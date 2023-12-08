@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{potal.pp.title.modify}" class="h3 mb-4 text-gray-800">범칙금 납부처 수정</h1>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{potal.pp.modify}" class="m-0 font-weight-bold text-primary">수정</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form id="frmPenaltyPlaceModify">
+                                <input type="hidden" name="placePymntId" th:value="${plPymntInfo.placePymntId}">
+                            <table class="table table-bordered">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                    <col width="30%">
+
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th th:text="#{potal.pp.name}">이름</th>
+                                    <td><input type="text" class="form-control" id="txtPlacePymntNm" name="placePymntNm" th:value="${plPymntInfo.placePymntNm}"></td>
+                                    <th th:text="#{potal.pp.dw}">주소</th>
+                                    <td><input type="text" class="form-control" id="txtPlacePymntAddr" name="placePymntAddr" th:value="${plPymntInfo.placePymntAddr}"></td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{potal.pp.register}">등록자</th>
+                                    <td th:text="${plPymntInfo.crtr}">서초동 주민센터</td>
+                                    <th th:text="#{potal.pp.registDate}">등록</th>
+                                    <td th:text="${plPymntInfo.crDt}"> 서초구 서초동 서초길 3호</td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{potal.pp.preName}">대표자 이름</th>
+                                    <td colspan="3"><input type="text" class="form-control" id="txtPlacePymntRprsvNm" name="placePymntRprsvNm" th:value="${plPymntInfo.placePymntRprsvNm}"></td>
+                                </tr>
+
+                                </tbody>
+                            </table>
+                            </form>
+                            <button th:text="#{potal.common.cancel}" type="button" id="btnGoList" class="btn btn-outline-secondary" onclick="javascript:window.history.back()">취소</button>
+                            <button th:text="#{potal.common.modiCom}" type="button" id="btnModify" class="btn btn-outline-success">수정완료</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+    $("#btnModify").click(function () {
+
+
+       // if($.trim($("#txtPlacePymntNm").val())==''){
+       //     alert("이름을 입력해주세요.");
+       //     $("#txtPlacePymntNm").focus();
+       //     return false;
+       // }
+       // if($.trim($("#txtPlacePymntAddr").val())==''){
+       //     alert("주소를 입력해주세요.");
+       //     $("#txtPlacePymntAddr").focus();
+       //     return false;
+       // }
+       // if($.trim($("#txtPlacePymntRprsvNm").val())==''){
+       //     alert("대표자이름을 입력해주세요.");
+       //     $("#txtPlacePymntRprsvNm").focus();
+       //     return false;
+       // }
+
+
+        $.ajax({
+            url: /*[[@{/portal/penaltyplace/update.ajax}]]*/ "/portal/penaltyplace/update.ajax",
+            type: "post",
+            data: $("#frmPenaltyPlaceModify").serialize(),
+            success: function(data){
+								var resultCode = data.code;
+								var resultMessage = data.message;
+                if(resultCode == '200'){
+                    alert(resultMessage);
+
+                    var baseUrl = /*[[@{/portal/penaltyplace/detail.do}]]*/ '';
+                    window.location.href=baseUrl+"?placePymntId="+[[${plPymntInfo.placePymntId}]];
+                } else {
+										alert(resultMessage);
+								}
+            }
+        });
+
+    })
+
+
+</script>

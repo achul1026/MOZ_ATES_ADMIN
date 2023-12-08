@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-4 text-gray-800" th:text="#{enforcement.lawRegist.title}">법률 등록</h1>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{enforcement.lawRegist.registrationTitle}">등록</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form id="frmLawRegist">
+                            <table class="table table-bordered">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                    <col width="30%">
+
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th th:text="#{enforcement.lawRegist.legalNumber}">법률 번호</th>
+                                    <td><input type="text" class="form-control col-lg-7" id="txtLawArticl" name="lawArticleNo"></td>
+                                    <th th:text="#{enforcement.lawRegist.nameOfLaw}">법률명</th>
+                                    <td><input type="text" class="form-control col-lg-7" id="txtLawNm" name="lawNm"></td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{enforcement.lawRegist.legalExplanation}">법률 설명</th>
+                                    <td colspan="3"><textarea class="form-control" id="txtLawDesc" name="lawDesc" rows="15"></textarea></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            </form>
+                            <button type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/enf/law/list.do}'|" th:text="#{enforcement.lawRegist.list}">목록</button>
+                            <button type="button" id="btnRegist" class="btn btn-outline-primary" th:text="#{enforcement.lawRegist.registrationButton}">등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>
+<script th:inline="javascript">
+
+    $("#btnRegist").click(function () {
+
+
+        if($.trim($("#txtLawArticl").val())==''){
+            alert("법률번호를 입력해주세요.");
+            $("#txtLawArticl").focus();
+            return false;
+        }
+        if($.trim($("#txtLawNm").val())==''){
+            alert("법률명을 입력해주세요.");
+            $("#txtLawNm").focus();
+            return false;
+        }
+        if($("#txtLawDesc").val().replace(/\s| /gi, "").length == 0){
+            alert("법률 설명을 입력해주세요.");
+            $("#txtLawDesc").focus();
+            return false;
+        }
+
+
+
+        $.ajax({
+            url: /*[[@{/enf/law/save.ajax}]]*/ "/enf/law/save.ajax",
+            type: "post",
+            data: $("#frmLawRegist").serialize(),
+            success: function(data){
+                if(data.code == "1"){
+                    alert("등록했습니다.");
+                    window.history.back();
+                }
+            }
+        });
+
+    })
+
+</script>

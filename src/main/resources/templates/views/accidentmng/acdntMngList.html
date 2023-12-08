@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-4 text-gray-800" th:text="#{accident.mngList.title}">교통사고 관리</h1>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-body search-form">
+                        <form id="frmSearch" class="flex-center gap12">
+                            <input type="hidden" id="hdnStart" name="start" th:value="${tfcAcdntMaster.start}">
+                            <label th:text="#{accident.mngList.startDate}">시작일</label>
+                            <input class="form-control col-lg-2 input-data" id="sDate" name="sDate" type="date" th:value="${tfcAcdntMaster.getSDate()}">
+                            <label th:text="#{accident.mngList.endDate}">종료일</label>
+                            <input class="form-control col-lg-2 input-data" id="eDate" name="eDate" type="date" th:value="${tfcAcdntMaster.getEDate()}">
+                            <label>
+                                <select class="form-control select" name="searchType">
+                                    <option value="all" th:text="#{accident.mngList.selectAll}" >전체</option>
+                                </select>
+                            </label>
+                            <input class="form-control col-lg-3 search-box" name="searchTxt" type="text" th:value="${tfcAcdntMaster.searchTxt}" >
+                            <button type="button" id="btnSearch" class="btn btn-outline-primary" th:text="#{accident.mngList.check}">조회</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary" style="display: inline;" th:text="#{accident.mngList.trafficAccidentList}">교통사고 리스트</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <div class="row"><div class="col-sm-12">
+                                    <table class="table table-bordered dataTable" id="tblList" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting sorting_asc" rowspan="1" colspan="1" style="width: 56px;" th:text="#{accident.mngList.tableNumber}">No.</th>
+                                            <th class="sorting" rowspan="1" colspan="1" style="width: 61px;" th:text="#{accident.mngList.accidentNumber}">사고번호</th>
+                                            <th class="sorting" rowspan="1" colspan="1" style="width: 49px;" th:text="#{accident.mngList.accidentDate}">사고일시</th>
+                                            <th class="sorting" rowspan="1" colspan="1" style="width: 67px;" th:text="#{accident.mngList.accidentPlace}">사고장소</th>
+                                            <th class="sorting" rowspan="1" colspan="1" style="width: 31px;" th:text="#{accident.mngList.accidentCarNumber}">사고차 번호</th>
+                                       </tr>
+                                    </thead>
+
+                                    <tbody>
+										<tr th:each="acdntList, varstaus : ${acdntList}">
+											<td th:text="${acdntList.rnum}"></td>
+											<td th:text="${acdntList.tfcAcdntId}" th:onclick="|location.href='@{/acdnt/mng/detail.do(tfcAcdntId=${acdntList.tfcAcdntId})}'|"></td>
+											<td th:text="${acdntList.acdntDt}"></td>
+											<td th:text="${acdntList.roadAddr}"></td>
+											<td th:text="${acdntList.vhRegNo}"></td>
+										</tr>
+                                    </tbody>
+                                </table>
+                                </div>
+                                   <div class="register-btn">
+                                        <button type="button" id="btnRegist" class="btn btn-outline-success" th:onclick="|location.href='@{/acdnt/mng/save.do}'|" th:text="#{accident.mngList.registrationAccident}">사고 등록</button>
+                                    </div>
+                                <div class="page_wrap">
+					                    <ul class="pagination">
+					                        <li><a href="#" class="first">맨앞으로</a></li>
+					                        <li><a href="#" class="left"><i class="page-arrow-left"></i></a></li>
+					                        <li><a href="#" class="active num">1</a></li>
+					                        <li><a href="#" class="num">2</a></li>
+					                        <li><a href="#" class="num">3</a></li>
+					                        <li><a href="#" class="num">4</a></li>
+					                        <li><a href="#" class="num">5</a></li>
+					                        <li><a href="#" class="right"><i class="page-arrow-right"></i></a></li>
+					                        <li><a href="#" class="last">맨뒤로</a></li>
+					                    </ul>
+				                  </div>
+                                </div>
+                                 
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+</script>

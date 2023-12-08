@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-4 text-gray-800" th:text="#{equipment.facilityLogList.title}">교통시설물 로그</h1>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{equipment.logList.searchOp}">검색조건</h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="frmSearch">
+                            <input type="hidden" id="hdnStart" name="start">
+                            <label th:text="#{equipment.logList.startDate}">시작일</label>
+                            <input class="form-control col-lg-2" id="sDate" name="sDate" type="date">
+                            &nbsp;&nbsp;&nbsp;
+                            <label th:text="#{equipment.logList.endDate}">종료일</label>
+                            <input class="form-control col-lg-2" id="eDate" name="eDate" type="date">
+                            &nbsp;&nbsp;&nbsp;
+                            <label>
+                                <select class="form-control" name="searchType">
+                                    <option value="all" th:text="#{equipment.logList.selectAll}">전체</option>
+                                </select>
+                            </label>
+                            <input class="form-control col-lg-3" name="searchTxt" type="text">
+                            &nbsp;&nbsp;&nbsp;
+
+                            <button type="button" id="btnSearch" class="btn btn-outline-primary" th:text="#{equipment.logList.check}">조회</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary" style="display: inline;" th:text="#{equipment.facilityLogList.list}">단속장비 로그 리스트</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <div class="row"><div class="col-sm-12">
+                                    <table class="table table-bordered dataTable" id="tblList" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                        <thead>
+                                        <tr role="row">
+<!--                                            <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 56px;" th:text="#{equipment.logList.tableNumber}">No.</th>-->
+<!--                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 49px;" th:text="#{equipment.logList.equipmentNumber}">장비번호</th>-->
+<!--                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending" style="width: 67px;" th:text="#{equipment.logList.carNumber}">차로번호</th>-->
+<!--                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 31px;" th:text="#{equipment.logList.controlRequest}">제어요청</th>-->
+<!--                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;" th:text="#{equipment.logList.controlResult}">제어결과</th>-->
+<!--                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;" th:text="#{equipment.logList.registrationDate}">등록일</th>-->
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>
+<script th:inline="javascript">
+   
+</script>

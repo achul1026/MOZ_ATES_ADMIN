@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{police.polList.title}" class="h3 mb-4 text-gray-800">사용자 목록</h1>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{police.common.searchCon}" class="m-0 font-weight-bold text-primary">검색조건</h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="frmSearch">
+                            <input type="hidden" id="hdnStart" name="start" th:value="${polInfo.start}">
+                            <label th:text= "#{police.common.startDate}">시작일</label>
+                            <input class="form-control col-lg-2" id="sDate" name="sDate" type="date" th:value="${polInfo.getSDate()}">
+                            &nbsp;&nbsp;&nbsp;
+                            <label th:text= "#{admin.common.endDate}">종료일</label>
+                            <input class="form-control col-lg-2" id="eDate" name="eDate" type="date" th:value="${polInfo.getEDate()}">
+                            &nbsp;&nbsp;
+                            <label>
+                                <select class="form-control" name="searchType">
+                                    <option th:text= "#{police.common.allCon}"  value="all">전체</option>
+                                </select>
+                            </label>
+                            <input class="form-control col-lg-3" name="searchTxt" type="text" th:value="${polInfo.searchTxt}" >
+                            &nbsp;&nbsp;&nbsp;
+
+                            <button th:text= "#{police.common.search}"  type="button" id="btnSearch" class="btn btn-outline-primary">조회</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text= "#{police.polList.list}" class="m-0 font-weight-bold text-primary" style="display: inline;">사용자 리스트</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table class="table table-bordered dataTable" id="tblList" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                            <thead>
+                                            <tr role="row">
+                                                <th class="sorting sorting_asc" style="width: 56px;">No.</th>
+                                                <th th:text="#{police.polList.name}" class="sorting" style="width: 67px;">이름</th>
+                                                <th th:text="#{police.polList.id}" class="sorting" style="width: 61px;">ID</th>
+                                                <th th:text="#{police.polList.phone}" class="sorting" style="width: 49px;">연락처</th>
+                                                <th th:text="#{police.polList.email}" class="sorting" style="width: 68px;">이메일</th>
+                                                <th th:text="#{police.polList.jur}" class="sorting" style="width: 68px;">관할</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tbody>
+												<tr th:each="polInfo, varstaus : ${polList}">
+													<td th:text="${polInfo.rnum}"></td>
+													<td th:text="${polInfo.polNm}"></td>
+													<td th:text="${polInfo.polLcenId}" th:onclick="|location.href='@{/user/pol/detail.do(polLcenId=${polInfo.polLcenId})}'|"></td>
+													<td th:text="${polInfo.phone}"></td>
+													<td th:text="${polInfo.email}"></td>
+													<td th:text="${polInfo.jur}"></td>
+												</tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</th:block>
+</html>
+<script th:inline="javascript"></script>

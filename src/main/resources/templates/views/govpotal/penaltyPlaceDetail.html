@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{potal.pp.title.detail}" class="h3 mb-4 text-gray-800">범칙금 납부 상세</h1>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{potal.pp.detail}" class="m-0 font-weight-bold text-primary" >상세</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                    <col width="30%">
+
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th th:text="#{potal.pp.name}">이름</th>
+                                    <td th:text="${plPymntInfo.placePymntNm}">서초동 주민센터</td>
+                                    <th th:text="#{potal.pp.dw}">주소</th>
+                                    <td th:text="${plPymntInfo.placePymntAddr}"> 서초구 서초동 서초길 3호</td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{potal.pp.register}">등록자</th>
+                                    <td th:text="${plPymntInfo.crtr}">서초동 주민센터</td>
+                                    <th th:text="#{potal.pp.registDate}">등록</th>
+                                    <td th:text="${plPymntInfo.crDt}"> 서초구 서초동 서초길 3호</td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{potal.pp.preName}">대표자 이름</th>
+                                    <td colspan="3" th:text="${plPymntInfo.placePymntRprsvNm}">mike lim</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <button th:text="#{penalty.common.listBack}" type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/portal/penaltyplace/list.do}'|">목록</button>
+                            <button th:text="#{potal.common.modifyBtn}" type="button" id="btnRegist" class="btn btn-outline-warning" th:onclick="'location.href=\''+@{/portal/penaltyplace/update.do(placePymntId=${plPymntInfo.placePymntId})}+'\''">수정</button>
+                            <button th:text="#{potal.common.delete}" type="button" id="btnDelete" class="btn btn-outline-danger">삭제</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+
+    $("#btnDelete").click(function () {
+        if(confirm("Are you sure you want to delete it?")){
+
+            var idx = [[${plPymntInfo.placePymntId}]];
+            $.ajax({
+                url: /*[[@{/portal/penaltyplace/delete.ajax}]]*/ "/portal/penaltyplace/delete.ajax",
+                type: "post",
+                data: {"placePymntId":idx},
+                success: function(result){
+										var resultCode = result.code;
+										var resultMessage = result.message;
+                    if(resultCode == '200'){
+                        alert(resultMessage);
+                        location.href = /*[[@{/portal/penaltyplace/list.do}]]*/ '/portal/penaltyplace/list.do';
+                    } else {
+												alert(resultMessage);
+										}
+                }
+            });
+        }else{
+            return;
+        }
+    });
+
+</script>

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{potal.faq.title.modify}" class="h3 mb-4 text-gray-800">FAQ 수정</h1>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{potal.faq.modify}" class="m-0 font-weight-bold text-primary">수정</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form id="frmFaqModify">
+                            <table class="table table-bordered">
+                                <input type="hidden" name="faqIdx" th:value="${faq.faqIdx}">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                    <col width="30%">
+
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th th:text="#{potal.faq.title}">제목</th>
+                                    <td><input type="text" class="form-control" id="txtPostTitle" name="postTitle" th:value="${faq.postTitle}"></td>
+                                    <th th:text="#{potal.faq.classifi}">분류</th>
+                                    <td>
+                                        <select class="form-control" name="cateTy">
+                                            <th:block th:each="cd : ${cdList}">
+                                                <option th:value="${cd.cdId}" th:text="${cd.cdNm}" th:selected="${cd.cdId == faq.cateTy}"></option>
+                                            </th:block>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{potal.faq.writer}">등록자</th>
+                                    <td th:text="${faq.wrtrId}"></td>
+                                    <th th:text="#{potal.faq.registDate}">등록일</th>
+                                    <td th:text="${faq.regDt}"></td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{potal.faq.priority}">우선순위</th>
+                                    <td colspan="3"><input type="text" class="form-control" id="txtFaqSeq" name="faqSeq" th:value="${faq.faqSeq}"></td>
+
+                                </tr>
+                                <tr>
+                                    <th th:text="#{potal.faq.content}">내용</th>
+                                    <td colspan="3"><textarea class="form-control" rows="15" id="txtPostContent" name="postContent" th:text="${faq.postContent}">문제 발생시 관련 홈페이지에 문의하시면 됩니다.</textarea></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            </form>
+                            <button th:text="#{potal.common.cancel}" type="button" id="btnGoList" class="btn btn-outline-secondary" onclick="javascript:window.history.back()">취소</button>
+                            <button th:text="#{potal.common.modiCom}" type="button" id="btnModify" class="btn btn-outline-success">수정완료</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+    $("#btnModify").click(function () {
+
+
+       // if($.trim($("#txtPostTitle").val())==''){
+       //     alert("제목을 입력해주세요.");
+       //     $("#txtPostTitle").focus();
+       //     return false;
+       // }
+       // if($.trim($("#txtPostContent").val())==''){
+       //     alert("내용을 입력해주세요.");
+       //     $("#txtPostContent").focus();
+       //     return false;
+       // }
+
+
+        $.ajax({
+            url: /*[[@{/portal/faq/update.ajax}]]*/ "/portal/faq/update.ajax",
+            type: "post",
+            data: $("#frmFaqModify").serialize(),
+            success: function(result){
+								var resultCode = result.code;
+								var resultMessage = result.message;
+                if(resultCode == '200'){
+                    alert(resultMessage);
+                    var baseUrl = /*[[@{/portal/faq/detail.do}]]*/ '';
+                    window.location.href=baseUrl+"?faqIdx="+[[${faq.faqIdx}]];
+                }	else {
+									alert(resultMessage);
+								}
+            }
+        });
+
+    })
+
+
+</script>

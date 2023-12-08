@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{potal.faq.title.regist}" class="h3 mb-4 text-gray-800">FAQ 등록</h1>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{potal.faq.regist}" class="m-0 font-weight-bold text-primary">등록</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form id="frmFaqRegist">
+                            <table class="table table-bordered">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                    <col width="30%">
+
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th th:text="#{potal.faq.title}">제목</th>
+                                    <td><input type="text" class="form-control" name="postTitle"></td>
+                                    <th th:text="#{potal.faq.category}">카테고리</th>
+                                    <td>
+                                        <select class="form-control" name="cateTy">
+                                            <th:block th:each="cd : ${cdList}">
+                                                <option th:value="${cd.cdId}" th:text="${cd.cdNm}"></option>
+                                            </th:block>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{potal.faq.priority}">우선순위</th>
+                                    <td colspan="3"><input type="text" class="form-control" name="faqSeq"></td>
+<!--                                    <th>노출</th>-->
+<!--                                    <td>-->
+<!--                                        <input type="radio" id="useY" name="useYN" value="y" checked>-->
+<!--                                        <label for="useY">노출</label>-->
+<!--                                        <input type="radio" id="useN" name="useYN" value="n">-->
+<!--                                        <label for="useN">비노출</label>-->
+<!--                                    </td>-->
+                                </tr>
+                                <tr>
+                                    <th th:text="#{potal.faq.content}">내용</th>
+                                    <td colspan="3"><textarea class="form-control" rows="15" id="txtPostContent" name="postContent"></textarea></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            </form>
+                            <button th:text="#{penalty.common.listBack}" type="button" id="btnGoList" class="btn btn-outline-secondary" onclick="javascript:window.history.back()">목록</button>
+                            <button th:text="#{potal.faq.regist}" type="button" id="btnRegist" class="btn btn-outline-warning">등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+    $("#btnRegist").click(function () {
+
+       // if($.trim($("input[name=postTitle]").val())==''){
+       //     alert("제목을 입력해주세요.");
+       //     $("input[name=postTitle]").focus();
+       //     return false;
+       // }
+       // if($.trim($("#txtPostContent").val())==''){
+       //     alert("내용을 입력해주세요.");
+       //     $("#txtPostContent").focus();
+       //     return false;
+       // }
+
+        $.ajax({
+            url: /*[[@{/portal/faq/save.ajax}]]*/ "/portal/faq/save.ajax",
+            type: "post",
+            data: $("#frmFaqRegist").serialize(),
+            success: function(result){
+								var resultCode = result.code;
+								var resultMessage = result.message;
+                if(resultCode == '200'){
+                    alert(resultMessage);
+                    location.href=/*[[@{/portal/faq/list.do}]]*/ "";
+                } else {
+										alert(resultMessage);
+								}
+            }
+        });
+
+    })
+
+
+
+</script>

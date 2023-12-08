@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{penalty.penalty.title.regist}" class="h3 mb-4 text-gray-800">범칙금 등록</h1>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{penalty.penalty.regist}" class="m-0 font-weight-bold text-primary" >등록</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form id="frmPenaltyRegist">
+                                <table class="table table-bordered">
+                                    <colgroup>
+                                        <col width="30%">
+                                        <col width="70%">
+                                    </colgroup>
+                                    <tbody>
+                                    <tr>
+                                    	<th>범칙금 번호</th>
+                                    	<td><input type="text" class="form-control" id="tfcEnfId" name="tfcEnfId"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th>결제 번호</th>
+                                    	<td><input type="text" class="form-control" id="pymntId" name="pymntId"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th>위반자 고유 아이디</th>
+                                    	<td><input type="text" class="form-control" id="vioId" name="tfcEnfMaster.vioId"> </td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:test="#{penalty.penalty.penaltyName}">위반 내용</th>
+                                    	<td>
+                                    		<select  class="form-control" name="penaltyName2" id="penaltyName2" onchange=changePrice()>
+                                    			<option>위반사항을 선택해주세요.</option>
+                                            	<option class="penaltyName1" th:value="속도위반" th:text="속도위반"></option>
+                                            	<option class="penaltyName2" th:value="신호위반" th:text="신호위반"></option>
+                                               	
+                                    		</select>
+                                    		<input type="hidden" id="penaltyname" name="penaltyname">
+                                    		<input type="hidden" id="totalPrice" name=totalPrice>
+                                    	</td>	
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.totalPrice}">범칙금</th>
+                                    	<td><p><span id="price"></span>원</p></td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.endDay}">납부 기한</th>
+                                        <td><input type="date" class="form-control" id="pymntDdln" name="pymntDdln" th:placeholder="|납부 기간을 선택해 주세요.|">
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.tfcEnfDt}">위반 일시</th>
+                                        <td><input type="date" class="form-control" id="tfcEnfDt" name="tfcEnfDt"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.roadAddr}">위반장소</th>
+                                    	<td><input type="text" class="form-control" id="roadAddr" name="tfcEnfMaster.roadAddr"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.vioNm}">위반자 이름</th>
+                                    	<td><input type="text" class="form-control" id="payerNm" name="payerNm"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.vioNid}">위반자 NID</th>
+                                    	<td><input type="text" class="form-control" id="vioNid" name="vioNid"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.carNum}">차량번호</th>
+                                    	<td><input type="text" class="form-control" id="vhRegNo" name="tfcEnfMaster.vhRegNo"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.policeStaticon}">관할 경찰서</th>
+                                    	<td><input type="text" class="form-control" id="policeStation" name="policeStation"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.detail}">상세 내용</th>
+                                    	<td><textarea class="form-control" id="penaltydetail" name="penaltydetail"></textarea></td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                                
+                            </form>
+                            <button th:text="#{penalty.common.listBack}" type="button" id="btnGoList" class="btn btn-outline-secondary" onclick="javascript:window.history.back()" style="float: right; margin-left:5px;">목록</button>
+                            <button th:text="#{penalty.penalty.save}" type="button" id="btnRegist" class="btn btn-outline-success" style="float: right;" >저장</button>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+
+function changePrice(){
+var penaltyName = $('#penaltyName2').val();
+	
+	if(penaltyName == "속도위반"){
+		$('#price').text('30000');
+		$("input[id=totalPrice]").val("30000");
+		$("input[id=penaltyName]").val("속도위반");
+	}
+	else{
+		$('#price').text('50000');
+		$("input[id=totalPrice]").val("50000");
+		$("input[id=penaltyName]").val("신호위반");
+	}
+}
+
+$("#btnRegist").click(function () {
+	if($.trim($("#tfcEnfId").val())==''){
+            alert("범칙금 번호를 입력해주세요.");
+            $("#tfcEnfId").focus();
+            return false;
+        }
+	if($.trim($("#pymntId").val())==''){
+            alert("결제 번호를 입력해주세요.");
+            $("#pymntId").focus();
+            return false;
+        }
+	if($.trim($("#pymntDdln").val())==''){
+            alert("납부기한을 입력해주세요.");
+            $("#pymntDdln").focus();
+            return false;
+        }
+	if($.trim($("#tfcEnfDt").val())==''){
+            alert("위반일시를 입력해주세요.");
+            $("#tfcEnfDt").focus();
+            return false;
+        }                        
+$.ajax({
+    url: /*[[@{/penalty/mng/save.ajax}]]*/ "/penalty/mng/save.ajax",
+   type: "post",
+    data: $("#frmPenaltyRegist").serialize(),
+    success: function(data){
+        if(data.code == "1"){
+            alert("등록했습니다.");
+            location.href=/*[[@{/penalty/mng/list.do}]]*/ "";
+        }
+    }
+});
+
+})
+
+function nowAsDuration(){
+    return moment.duration({
+        hours:   moment().hour(),
+        minutes: moment().minute(),
+        seconds: moment().second()
+    });
+}
+</script>

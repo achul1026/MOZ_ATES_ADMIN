@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-4 text-gray-800" th:text="#{enforcement.lawDetail.title}">법률 상세</h1>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{enforcement.lawDetail.subtitle}">상세</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form id="frmLawRegist">
+                            <table class="table table-bordered">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                    <col width="30%">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th th:text="#{enforcement.lawDetail.legalNumber}">법률 번호</th>
+                                    <td th:text="${tfcLwInfo.lawArticleNo}"></td>
+                                    <th th:text="#{enforcement.lawDetail.nameOfLow}">법률명</th>
+                                    <td th:text="${tfcLwInfo.lawNm}"></td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{enforcement.lawDetail.constructer}">생성자</th>
+                                    <td th:text="${tfcLwInfo.crtr}"></td>
+                                    <th th:text="#{enforcement.lawDetail.creationDate}">생성일</th>
+                                    <td th:text="${tfcLwInfo.crDt}"></td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{enforcement.lawDetail.legalExplanation}">법률 설명</th>
+                                    <td colspan="3" th:text="${tfcLwInfo.lawDesc}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            </form>
+                            <button type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/enf/law/list.do}'|" th:text="#{enforcement.lawDetail.listButton}">목록</button>
+                            <button type="button" id="btnDelete" class="btn btn-outline-danger" th:text="#{enforcement.lawDetail.deleteButton}">삭제</button>
+                            <button type="button" id="btnModify" class="btn btn-outline-warning" th:onclick="|location.href='@{/enf/law/update.do(tfcLawId=${tfcLwInfo.tfcLawId})}'|" th:text="#{enforcement.lawDetail.modifyButton}">수정</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>
+<script th:inline="javascript">
+
+    $("#btnDelete").click(function () {
+        if(confirm("삭제하시겠습니까")){
+
+            var idx = [[${tfcLwInfo.tfcLawId}]];
+            $.ajax({
+                url: /*[[@{/enf/law/delete.ajax}]]*/ "/enf/law/delete.ajax",
+                type: "post",
+                data: {"tfcLawId":idx},
+                success: function(data){
+                    if(data.code == "1"){
+                        alert("삭제했습니다. 현재 보안에 취약 idx값 하나만 넘기기 때문에 추후에 보안 강화해야함");
+                        location.href = /*[[@{/enf/lawList}]]*/ '/enf/law/list.do';
+                    }
+                },
+                error: function(data){
+					alert(data.responseJSON.message)
+				}
+                
+            });
+        }else{
+            return;
+        }
+    });
+
+</script>

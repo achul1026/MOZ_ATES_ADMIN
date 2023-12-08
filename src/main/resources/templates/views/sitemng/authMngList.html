@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	권한 관리 목록
+   <div th:each="authList : ${mozAuthList}">
+	   <button type="button" th:attr="onclick=|moveDetail('${authList.authId}')|"> 상세 </button>
+   </div>
+	   <button type="button" th:onclick="moveRegist()"> 생성 </button>
+
+</th:block>
+</html>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+	function moveDetail(authId){
+		var baseUrl = /*[[@{/siteMng/auth/detail.do}]]*/ '';
+        window.location.href=baseUrl+"?authId="+authId;
+	};
+	
+	function moveRegist(){
+		var baseUrl = /*[[@{/siteMng/auth/save.do}]]*/ '';
+        window.location.href=baseUrl;
+		
+	}
+    /*]]>*/
+</script>

@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{penalty.penalty.title}"  class="h3 mb-4 text-gray-800">踰붿튃湲� 愿�由�</h1>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <form id="frmSearch">
+                            <input type="hidden" id="hdnStart" name="start" th:value="${finePymntInfo.start}">
+                            <label th:text="#{penalty.common.startDate}">�떆�옉�씪</label>
+                            <input class="form-control col-lg-2" id="sDate" name="sDate" type="date" th:value="${finePymntInfo.getSDate()}">
+                            &nbsp;&nbsp;&nbsp;
+                            <label th:text= "#{penalty.common.endDate}">醫낅즺�씪</label>
+                            <input class="form-control col-lg-2" id="eDate" name="eDate" type="date" th:value="${finePymntInfo.getEDate()}">
+                            &nbsp;&nbsp;&nbsp;
+                            
+                            <button style="float: right;" th:text= "#{penalty.common.search}" type="button" id="btnSearch" class="btn btn-outline-primary" >Filter</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                    <div id="tblList_info">
+                    	
+                    </div>
+                    <div style="display: flex; justify-content: right; margin-bottom: 5px;">
+                    <input class="form-control col-lg-3" name="searchTxt" type="text" th:value="${finePymntInfo.searchTxt}">
+                            &nbsp;&nbsp;&nbsp;
+                            <button th:text="#{penalty.penalty.impose}" type="button" id="btnRegist" class="btn btn-outline-success" th:onclick="|location.href='@{/penalty/mng/save.do}'|">踰붿튃湲� �벑濡�</button>
+                        </div>
+                        <div class="table-responsive">
+                            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table class="table table-bordered dataTable" id="tblList" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                            <thead>
+                                            <tr role="row">
+                                                <th th:text="#{penalty.common.number}" class="sorting sorting_asc" style="width: 50px;">踰덊샇</th>
+                                                <th th:text="#{penalty.penalty.number}" class="sorting" tabindex="0" style="width: 67px;">踰붿튃湲� 踰덊샇</th>
+                                                <th th:text="#{penalty.penalty.penaltyName}" class="sorting" style="width: 67px;">�쐞諛� �궡�슜</th>
+                                                <th th:text="#{penalty.penalty.addr}" class="sorting" style="width: 67px;">�쐞諛� �옣�냼</th>
+                                                <th th:text="#{penalty.penalty.price}" class="sorting" style="width: 61px;">踰붿튃湲�</th>
+                                                <th th:text="#{penalty.penalty.endDay}" class="sorting" style="width: 31px;">�궔遺�湲고븳</th>
+                                                <th th:text="#{penalty.penalty.condition}" class="sorting" style="width: 68px;">�궔遺� �뿬遺�</th>
+                                                <th th:text="#{penalty.penalty.enrollment}" class="sorting" style="width: 49px;">踰붿튃湲� �벑濡앹씪</th>
+                                            </tr>
+                                            </thead>
+
+                                            <tbody>
+												<tr th:each="penaltyInfo, varstaus : ${penaltyList}">
+													<td th:text="${penaltyInfo.rnum}"></td>
+													<td th:text="${penaltyInfo.pymntId}" th:onclick="|location.href='@{/penalty/mng/detail.do(pymntId=${penaltyInfo.pymntId})}'|"></td>
+													<td th:text="${penaltyInfo.penaltyname}"></td>
+													<td th:text="${penaltyInfo.tfcEnfMaster.roadAddr}"></td>
+													<td th:text="${penaltyInfo.totalPrice}"></td>
+													<td th:text="${penaltyInfo.pymntDdln}"></td>
+													<td th:text="${penaltyInfo.pymntStts}"></td>
+													<td th:text="${penaltyInfo.tfcEnfMaster.tfcEnfDt}"></td>
+												</tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-7">
+                                    <div class="dataTables_info">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</th:block>
+</html>
+<script th:inline="javascript"></script>
+<style>
+th, td {
+  text-align: center;
+}
+th{
+	vertical-align: middle;
+}
+</style>

@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div class="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 class="h3 mb-4 text-gray-800"
+			th:text="#{accident.mngDetail.title}">교통사고 상세정보</h1>
+
+		<div class="row">
+
+			<div class="col-lg-12">
+				<div class="card shadow mb-4">
+					<div class="card-header py-3">
+						<h6 class="m-0 font-weight-bold text-primary"
+							th:text="#{accident.mngDetail.subtitle}">상세</h6>
+					</div>
+					<div class="card-body">
+						<div class="table-responsive">
+							<table class="table table-bordered">
+								<colgroup>
+									<col width="20%">
+									<col width="30%">
+									<col width="20%">
+									<col width="30%">
+
+								</colgroup>
+								<tbody>
+									<tr>
+										<th th:text="#{accident.mngDetail.accidentNumber}">사고번호</th>
+										<td th:text="${tfcAcdntMaster.tfcAcdntId}"></td>
+										<th th:text="#{accident.mngDetail.accidentDate}">사고일시</th>
+										<td th:text="${tfcAcdntMaster.acdntDt}"></td>
+									</tr>
+									<tr>
+										<th th:text="#{accident.mngDetail.accidentPlace}">사고장소</th>
+										<td th:text="${tfcAcdntMaster.roadAddr}"></td>
+										<th th:text="#{accident.mngDetail.accidentCarNumber}">사고차번호</th>
+										<td th:text="${tfcAcdntMaster.vhRegNo}"></td>
+									</tr>
+									<tr>
+										<th th:text="#{accident.mngDetail.policeOfficerInCharge}">담당경찰관</th>
+										<td th:text="${tfcAcdntMaster.polId}"></td>
+										<th th:text="#{accident.mngDetail.attacker}">가해자</th>
+										<td th:text="${tfcAcdntMaster.vioInfo?.vioNm}"></td>
+									</tr>
+									<tr>
+										<th th:text="#{accident.mngDetail.typeOfAccident}">사고 종류</th>
+										<td colspan="3" th:text="${tfcAcdntMaster.cmCd.cdNm}"></td>
+									</tr>
+								</tbody>
+							</table>
+							<button type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/acdnt/mng/list.do}'|" th:text="#{accident.mngRegist.list}" >목록</button>
+                            <button type="button" id="btnModify" class="btn btn-outline-warning" th:onclick="|location.href='@{/acdnt/mng/update.do(tfcAcdntId=${tfcAcdntMaster.tfcAcdntId})}'|" th:text="#{accident.mngDetail.modifyButton}">수정</button>
+						<div  id="mapContainer" style="width:100%; height:700px;">
+							<h6> latitude : <label id="acdntlat" th:text="${aDomain.lat}" th:value="${aDomain.lat}"/></h6>
+							<h6> longitude : <label id="acdntlng" th:text="${aDomain.lng}" th:value="${aDomain.lng}"/></h6>
+									<div id="map" style="width:100%; height:600px;" ></div>
+							</div>           
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>

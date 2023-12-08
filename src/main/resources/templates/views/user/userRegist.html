@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{admin.admin.reg}" class="h3 mb-4 text-gray-800">신규 관리자 등록</h1>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{admin.admin.regist}" class="m-0 font-weight-bold text-primary" >등록</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form id="frmUserRegist">
+                            <table class="table table-bordered">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                    <col width="30%">
+
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th th:text="#{admin.admin.id}">아이디</th>
+                                    <td><input type="text" class="form-control" id="txtOprtrAccountId" name="oprtrAccountId"></td>
+                                    <th th:text="#{admin.admin.email}">E-mail</th>
+                                    <td><input type="text" class="form-control" id="txtOprtrEmail" name="oprtrEmail"></td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{admin.admin.password}">비밀번호</th>
+                                    <td><input type="password" class="form-control" id="pwOprtrAccountPw" name="oprtrAccountPw"></td>
+                                    <th th:text="#{admin.admin.passwordRe}">비밀번호 확인</th>
+                                    <td><input type="password" class="form-control" id="pwOprtrAccountPwChk" name="oprtrAccountPwChk"></td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{admin.admin.oprtrNm}">담당자 이름</th>
+                                    <td><input type="text" class="form-control" id="oprtrNm" name="oprtrNm"></td>
+                                    <th th:text="#{admin.admin.oprtrPno}">담당자 연락처</th>
+                                    <td><input type="text" class="form-control" id="oprtrPno" name="oprtrPno"></td>
+                                </tr>
+                                <tr>
+                                    <th th:text=#{admin.admin.ranking}>등급</th>
+                                    <td>
+                                        <select class="form-control" name="oprtrPermission">
+                                            <option th:text="#{admin.admin.superAdmin}" value="sup" selected>슈퍼 어드민</option>
+                                            <option th:text="#{admin.admin.police}" value="pol">경찰</option>
+                                            <option th:text="#{enforceoment.admin.regionalManager}" value="opr">지역 담당자</option>
+                                        </select>
+                                    </td>
+                                    <th th:text="#{admin.admin.deprt}">담당 부서</th>
+                                    <td><input type="text" class="form-control" id="txtOprtrDeptNm" name="oprtrDeptNm"></td>
+                                </tr>
+
+
+                                </tbody>
+                            </table>
+                            </form>
+                            <button th:text="#{admin.admin.listBack}" type="button" id="btnGoList" class="btn btn-outline-secondary" onclick="javascript:window.history.back()">목록</button>
+                            <button th:text="#{admin.admin.join}" type="button" id="btnRegist" class="btn btn-outline-warning">등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+    $("#btnRegist").click(function () {
+
+
+        if($.trim($("#txtOprtrAccountId").val())==''){
+            alert("아이디를 입력해주세요.");
+            $("#txtOprtrAccountId").focus();
+            return false;
+        }
+        if($.trim($("#txtOprtrEmail").val())==''){
+            alert("이메일를 입력해주세요.");
+            $("#txtOprtrEmail").focus();
+            return false;
+        }
+        if($.trim($("#pwOprtrAccountPw").val())==''){
+            alert("비밀번호를 입력해주세요.");
+            $("#pwOprtrAccountPw").focus();
+            return false;
+        }
+        if($.trim($("#pwOprtrAccountPwChk").val())==''){
+            alert("비밀번호를 입력해주세요.");
+            $("#pwOprtrAccountPwChk").focus();
+            return false;
+        }
+        if($.trim($("#oprtrNm").val())==''){
+            alert("담당자명을 입력해주세요.");
+            $("#oprtrNm").focus();
+            return false;
+        }
+        if($.trim($("#oprtrPno").val())==''){
+            alert("핸드폰 번호를 입력해주세요.");
+            $("#oprtrPno").focus();
+            return false;
+        }
+        if($.trim($("#txtOprtrDeptNm").val())==''){
+            alert("담당부서를 입력해주세요.");
+            $("#txtOprtrDeptNm").focus();
+            return false;
+        }
+        if($.trim($("#pwOprtrAccountPwChk").val())!=$.trim($("#pwOprtrAccountPw").val())){
+            alert("비밀번호가 맞지 않습니다.");
+            $("#pwOprtrAccountPwChk").focus();
+            return false;
+        }
+
+
+        $.ajax({
+                url: /*[[@{/user/save.ajax}]]*/ "/user/save.ajax",
+            type: "post",
+            data: $("#frmUserRegist").serialize(),
+            success: function(data){
+                if(data.code == "1"){
+                    alert("등록했습니다.");
+                    location.reload();
+                }else{
+                    alert(data.msg);
+                }
+            }
+        });
+
+    })
+
+
+
+</script>

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{potal.complaint.title.detail}" class="h3 mb-4 text-gray-800">불만사항 상세</h1>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{potal.complaint.detail}" class="m-0 font-weight-bold text-primary" >상세</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                    <col width="30%">
+
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th th:text="#{potal.complaint.title}">제목</th>
+                                    <td colspan="3" th:text="${complaintsReg.postTtl}">왜 이렇게 과태료가 많이 나왔죠? 불만사항은 단속 번호가 없다.</td>
+                                </tr>
+
+                                <tr>
+                                    <th th:text="#{potal.complaint.email}">이메일</th>
+                                    <td th:text="${complaintsReg.wrtrEmail}">blue22@naver.com</td>
+                                    <th th:text="#{potal.complaint.registDate}">등록일</th>
+                                    <td th:text="${complaintsReg.crDt}">2020-11-22</td>
+                                </tr>
+                                 <tr>
+                                    <th th:text="#{potal.complaint.category}">카테고리</th>
+                                    <td th:text="${complaintsReg.cmCd.cdNm}">과태료</td>
+                                    <th th:text="#{potal.complaint.aon}">답변여부</th>
+                                    <td th:text="${complaintsReg.ansStts}=='Y'?'완료':'미완료'">미완료</td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{potal.complaint.inquriy}">내용</th>
+                                    <td colspan="3" th:text="${complaintsReg.postCn}">과태료가 생각보다 많이나왔어요 확인해주세요.</td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{potal.complaint.answer}" class="m-0 font-weight-bold text-primary" >답변</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                    <col width="30%">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th th:text="#{potal.complaint.answerContent}">답변 내용</th>
+                                    <td colspan="3"><textarea class="form-control"id="txtAnsContents" name="ansContents" rows="15" th:text="${complaintsReg.ansContents}"></textarea></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                            <button th:text="#{penalty.common.listBack}" type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/portal/complaintList}'|">목록</button>
+                            <button th:text="#{potal.complaint.submit}" type="button" id="btnRegist" class="btn btn-outline-warning" th:onclick="cmpemailSend()">답변 전송</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+</script>
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/bootstrap/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/bootstrap/vendor/jquery/jquery.cookie.min.js}"></script>
+<script th:src="@{/bootstrap/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<!-- Context Path add -->
+<link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}"/>
+
+<script>
+//이메일 발송
+//emailSend();
+var contextPath = document.getElementById('contextPathHolder').getAttribute("data-contextpath");
+
+//이메일발송
+function cmpemailSend(){
+	/*<![CDATA[*/
+    var complaintsIdx = "[[${complaintsReg.complaintsIdx}]]";
+	var userId = "[[${complaintsReg.wrtrEmail}]]"; //수신자
+    /*]]>*/
+//  var userId = "ruddydbluedus12@gmail.com"; //테스트용 절대값
+	var content = $("#txtAnsContents").val();
+	
+	var Cmpparams = {
+			complaintsIdx : complaintsIdx
+			,userId : userId
+			,content : content
+	};
+	console.log(Cmpparams);
+	
+	$.ajax({
+		url: contextPath+"/portal/cmpSendEmail"
+		,type: "POST"
+		,contentType: "application/json; charset=UTF-8"
+		,data : JSON.stringify(Cmpparams)
+		,dataType : "json"
+		,success: function(data){
+			alert("메일발송성공");
+		},
+		
+		error: function(jqXHR,textStatus,errorThrown){
+			alert("이메일 전송에 실패하였습니다.");
+		}
+	});
+}
+</script>

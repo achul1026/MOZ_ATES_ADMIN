@@ -1,0 +1,16 @@
+#wrapper {
+	display: flex;
+	background: #ededed;
+}
+.sidebar { 
+	background: #353535;
+	padding: 31px;
+	height: 100vh;
+ }
+ .logo {
+	 display: block	;
+	 width:40px;
+	 height:40px;
+	 background:url(../img/inatro-logo.png) no-repeat center / cover;
+ }
+ 

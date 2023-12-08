@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{penalty.penalty.title.modify}" class="h3 mb-4 text-gray-800">범칙금 수정</h1>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form id="frmPenaltyModify">
+                                <input type="hidden" name="pymntId" id="pymntId" th:value="${finePymntInfo.pymntId}">
+                                <input type="hidden" name="tfcEnfId" id="tfcEnfId" th:value="${finePymntInfo.tfcEnfId}">
+                                <span th:if="${finePymntInfo.pymntStts =='Y'}">
+                            		<button type="button" style="float: right; margin-left: 5px;" data-toggle="modal" data-target="#paymentCencal" id="payment" class="btn btn-outline-secondary btn-modal"  data-backdrop="static">미납 처리</button>
+                            	</span>
+                            	<span th:if="${finePymntInfo.pymntStts =='N'}">
+                            		<button type="button" style="float: right; margin-left: 5px;" data-toggle="modal" data-target="#paymentCompleted" id="payment" class="btn btn-outline-secondary btn-modal"  data-backdrop="static">납부완료 처리</button>
+                            	</span>
+                                <button type="button" style="float: right;" class="btn btn-outline-secondary"  id="contect" data-toggle="modal" data-target="#contectPenalty" onclick="contectPenalty()" data-backdrop="static">SMS/Email 전송</button>
+                            <table class="table table-bordered" style="margin-top: 3px;">
+                                <colgroup>
+                                    <col width="30%">
+                                    <col width="70%">
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                	<th th:text="#{penalty.penalty.penaltyName}">위반 내용</th>
+                                	<input type="hidden" name="totalPrice" id="totalPrice">
+                                	<td>
+                                		<select  class="form-control" name="penaltyname" id="penaltyName2" onchange="changePrice()">
+                                			<option th:text="${finePymntInfo.penaltyname}"></option>
+                                			<option id="penaltyName" th:text="${finePymntInfo.penaltyname} == '속도위반' ? '신호위반' : '속도위반'"></option>	
+                                		</select>
+                                	</td>
+                                </tr>
+                                <tr>
+                                	<th th:text="#{penalty.penalty.totalPrice}">범칙금</th>
+                                	<td>
+                                		<p>위반 내용에 따라 범칙금이 부과됩니다.</p>
+                                		<p><span id="price" th:text="${finePymntInfo.totalPrice}"></span>원</p>
+                                	</td>
+                                </tr>
+                                <tr>
+                                	<th th:text="#{penalty.penalty.condition}">납부 여부</th>
+                                	
+                                	<td id="pymntStts" th:text="${finePymntInfo.pymntStts}=='Y'?'납부':'미납'"> </td>
+                                </tr>
+                                <tr>
+                                	<th th:text="#{penalty.penalty.endDay}">납부 기한</th>
+                                    <td><input type="date" class="form-control"  name="pymntDdln" th:value="${finePymntInfo.pymntDdln}" th:field="${finePymntInfo.pymntDdln}"></td>
+                                    
+                                </tr>
+                                <tr>
+                                    	<th th:text="#{penalty.penalty.tfcEnfDt}">위반 일시</th>
+                                        <td><input type="date" class="form-control"  name="tfcEnfDt" th:value="${finePymntInfo.tfcEnfMaster.tfcEnfDt}" th:field="${finePymntInfo.tfcEnfMaster.tfcEnfDt}"></td>
+                                </tr>
+                                <tr>
+                                    	<th th:text="#{penalty.penalty.roadAddr}">위반장소</th>
+                                    	<td><input type="text" class="form-control" id="roadAddr" name="roadAddr" th:value="${finePymntInfo.tfcEnfMaster.roadAddr}"></td>
+                                </tr>
+                                <tr>
+                                    	<th th:text="#{penalty.penalty.vioNm}">위반자 이름</th>
+                                    	<td><input type="text" class="form-control" id="payerNm" name="vioNm" th:value="${finePymntInfo.payerNm}" ></td>
+								</tr>
+								<tr>
+                                    	<th th:text="#{penalty.penalty.vioNid}">위반자 NID</th>
+                                    	<td><input type="text" class="form-control" id="vioId" name="vioId" th:value="${finePymntInfo.tfcEnfMaster.VioId}" ></td>
+                                </tr>
+                                <tr>
+                                    	<th th:text="#{penalty.penalty.carNum}">차량번호</th>
+                                    	<td><input type="text" class="form-control" id="vhRegNo" name="vhRegNo" th:value="${finePymntInfo.tfcEnfMaster.vhRegNo}"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.policeStaticon}">관할 경찰서</th>
+                                    	<td><input type="text" class="form-control" id="jur" name="jur" th:value="${finePymntInfo.polInfo.jur}"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{penalty.penalty.detail}">상세 내용</th>
+                                    	<td><textarea class="form-control" id="penaltydetail" name="penaltydetail" th:value="${finePymntInfo.penaltydetail}" th:text="${finePymntInfo.penaltydetail}"></textarea></td>
+                                    	
+                                    </tr>
+                                </tbody>
+                            </table>
+                            </form>
+                            
+                            <button th:text="#{penalty.common.cancel}" type="button" id="btnGoList" class="btn btn-outline-secondary" style="float: right; margin-left: 5px;"  onclick="javascript:window.history.back()" >취소</button>
+                            <button th:text="#{penalty.penalty.btnDelete}" type="button" id="btnDelete" class="btn btn-outline-warning" style="float: right;margin-left: 5px;" onclick="clearInput()">삭제</button>
+                        	<button th:text="#{penalty.penalty.btnSaving}" type="button" id="btnModify" class="btn btn btn-outline-success" style="float: right;margin-left: 5px;">저장</button>
+                        	<button th:text="#{penalty.common.billPrint}" type="button" id="billPrint" class="btn btn-outline-secondary" style="float: right;margin-left: 5px;">고지서 출력</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+	
+
+	<div class="modal fade" id="paymentCompleted">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="comModalLabel">범칙금 납부 처리</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">X</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<div class="form-group">
+						<label for="recipient-name" class="col-form-label">납부방법</label> <select
+							class="form-control" id="pymntMethod">
+							<option  th:text="#{penalty.penalty.cash}" th:value="p001">현금</option>
+							<option th:text="#{penalty.penalty.transfer}" th:value="p002">계좌이체</option>
+							<option th:text="#{penalty.penalty.card}" th:value="p003">카드</option>
+						</select>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary"
+						onclick="paymentCompleted()">납부완료</button>
+					<input type="hidden" th:value="${finePymntInfo.pymntId}" />
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="paymentCencal">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="cenModalLabel">범칙금 미납 처리</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">X</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<span>범칙금 미납 처리를 진행하시겠습니까?</span>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary"
+						onclick="paymentCencal()">미납처리</button>
+					<input type="hidden" th:value="${finePymntInfo.pymntId}" />
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="contectPenalty">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="cenModalLabel">CONTECT</h5>
+					<button type="button" class="close" data-dismiss="modal"
+						aria-label="Close">
+						<span aria-hidden="true">X</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<span>Please select a contact method</span>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary"
+						data-dismiss="modal">Close</button>
+					<button type="button" class="btn btn-primary" onclick="modalHide()" data-toggle="modal" data-target="#sendSMSPage">SMS</button>
+					<button type="button" class="btn btn-primary" onclick="modalHide()" data-toggle="modal" data-target="#sendEmailPage">email</button>
+					<input type="hidden" th:value="${finePymntInfo.pymntId}"/>
+				</div>
+			</div>
+		</div>
+	</div>
+	
+	<div class="modal fade" id="sendEmailPage">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="emailModalLabel">New message(email)</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">X</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Recipient:</label>
+            <input type="text" class="form-control" id="emailAddr">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Message:</label>
+            <textarea class="form-control" id="mailContent"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="sendEmail()">Send email</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+	<div class="modal fade" id="sendSMSPage">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="emailModalLabel">New message(SMS)</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">X</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <form>
+          <div class="form-group">
+            <label for="recipient-name" class="col-form-label">Recipient:</label>
+            <input type="text" class="form-control" id="recipient">
+          </div>
+          <div class="form-group">
+            <label for="message-text" class="col-form-label">Message:</label>
+            <textarea class="form-control" id="SMSContent"></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="sendSMS()">Send SMS</button>
+      </div>
+    </div>
+  </div>
+</div>
+	
+</th:block>
+</html>
+<script th:inline="javascript">
+	
+	function changePrice(){
+		var penaltyName = $('#penaltyName2').val();
+	
+		if(penaltyName == "속도위반"){
+			$('#price').text('30000');
+			$("input[id=totalPrice]").val("30000");
+			$("input[id=penaltyName]").val("속도위반");
+			
+		}
+		else{
+			$('#price').text('50000');
+			$("input[id=totalPrice]").val("50000");
+			$("input[id=penaltyName]").val("신호위반");
+		}
+	}
+	
+    $("#btnModify").click(function () {
+        $.ajax({
+            url: /*[[@{/penalty/mng/update.ajax}]]*/ "/penalty/mng/update.ajax",
+            type: "post",
+            data: $("#frmPenaltyModify").serialize(),
+            success: function(data){
+                if(data.code == "1"){
+                    alert("수정했습니다.");
+                    var baseUrl = /*[[@{/penalty/mng/detail.do}]]*/ '';
+                    window.location.href=baseUrl+"?pymntId="+[[${finePymntInfo.pymntId}]];
+                }else if(data.code =="0"){
+                	alert("수정실패");
+                }
+            }
+        });
+
+    })
+	
+	function clearInput(){
+		var el = document.getElementsByClassName('form-control');
+		for(var i=0; i<el.length; i++){
+			el[i].value = '';
+		}
+	}
+    
+    
+    
+   function paymentCompleted(){
+	   	var pymntId = $("#pymntId").val();
+    	var pymntStts = $('#pymntStts').text();
+    	var completed = '납부';
+    	var pymntMethod = $('#pymntMethod').val();
+    	$.ajax({
+    		url: /*[[@{/penalty/pymnt/cmpl.ajax}]]*/ '/penalty/pymnt/cmpl.ajax',
+    		type: "post",
+    		data: {"pymntId" : pymntId
+    				, "pymntMethod" : pymntMethod},
+    		success: function(data){
+                if(data.code == "1"){
+                	if(pymntStts != completed){
+                		alert("납부 완료하였습니다.");
+                		location.reload(true);
+                	}
+                }else if(data.code =="0"){
+                	alert("납부 실패하였습니다.");
+                }
+            }
+    	})
+	}
+    
+   function paymentCencal(){
+   	var pymntId = $("#pymntId").val();
+   	
+   	$.ajax({
+   		url: /*[[@{/penalty/pymnt/cncl.ajax}]]*/ '/penalty/pymnt/cncl.ajax',
+   		type: "post",
+   		data: {"pymntId" : pymntId},
+   		success: function(data){
+               if(data.code == "1"){
+            	   alert("미납 처리를 완료하였습니다.");
+            	   location.reload(true);
+               }else if(data.code =="0"){
+               	alert("미납 처리를 실패하였습니다.");
+               }
+           }
+   	})
+	} 
+	
+   	function modalHide(){
+   		$('#contectPenalty').modal('hide');
+   	}	
+
+   	function sendEmail(){
+	
+   		/*<![CDATA[*/
+   	    var pymntId = $("#pymntId").val();
+   		var emailAddr = $("#emailAddr").val();
+   	    /*]]>*/
+   		var content = $("#mailContent").val();
+   		var penaltyParams = {
+   				pymntId : pymntId
+   				,emailAddr : emailAddr
+   				,content : content
+   		};
+   		console.log(penaltyParams);
+   		
+   		$.ajax({
+   			url: "/penalty/penalty/sendemail.ajax"
+   			,type: "POST"
+   			,contentType: "application/json; charset=UTF-8"
+   			,data : JSON.stringify(penaltyParams)
+   			,dataType : "json"
+   			,success: function(data){
+   				alert("메일발송성공");
+   			},
+   			
+   			error: function(jqXHR,textStatus,errorThrown){
+   				alert("이메일 전송에 실패하였습니다.");
+   			}
+   		});
+   	}
+
+</script>

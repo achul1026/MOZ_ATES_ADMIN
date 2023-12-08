@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-4 text-gray-800" th:text="#{enforcement.infoModify.title}">교통단속 상세정보 수정</h1>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="|${tfcEnfMaster.tfcEnfId} #{enforcement.infoModify.subTitle}|">상세정보</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form id="frmInfoModify">
+                                <input type="hidden" name="tfcEnfId" th:value="${tfcEnfMaster.tfcEnfId}">
+                                <table class="table table-bordered">
+                                    <colgroup>
+                                        <col width="20%">
+                                        <col width="30%">
+                                        <col width="20%">
+                                        <col width="30%">
+
+                                    </colgroup>
+                                    <tbody>
+                                    <tr id="imageTr">
+                                        <th th:text="#{enforcement.infoModify.insertImg}">현재 등록 사진</th>
+                                    	  <!--여기서부터 /block까지 이미지 생성.-->
+                                     		<td colspan="3">
+                                    		<block th:each = "images : ${#strings.arraySplit(tfcEnfMaster.tfcEnfInfoimage,',')}" th:remove="tag">
+                                    			<img th:src="@{/images/}+${images}" style="width:250px;height:250px; margin-left:10px;" alt=" " multiple/>
+                                   		 	</block>
+                                   		 	<br>
+                                    	<button type="button" class="btn btn-outline-warning" id="btnimageModify" data-flag="N" th:text ="#{enforcement.infoModify.updateImg}" >변경</button>
+										<button type="button" class="btn btn-outline-danger" id="btnimageDelete" style="display:none" th:text="#{enforcement.infoModify.deleteImg}">삭제</button>
+                                    </td>
+                                   	</tr>
+                                   	<tr id="trImage" style="display: none;">
+                                   		<th th:text="#{enforcement.infoModify.newImg}">새 단속장비 사진 등록</th>
+                                   		<td colspan="3">
+											<input type="file" id="txttfcEnfImage" name="uploadFile" onchange="setThumbnail(event);" multiple/>
+											<div id="image_container">
+											</div>
+                                   		</td>
+                                    </tr>
+
+                                    <tr>
+                                        <th th:text="#{enforcement.infoModify.violationNumber}">위반번호</th>
+                                        <td th:text="${tfcEnfMaster.tfcEnfId}"></td>
+                                        <th th:text="#{enforcement.infoModify.violationDate}">위반일시</th>
+                                        <td th:text="${tfcEnfMaster.tfcEnfDt}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{enforcement.infoModify.placeOfViolate}">위반장소</th>
+                                        <td><input type="text" id="txtRoadAddr" name="roadAddr" th:value="${tfcEnfMaster.roadAddr}"></td>
+                                        <th th:text="#{enforcement.infoModify.violatorsName}">위반자 명</th>
+                                        <td th:text="${tfcEnfMaster.vioId}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{enforcement.infoModify.intermittentName}">단속명</th>
+                                        <td><input type="text" id="txtLastTfcEnfProcCd" name="lastTfcEnfProcCd" th:value="${tfcEnfMaster.lastTfcEnfProcCd}"></td>
+                                        <th th:text="#{enforcement.infoModify.relatedAccidentInformation}">연관 사고 정보</th>
+                                        <td th:text="${tfcEnfMaster.tfcAcdntId}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{enforcement.infoModify.fine}">벌금</th>
+                                        <td><input type="text" id="txtTotalPrice" name="totalPrice" th:value="${tfcEnfMaster.FinePymntInfo != null ? tfcEnfMaster.FinePymntInfo.totalPrice : ''}"></td>
+                                         <th th:text="#{enforcement.infoModify.paymentStatus}">납부상태</th>
+                                        <td th:text="${tfcEnfMaster.FinePymntInfo != null ? tfcEnfMaster.FinePymntInfo.pymntStts : 'N'}"></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{enforcement.infoModify.tfcEnfDetail}">상세내용</th>
+                                        <td colspan="3"><input type="text" id="txttfcEnfDetail" name="tfcEnfDetail" th:value="${tfcEnfMaster.tfcEnfDetail}" style="width:90%;"></td>
+                                    </tr>
+                                    <tr>
+                                    	<th th:text="#{enforcement.infoModify.lat}"></th>
+                                    	<td><input type="text" id="txtlatitude" name="lat" th:value="${tfcEnfMaster.lat}"></td>
+                                    	<th th:text="#{enforcement.infoModify.lng}"></th>
+                                    	<td><input type="text" id="txtlongitude" name="lng" th:value="${tfcEnfMaster.lng}"></td>                                    	
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </form>
+                            <button type="button" id="btnGoList" class="btn btn-outline-danger" onclick="javascript:window.history.back()" th:text="#{enforcement.infoModify.cancellation}">취소</button>
+                            <button type="button" id="btnModify" class="btn btn-outline-success" th:text="#{enforcement.infoModify.save}" >저장</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+
+</th:block>
+</html>
+
+<script th:inline="javascript">
+
+        $("#btnimageModify").click(function(){
+        if($(this).attr('data-flag')=='N'){
+            $("#btnimageDelete").show();
+            $("#trImage").show();
+            $(this).text("변경 취소");
+            $(this).attr('data-flag','Y');
+        }else if($(this).attr('data-flag')=='Y'){
+            $("#btnimageDelete").hide();
+            $("#trImage").hide();
+            $(this).text("변경");
+            $(this).attr('data-flag','N');
+        }
+    })
+    
+        $("#btnimageDelete").click(function(){
+		if(confirm("Do you want to delete?") == true){
+			$("#imageTr").hide();
+			
+			var form = $("#frmInfoModify")[0];
+        	var data = new FormData(form);
+
+		    $.ajax({
+            url: /*[[@{/enf/infoImageDelteAjax}]]*/ "/enf/info/image/delete.ajax",
+            type: "post",
+            enctype: 'multipart/form-data',  
+            data: data,
+            processData: false,    
+            contentType: false,
+            success: function(data){
+                if(data.code == "1"){
+                    alert("이미지가 삭제되었습니다.");
+                }
+            }
+        });	
+    } else{ 
+		 return;
+	}
+})
+    $("#btnModify").click(function () {
+        if($.trim($("#txtRoadAddr").val())==''){
+            alert("위반장소를 입력해주세요.");
+            $("#txtRoadAddr").focus();
+            return false;
+        }
+        if($.trim($("#txtLastTfcEnfProcCd").val())==''){
+            alert("단속명을 입력해주세요.");
+            $("#txtLastTfcEnfProcCd").focus();
+            return false;
+        }
+        if($.trim($("#txtTotalPrice").val())==''){
+            alert("벌금을 입력해주세요.");
+            $("#txtTotalPrice").focus();
+            return false;
+        }
+        if($.trim($("#txttfcEnfDetail").val())==''){
+            alert("상세내용을 입력해주세요.");
+            $("#txttfcEnfDetail").focus();
+            return false;
+        }
+        if($.trim($("#txtlatitude").val())==''){
+            alert("위도를 입력해주세요.");
+            $("#txtlatitude").focus();
+            return false;
+        }
+        if($.trim($("#txtlongitude").val())==''){
+            alert("경도를 입력해주세요.");
+            $("#txtlongitude").focus();
+            return false;
+        }
+        
+		var form = $("#frmInfoModify")[0];
+        var data = new FormData(form);
+
+        $.ajax({
+            url: /*[[@{/enf/info/update.ajax}]]*/ "/enf/info/update.ajax",
+            type: "post",
+            enctype: 'multipart/form-data',  
+            data: data,
+            processData: false,    
+            contentType: false,
+            success: function(data){
+                if(data.code == "1"){
+                    alert("수정했습니다.");
+
+                    var baseUrl = /*[[@{/enf/info/detail.do}]]*/ '';
+                    window.location.href=baseUrl+"?tfcEnfId="+[[${tfcEnfMaster.tfcEnfId}]];
+
+                } else {
+									alert("수정을 실패 했습니다.");
+								}
+            }
+        });
+
+    })
+    
+        function setThumbnail(event) {
+		var reader = new FileReader();
+		reader.onload = function(event) {
+			 var img = document.createElement("img");
+			 img.setAttribute('width','900px');
+			 img.setAttribute('height','300px');
+			  img.setAttribute("src", event.target.result);
+			   document.querySelector("div#image_container").appendChild(img);
+			    };
+		 reader.readAsDataURL(event.target.files[0]);
+		 }
+
+
+</script>

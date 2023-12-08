@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-4 text-gray-800" th:text="#{enforcement.log.list.title}">교통단속 로그</h1>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{enforcement.log.list.searchOp}">검색조건</h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="frmSearch">
+                            <input type="hidden" id="hdnStart" name="start" th:value="${tfcEnfHst.start}">
+                            <label th:text="#{enforcement.log.list.startDate}">시작일</label>
+                            <input class="form-control col-lg-2" id="sDate" name="sDate" type="date" th:value="${tfcEnfHst.getSDate()}">
+                            &nbsp;&nbsp;&nbsp;
+                            <label th:text="#{enforcement.log.list.endDate}">종료일</label>
+                            <input class="form-control col-lg-2" id="eDate" name="eDate" type="date" th:value="${tfcEnfHst.getEDate()}">
+                            &nbsp;&nbsp;&nbsp;
+                            <label>
+                                <select class="form-control" name="searchType">
+                                    <option value="all" th:text="#{enforcement.log.list.selectAll}">전체</option>
+                                </select>
+                            </label>
+                            <input class="form-control col-lg-3" name="searchTxt" type="text" th:value="${tfcEnfHst.searchTxt}">
+                            &nbsp;&nbsp;&nbsp;
+
+                            <button type="button" id="btnSearch" class="btn btn-outline-primary" th:text="#{enforcement.log.list.check}">조회</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary" style="display: inline;" th:text="#{enforcement.log.list.trafficEnforcementLogList}">교통단속 로그 리스트</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <div class="row"><div class="col-sm-12">
+                                    <table class="table table-bordered dataTable" id="tblList" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                    <thead>
+                                        <tr role="row">
+                                            <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 40px;" th:text="#{enforcement.log.list.tableNumber}">No.</th>
+                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 45px;" th:text="#{enforcement.log.list.enforcementInformationCode}">단속 정보 코드</th>
+                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending" style="width: 60px;" th:text="#{enforcement.log.list.creationDate}">생성일</th>
+                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 100px;" th:text="#{enforcement.log.list.coment}">코멘트</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+
+<!--                                    <tr class="odd">-->
+<!--                                        <td class="sorting_1">57</td>-->
+<!--                                        <td>단속로그</td>-->
+<!--                                        <td>2020-11-22</td>-->
+<!--                                        <td>moz school road</td>-->
+<!--                                        <td>과속</td>-->
+<!--                                        <td>jessica</td>-->
+<!--                                    </tr><tr class="even">-->
+<!--                                        <td class="sorting_1">56</td>-->
+<!--                                        <td>단속로그</td>-->
+<!--                                        <td>2020-10-12</td>-->
+<!--                                        <td>e-mart corner</td>-->
+<!--                                        <td>신호위반</td>-->
+<!--                                        <td>sister</td>-->
+<!--                                    </tr><tr class="odd">-->
+<!--                                        <td class="sorting_1">55</td>-->
+<!--                                        <td>단속로그</td>-->
+<!--                                        <td>2020-10-12</td>-->
+<!--                                        <td>moz school road</td>-->
+<!--                                        <td>신호위반</td>-->
+<!--                                        <td>sister</td>-->
+<!--                                    </tr><tr class="even">-->
+<!--                                        <td class="sorting_1">54</td>-->
+<!--                                        <td>단속로그</td>-->
+<!--                                        <td>2020-10-12</td>-->
+<!--                                        <td>moz school road</td>-->
+<!--                                        <td>신호위반</td>-->
+<!--                                        <td>sister</td>-->
+<!--                                    </tr><tr class="odd">-->
+<!--                                        <td class="sorting_1">53</td>-->
+<!--                                        <td>단속로그</td>-->
+<!--                                        <td>2020-10-12</td>-->
+<!--                                        <td>moz school road</td>-->
+<!--                                        <td>신호위반</td>-->
+<!--                                        <td>sister</td>-->
+<!--                                    </tr><tr class="even">-->
+<!--                                        <td class="sorting_1">52</td>-->
+<!--                                        <td>단속로그</td>-->
+<!--                                        <td>2020-10-12</td>-->
+<!--                                        <td>moz school road</td>-->
+<!--                                        <td>신호위반</td>-->
+<!--                                        <td>sister</td>-->
+<!--                                    </tr><tr class="odd">-->
+<!--                                        <td class="sorting_1">51</td>-->
+<!--                                        <td>단속로그</td>-->
+<!--                                        <td>2020-10-12</td>-->
+<!--                                        <td>moz school road</td>-->
+<!--                                        <td>신호위반</td>-->
+<!--                                        <td>sister</td>-->
+<!--                                    </tr><tr class="even">-->
+<!--                                        <td class="sorting_1">50</td>-->
+<!--                                        <td>단속로그</td>-->
+<!--                                        <td>2020-10-12</td>-->
+<!--                                        <td>moz school road</td>-->
+<!--                                        <td>신호위반</td>-->
+<!--                                        <td>sister</td>-->
+<!--                                    </tr><tr class="odd">-->
+<!--                                        <td class="sorting_1">49</td>-->
+<!--                                        <td>단속로그</td>-->
+<!--                                        <td>2020-10-12</td>-->
+<!--                                        <td>moz school road</td>-->
+<!--                                        <td>신호위반</td>-->
+<!--                                        <td>sister</td>-->
+<!--                                    </tr><tr class="even">-->
+<!--                                        <td class="sorting_1">48</td>-->
+<!--                                        <td>단속로그</td>-->
+<!--                                        <td>2020-10-12</td>-->
+<!--                                        <td>moz school road</td>-->
+<!--                                        <td>신호위반</td>-->
+<!--                                        <td>sister</td>-->
+<!--                                    </tr>-->
+                                    </tbody>
+                                </table>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+
+    $(function (){
+
+        $('#tblList').DataTable({
+            "destroy" : true,
+            "processing" : false,
+            "serverSide" : true,
+            "paging" : true,
+            "searching" : false,
+            "ordering" : false,
+            "lengthChange" : false,
+            "displayStart": /*[[ ${tfcEnfHst.start} ]]*/ 10,
+            "language" : {
+                "emptyTable" : "조회 결과가 없습니다."
+            },
+            initComplete: function () {
+                $(".paginate_button").off("click");
+            },
+            ajax : {
+                url : /*[[@{/enf/logListAjax}]]*/ "/enf/logListAjax",
+                method : "post",
+                data : function(d){
+                    var frmData = $("#frmSearch").serializeArray();
+                    $.each(frmData,function (key, val) {
+                        d[val.name] = val.value;
+                    })
+                }
+            },
+            columns : [
+                {
+                    render : function (data, type, row, meta) {
+                        return meta.settings._iRecordsTotal-meta.settings._iDisplayStart-meta.row;
+                    }
+                }
+                , { data: 'cmCd.cdNm' }
+                , { data: 'crDt' }
+                , { data: 'cmnt' }
+            ]
+        })
+
+    })
+
+
+
+    /*]]>*/
+
+
+</script>

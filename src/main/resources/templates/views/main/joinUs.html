@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+	
+    <title>SB Admin 2 - Join Us </title>
+
+    <!-- Custom fonts for this template-->
+    <link th:href="@{/bootstrap/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
+    <link 
+    		href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+            rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link th:href="@{/bootstrap/css/sb-admin-2.min.css}" rel="stylesheet">
+	<!-- Context Path add -->
+	<link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}"/>
+	<script>
+	var contextPath = document.getElementById('contextPathHolder').getAttribute("data-contextpath");
+	</script>
+</head>
+
+<body class="bg-gradient-primary">
+<div class="container">
+
+    <!-- Outer Row -->
+    <div class="row justify-content-center">
+
+        <div class="col-xl-10 col-lg-12 col-md-9">
+
+            <div class="card o-hidden border-0 shadow-lg my-5">
+                <div class="card-body p-0">
+                    <!-- Nested Row within Card Body -->
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="p-5">
+                                <div class="text-center">
+                                    <h1 class="h4 text-gray-900 mb-4">Mozates</h1>
+                                </div>
+                                <form class="user" id="joinUsForm">
+                                    <div class="form-group">
+                                        <input type="text"  id="oprtrAccountId" name="oprtrAccountId"  placeholder="email">
+                                        <input type="password"  id="oprtrAccountPw" name="oprtrAccountPw" placeholder="Password">
+                                        <input type="text"  id="oprtrEmail" name="oprtrEmail"  placeholder="external email">
+                                        <input type="text"  id="oprtrNm" name="oprtrNm"  placeholder="name">
+                                        <input type="text"  id="oprtrDeptNm" name="oprtrDeptNm"  placeholder="Department">
+                                    </div>
+                                    </div>
+                                    <div class="col-xl-4">
+                                   		<button type="button" class="btn btn-primary btn-block btn-user" id="joinSubmit"> 완료 </button>
+                                    </div>
+                                </form>
+                                <hr>
+                                
+                                <!-- 다국어 번역 버튼 -->
+									<select id="language" name="language">
+										<option value="eng"> English </option>
+										<option value="kor"> Korean </option>
+										<option value="por"> Porutuguese </option>
+									</select>
+								
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+<!-- Bootstrap core JavaScript-->
+<script th:src="@{/bootstrap/vendor/jquery/jquery.min.js}"></script>
+<script th:src="@{/bootstrap/vendor/jquery/jquery.cookie.min.js}"></script>
+<script th:src="@{/bootstrap/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
+<script th:src="@{/bootstrap/js/mz-validation.js}"></script>
+
+<!-- Core plugin JavaScript-->
+<script th:src="@{/bootstrap/vendor/jquery-easing/jquery.easing.min.js}"></script>
+<script>
+	$("#joinSubmit").on('click',function(){
+		var oprtrAccountId = $("#oprtrAccountId").val();
+		var oprtrAccountPw = $("#oprtrAccountPw").val();
+		var oprtrEmail = $("#oprtrEmail").val();
+		
+		if(!validationChecker.isNull(oprtrAccountId)){
+			alert("사용하실 이메일을 입력해주세요")
+			return false;
+		} else if(!validationChecker.isNull(oprtrAccountPw)){
+			alert("사용하실 비밀번호를 입력해주세요")
+			return false;
+		} else if(!validationChecker.isNull(oprtrEmail)){
+			alert("외부 이메일 주소를 입력해주세요")
+			return false;
+		}
+		
+		if(!validationChecker.isRegexValidation(oprtrAccountId,"EMAIL")){
+			alert("이메일 양식을 확인해주세요");
+			return false;
+		} else if(!validationChecker.isRegexValidation(oprtrAccountPw,"PASSWORD")){
+			alert("사용하실 비밀번호 양식을 확인해주세요");
+			return false;
+		} else if(!validationChecker.isRegexValidation(oprtrEmail,"EMAIL")){
+			alert("외부 이메일 양식을 확인해주세요");
+			return false;
+		}
+		
+        $.ajax({
+            url: "/joinUsAjax",
+            type: "post",
+            data: $("#joinUsForm").serialize(),
+            success: function(data){
+                if(data.code == 200){
+                    alert("회원 등록이 완료되었습니다.");
+                    location.href="/login";
+                }
+            }
+        });
+	});
+</script>
+
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 class="h3 mb-4 text-gray-800" th:text="#{equipment.mngRegist.title}">단속장비 등록</h1>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{equipment.mngRegist.registrationTitle}">등록</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <form id="frmEqpRegist" enctype="multipart/form-data">
+                                <table class="table table-bordered">
+                                    <colgroup>
+                                        <col width="20%">
+                                        <col width="30%">
+                                        <col width="20%">
+                                        <col width="30%">
+
+                                    </colgroup>
+                                    <tbody>
+                                    	<tr>
+                                        	<th th:text="#{equipment.mngRegist.inserImg}">단속장비 사진 등록</th>
+											<td colspan="3">
+											<input type="file" id="txttfcEnfEqpImage" name="uploadFile" onchange="setThumbnail(event);" multiple/>
+											<div id="image_container">
+											</div>
+											</td>
+                                   	 	</tr>
+
+                                    <tr>
+                                        <th th:text="#{equipment.mngRegist.enforcementEquipmentNumber}">단속장비 번호</th>
+                                        <td><input type="text" class="form-control" id="txtTfcEnfEqpId" name="tfcEnfEqpId"></td>
+                                        <th th:text="#{equipment.mngRegist.registrationDate}">등록일</th>
+                                        <td><input type="date" class="form-control" id="txtCrDt" name="crDt"></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{equipment.mngRegist.typesOfEnforcementEquipment}">단속장비 종류</th>
+                                        <td><input type="text" class="form-control" id="txtEqpTy" name="eqpTy"></td>
+                                        <th th:text="#{equipment.mngRegist.manufacturer}">제조업체</th>
+                                        <td><input type="text" class="form-control" id="txtMnfctr" name="mnfctr"></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{equipment.mngRegist.whetherOrNotToUse}">사용여부</th>
+                                        <td>
+                                            <input type="radio" id="useY" name="useYn" value="Y" checked>
+                                            <label for="useY">Y</label>
+                                            <input type="radio" id="useN" name="useYn" value="N">
+                                            <label for="useN">N</label>
+                                        </td>
+                                        <th th:text="#{equipment.mngRegist.manager}">담당자</th>
+                                        <td><input type="text" class="form-control" id="txtCrOprtrId" name="crOprtrId"></td>
+                                    </tr>
+                                    <tr>
+                                        <th th:text="#{equipment.mngRegist.location}">위치</th>
+                                        <td><input type="text" class="form-control" id="txtRoadAddr" name="roadAddr"></td>
+                                        <th th:text="#{equipment.mngRegist.managerDept}">담당자 소속</th>
+                                        <td><input type="text" class="form-control" id="txtCrOprtrDept" name="crOprtrDept"></td>
+                                    </tr>
+                                    <tr>
+                                   		<th th:text="#{equipment.mngRegist.enforceementEquipmentInfo}">상세내용</th>
+                                    	<td colspan="3"><input type="text" class="form-control" id="txtEqpInfo" name="tfcEnfEqpInfo"></td>
+                                    </tr>
+                                    
+                                    </tbody>
+                                </table>
+                            </form>
+                            <button type="button" id="btnGoList" class="btn btn-outline-secondary" onclick="javascript:window.history.back()" th:text="#{equipment.mngRegist.list}">목록</button>
+                            <button type="button" id="btnRegist" class="btn btn-outline-warning" th:text="#{equipment.mngRegist.registrationButton}">등록</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+
+
+    $("#btnRegist").click(function () {
+/*         if($.trim($("#txttfcEnfEqpImage").val())==''){
+            alert("사진을 등록해주세요.");
+            $("#txttfcEnfEqpImage").focus();
+            return false;
+        } */
+        if($.trim($("#txtTfcEnfEqpId").val())==''){
+            alert("장비번호를 입력해주세요.");
+            $("#txtTfcEnfEqpId").focus();
+            return false;
+        }
+        if($.trim($("#txtCrDt").val())==''){
+            alert("장비등록일을 입력해주세요.");
+            $("#txtCrDt").focus();
+            return false;
+        }
+
+        if($.trim($("#txtEqpTy").val())==''){
+            alert("장비종류를 입력해주세요.");
+            $("#txtEqpTy").focus();
+            return false;
+        }
+
+        if($.trim($("#txtMnfctr").val())==''){
+            alert("제조업체를 입력해주세요.");
+            $("#txtMnfctr").focus();
+            return false;
+        }
+
+        if($.trim($("#txtCrOprtrId").val())==''){
+            alert("장비담당자를 입력해주세요.");
+            $("#txtCrOprtrId").focus();
+            return false;
+        }
+        if($.trim($("#txtRoadAddr").val())==''){
+            alert("주소를 입력해주세요.");
+            $("#txtRoadAddr").focus();
+            return false;
+        }
+        if($.trim($("#txtCrOprtrDept").val())==''){
+            alert("담당자 부서를 입력해주세요.");
+            $("#txtCrOprtrDept").focus();
+            return false;
+        }
+        if($.trim($("#txtEqpInfo").val())==''){
+            alert("단속장비 상세정보를 입력해주세요.");
+            $("#txtEqpInfo").focus();
+            return false;
+        }
+
+
+
+        var form = $("#frmEqpRegist")[0];
+        var data = new FormData(form);
+        $.ajax({
+            url: /*[[@{/eqp/mng/save.ajax}]]*/ "/eqp/mng/save.ajax",
+            type: "post",
+            enctype: 'multipart/form-data',  
+            data: data,
+            processData: false,    
+            contentType: false,
+            success: function(data){
+                if(data.code == "1"){
+                    alert("등록했습니다.");
+                    location.href=/*[[@{/eqp/mng/list.do}]]*/ "";
+                }else{
+                    alert(data.msg);
+                }
+            }
+        });
+
+    })
+    
+    
+    function setThumbnail(event) {
+		var reader = new FileReader();
+		reader.onload = function(event) {
+			 var img = document.createElement("img");
+			 img.setAttribute('width','900px');
+			 img.setAttribute('height','300px');
+			  img.setAttribute("src", event.target.result);
+			   document.querySelector("div#image_container").appendChild(img);
+			    };
+		 reader.readAsDataURL(event.target.files[0]);                                                                                                                                                         
+		 }
+</script>

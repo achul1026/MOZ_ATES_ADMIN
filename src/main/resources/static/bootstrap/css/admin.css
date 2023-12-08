@@ -1,0 +1,103 @@
+@charset "utf-8";
+
+body {
+	background: #353535;
+	text-align: center;
+}
+
+.admin_wrap {
+	position: fixed;
+	top:50%;
+	left:50%;
+	transform: translate(-50%, -50%);
+}
+.admin_title {
+	color: #fff;
+	font-weight: bold;
+	font-size:40px;
+}
+.admin_title p {
+	margin-top:7px;
+	font-size:28px;
+	font-weight: 100;
+}
+.admin_form {
+	margin:31px 0;
+	padding: 57px;
+	background: #fff;
+	border-radius: 20px;
+}
+.admin_input {
+	margin-bottom: 21px;
+	font-weight: 600;
+	text-align: left;
+}
+.admin_input p {
+	margin-top:8px;
+	letter-spacing: -1px;
+	color:#fd4a4a;
+	font-weight: 600;
+}
+.admin_input label {
+	display: block;
+	margin-bottom: 8px;
+}
+.admin_input input {
+	padding-left:19px;
+	width:283px;
+	height:52px;
+	border:1px solid #000;
+	border-radius: 6px;
+}
+.check label {
+	margin:0;
+	font-size:12px;
+}
+.check p {
+	margin-top: 0;
+	margin-bottom: 7px;
+}
+.admin_input input::placeholder {
+	
+	color: #ccc;
+}
+.check {
+	padding-bottom: 21px;
+	margin-bottom:0;
+	border-bottom:1px solid #808080;	
+}
+
+.check input {
+	width:16px;
+	height:16px;
+	accent-color:#00967a;
+}
+.check div {
+	display: inline-block;
+	vertical-align:middle;
+	margin: 0;
+	color: black;
+}
+.login {
+	display: flex;
+	gap:12px;
+	padding-top: 21px;
+	
+}
+.login button {
+	padding:14px 0;
+	width:50%;
+	color:#fff;
+	border: none;
+	outline: none;
+	border-radius: 6px;
+	background: #00967a;
+}
+.pass_find a {
+	color:#4FFFDE;
+	border: none;
+	outline: none;
+}
+.none {
+	display: none;
+}

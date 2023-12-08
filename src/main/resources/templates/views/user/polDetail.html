@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{police.polDetail.title.detail}" class="h3 mb-4 text-gray-800">사용자 상세정보</h1>
+
+        <div class="row">
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{police.polDetail.detail}" class="m-0 font-weight-bold text-primary" >상세</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-bordered">
+                                <colgroup>
+                                    <col width="20%">
+                                    <col width="30%">
+                                    <col width="20%">
+                                    <col width="30%">
+
+                                </colgroup>
+                                <tbody>
+                                <tr>
+                                    <th th:text="#{police.polDetail.name}">이름</th>
+                                    <td th:text="${polInfo.polNm}"></td>
+                                    <th th:text="#{police.polDetail.email}">E-mail</th>
+                                    <td th:text="${polInfo.email}"></td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{police.polDetail.polLcenId}">아이디</th>
+                                    <td th:text="${polInfo.polLcenId}"></td>
+                                    <th th:text="#{police.polDetail.polDeptNm}">담당 부서</th>
+                                    <td th:text="${polInfo.polDeptNm}"></td>
+                                </tr>
+                                <tr>
+                                    <th th:text="#{police.polDetail.phone}">담당자 휴대전화</th>
+                                    <td th:text="${polInfo.phone}"></td>
+                                    <th th:text="#{police.polDetail.jur}">관할</th>
+                                    <td th:text="${polInfo.jur}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+<!--                            <button th:text="#{admin.admin.listBack}" type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/user/userList}'|">목록</button>-->
+<!--                            <button th:text="#{admin.admin.modify}" type="button" id="btnRegist" class="btn btn-outline-warning" th:onclick="'location.href=\''+@{/user/userModify(oprtrId=${webOprtr.oprtrId})}+'\''">수정</button>-->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+
+        </div>
+
+    </div>
+
+
+
+</th:block>
+</html>
+<script>
+</script>

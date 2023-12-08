@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+		
+       <div class="contents-wrap">
+				<div class="table-title">
+					교통 단속
+				</div>
+				
+				<div class="table-wrap">
+					<table class="register-table">
+						<colgroup>
+							<col width="20%">
+							<col width="30%">
+							<col width="20%">
+							<col width="30%">
+						</colgroup>
+						<tbody>
+							<tr>
+								<th>Data</th>
+								<td colspan="3">
+									<input type="date" value="2023-09-11" class="data">
+								</td>
+							</tr>
+							<tr>
+								<th>운전자명</th>
+								<td>Sam smith</td>
+								<th>차량등록번호</th>
+								<td>Sam smith</td>
+							</tr>
+							<tr>
+								<th>차량</th>
+								<td>Sam smith</td>
+								<th>차량 번호</th>
+								<td>Sam smith</td>
+							</tr>
+							<tr>
+								<th>적발 지역</th>
+								<td>Sam smith</td>
+								<th>범칙금</th>
+								<td>Sam smith</td>
+							</tr>
+							<tr>
+								<th>위반법령</th>
+								<td>Sam smith</td>
+								<th>상세유형</th>
+								<td>Sam smith</td>
+							</tr>
+							<tr>
+								<th>담당 경찰명</th>
+								<td>Sam smith</td>
+								<th>관할 경찰서</th>
+								<td>Sam smith</td>
+							</tr>
+							<tr>
+								<th class="table-content">상세내용</th>
+								<td class="table-content" colspan="3">text</td>
+							</tr>
+						</tbody>
+					</table>
+					
+					<div class="btn-wrap">
+	                   <input type="button" value="등록" class="on-button">
+	                   <input type="button" value="취소" class="cancel-button">
+                  </div>
+				</div>
+			</div>
+    </div>
+
+	<!--modal-->
+	<div class="modal-wrap">
+		<div class="modal-contents">
+			<div class="modal-title">
+				<div class="modal-title-text">교통정보단속</div>
+				<div class="close"><img src="/images/close.png"></div>
+			</div>
+			<div class="modal-sub-title">
+				<p>속도 위반</p>
+				<p>2022-04-12 14:15:50</p>
+			</div>
+			<div class="modal-body">
+				<table class="register-table">
+						<colgroup>
+							<col width="20%">
+							<col width="30%">
+							<col width="20%">
+							<col width="30%">
+						</colgroup>
+						<tbody>
+							<tr>
+								<th>운전자명</th>
+								<td>Sam smith</td>
+								<th>차량등록번호</th>
+								<td>Sam smith</td>
+							</tr>
+							<tr>
+								<th>차량</th>
+								<td>Sam smith</td>
+								<th>차량 번호</th>
+								<td>Sam smith</td>
+							</tr>
+							<tr>
+								<th>적발 지역</th>
+								<td>Sam smith</td>
+								<th>범칙금</th>
+								<td>Sam smith</td>
+							</tr>
+							<tr>
+								<th>위반법령</th>
+								<td>Sam smith</td>
+								<th>상세유형</th>
+								<td>Sam smith</td>
+							</tr>
+							<tr>
+								<th>담당 경찰명</th>
+								<td>Sam smith</td>
+								<th>관할 경찰서</th>
+								<td>Sam smith</td>
+							</tr>
+							<tr>
+								<th class="table-content">상세내용</th>
+								<td class="table-content" colspan="3">text</td>
+							</tr>
+						</tbody>
+					</table>
+			</div>
+			<div class="moda-btn">
+				<input type="button" class="on-button" value="확인">
+				<input type="button" class="cancel-button" value="자세히보기">
+			</div>
+		</div>
+	</div>
+
+</th:block>
+</html>
+<script>
+
+
+
+</script>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<th:block th:if="${not #strings.isEmpty(enfSearchVO.carNum) && not #strings.isEmpty(carDetail.carNum)}">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary" th:text="#{enforcement.car.search.Ajax.title}">차량 상세정보</h6>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <colgroup>
+                        <col width="20%">
+                        <col width="30%">
+                        <col width="20%">
+                        <col width="30%">
+
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th th:text="#{enforcement.car.search.Ajax.carNumber}">차 번호</th>
+                        <td th:text="${carDetail.carNum}"></td>
+                        <th th:text="#{enforcement.car.search.Ajax.Borrower}">차주 이름</th>
+                        <td th:text="${carDetail.carDriverName}"></td>
+                    </tr>
+                    <tr>
+                        <th th:text="#{enforcement.car.search.Ajax.carType}">차종</th>
+                        <td th:text="${carDetail.carType}"></td>
+                        <th th:text="#{enforcement.car.search.Ajax.carRegistrationDate}">차 등록일</th>
+                        <td th:text="${carDetail.regDt}"></td>
+                    </tr>
+                    <tr>
+                        <th th:text="#{enforcement.car.search.Ajax.automotiveUse}">자동차 용도</th>
+                        <td th:text="${carDetail.automotiveUse}"></td>
+                        <th th:text="#{enforcement.car.search.Ajax.carClassification}">자동차 구분</th>
+                        <td th:text="${carDetail.carClassification}"></td>
+                    </tr>
+                    <tr>
+                        <th th:text="#{enforcement.car.search.Ajax.competentAuthority}">관할 관청</th>
+                        <td th:text="${carDetail.competentAuthority}"></td>
+                        <th th:text="#{enforcement.car.search.Ajax.wtCarIsScrapped}">폐차 여부</th>
+                        <td th:text="${carDetail.wtCarIsScrapped}"></td>
+                    </tr>
+                    <tr>
+                        <th th:text="#{enforcement.car.search.Ajax.note}">비고</th>
+                        <td colspan="3" th:text="${carDetail.note}"></td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:if="${not #strings.isEmpty(enfSearchVO.carNum) && #strings.isEmpty(carDetail.carNum)}">
+    <div class="card shadow mb-4">
+        <div class="card-header py-3">
+            <h6 class="m-0 font-weight-bold text-primary" th:text="#{enforcement.car.search.Ajax.vehicleDetails}">차량 상세정보</h6>
+        </div>
+        <div class="card-body">
+            <p style="text-align: center;" th:text="#{enforcement.car.search.Ajax.content}">검색 결과가 없습니다.</p>
+        </div>
+    </div>
+</th:block>
+

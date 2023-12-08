@@ -1,0 +1,37 @@
+<html xmlns:th="http://www.thymeleaf.org"  
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	
+<th:block th:fragment="pagingFragment">
+			<ul class="pagination">
+				<li><a class="first" th:onclick="fnPageMove([[${pagination.startPage}]])">맨앞으로</a></li>	
+				
+				<li class="page-item">
+					<a class="first" th:onclick="fnPageMove([[${pagination.prevBlock}]])" aria-label="Previous"> 
+						<i class="page-arrow-left"></i>
+					</a>
+				</li>
+				
+				<th:block th:with="start = ${pagination.startPage}, end = ${pagination.endPage}">
+					<li class="page-item" th:with="start = ${pagination.startPage}, end = ${pagination.endPage}" th:each="pageButton : ${#numbers.sequence(start, end)}">
+						
+						<div th:if="${pageButton == pagination.page}">
+							<a class="num active" th:onclick="fnPageMove([[${pageButton}]])" th:text=${pageButton}></a>
+						</div>
+						
+						<div th:unless="${pageButton == pagination.page}">
+							<a class="num" th:onclick="fnPageMove([[${pageButton}]])" th:text=${pageButton}></a>
+						</div>
+						
+					</li>
+				</th:block>
+				
+				<li class="page-item">
+					<a class="last" th:onclick="fnPageMove([[${pagination.nextBlock}]])" aria-label="Next">
+																	<!-- nextBlock이 아닌 nextPage로 처리 필요 -->
+						<i class="page-arrow-right"></i>
+					</a>
+				</li>
+				
+				<li><a class="last" th:onclick="fnPageMove([[${pagination.endPage}]])">맨뒤로</a></li>
+		</ul>
+</th:block>

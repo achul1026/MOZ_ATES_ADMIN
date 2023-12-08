@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{potal.complaint.title.complaint}" class="h3 mb-4 text-gray-800">불만사항</h1>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text= "#{penalty.common.searchCon}" class="m-0 font-weight-bold text-primary">검색조건</h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="frmSearch">
+                            <input type="hidden" id="hdnStart" name="start" th:value="${complaintsReg.start}">
+                            <label th:text= "#{penalty.common.startDate}">시작일</label>
+                            <input class="form-control col-lg-2" id="sDate" name="sDate" type="date" th:value="${complaintsReg.getSDate()}">
+                            &nbsp;&nbsp;&nbsp;
+                            <label th:text= "#{penalty.common.endDate}">종료일</label>
+                            <input class="form-control col-lg-2" id="eDate" name="eDate" type="date" th:value="${complaintsReg.getEDate()}">
+                            &nbsp;&nbsp;&nbsp;
+                            <label>
+                                <select class="form-control" name="searchType">
+                                    <option th:text= "#{penalty.common.allCon}" value="all">전체</option>
+                                </select>
+                            </label>
+                            <input class="form-control col-lg-3" name="searchTxt" type="text" th:value="${complaintsReg.searchTxt}">
+                            &nbsp;&nbsp;&nbsp;
+
+                            <button th:text= "#{penalty.common.search}" type="button" id="btnSearch" class="btn btn-outline-primary">조회</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{potal.complaint.list}" class="m-0 font-weight-bold text-primary" style="display: inline;">불만사항 리스트</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <div class="row"><div class="col-sm-12">
+                                    <table class="table table-bordered dataTable" id="tblList" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                    <thead>
+                                    <tr role="row">
+                                        <th class="sorting sorting_asc" style="width: 20px;">No.</th>
+                                        <th th:text="#{potal.complaint.category}" style="width: 30px;">카테고리</th>
+                                        <th th:text="#{potal.complaint.title}"style="width: 170px;">제목</th>
+                                        <th th:text="#{potal.complaint.QEmail}" style="width: 67px;">질문자 이메일</th>
+                                        <th th:text="#{potal.complaint.registDate}" style="width: 67px;">등록일</th>
+                                        <th th:text="#{potal.complaint.aon}" style="width: 67px;">답변여부</th>
+                                    </tr>
+                                    </thead>
+
+                                    <tbody>
+										<tr th:each="complaint, varstaus : ${complaintList}">
+											<td th:text="${complaint.rnum}"></td>
+											<td th:text="${complaint.cmCd.cdNm}"></td>
+											<td th:text="${complaint.postTtl}" th:onclick="|location.href='@{/portal/complaint/detail.do(complaintsIdx=${complaint.complaintsIdx})}'|"></td>
+											<td th:text="${complaint.wrtrEmail}"></td>
+											<td th:text="${complaint.crDt}"></td>
+											<td th:text="${complaint.ansStts}"></td>
+										</tr>
+
+<!--                                    <tr class="odd">-->
+<!--                                        <td class="sorting_1">57</td>-->
+<!--                                        <td>과태료</td>-->
+<!--                                        <td><a th:href="@{/portal/complaintDetail(idx=449903)}"><u>왜 이렇게 과태료가 많이 나왔죠?</u></a></td>-->
+<!--                                        <td>blue22@naver.com</td>-->
+<!--                                        <td>2020-11-22</td>-->
+<!--                                        <td style="color: red;">미완료</td>-->
+<!--                                    </tr>-->
+<!--                                    <tr class="odd">-->
+<!--                                        <td class="sorting_1">56</td>-->
+<!--                                        <td>민원</td>-->
+<!--                                        <td><a th:href="@{/portal/complaintDetail(idx=449903)}"><u>민원실 직원이 태도 불량해요</u></a></td>-->
+<!--                                        <td>blue22@naver.com</td>-->
+<!--                                        <td>2020-11-22</td>-->
+<!--                                        <td style="color: red;">미완료</td>-->
+<!--                                    </tr>-->
+<!--                                    <tr class="odd">-->
+<!--                                        <td class="sorting_1">56</td>-->
+<!--                                        <td>민원</td>-->
+<!--                                        <td><a th:href="@{/portal/complaintDetail(idx=449903)}"><u>민원실 직원이 태도 불량해요</u></a></td>-->
+<!--                                        <td>blue22@naver.com</td>-->
+<!--                                        <td>2020-11-22</td>-->
+<!--                                        <td style="color: green;">완료</td>-->
+<!--                                    </tr>-->
+<!--                                    <tr class="odd">-->
+<!--                                        <td class="sorting_1">56</td>-->
+<!--                                        <td>민원</td>-->
+<!--                                        <td><a th:href="@{/portal/complaintDetail(idx=449903)}"><u>민원실 직원이 태도 불량해요</u></a></td>-->
+<!--                                        <td>blue22@naver.com</td>-->
+<!--                                        <td>2020-11-22</td>-->
+<!--                                        <td style="color: green;">완료</td>-->
+<!--                                    </tr>-->
+<!--                                    <tr class="odd">-->
+<!--                                        <td class="sorting_1">56</td>-->
+<!--                                        <td>민원</td>-->
+<!--                                        <td><a th:href="@{/portal/complaintDetail(idx=449903)}"><u>민원실 직원이 태도 불량해요</u></a></td>-->
+<!--                                        <td>blue22@naver.com</td>-->
+<!--                                        <td>2020-11-22</td>-->
+<!--                                        <td style="color: green;">완료</td>-->
+<!--                                    </tr>-->
+
+
+                                    </tbody>
+                                </table>
+                                </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</th:block>
+</html>
+<script th:inline="javascript"></script>

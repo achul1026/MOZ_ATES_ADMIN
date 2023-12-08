@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div class="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{admin.admin.title}" class="h3 mb-4 text-gray-800">관리자 목록</h1>
+
+        <div class="row">
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text="#{admin.common.searchCon}" class="m-0 font-weight-bold text-primary">검색조건</h6>
+                    </div>
+                    <div class="card-body">
+                        <form id="frmSearch">
+                            <input type="hidden" id="hdnStart" name="start" th:value="${webOprtr.start}">
+                            <label th:text= "#{admin.common.startDate}">시작일</label>
+                            <input class="form-control col-lg-2" id="sDate" name="sDate" type="date" th:value="${webOprtr.getSDate()}">
+                            &nbsp;&nbsp;&nbsp;
+                            <label th:text= "#{admin.common.endDate}">종료일</label>
+                            <input class="form-control col-lg-2" id="eDate" name="eDate" type="date" th:value="${webOprtr.getEDate()}">
+                            &nbsp;&nbsp;
+                            <label>
+                                <select class="form-control" name="searchType">
+                                    <option th:text= "#{admin.common.allCon}"  value="all">전체</option>
+                                </select>
+                            </label>
+                            <input class="form-control col-lg-3" name="searchTxt" type="text" th:value="${webOprtr.searchTxt}" >
+                            &nbsp;&nbsp;&nbsp;
+
+                            <button th:text= "#{admin.common.search}"  type="button" id="btnSearch" class="btn btn-outline-primary">조회</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-lg-12">
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 th:text= "#{admin.admin.list}" class="m-0 font-weight-bold text-primary" style="display: inline;">관리자 리스트</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <table class="table table-bordered dataTable" id="tblList" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
+                                            <thead>
+                                            <tr role="row">
+                                                <th class="sorting sorting_asc" style="width: 56px;">No.</th>
+                                                <th th:text="#{admin.admin.id}" style="width: 67px;">아이디</th>
+                                                <th th:text="#{admin.admin.email}" style="width: 61px;">이메일</th>
+                                                <th th:text="#{admin.admin.ranking}" style="width: 49px;">등급</th>
+                                                <th th:text="#{admin.admin.regDate}" style="width: 68px;">등록일</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+												<tr th:each="webOprtr, varstaus : ${webOprtrList}">
+													<td th:text="${webOprtr.rnum}"></td>
+													<td th:text="${webOprtr.oprtrAccountId}" th:onclick="|location.href='@{/user/user/detail.do(oprtrId=${webOprtr.oprtrId})}'|"></td>
+													<td th:text="${webOprtr.oprtrEmail}"></td>
+													<td th:text="${webOprtr.oprtrPermission}"></td>
+													<td th:text="${webOprtr.oprtrRegDt}"></td>
+												</tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+</th:block>
+</html>
+<script th:inline="javascript"></script>
