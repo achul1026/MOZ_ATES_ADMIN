@@ -1,0 +1,60 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<form id="frmSearch">
+	<input type="hidden" id="page" name="page" th:value="1">
+	<input type="hidden" id="pageType" name="pageType" th:value="list">
+</form>
+
+<div id="search-form-result-wrap">
+	<div id="table-search-result-text">
+		Found <span th:text='|"${pagination.totalListCnt}"|'>"0"</span> results
+	</div>
+	<div>
+		<button type="button" id="btnRegist" class="main-btn form-button" th:onclick="|location.href='@{/eqp/mng/save.do}'|"
+		th:text="#{equipment.mngList.RegistrationOfEnforcementEquipment}">단속장비 등록</button>
+	</div>
+</div>
+
+<div class="">
+	<table class="main-table" id="tblList">
+		<thead>
+			<tr>
+				<th th:text="#{equipment.mngList.tableNumber}">No.</th>
+				<th th:text="#{equipment.mngList.equipmentType}">단속장비 유형</th>
+<!--				<th th:text="#{equipment.mngList.equipmentId}">단속장비 ID</th>-->
+				<th th:text="#{equipment.mngList.equipmentName}">단속장비 이름</th>
+				<th th:text="#{equipment.mngList.equipmentStatus}">단속장비 상태</th>
+				<th th:text="#{equipment.mngList.address}">위치</th>
+				<th th:text="#{equipment.mngList.registrationDate}">설치일</th>
+				<th th:text="#{equipment.mngList.manager}">담당자</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr th:each="eqpItem : ${eqpList}"
+				th:onclick="|location.href='@{/eqp/mng/detail.do(tfcEnfEqpId=${eqpItem.tfcEnfEqpId})}'|">
+				<td th:text="${eqpItem.rnum}"></td>
+				<td th:text="${eqpItem.cmCd.cdNm}"></td>
+<!--				<td th:text="${eqpItem.tfcEnfEqpId}"></td>-->
+				<td th:text="${eqpItem.eqpNm}"></td>
+				<td th:text="${eqpItem.useYn == 'Y' ? 'Normal' : 'Breakdown'}"></td>
+				<td th:text="${eqpItem.roadAddr}"></td>
+				<td th:text="${#dates.format(eqpItem.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+				<td th:text="${eqpItem.webOprtr.oprtrNm}"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="page_wrap">
+	<div th:insert="tags/paging :: pagingFragment"></div>
+</div>
+
+</html>
+<script th:inline="javascript">
+
+	function fnPageMove(page) {
+		$("#page").val(page);
+		getListAjax();
+	}
+</script>

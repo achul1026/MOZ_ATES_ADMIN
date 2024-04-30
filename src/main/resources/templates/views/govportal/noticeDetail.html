@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 th:text="|#{portal.notice.title.detail}|"  id="detail-content-title">공지사항 상세</h1>
+
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{portal.noticeDetail.ttl}">제목</th>
+						<td th:text="${brd.boardTitle}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.noticeDetail.posting}">게시기간</th>
+						<td>
+							<th:block th:if="${brd.postStrDt == null && brd.postEndDt == null}" th:text="#{portal.common.alwaysPosted}">
+								항상 게시
+							</th:block>
+							
+							<th:block th:if="${brd.postStrDt != null && brd.postEndDt != null}">
+								<input type="date" class="input-date" name="postStrDt" th:value="${#dates.format(brd.postStrDt, 'yyyy-MM-dd')}" disabled> 
+								~ 
+								<input type="date" class="input-date" name="postEndDt" th:value="${#dates.format(brd.postEndDt, 'yyyy-MM-dd')}" disabled>
+							</th:block>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.noticeDetail.type}">유형</th>
+						<td><input type="checkbox" th:checked="${brd.imprtYn == 'Y'}" disabled> <label th:text="#{portal.noticeDetail.important}">중요</label></td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.noticeDetail.attachment}">첨부파일</th>
+						<td>
+							<th:block th:each="fileItem : ${brd.atchFileList}">
+								<p th:text="${fileItem.fileOrgNm}"></p>
+							</th:block>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.noticeDetail.exposure}">노출여부</th>
+						<td><input type="checkbox" th:checked="${brd.useYn == 'Y'}" disabled> <label th:text="#{portal.noticeDetail.exposureChkbox}">노출</label></td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.noticeDetail.popupYn}">팝업여부</th>
+						<td><input type="checkbox" th:checked="${brd.popupYn == 'Y'}" disabled> <label th:text="#{portal.noticeDetail.popupYnChkbox}">사용</label></td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.notice.common.content}">내용</th>
+						<td><pre th:text="${brd.boardContents}"></pre></td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<div class="btn-wrap-center">
+				<button th:text="#{penalty.common.list}" type="button" id="btnGoList"
+					class="sub-btn left-btn" th:onclick="|location.href='@{/portal/notice/list.do}'|">목록</button>
+				<button type="button" id="btnDelete" class="delete-btn" th:text="#{portal.common.delete}" onclick="deleteInfo()">삭제</button>
+				<button th:text="#{portal.common.modifyBtn}" type="button" id="btnModify" class="main-btn"
+					th:onclick="'location.href=\''+@{/portal/notice/update.do(boardIdx=${brd.boardIdx})}+'\''">수정</button>
+			</div>
+	</div>
+
+
+
+</th:block>
+
+</html>
+<script th:inline="javascript">
+function deleteInfo() {
+	new ModalBuilder().init().alertBody([[#{portal.noticeDetail.deleteMessage}]]).footer(2,'확인',function(button, modal){
+		modal.close();
+		var idx = [[${brd.boardIdx}]];
+		$.ajax({
+			url: /*[[@{/portal/notice/delete.ajax}]]*/ "/portal/notice/delete.ajax",
+			type: "post",
+			data: {"boardIdx": idx},
+			success: function (result) {
+				var resultCode = result.code;
+				var resultMessage = result.message;
+				if (resultCode == '200') {
+					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
+						location.href = /*[[@{/portal/notice/list.do}]]*/ '/portal/notice/list.do';
+					}).open();
+				} else {
+					new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
+						modal.close();}).open();
+				}
+			}
+		});
+		}, '취소', function(button, modal){}).open();
+}
+	$(document).ready(function(){
+		var postStrDt = [[${brd.postStrDt}]];
+		var postEndDt = [[${brd.postEndDt}]];
+		if(!isNull(postStrDt) && !isNull(postEndDt)){
+			$('.time-check-on').show();
+		}
+	})
+</script>

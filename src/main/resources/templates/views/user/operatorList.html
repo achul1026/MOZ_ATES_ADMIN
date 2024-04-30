@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+		<h1 id="content-title" th:text="#{user.operatorList.title}">운영자</h1>
+		<div id="content-sub-title" th:text="#{user.operatorList.subTitle}">운영자를 관리할 수 있습니다.</div>
+		
+		<form id="frmSearch">
+			<input type="hidden" id="page" name="page" th:value="1">
+			<input type="hidden" id="hdnStart" name="start" th:value="${webOprtr.start}">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{common.search.searchOption}">유형 선택</th>
+						<td>
+							<select name="searchType" class="filter-select" id="searchType" th:field="${webOprtr.searchType}">
+								<option value="all" th:text="#{common.search.searchOption.all}">전체</option>
+								<option value="oprtrNm" th:text="#{common.user.name}">이름</option>
+								<option value="oprtrId" th:text="#{common.user.id}">ID</option>
+								<option value="oprtrPno" th:text="#{common.user.contact}">연락처</option>
+								<option value="oprtrEmail" th:text="#{common.user.email}">이메일</option>
+								<option value="ogzn" th:text="#{common.user.department}">기관</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{common.search.search}">내용 검색</th>
+						<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" 
+							th:value="${webOprtr.searchTxt}" th:placeholder="#{common.placeholder.enterKeyword}"></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="btn-wrap-center">
+				<button th:text="#{common.button.search}" type="button" id="btnSearch" class="main-btn form-button">조회</button>
+				<button type="button" id="resetSearch" class="sub-btn form-button" onclick="location.href='/user/operator/list.do'" th:text="#{common.button.resetSearch}">검색 초기화</button>
+			</div>
+		
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+			</div>
+			<div id="table-regist-btn">
+				
+			</div>
+		</div>
+
+		<div class="">
+			<table class="main-table" id="">
+				<thead>
+					<tr>
+						<th th:text="#{common.table.order}">번호</th>
+						<th th:text="#{common.user.name}">이름</th>
+						<th th:text="#{common.user.id}">ID</th>
+						<th class="">
+								<select class="th-select" name="oprtrStts" onchange="this.form.submit(this.value)">
+									<option th:text="#{common.common.status}" value="">상태</option>
+									<option th:text="#{user.common.statusOk}" th:selected="${webOprtr.oprtrStts == 'OSC000'}" value="OSC000">정상</option>
+									<option th:text="#{user.common.statusStopped}" th:selected="${webOprtr.oprtrStts == 'OSC001'}" value="OSC001">정지</option>
+									<option th:text="#{user.common.statusWaiting}" th:selected="${webOprtr.oprtrStts == 'OSC002'}" value="OSC002">승인대기</option>
+									<th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
+										<option th:text="#{user.common.statusWithdraw}" th:selected="${webOprtr.oprtrStts == 'OSC003'}" value="OSC003">탈퇴</option>
+									</th:block>
+								</select>
+						</th>
+						<th th:text="#{common.user.contact}">연락처</th>
+						<th th:text="#{common.user.email}">이메일</th>
+<!--						<th class="">-->
+<!--							<select class="th-select">-->
+<!--								<option th:text="#{admin.common.rank}">역할</option>-->
+<!--								<option th:text="#{admin.common.allCon}">전체</option>-->
+<!--								<option th:text="#{admin.common.rankOp}">관리자</option>-->
+<!--								<option th:text="#{admin.common.rankAdmin}">운영자</option>-->
+<!--								<option th:text="#{admin.common.rankPol}">경찰</option>-->
+<!--							</select>-->
+<!--						</th>-->
+						<th th:text="#{common.user.department}">기관</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="webOprtrItem : ${webOprtrList}" th:onclick="|location.href='@{/user/operator/detail.do(oprtrId=${webOprtrItem.oprtrId})}'|">
+						<td th:text="${webOprtrItem.rnum}"></td>
+						<td th:text="${webOprtrItem.oprtrNm}"></td>
+						<td th:text="${webOprtrItem.oprtrAccountId}"></td>
+						<td th:switch="${webOprtrItem.oprtrStts}">
+							<span th:case="'OSC000'" th:text="#{user.common.statusOk}"></span>							
+							<span th:case="'OSC001'" th:text="#{user.common.statusStopped}"></span>							
+							<span th:case="'OSC002'" th:text="#{user.common.statusWaiting}"></span>		
+							<span th:case="'OSC003'" th:text="#{user.common.statusWithdraw}"></span>					
+						</td>
+						<td th:text="${webOprtrItem.oprtrPno}"></td>
+						<td th:text="${webOprtrItem.oprtrEmail}"></td>
+<!--						<td th:switch="${webOprtrItem.oprtrPermission}">-->
+<!--							<span th:case="sup">Administrator</span>-->
+<!--							<span th:case="opr">Operator</span>-->
+<!--							<span th:case="pol">Police Officer</span>-->
+<!--						</td>-->
+						<td th:text="${webOprtrItem.oprtrDeptNm}"></td>
+					</tr>
+					<tr th:if="${#lists.size(webOprtrList) == 0}">
+						<td colspan="7" th:text="#{common.search.notFound}">검색 결과를 찾을 수 없습니다.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		</form>
+		<div class="page_wrap">
+			<div th:insert="tags/paging :: pagingFragment"></div>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();		
+	})
+</script>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 th:text="#{portal.objection.title.detail}" id="detail-content-title">이의제기 상세</h1>
+
+		<div class="">
+			<form id="frmSearch">
+				<input type="hidden" name="objIdx" th:value="${objReg.objIdx}">
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{portal.objection.title}">제목</th>
+							<td th:text="${objReg.postTtl}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{portal.objection.date}">날짜</th>
+							<td th:text="${#dates.format(objReg.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{portal.objection.category}">카테고리</th>
+							<td th:text="${objReg.cmCd.cdNm}">과태료</td>
+						</tr>
+						<tr>
+							<th th:text="#{portal.complaint.attachment}">첨부파일</th>
+							<td th:text="${objReg.atchFile != null ? objReg.atchFile.fileOrgNm : '-'}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{portal.complaint.writer}">게시자</th>
+							<td th:text="${objReg.wrtrNm}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{portal.objection.inquriy}">문의내용</th>
+							<td><pre th:text="${objReg.postCn}"></pre></td>
+						</tr>
+					</tbody>
+				</table>
+	
+				<div class="btn-wrap-center">
+					<button th:text="#{penalty.common.list}" type="button" id="btnGoList"
+					class="sub-btn list-btn" th:onclick="|location.href='@{/portal/objection/list.do}'|">목록</button>
+					<button type="button" class="main-btn find answer-btn" th:text="#{portal.common.registerAnswerBtn}">답변 등록하기</button>
+				</div>
+			
+			
+		
+			<div class="answer-table">
+				<h1 id="detail-content-title" th:text="#{portal.objection.answer}">답변하기</h1>
+				<table class="sub-table detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th><span th:text="#{portal.complaint.attachment}">Attachment</span></th>
+							<td colspan="3">
+								<input type="file" id="uploadFiles" name="uploadFiles" multiple/>
+								<div id="dragArea">
+									<div class="drag-area">
+										<div class="dragText">
+										   	File name cannot be more than 50 characters<br>
+											The file size can only be uploaded under 5MB<br>
+											Only WORD, XLSX, PDF, and ZIP file can be uploaded
+										</div>
+										<div>
+											<input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
+											<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+										</div>
+									</div>
+								</div>
+								<div class="upload_wrap">
+									<div id="upload_list_box">
+										<th:block th:each="item : ${objReg.ansAtchFileList}">
+											<div class="upload_list">
+												<div class="list_item input_same group_box flex-center">
+						                			<div class="file_list" th:text="${item.fileOrgNm}"></div>
+							                		<button type="button" th:data-name="${item.fileOrgNm}" th:data-value="${item.fileIdx}" class="fileDelBtn">
+															<img src="/images/upload_close.png" alt="업로드파일 삭제">
+							                		</button>
+	                							</div>
+											</div>
+										</th:block>
+									</div>	
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th><span class="requiredMark" th:text="#{portal.objection.answerContent}">답변 내용</span></th>
+							<td colspan="3">
+								<textarea class="detail-table-textarea" id="ansContents" name="ansContents" 
+								th:text="${objReg.ansContents}" th:placeholder="#{portal.common.search.placeholder}"></textarea><br><br>
+								<th:block th:if="${objReg.ansStts == 'N'}">
+									<button th:text="#{portal.objection.submit}" type="button" id="btnRegist" class="main-btn form-button">답변 등록</button>
+								</th:block>
+								<th:block th:if="${objReg.ansStts == 'Y'}">
+									<button th:text="#{portal.objection.modify}" type="button" id="btnRegist" class="main-btn form-button">답변 수정</button>									
+								</th:block>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				<div class="btn-wrap-center">
+					<button type="button" th:text="#{penalty.common.list}" onclick="javascript:window.history.back()"
+						class="sub-btn form-button">목록</button>
+				</div>
+			</div>
+		</form>
+	</div>
+	</div>
+</th:block>
+
+</html>
+<!-- Bootstrap core JavaScript-->
+<!-- <script th:src="@{/bootstrap/vendor/jquery/jquery.min.js}"></script> -->
+<!-- <script th:src="@{/bootstrap/vendor/jquery/jquery.cookie.min.js}"></script> -->
+<!-- <script th:src="@{/bootstrap/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script> -->
+<!-- Context Path add -->
+<link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}" />
+
+<script th:inline="javascript">
+	$(document).ready(function(){
+		var answer = $("#ansContents").val();
+		if(!isNull(answer) && answer != ''){
+			$(".answer-table").show();
+			$("#answerBtn").hide();
+			$(".answer-btn").hide();
+			$(".list-btn").hide();
+		}
+	})
+	
+	$(".answer-btn").on('click', function(){
+		$('.answer-table').show();
+		$('.answer-btn').hide();
+		$('.list-btn').hide();		
+	})
+
+	$("#btnRegist").click(function () {
+		var ansContents = $("#ansContents").val();
+		
+		if(isNull(ansContents)){
+			new ModalBuilder().init().alertBody([[#{portal.complaint.common.message.answer}]]).footer(4,'확인',function(button, modal){
+				modal.close();
+				$("#ansContents").focus();
+			}).open();
+			return false;
+		}
+		
+		var form = $("#frmSearch")[0];
+		var data = new FormData(form);
+		
+		deleteFilesArr.forEach((value, index) => {
+			data.append("ansAtchFileList[" + index + "].fileIdx", value);
+		})
+		
+		idx = /*[[${objReg.objIdx}]]*/ '';
+		$.ajax({
+			url: /*[[@{/portal/objection/answer.ajax}]]*/ "/portal/objection/answer.ajax",
+			type: "post",
+			enctype: 'multipart/form-data',
+			data: data,
+			processData: false,
+			contentType: false,
+			success: function (result) {
+				var resultCode = result.code;
+				var resultMessage = result.message;
+				if (resultCode == '200') {
+					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
+						var baseUrl = /*[[@{/portal/objection/detail.do}]]*/ '';
+						window.location.href = baseUrl + "?objIdx=" + idx;
+					}).open();
+				} else {
+					new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+				}
+			}
+		});
+	});
+	
+	var deleteFilesArr = new Array();
+	let $fileInput = $("#uploadFiles");
+	$(".fileDelBtn").on('click',function(){
+        var $this = $(this);
+        var fileNm = $this.data('name');
+        var fileId = $this.data('value');
+        const dataTransfer = new DataTransfer();
+        let trans = $('#uploadFiles')[0].files;
+        let fileArray = Array.from(trans);
+
+        $this.closest('.upload_list').remove();
+        fileArray.filter(file => file.name != fileNm).forEach(file => {
+            dataTransfer.items.add(file);
+        });
+        $fileInput.prop('files',dataTransfer.files);
+        
+        let uploadLength = $('#upload_list_box').children('.upload_list').length;
+		if(uploadLength <= 0){
+			$('.upload_wrap').addClass('none');
+		}
+		deleteFilesArr.push(fileId);
+    });
+</script>

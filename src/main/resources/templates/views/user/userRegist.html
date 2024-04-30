@@ -84,8 +84,6 @@
 </html>
 <script th:inline="javascript">
     $("#btnRegist").click(function () {
-
-
         if($.trim($("#txtOprtrAccountId").val())==''){
             alert("아이디를 입력해주세요.");
             $("#txtOprtrAccountId").focus();
@@ -127,7 +125,6 @@
             return false;
         }
 
-
         $.ajax({
                 url: /*[[@{/user/save.ajax}]]*/ "/user/save.ajax",
             type: "post",
@@ -143,7 +140,4 @@
         });
 
     })
-
-
-
 </script>

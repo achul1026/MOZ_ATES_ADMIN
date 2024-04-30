@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{portal.eduModify.title}">교통안전교육 수정</h1>
+				
+		<form id="sftyEducnRegistFrm">
+			<input type="hidden" name="tfcSftyEdctnId" th:value="${tfcSftyEdctn.tfcSftyEdctnId}">
+            <table class="detail-table">
+                <colgroup>
+                    <col width="15%">
+                    <col width="85%">
+                </colgroup>
+                <tbody>
+					<tr>
+						<th th:text="#{portal.eduModify.ttl}">제목</th>
+						<td><input type="text" class="main-input" id="postTtl" name="postTtl" th:value="${tfcSftyEdctn.postTtl}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.eduModify.posting}">게시 여부</th>
+						<td>
+							<label for="away-check" class="radioBox">
+								<input type="radio" name="datecheck" id="away-check" class="data-validate" onclick="dateCheck('true')"
+								th:checked="${tfcSftyEdctn.postStrDe == null && tfcSftyEdctn.postEndDe == null}">
+								<span class="radioOn"></span>
+								Always Posted
+							</label>
+							<label for="timeline-check" class="radioBox">
+								<input type="radio" name="datecheck" id="timeline-check" class="time-check" onclick="dateCheck('false')"
+								th:checked="${tfcSftyEdctn.postStrDe != null && tfcSftyEdctn.postEndDe != null}">
+								<span class="radioOn"></span>
+								Posting Period Settings
+							</label>
+								
+<!--							<input type="radio" class="un-check" name="datecheck" id="away-check" onclick="dateCheck('false')"-->
+<!--								th:checked="${tfcSftyEdctn.postStrDe == null && tfcSftyEdctn.postEndDe == null}"><label for="away-check" th:text="#{portal.common.alwaysPosted}"> 항상 게시</label>-->
+<!--							<input type="radio" class="time-check" name="datecheck" id="timeline-check" onclick="dateCheck('true')"-->
+<!--								th:checked="${tfcSftyEdctn.postStrDe != null && tfcSftyEdctn.postEndDe != null}"><label for="timeline-check" th:text="#{portal.common.postingPeriodSetting}"> 게시기간 설정</label>-->
+						</td>
+					</tr>
+					<tr class="time-check-change">
+						<th th:text="#{portal.eduModify.postingPeriod}">게시기간</th>
+						<td>
+							<input type="date" class="input-date" name="postStrDe" id="postStrDe" th:value="${#dates.format(tfcSftyEdctn.postStrDe, 'yyyy-MM-dd')}"> 
+							~ 
+							<input type="date" class="input-date" name="postEndDe" id="postEndDe" th:value="${#dates.format(tfcSftyEdctn.postEndDe, 'yyyy-MM-dd')}">
+						</td>
+					</tr>
+	                <tr>
+	                    <th th:text="#{portal.eduModify.exposure}">노출여부</th>
+	                    <td>
+                  			<input type="hidden" name="expYn" id="expYn" value="Y">
+                  			<input type="checkbox" name="expYn-chkbox" id="expYn-chkbox"  th:checked="${tfcSftyEdctn.expYn == 'Y'}"> <label  th:text="#{portal.common.exposure}">노출</label>
+                  		</td>
+	                </tr>
+	                <tr>
+	                    <th th:text="#{portal.eduModify.attachment}">첨부파일</th>
+						<td colspan="3">
+							<input type="file" id="uploadFiles" name="uploadFiles"/>
+							<th:block th:if="${tfcSftyEdctn.atchFile == null}">
+								<div id="dragArea">
+									<div class="drag-area">
+										<div class="dragText">
+										   	File name cannot be more than 50 characters<br>
+											The file size can only be uploaded under 5MB<br>
+											Only WORD, XLSX, PDF, and ZIP file can be uploaded
+										</div>
+										<div>
+											<input type="file" id="uploadFiles" onchange="addFiles(this);" style="display: none;">
+											<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+										</div>
+									</div>
+								</div>
+								<div class="upload_wrap">
+									<div id="upload_list_box">
+									</div>
+								</div>
+							</th:block>
+							<th:block th:if="${tfcSftyEdctn.atchFile != null}">
+								<div class="upload_wrap">
+									<div id="upload_list_box">
+										<div class="upload_list">
+											<div class="list_item input_same group_box flex-center">
+					                			<div class="file_list" th:text="${tfcSftyEdctn.atchFile.fileOrgNm}"></div>
+						                		<button type="button" th:data-name="${tfcSftyEdctn.atchFile.fileOrgNm}"
+						                			th:data-value="${tfcSftyEdctn.atchFile.fileIdx}" class="fileDelBtn">
+														<img src="/images/upload_close.png" alt="업로드파일 삭제">
+						                		</button>
+	               							</div>
+										</div>
+									</div>	
+								</div>
+							</th:block>
+						</td>
+	                </tr>
+	                <tr>
+	                    <th th:text="#{portal.eduModify.content}">상세</th>
+						<td>
+							<textarea class="form-control detail-table-textarea" id="potCn"name="postCn" th:text="${tfcSftyEdctn.postCn}"></textarea>
+						</td>
+	                </tr>
+                </tbody>
+            </table>
+        </form>
+		
+		<div class="btn-wrap-center">
+			<button th:text="#{penalty.common.cancel}" type="button" id="btnGoList"
+				class="sub-btn form-button" onclick="javascript:window.history.back()">목록</button>
+			<button th:text="#{portal.common.modifyBtn}" type="button" id="btnRegist"
+				class="main-btn form-button">수정</button>
+		</div>
+	</div>
+
+
+
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	$(document).ready(function(){
+		var postStrDe = [[${tfcSftyEdctn.postStrDe}]];
+		var postEndDe = [[${tfcSftyEdctn.postEndDe}]];
+		if(!isNull(postStrDt) && !isNull(postEndDt)){
+			$('.time-check-change').show();
+		}else{
+			$('.time-check-change').hide();
+		}
+	})
+	
+	var deleteFileId;
+	let $fileInput = $("#uploadFiles");
+	
+	$(".fileDelBtn").on('click',function(){
+        var $this = $(this);
+        var fileNm = $this.data('name');
+        var fileId = $this.data('value');
+        const dataTransfer = new DataTransfer();
+        let trans = $('#uploadFiles')[0].files;
+        let fileArray = Array.from(trans);
+
+        $this.closest('.upload_list').remove();
+        fileArray.filter(file => file.name != fileNm).forEach(file => {
+            dataTransfer.items.add(file);
+        });
+        $fileInput.prop('files',dataTransfer.files);
+        
+        let uploadLength = $('#upload_list_box').children().length;
+		if(uploadLength <= 0){
+			$('.upload_wrap').addClass('none');
+		}
+		
+		$("#dragArea").removeClass("none");
+		deleteFileId = fileId;
+    });
+	
+	
+	$("#btnRegist").click(function () {
+		new ModalBuilder().init().alertBody([[#{portal.eduModify.modifyMessage}]]).footer(2,'확인',function(button, modal){
+		
+		var expYn = $("#expYn-chkbox").prop("checked")? "Y" :"N";
+		$("#expYn").val(expYn);
+		
+		if($("#away-check").prop("checked")){
+			$("#postStrDe").val("");
+			$("#postEndDe").val("");
+		}
+		
+		var form = $("#sftyEducnRegistFrm")[0];
+		var data = new FormData(form);
+		
+		if(!isNull(deleteFileId)){
+			data.append("atchFile.fileIdx", deleteFileId);
+		}
+		
+		$.ajax({
+			url: /*[[@{/portal/sftyEdu/update.ajax}]]*/ "/portal/sftyEdu/update.ajax",
+			type: "post",
+			data: data,
+			enctype: 'multipart/form-data',
+		    processData: false,
+		    contentType: false,
+		    cache: false,
+			success: function (result) {
+				var resultCode = result.code;
+				var resultMessage = result.message;
+				if (resultCode == '200') {
+					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
+						var baseUrl = /*[[@{/portal/sftyEdu/detail.do}]]*/ '';
+						window.location.href = baseUrl + "?tfcSftyEdctnId=" + [[${tfcSftyEdctn.tfcSftyEdctnId}]];
+					}).open();
+				} else {
+					new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+				}
+			}
+		});
+		modal.close();
+		}, '취소', function(button, modal){}).open();
+	})
+</script>

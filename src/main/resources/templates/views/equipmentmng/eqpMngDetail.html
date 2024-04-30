@@ -1,83 +1,190 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
 
-    <div class="container-fluid">
+	<div id="container-fluid">
 
-        <!-- Page Heading -->
-        <h1 class="h3 mb-4 text-gray-800" th:text="#{equipment.mngDetail.title}">단속장비 상세정보</h1>
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{equipment.mngDetail.title}">단속장비 상세정보</h1>
+		
+		<div class="">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					
+					<tr>
+						<th th:text="#{equipment.mngDetail.typesOfEquipment}">장비종류</th>
+						<td th:text="${tfcEnfEqpMaster.cmCd.cdNm}"></td>
+						<th th:text="#{equipment.mngDetail.equipmentNm}">단속장비 이름</th>
+						<td th:text="${tfcEnfEqpMaster.eqpNm}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.mngDetail.modelNm}">모델명</th>
+						<td th:text="${tfcEnfEqpMaster.modelNm}"></td>
+						<th th:text="#{equipment.mngDetail.manufacturer}">제조업체</th>
+						<td th:text="${tfcEnfEqpMaster.mnfctr}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.mngDetail.installationStatus}">설치여부</th>
+						<td colspan="3" class="tdFlex">
+							<div class="statusComplete">
+								<img src="/images/status_icon01.png" alt="설치" class="statusImg">
+								<span th:text="${tfcEnfEqpMaster.instlYn}=='Y' ? 'Installed':'Not installed'" class="statusText"></span>
+							</div>
+							<!----실패시
+							<div class="statusFail">
+								<img src="/images/status_icon02.png" alt="설치" class="statusImg">
+								<span th:text="${tfcEnfEqpMaster.instlYn}=='Y' ? 'Installed':'Not installed'" class="statusText"></span>
+							</div>---->
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.mngDetail.installationLocation}">장치위치정보</th>
+						<td colspan="3">
+							<p th:text="${tfcEnfEqpMaster.roadAddr}"></p><br>
+							<div id="map" class="detailMap"></div>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.mngDetail.installationDate}">설치일자</th>
+						<td th:text="${#dates.format(tfcEnfEqpMaster.instlDate, 'yyyy-MM-dd')}"></td>
+						<th th:text="#{equipment.mngDetail.installer}">설치자</th>
+						<td th:text="${tfcEnfEqpMaster.instler}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.mngDetail.manager}">담당자</th>
+						<td th:text="${tfcEnfEqpMaster.webOprtr.oprtrNm}"></td>
+						<th th:text="#{equipment.mngDetail.managerDept}">담당자소속</th>
+						<td th:text="${tfcEnfEqpMaster.crOprtrDept}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.mngDetail.detailImg}">단속장비 사진</th>
+						<!-- 여기서부터 /block까지 이미지 생성. -->
+						<td colspan="3">
+							<th:block th:each="fileInfo : ${tfcEnfEqpMaster.tfcEnfEqpFileInfoList}">
+								<p th:text="${fileInfo.fileOrgNm}"></p>
+							</th:block>
+<!-- 							<th:block th:each="images : ${#strings.arraySplit(tfcEnfEqpMaster.tfcEnfEqpImagename,',')}" -->
+<!-- 								th:remove="tag"> -->
+<!-- 								<img th:src="@{/images/}+${images}" style="width:250px;height:250px; margin-left:10px;" -->
+<!-- 									alt=" " /> -->
+								<!-- <td colspan="3"> 
+                    	<img th:src="@{/images/}+${tfcEnfEqpMaster.tfcEnfEqpImage_OrgFile_name}" style="width:900px;height:300px;" alt=" " />-->
+<!-- 							</block> -->
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.mngDetail.enforceementEquipmentInfo}">상세내용</th>
+						<td colspan="3"><pre th:text="${tfcEnfEqpMaster.tfcEnfEqpInfo}"></pre></td>
+					</tr>
 
-        <div class="row">
-
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{equipment.mngDetail.subTitle}">상세</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <colgroup>
-                                    <col width="20%">
-                                    <col width="30%">
-                                    <col width="20%">
-                                    <col width="30%">
-
-                                </colgroup>
-                                <tbody>
-                                 <tr>
-                                    <th th:text="#{equipment.mngDetail.detailImg}">단속장비 사진수정</th>
-                                     <!-- 여기서부터 /block까지 이미지 생성. -->
-                                     <td colspan="3">
-                                    <block th:each = "images : ${#strings.arraySplit(tfcEnfEqpMaster.tfcEnfEqpImageorgn,',')}" th:remove="tag">
-                                    <img th:src="@{/images/}+${images}" style="width:250px;height:250px; margin-left:10px;" alt=" " />
-<!--                                    <td colspan="3"> 
-                                    	<img th:src="@{/images/}+${tfcEnfEqpMaster.tfcEnfEqpImage_OrgFile_name}" style="width:900px;height:300px;" alt=" " />-->
-                                    </block>
-                                    </td>
-                                </tr> 
-                                <tr>
-                                    <th th:text="#{equipment.mngDetail.enforcementEquipmentNumber}">단속장비 번호</th>
-                                    <td th:text="${tfcEnfEqpMaster.tfcEnfEqpId}"></td>
-                                    <th th:text="#{equipment.mngDetail.registrationDate}">등록일</th>
-                                    <td th:text="${tfcEnfEqpMaster.crDt}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{equipment.mngDetail.typesOfEquipment}">장비종류</th>
-                                    <td th:text="${tfcEnfEqpMaster.eqpTy}"></td>
-                                    <th th:text="#{equipment.mngDetail.manufacturer}">제조업체</th>
-                                    <td th:text="${tfcEnfEqpMaster.mnfctr}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{equipment.mngDetail.whetherOrNotToUse}">사용여부</th>
-                                    <td th:text="${tfcEnfEqpMaster.useYn}=='Y'?'Use':'NotUse'"></td>
-                                    <th th:text="#{equipment.mngDetail.manager}">담당자</th>
-                                    <td th:text="${tfcEnfEqpMaster.crOprtrId}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{equipment.mngDetail.managerDept}">담당자소속</th>
-                                    <td  th:text="${tfcEnfEqpMaster.crOprtrDept}"></td>
-                                    <th th:text="#{equipment.mngDetail.location}">장치위치정보</th>
-                                    <td th:text="${tfcEnfEqpMaster.roadAddr}"></td>
-                                </tr>
-                                                                    <tr>
-                               		<th th:text="#{equipment.mngDetail.enforceementEquipmentInfo}">상세내용</th>
-                                    <td colspan="3" th:text="${tfcEnfEqpMaster.tfcEnfEqpInfo}"></td>
-                                </tr>
-
-                                </tbody>
-                            </table>
-                            <button type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/eqp/mng/list.do}'|" th:text="#{equipment.mngDetail.listButton}">목록</button>
-                            <button type="button" id="btnRegist" class="btn btn-outline-warning" th:onclick="|location.href='@{/eqp/mng/update.do(tfcEnfEqpId=${tfcEnfEqpMaster.tfcEnfEqpId})}'|" th:text="#{equipment.mngDetail.modifyButton}">수정</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+				</tbody>
+			</table>
+		<div class="equipmentTableHisWrap">
+				<h2 class="equipmentTableTitle">Inspection history</h2>
+				<table class="main-table equipmentTable">
+					<colgroup>
+					</colgroup>
+					<thead>
+						<tr>
+							<th th:text="#{equipment.mngDetail.maintenance.oprtrNm}">담당자 명</th>
+							<th th:text="#{equipment.mngDetail.maintenance.mntnType}">관리 타입</th>
+							<th th:text="#{equipment.mngDetail.maintenance.mntnStts}">시설물 상태</th>
+							<th th:text="#{equipment.mngDetail.maintenance.date}">관리 날짜</th>
+							<th th:text="#{equipment.mngDetail.maintenance.option}">관리자명</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${#lists.isEmpty(eqpMntnHstList)}">
+							<td colspan="5" th:text="#{equipment.mngDetail.maintenance.none}">None Result</td>
+						</tr>
+						<tr th:if="${!#lists.isEmpty(eqpMntnHstList)}" th:each="hstItem : ${eqpMntnHstList}">
+							<td th:text="${hstItem.oprtrNm}"></td>
+							<td th:text="${hstItem.mntnType}"></td>
+							<td th:text="${hstItem.mntnStts}"></td>
+							<td th:text="${#dates.format(hstItem.crDt, 'yyyy-MM-dd')}"></td>
+							<td>
+								<button type="button" class="innerDeleteBtn delete-btn" th:onclick="deleteHst([[${hstItem.mntnHstId}]])">Delete</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn left-btn" th:onclick="|location.href='@{/eqp/mng/list.do(pageType=list)}'|"
+					th:text="#{equipment.mngDetail.listButton}">목록</button>
+				<button type="button" id="btnDelete" class="delete-btn" th:text="#{equipment.common.button.delete}">삭제</button>
+				<button type="button" id="btnRegist" class="main-btn form-button" th:text="#{equipment.mngDetail.modifyButton}"
+					th:onclick="|location.href='@{/eqp/mng/update.do(tfcEnfEqpId=${tfcEnfEqpMaster.tfcEnfEqpId})}'|">수정</button>
+			</div>
+		</div>
+	</div>
 </th:block>
-</html>
 
+</html>
+<script th:inline="javascript">
+	const lng = /*[[${tfcEnfEqpMaster.lng}]]*/;
+	const lat = /*[[${tfcEnfEqpMaster.lat}]]*/;
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : lng,
+		center_lat : lat,
+		isInitDrawCenterMarker : true
+	});
+	
+	$("#btnDelete").click(function () {
+		new ModalBuilder().init().alertBody([[#{equipment.mngDetail.deleteMessage}]]).footer(2,'확인',function(button, modal){
+			modal.close();
+			var idx = [[${tfcEnfEqpMaster.tfcEnfEqpId}]];
+			$.ajax({
+				url: /*[[@{/eqp/mng/delete.ajax}]]*/ "/eqp/mng/delete.ajax",
+				type: "post",
+				data: {"tfcEnfEqpId": idx},
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+					if (resultCode == '200') {
+						new ModalBuilder().init().alertBody(resultMessage).footer(2,'확인',function(button, modal){
+							modal.close();
+							location.href = /*[[@{/eqp/mng/list.do}]]*/ '/eqp/mng/list.do';
+							}, '취소', function(button, modal){
+						}).open();
+					} else {
+						alert(resultMessage);
+					}
+				}
+			});
+			}, '취소', function(button, modal){}).open();
+	});
+	
+	function deleteHst(mntnHstId){
+		const deleteConfirm = /*[[#{equipment.mngDetail.maintenance.confirm}]]*/;
+		const successMsg = /*[[#{equipment.mngDetail.maintenance.success}]]*/;
+		
+		if (confirm(deleteConfirm)) {
+			$.ajax({
+				url: /*[[@{/eqp/mng/hstDelete.ajax}]]*/ "/eqp/mng/hstDelete.ajax",
+				type: "post",
+				data: {"mntnHstId": mntnHstId},
+				success: function (data) {
+						alert(successMsg);
+						location.reload();
+				},
+				error: function (data) {
+					alert(data.responseJSON.message);
+				}
+
+			});
+		} else {
+			return;
+		}
+	}
+</script>

@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 th:text="#{portal.faq.title.detail}" id="detail-content-title">FAQ 상세</h1>
+
+				<table class="sub-table detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{portal.faq.title}">제목</th>
+							<td th:text="${faq.postTitle}"></td>
+						</tr>
+<!--						<tr>-->
+<!--							<th th:text="#{portal.faq.exposureRank}">노출순위</th>-->
+<!--							<td th:text="${faq.faqSeq}"></td>-->
+<!--						</tr>-->
+<!--						<tr>-->
+<!--							<th th:text="#{portal.faq.keyword}">키워드</th>-->
+<!--							<td th:text="${faq.faqKywrd}"></td>-->
+<!--						</tr>-->
+						<tr>
+							<th th:text="#{portal.faq.category}">카테고리</th>
+							<td th:text="${faq.cmCd.cdNm}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{portal.faq.answerContent}">답변</th>
+							<td><pre th:text="${faq.postContent}"></pre></td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<div class="btn-wrap-center">
+					<button th:text="#{penalty.common.list}" type="button" id="btnGoList"
+					class="sub-btn left-btn" th:onclick="|location.href='@{/portal/faq/list.do}'|">목록</button>
+					<button th:text="#{portal.common.delete}" type="button" id="btnDelete"
+						class="delete-btn" onclick="deleteInfo()">삭제</button>
+					<button th:text="#{portal.common.modifyBtn}" type="button" id="btnRegist" class="main-btn"
+						th:onclick="'location.href=\''+@{/portal/faq/update.do(faqIdx=${faq.faqIdx})}+'\''">수정</button>
+					
+				</div>
+	</div>
+
+</th:block>
+
+</html>
+
+<script th:inline="javascript">
+	function deleteInfo() {
+		new ModalBuilder().init().alertBody([[#{portal.faq.deleteMessage}]]).footer(2,'확인',function(button, modal){
+			modal.close();
+			var idx = [[${faq.faqIdx}]];
+			$.ajax({
+				url: /*[[@{/portal/faq/delete.ajax}]]*/ "/portal/faq/delete.ajax",
+				type: "post",
+				data: {"faqIdx": idx},
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+					if (resultCode == '200') {
+						new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
+							location.href = /*[[@{/portal/faq/list.do}]]*/ '/portal/faq/list.do';
+						}).open();
+					} else {
+						new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+					}
+				}
+			});
+			}, '취소', function(button, modal){}).open();
+	}
+</script>

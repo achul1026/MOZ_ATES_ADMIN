@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	<div class="container-fluid">
+		
+	<h1 class="search-result">권한 관리</h1>
+	<div class="search-text">권한을 추가 할 수 있습니다.</div>
+	<form id="authRegistForm">
+		<table class="sub-table detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="90%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>권한코드(필수)</th>
+						<td><input class="search-box" id="authNm" name="authNm" type="text" th:placeholder="#{common.placeholder.enterContent}"></td>
+					</tr>
+					<tr>
+						<th>권한 이름</th>
+						<td><input class="search-box" id="authNm" name="authNm" type="text" th:placeholder="#{common.placeholder.enterContent}"></td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="authority-wrap">
+				<div class="authority-title">
+					대시보드
+					<div class="toggle-wrap">
+						<input type="checkbox" id="toggle" hidden> 
+						<label for="toggle" class="toggle">
+						  <span class="toggleButton"></span>
+						</label>
+					</div>
+				</div>
+			</div>
+		<div th:if="${!#lists.isEmpty(menuAllList)}" class="authority-wrap">
+				<div th:each="menuItem, menuVar : ${menuAllList}">
+					<div class="authority-title">
+						[[${lang == 'por' ? menuItem.mainMenu.menuNmPor : menuItem.mainMenu.menuNmEng}]]
+						<input type="hidden" class="parentMenu" th:value="${menuItem.mainMenu.menuId}"/>
+						
+						<input type="checkbox" id="toggle" hidden> 
+						<label for="toggle" class="toggle">
+						  <span class="toggleButton"></span>
+						</label>
+					</div>
+					
+					<label>
+						전체
+					<input th:id="'parAllCheck'+${menuVar.index}" th:attr="onclick=|parCheckAll('${menuVar.index}')|" type="checkbox">
+						<input type="checkbox" id="toggle" hidden> 
+					<label for="toggle" class="toggle">
+					  <span class="toggleButton"></span>
+					</label>
+					</label>
+					<label>
+						생성
+					<input th:id="'parCreateYn'+${menuVar.index}" class="parentCreateYn" type="checkbox">
+					</label>
+					<label>
+						삭제
+					<input th:id="'parDeleteYn'+${menuVar.index}" class="parentDeleteYn" type="checkbox">
+					</label>
+					<label>
+						수정
+					<input th:id="'parUpdateYn'+${menuVar.index}" class="parentUpdateYn" type="checkbox">
+					</label>
+					<label>
+						읽기
+					<input th:id="'parReadYn'+${menuVar.index}" type="checkbox" class="parentReadYn">
+					</label>
+				<div th:each="subMenuItem, subMenuVar : ${menuItem.subMenuList}">
+					<div class="authority-title">
+						[[${lang == 'por' ? subMenuItem.menuNmPor : subMenuItem.menuNmEng}]]
+						<input type="hidden" th:class="'childMenu'+${menuVar.index}" th:id="'childMenuId'+${menuVar.index}+'-'+${subMenuVar.index}" th:value="${subMenuItem.menuId}"/>
+					</div>
+					<label >
+						전체
+					<input th:id="'childAllCheck'+${menuVar.index}+'-'+${subMenuVar.index}" th:attr="onclick=|childCheckAll('${menuVar.index}', '${subMenuVar.index}')|" type="checkbox">
+					</label>
+					<label >
+						생성
+					<input th:id="'childCreateYn'+${menuVar.index}+'-'+${subMenuVar.index}" th:class="'childCreateYn'+${menuVar.index}" type="checkbox">
+					</label>
+					<label >
+						삭제
+					<input th:id="'childDeleteYn'+${menuVar.index}+'-'+${subMenuVar.index}" th:class="'childDeleteYn'+${menuVar.index}" type="checkbox">
+					</label>
+					<label >
+						수정
+					<input th:id="'childUpdateYn'+${menuVar.index}+'-'+${subMenuVar.index}" th:class="'childUpdateYn'+${menuVar.index}" type="checkbox">
+					</label>
+					<label >
+						읽기
+					<input th:id="'childReadYn'+${menuVar.index}+'-'+${subMenuVar.index}" th:class="'childReadYn'+${menuVar.index}" type="checkbox">
+					</label>
+				</div>
+			</div>
+	</div>
+		<div class="btn-wrap-center">
+			<button type="button" id="saveBtn" class="main-btn">저장</button>
+		</div>
+	</form>
+	</div>
+</th:block>
+</html>
+<script th:inline="javascript">
+    /*<![CDATA[*/
+	function parCheckAll(idx){
+		var isChecked = $("#parAllCheck"+idx).is(":checked");
+		if(isChecked){
+			$("#parCreateYn"+idx).prop("checked",true);
+			$("#parReadYn"+idx).prop("checked",true);
+			$("#parUpdateYn"+idx).prop("checked",true);
+			$("#parDeleteYn"+idx).prop("checked",true);
+		} else {
+			$("#parCreateYn"+idx).prop("checked",false);
+			$("#parReadYn"+idx).prop("checked",false);
+			$("#parUpdateYn"+idx).prop("checked",false);
+			$("#parDeleteYn"+idx).prop("checked",false);
+		}
+	}
+	
+	function childCheckAll(parIdx,childIdx){
+		var isChecked = $("#childAllCheck"+parIdx+'-'+childIdx).is(":checked");
+		if(isChecked){
+			$("#childCreateYn"+parIdx+'-'+childIdx).prop("checked",true);
+			$("#childReadYn"+parIdx+'-'+childIdx).prop("checked",true);
+			$("#childUpdateYn"+parIdx+'-'+childIdx).prop("checked",true);
+			$("#childDeleteYn"+parIdx+'-'+childIdx).prop("checked",true);
+		} else {
+			$("#childCreateYn"+parIdx+'-'+childIdx).prop("checked",false);
+			$("#childReadYn"+parIdx+'-'+childIdx).prop("checked",false);
+			$("#childUpdateYn"+parIdx+'-'+childIdx).prop("checked",false);
+			$("#childDeleteYn"+parIdx+'-'+childIdx).prop("checked",false);
+		}
+	}
+	
+	$("#saveBtn").on('click', function(){
+		//최종 보낼 객체 List<Map<String,Object>>
+		var resultObj = new Object();
+		var authCd = $("#authCd").val().trim();
+		var authNm = $("#authNm").val().trim();
+		
+		if(authCd == null || authCd == ''){
+			alert("권한 코드를 입력해주세요.");
+			return false;
+		}
+		
+		if(authNm == null || authNm == ''){
+			alert("권한 이름을 입력해주세요.");
+			return false;
+		}
+		
+		resultObj.authCd = authCd;
+		resultObj.authNm = authNm;
+		
+		//대메뉴 배열 
+		var parMenuArr = new Array();
+		
+		var parMenuLength = $(".parentMenu").length;
+		
+		for(var i = 0; i < parMenuLength; i++){
+			var parMenu = new Object();
+			var parentMenuId = $(".parentMenu").eq(i).val();
+			var parCreateYn = $("#parCreateYn"+i).is(":checked")?'Y':'N';
+			var parReadYn = $("#parReadYn"+i).is(":checked")?'Y':'N';
+			var parUpdateYn = $("#parUpdateYn"+i).is(":checked")?'Y':'N';
+			var parDeleteYn = $("#parDeleteYn"+i).is(":checked")?'Y':'N';
+			
+			parMenu.parentMenuId = parentMenuId;
+			parMenu.parCreateYn = parCreateYn;
+			parMenu.parReadYn = parReadYn;
+			parMenu.parUpdateYn = parUpdateYn;
+			parMenu.parDeleteYn = parDeleteYn;
+			
+			//소메뉴 배열
+			var childMenuArr = new Array();
+			var childMenuLength = $(".childMenu"+i).length;
+			for(var j = 0; j < childMenuLength; j++){
+				var childMenu = new Object();
+				var childMenuId = $(".childMenu"+i).eq(j).val();
+				var childCreateYn = $("#childCreateYn"+i+'-'+j).is(":checked")?'Y':'N';
+				var childReadYn = $("#childReadYn"+i+'-'+j).is(":checked")?'Y':'N';
+				var childUpdateYn = $("#childUpdateYn"+i+'-'+j).is(":checked")?'Y':'N';
+				var childDeleteYn = $("#childDeleteYn"+i+'-'+j).is(":checked")?'Y':'N';
+				
+				childMenu.childMenuId = childMenuId;
+				childMenu.childCreateYn = childCreateYn;
+				childMenu.childReadYn = childReadYn;
+				childMenu.childUpdateYn = childUpdateYn;
+				childMenu.childDeleteYn = childDeleteYn;
+				
+				childMenuArr.push(childMenu);
+				
+//				console.log(childMenuId);
+//				console.log('childCreateYn:'+childCreateYn);
+//				console.log('childReadYn:'+childReadYn);
+//				console.log('childUpdateYn:'+childUpdateYn);
+//				console.log('childDeleteYn:'+childDeleteYn);
+			}
+			
+			parMenu.childMenuArr = childMenuArr;
+			parMenuArr.push(parMenu);
+			
+//			console.log(parentMenuId);
+//			console.log('parCreateYn:'+parCreateYn);
+//			console.log('parReadYn:'+parReadYn);
+//			console.log('parUpdateYn:'+parUpdateYn);
+//			console.log('parDeleteYn:'+parDeleteYn);
+		}
+		resultObj.authMenuList = parMenuArr;
+		console.log(resultObj);
+		
+		$.ajax({
+			type : "post",
+			dataType : "json",
+			contentType : "application/json",
+			data : JSON.stringify(resultObj) ,
+			url : '/siteMng/auth/save.ajax',
+			success : function(data) {
+				if(data.code == '200'){
+					alert(data.message);
+				} else {
+					alert(data.message);
+				}
+			}
+		});
+	});
+    /*]]>*/
+</script>

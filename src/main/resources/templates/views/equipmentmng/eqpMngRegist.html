@@ -1,184 +1,295 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
+	<div id="container-fluid">
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{equipment.mngRegist.title}">단속장비 등록</h1>
+		
+		<form id="frmEqpRegist" enctype="multipart/form-data">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.typesOfEnforcementEquipment}">단속장비 종류</span>
+						</th>
+						<td>
+							<select id="eqpTy" class="filter-select filter95 data-validate" name="eqpTy" th:data-valid-name="#{equipment.mngRegist.typesOfEnforcementEquipment}" data-valid-required>
+								<option value="">Select</option>
+								<th:block th:each="cdItem : ${cdList}">
+									<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}"></option>
+								</th:block>
+							</select>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.equipmentName}"></span>
+						</th>
+						<td><input type="text" class="main-input data-validate" id="eqpNm" name="eqpNm" placeholder="Please Enter Equipment Name" th:data-valid-name="#{equipment.mngRegist.equipmentName}" data-valid-required></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.modelName}"></span>
+						</th>
+						<td><input type="text" class="main-input data-validate" id="modelNm" name="modelNm" placeholder="Please Enter Model Name" th:data-valid-name="#{equipment.mngRegist.modelName}" data-valid-required></td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.manufacturer}">제조업체</span>
+						</th>
+						<td><input type="text" class="main-input data-validate" id="mnfctr" name="mnfctr" placeholder="Please Enter Manufacturer" th:data-valid-name="#{equipment.mngRegist.manufacturer}" data-valid-required></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.installationStatus}">설치 여부</span>
+						</th>
+						<td>
+							<div>
+								<label for="useY" class="radioBox">
+									<input type="radio" id="useY" name="instlYn" value="Y" checked>
+									<span class="radioOn"></span>
+									Installed
+								</label>
+								<label for="useN" class="radioBox">
+									<input type="radio" id="useN" name="instlYn" value="N">
+									<span class="radioOn"></span>
+									Not installed
+								</label>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.installationLocation}"></span>
+						</th>
+						<td colspan="3" class="modal-find-line">
+							<input type="text" class="main-input" id="roadAddr" name="roadAddr" placeholder="Please Enter Location">
+							<i class="search-icon mapSearch"></i>
+							<br><br>
+							<div id="map" class="detailMap">
+								
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.lat}">위도</span>
+						</th>
+						<td><input type="text" class="main-input lat data-validate" id="lat" name="lat" th:placeholder="#{equipment.mngRegist.placeholder.lat}" th:data-valid-name="#{equipment.mngRegist.lat}" data-valid-required></td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.lng}">경도</span>
+						</th>
+						<td><input type="text" class="main-input lng data-validate" id="lng" name="lng" th:placeholder="#{equipment.mngRegist.placeholder.lng}" th:data-valid-name="#{equipment.mngRegist.lng}" data-valid-required></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.installationDate}">설치일자</span>
+						</th>
+						<td>
+							<input type="date" class="input-date data-validate" name="instlDate" th:data-valid-name="#{equipment.mngRegist.installationDate}" data-valid-required> 
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.installer}"></span>
+						</th>
+						<td><input type="text" class="main-input data-validate" name="instler" placeholder="Please Enter installer" th:data-valid-name="#{equipment.mngRegist.installer}" data-valid-required></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.manager}">담당자</span>
+						</th>
+						<td class="modal-find-line">
+							<input type="text" class="main-input data-validate" id="crOprtrNm" readonly th:data-valid-name="#{equipment.mngRegist.manager}" placeholder="Please Enter Person in Charge" data-valid-required>
+							<input type="hidden" name="crOprtrId" id="crOprtrId">
+							<i class="search-icon" onclick="changeDeptListModal('show')"></i>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.mngRegist.managerDept}">담당자 소속</span>
+						</th>
+						<td><input type="text" class="main-input" id="crOprtrDept" name="crOprtrDept" placeholder="Please Enter Department" readonly></td> 
+					</tr>
+					<tr>
+						<th th:text="#{equipment.mngRegist.inserImg}">단속장비 사진 등록</th>
+						<td colspan="3">
+							<input type="file" id="uploadFiles" name="uploadFiles" multiple />
+							<div id="dragArea">
+								<div class="drag-area">
+								    <div class="dragText">
+								       File name cannot be more than 50 characters<br>
+										The file size can only be uploaded under 5MB<br>
+										Only JPG, JPEG, PNG, and MP4 files can be uploaded
+								    </div>
+								    <div>
+								        <input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
+								        <button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+								    </div>
+								</div>
+							</div>
+							<div class="upload_wrap none">
+								<div id="upload_list_box"></div>	
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.mngRegist.enforceementEquipmentInfo}">상세내용</th>
+						<td colspan="3"><textarea class="detail-table-textarea" id="txtEqpInfo" name="tfcEnfEqpInfo" placeholder="Please Enter Details"></textarea></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		
+		<div class="btn-wrap-center">
+			<button type="button" id="btnGoList" class="sub-btn"
+			onclick="javascript:window.history.back()" th:text="#{equipment.mngRegist.list}">목록</button>
+			<button type="button" id="btnRegist" class="main-btn" onclick="saveInfo()"
+				th:text="#{equipment.mngRegist.registrationButton}">등록</button>
+		</div>
+	</div>
 
-    <div class="container-fluid">
+	<div class="modal-wrap" id="modal">
 
-        <!-- Page Heading -->
-        <h1 class="h3 mb-4 text-gray-800" th:text="#{equipment.mngRegist.title}">단속장비 등록</h1>
-
-        <div class="row">
-
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{equipment.mngRegist.registrationTitle}">등록</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <form id="frmEqpRegist" enctype="multipart/form-data">
-                                <table class="table table-bordered">
-                                    <colgroup>
-                                        <col width="20%">
-                                        <col width="30%">
-                                        <col width="20%">
-                                        <col width="30%">
-
-                                    </colgroup>
-                                    <tbody>
-                                    	<tr>
-                                        	<th th:text="#{equipment.mngRegist.inserImg}">단속장비 사진 등록</th>
-											<td colspan="3">
-											<input type="file" id="txttfcEnfEqpImage" name="uploadFile" onchange="setThumbnail(event);" multiple/>
-											<div id="image_container">
-											</div>
-											</td>
-                                   	 	</tr>
-
-                                    <tr>
-                                        <th th:text="#{equipment.mngRegist.enforcementEquipmentNumber}">단속장비 번호</th>
-                                        <td><input type="text" class="form-control" id="txtTfcEnfEqpId" name="tfcEnfEqpId"></td>
-                                        <th th:text="#{equipment.mngRegist.registrationDate}">등록일</th>
-                                        <td><input type="date" class="form-control" id="txtCrDt" name="crDt"></td>
-                                    </tr>
-                                    <tr>
-                                        <th th:text="#{equipment.mngRegist.typesOfEnforcementEquipment}">단속장비 종류</th>
-                                        <td><input type="text" class="form-control" id="txtEqpTy" name="eqpTy"></td>
-                                        <th th:text="#{equipment.mngRegist.manufacturer}">제조업체</th>
-                                        <td><input type="text" class="form-control" id="txtMnfctr" name="mnfctr"></td>
-                                    </tr>
-                                    <tr>
-                                        <th th:text="#{equipment.mngRegist.whetherOrNotToUse}">사용여부</th>
-                                        <td>
-                                            <input type="radio" id="useY" name="useYn" value="Y" checked>
-                                            <label for="useY">Y</label>
-                                            <input type="radio" id="useN" name="useYn" value="N">
-                                            <label for="useN">N</label>
-                                        </td>
-                                        <th th:text="#{equipment.mngRegist.manager}">담당자</th>
-                                        <td><input type="text" class="form-control" id="txtCrOprtrId" name="crOprtrId"></td>
-                                    </tr>
-                                    <tr>
-                                        <th th:text="#{equipment.mngRegist.location}">위치</th>
-                                        <td><input type="text" class="form-control" id="txtRoadAddr" name="roadAddr"></td>
-                                        <th th:text="#{equipment.mngRegist.managerDept}">담당자 소속</th>
-                                        <td><input type="text" class="form-control" id="txtCrOprtrDept" name="crOprtrDept"></td>
-                                    </tr>
-                                    <tr>
-                                   		<th th:text="#{equipment.mngRegist.enforceementEquipmentInfo}">상세내용</th>
-                                    	<td colspan="3"><input type="text" class="form-control" id="txtEqpInfo" name="tfcEnfEqpInfo"></td>
-                                    </tr>
-                                    
-                                    </tbody>
-                                </table>
-                            </form>
-                            <button type="button" id="btnGoList" class="btn btn-outline-secondary" onclick="javascript:window.history.back()" th:text="#{equipment.mngRegist.list}">목록</button>
-                            <button type="button" id="btnRegist" class="btn btn-outline-warning" th:text="#{equipment.mngRegist.registrationButton}">등록</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-
-        </div>
-
-    </div>
-
-
+	</div>
 
 </th:block>
+
 </html>
 <script th:inline="javascript">
+	
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : null,
+		center_lat : null,
+		isInitDrawCenterMarker : false,
+		isFacility : false,
+		isEquipment : true
+	});
+	
+	function saveInfo() {
+		var form = $("#frmEqpRegist")[0];
+		if($("#frmEqpRegist").soValid()) {
+        	if(map.getLat() != null && map.getLng() != null) {
+	        	document.getElementById("lat").value = map.getLat();
+			    document.getElementById("lng").value = map.getLng();			
+			}
+			
+			var data = new FormData(form);
+			
+			$.ajax({
+				url: /*[[@{/eqp/mng/save.ajax}]]*/ "/eqp/mng/save.ajax",
+				type: "post",
+				enctype: 'multipart/form-data',
+				data: data,
+				processData: false,
+				contentType: false,
+				success: function (result) {
+					if(result.code == 200){
+						new ModalBuilder().init().successBody(result.message).footer(4,'확인',function(button, modal){
+							modal.close();
+							location.href =/*[[@{/eqp/mng/list.do}]]*/ "";
+						}).open();
+						modalAlertWrap();
+					} else {
+						new ModalBuilder().init().alertBoby(result.message).footer(4,'확인',function(button, modal){modal.close();}).open();
+						modalAlertWrap();
+					}
+				}
+			});
+		}
+	}
+	
+	// 모달 수정 여부 확인필요?
+	const modalContent = document.getElementById("modal");
+	
+	// modal control
+	function changeDeptListModal(type) {
 
+		if (type == "show") {
+			$.ajax({
+				url: '/common/modal/oprtr/list.ajax',
+				type: "get",
+				dataType: 'html',
+				success: function (data) {
+					modalContent.innerHTML += data;
+					modalContent.style.display = 'block';
+				}
+			});
+		} else if (type == "hide") {
+			modalContent.innerHTML = '';
+			modalContent.style.display = 'none';
+		}
 
-    $("#btnRegist").click(function () {
-/*         if($.trim($("#txttfcEnfEqpImage").val())==''){
-            alert("사진을 등록해주세요.");
-            $("#txttfcEnfEqpImage").focus();
-            return false;
-        } */
-        if($.trim($("#txtTfcEnfEqpId").val())==''){
-            alert("장비번호를 입력해주세요.");
-            $("#txtTfcEnfEqpId").focus();
-            return false;
-        }
-        if($.trim($("#txtCrDt").val())==''){
-            alert("장비등록일을 입력해주세요.");
-            $("#txtCrDt").focus();
-            return false;
-        }
+	}
 
-        if($.trim($("#txtEqpTy").val())==''){
-            alert("장비종류를 입력해주세요.");
-            $("#txtEqpTy").focus();
-            return false;
-        }
-
-        if($.trim($("#txtMnfctr").val())==''){
-            alert("제조업체를 입력해주세요.");
-            $("#txtMnfctr").focus();
-            return false;
-        }
-
-        if($.trim($("#txtCrOprtrId").val())==''){
-            alert("장비담당자를 입력해주세요.");
-            $("#txtCrOprtrId").focus();
-            return false;
-        }
-        if($.trim($("#txtRoadAddr").val())==''){
-            alert("주소를 입력해주세요.");
-            $("#txtRoadAddr").focus();
-            return false;
-        }
-        if($.trim($("#txtCrOprtrDept").val())==''){
-            alert("담당자 부서를 입력해주세요.");
-            $("#txtCrOprtrDept").focus();
-            return false;
-        }
-        if($.trim($("#txtEqpInfo").val())==''){
-            alert("단속장비 상세정보를 입력해주세요.");
-            $("#txtEqpInfo").focus();
-            return false;
-        }
-
-
-
-        var form = $("#frmEqpRegist")[0];
-        var data = new FormData(form);
-        $.ajax({
-            url: /*[[@{/eqp/mng/save.ajax}]]*/ "/eqp/mng/save.ajax",
-            type: "post",
-            enctype: 'multipart/form-data',  
-            data: data,
-            processData: false,    
-            contentType: false,
-            success: function(data){
-                if(data.code == "1"){
-                    alert("등록했습니다.");
-                    location.href=/*[[@{/eqp/mng/list.do}]]*/ "";
-                }else{
-                    alert(data.msg);
-                }
-            }
-        });
-
-    })
-    
-    
-    function setThumbnail(event) {
+	function setThumbnail(event) {
 		var reader = new FileReader();
-		reader.onload = function(event) {
-			 var img = document.createElement("img");
-			 img.setAttribute('width','900px');
-			 img.setAttribute('height','300px');
-			  img.setAttribute("src", event.target.result);
-			   document.querySelector("div#image_container").appendChild(img);
-			    };
-		 reader.readAsDataURL(event.target.files[0]);                                                                                                                                                         
-		 }
+		reader.onload = function (event) {
+			var img = document.createElement("img");
+			img.setAttribute('width', '900px');
+			img.setAttribute('height', '300px');
+			img.setAttribute("src", event.target.result);
+			document.querySelector("div#image_container").appendChild(img);
+		};
+		reader.readAsDataURL(event.target.files[0]);
+	}
+	
+	function findOprtrBtn(){
+		$("#modalTbody > tr").remove();
+		$("#modalPaging > div").remove();
+		
+		var page = $("#modalPage").val();
+		var searchTxt = $("#searchContent").val();
+		var start = $("#modalStart").val();
+		$.ajax({
+			type : "get",
+			data : {"searchType" : "oprtrNm", "searchTxt" : searchTxt, "page" : page, "start" : start},
+			url: '/common/modal/oprtr/search/list.ajax',
+			success : function(result) {
+				var html = '';
+				$(result.data.list).each(function(index, item){
+					var oprtrDeptNm = item.oprtrDeptNm;
+					var oprtrNm = item.oprtrNm;
+					if(isNull(oprtrDeptNm)){
+						oprtrDeptNm = '-';
+					}
+					if(isNull(oprtrNm)){
+						oprtrNm = '-';
+					}					
+					html += '<tr onclick="selectDept(\''+item.oprtrId+'\', \''+oprtrNm+'\', \''+ oprtrDeptNm +'\')">'+
+								'<td>'+item.rnum+'</td>'+
+								'<td>'+oprtrDeptNm+'</td>'+								
+								'<td>'+oprtrNm+'</td>'+
+							'</tr>';
+		    	})
+		    	$("#modalTbody").append(html);			
+		    	var paging = result.data.pagination;
+				if(paging != null && paging != '' && paging.totalCntList > 0){
+					$("#modalPaging").append(getPagingHtml(paging,page));
+				}
+				$("#totalCnt").text(paging.totalListCnt);
+				var start = result.data.webOprtr.start;
+				$("#modalStart").val();
+			}
+		});
+	}
+	
+	function fnPageMove(page) {
+		$("#modalPage").val(page);
+		findOprtrBtn();
+	}
+	
+	function selectDept(oprtrId, oprtrNm, oprtrDeptNm){
+		
+		if(oprtrDeptNm != null && oprtrDeptNm != ''){
+			$("#crOprtrDept").val(oprtrDeptNm);
+		} else {
+			$("#crOprtrDept").val("No affiliation");
+		}
+		
+		$("#crOprtrNm").val(oprtrNm);
+		$("#crOprtrId").val(oprtrId);
+		changeDeptListModal('hide');
+	}
 </script>

@@ -1,96 +1,119 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
+<div id="container-fluid">
+		<!-- Page Heading -->
+        <h1 id="content-title" th:text="#{administ.mngList.title}">법원 이송 대상자</h1>
+		<div id="content-sub-title" th:text="#{administ.mngList.descr}">법원 이송 대상자를 관리할 수 있습니다</div>
+		
+		<form id="frmSearch">
+			<div id="filter-table">
+				 <table class="">
+		            <colgroup>
+		               <col width="15%">
+	                   <col width="85%">
+		            </colgroup>
+		           <tbody>
+						<tr>
+							<th th:text="#{administ.common.searchCon}">유형 선택</th>
+							<td>
+								<select name="searchType" id="searchType" class="filter-select" th:field="${administDip.searchType}">
+									<option value="all" th:text="#{administ.common.searchOp}">전체</option>
+									<option value="vioNm" th:text="#{administ.mngList.driverName}">이름</option>
+									<option value="tfcEnfId" th:text="#{administ.common.enforcementNumber}">사고번호</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{administ.common.dateOp}">날짜 선택</th>
+							<td>
+								<input class="input-date" id="sDate" name="sDate" type="date" th:value="${administDip.sDate}"> ~
+								<input class="input-date" id="eDate" name="eDate" type="date" th:value="${administDip.eDate}">
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{administ.common.serchTerm}">내용 검색</th>
+							<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" 
+							     th:placeholder="#{administ.common.placeholder}" th:value="${administDip.searchTxt}">
+							     <input type="hidden" name="processYn" th:value="${administDip.processYn}"/></td>
+						</tr>
+					</tbody>
+		        </table>
+			</div>
+		</form>
+		  <div class="btn-wrap-center">
+			 <button type="button" id="btnSearch" class="main-btn form-button" th:text="#{administ.mngList.check}">조회</button>
+			 <button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')" th:text="#{administ.common.search.reset}">검색 초기화</button>
+		  </div>
 
-    <div class="container-fluid">
-
-        <!-- Page Heading -->
-        <h1 class="h3 mb-4 text-gray-800" th:text="#{administ.mngList.title}">법원이송 관리</h1>
-
-        <div class="row">
-
-
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{administ.mngList.searchOp}">검색조건</h6>
-                    </div>
-                    <div class="card-body">
-                        <form id="frmSearch">
-                            <input type="hidden" id="hdnStart" name="start">
-                            <label th:text="#{administ.mngList.startDate}">시작일</label>
-                            <input class="form-control col-lg-2" id="sDate" name="sDate" type="date">
-                            &nbsp;&nbsp;&nbsp;
-                            <label th:text="#{administ.mngList.endDate}">종료일</label>
-                            <input class="form-control col-lg-2" id="eDate" name="eDate" type="date"s>
-                            &nbsp;&nbsp;&nbsp;
-                            <label>
-                                <select class="form-control" name="searchType">
-                                    <option value="all" th:text="#{administ.mngList.selectAll}" >전체</option>
-                                </select>
-                            </label>
-                            <input class="form-control col-lg-3" name="searchTxt" type="text">
-                            &nbsp;&nbsp;&nbsp;
-
-                            <button type="button" id="btnSearch" class="btn btn-outline-primary" th:text="#{administ.mngList.check}">조회</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-
-
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" style="display: inline;" th:text="#{administ.mngList.countTransferList}">법원이송 리스트</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                                <div class="row"><div class="col-sm-12">
-                                    <table class="table table-bordered dataTable" id="tblList" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
-                                    <thead>
-                                        <tr role="row">
-                                            <th class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="Name: activate to sort column descending" style="width: 56px;" th:text="#{administ.mngList.tableNumber}">No.</th>
-                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Position: activate to sort column ascending" style="width: 61px;" th:text="#{administ.mngList.driverName}">이름</th>
-                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Office: activate to sort column ascending" style="width: 49px;" th:text="#{administ.mngList.caseNumber}">사건번호</th>
-                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Salary: activate to sort column ascending" style="width: 67px;" th:text="#{administ.mngList.count}">담당법원명</th>
-                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 31px;" th:text="#{administ.mngList.caseType}">사건유형</th>
-                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Age: activate to sort column ascending" style="width: 31px;" th:text="#{administ.mngList.provisionalHolding}">영치여부</th>
-<!--                                            <th class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Start date: activate to sort column ascending" style="width: 68px;">가해자</th>-->
-                                        </tr>
-                                    </thead>
-
-                                    <tbody>
-
-
-                                    </tbody>
-                                </table>
-                                </div>
-                                </div>
-                                <div class="col-sm-12 col-md-7">
-                                    <div class="dataTables_info">
-                                        <button type="button" id="btnRegist" class="btn btn-outline-success" th:onclick="|location.href='@{/administ/mngRegist}'|" th:text="#{administ.mngList.registrationCountTransfer}">법원이송 등록</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
-
-    </div>
+		  <div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'>"10"</span> results.
+			</div>
+			<div id="table-regist-btn">
+				<a href="/administCourt/mng/download.do" class="main-btn">Excel Down</a>
+			</div>
+		</div>
+		
+		<div class="">
+			<table class="main-table" id="tblList">
+				<colgroup>
+				
+				</colgroup>
+				<thead>
+					<tr>
+						<th th:text="#{administ.mngList.tableNumber}">No.</th>
+						<th th:text="#{administ.common.driverName}">이름</th>
+						<th th:text="#{administ.common.enforcementNumber}">사건번호</th>
+						<th th:text="#{administ.common.caseType}"></th>
+						<th th:text="#{administ.common.administrativeDate}">행정처리일시</th>
+						<th th:text="#{administ.common.retentionSttts}"></th>
+						<th th:text="#{administ.common.handlingStts}"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="administInfo : ${administList}"
+						th:onclick="|location.href='@{/administCourt/mng/detail.do(administDipId=${administInfo.administDipId})}'|">
+						<td th:text="${administInfo.rnum}"></td>
+						<td th:text="${administInfo.vioInfo != null ? administInfo.vioInfo.vioNm : '-'}"></td>
+						<td th:text="${administInfo.tfcEnfId}">23-01242</td>
+						<td th:text="${administInfo.cmCd.cdNm}"></td>
+						<td th:text="${#dates.format(administInfo.crDt, 'yyyy-MM-dd')}"></td>
+						<td>
+							<span class="tableStausOff" th:text="${administInfo.proHoldYn}"></span>
+						</td>
+						<td th:switch="${administInfo.processYn}">
+							<span th:case="N" class="tableStausProg">In Process</span>
+							<span th:case="Y" class="tableStausOn">Completed</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="page_wrap">
+			<div th:insert="tags/paging :: pagingFragment"></div>
+		</div>
+	</div>
 
 
 </th:block>
+
 </html>
 <script th:inline="javascript">
-
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();		
+	});
+	
+	$("#processYn").on('change', function(){
+		let processYn = $(this).val();
+		$("input[name='processYn']").val(processYn);
+		console.log(processYn);
+	});
 </script>

@@ -1,0 +1,50 @@
+
+<html xmlns:th="http://www.thymeleaf.org"  
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+	
+	
+<th:block th:fragment="courtDcsnFragment">
+	<div class="detail-table-wrap">
+		<div class="detail-title" th:text="#{administ.mngDetail.judgeResults}">
+			법원판결결과
+		</div>
+		<table class="sub-table detail-table">
+			<colgroup>
+				<col width="15%">
+				<col width="35%">
+				<col width="15%">
+				<col width="35%">
+			</colgroup>
+			<tbody>
+				<tr>
+					<th th:text="#{administ.mngDetail.judgeInCharge}">판결담당자</th>
+					<td><input type="text" th:value="${courtDcsnInfo?.courtMngr}"/></td>
+					<th th:text="#{administ.common.courtInCharge}">법원명</th>
+					<td><input type="text" th:value="${courtDcsnInfo?.courtNm}"/></td>
+				</tr>
+				<tr>
+					<th th:text="#{administ.common.handlingStts}">판결완료여부</th>
+					<td><input type="text" th:value="${courtDcsnInfo?.dcsnStts}"/></td>
+					<th th:text="#{administ.mngDetail.judgeFineInfo}">벌금정보</th>
+					<td><input type="text" th:value="${courtDcsnInfo?.finePrice}"/></td>
+				</tr>
+				<tr>
+					<th th:text="#{administ.common.caseType}">소송유형</th>
+					<td><input type="text" th:value="${courtDcsnInfo?.lawsuitType}"/></td>
+					<th th:text="#{administ.mngDetail.judgeViolation}">위반 법률명</th>
+					<td><input type="text" th:value="${courtDcsnInfo?.lawViolatedNm}"/></td>
+				</tr>
+				<tr>
+					<th th:text="#{administ.mngDetail.judgeDetail}">상세 내용</th>
+					<td rowspan="3"><input type="text" th:value="${courtDcsnInfo?.dscnContent}"/></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	
+	
+	<div class="registor-btn-right">
+		<button type="button" id="btnGoList" class="sub-btn form-button" th:text="#{administ.mngDetail.listButton}" th:onclick="|location.href='@{/administCourt/mng/list.do}'|">목록</button>
+		<button type="button" id="btnModify" class="main-btn form-button" th:text="#{administ.mngDetail.modifyButton}">수정</button>
+	</div>
+</th:block>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{portal.eduRegist.title}">교통안전교육 등록</h1>
+				
+		<form id="sftyEducnRegistFrm">
+	            <table class="detail-table">
+	                <colgroup>
+	                    <col width="15%">
+	                    <col width="85%">
+	                </colgroup>
+	                <tbody>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{portal.eduRegist.ttl}">제목</span>
+							</th>
+							<td><input type="text" class="main-input" id="postTtl" name="postTtl" th:placeholder="#{portal.eduRegist.title.placeholder}"></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{portal.eduRegist.posting}">게시 여부</span>
+							</th>
+							<td>
+								<label for="away-check" class="radioBox">
+									<input type="radio" name="datecheck" id="away-check" class="" onclick="dateCheck('true')"
+									th:data-valid-name="#{sitemng.noticeRegist.posting}" data-valid-required checked>
+									<span class="radioOn"></span>
+									Always Posted
+								</label>
+								<label for="timeline-check" class="radioBox">
+									<input type="radio" name="datecheck" id="timeline-check" class="time-check" onclick="dateCheck('false')">
+									<span class="radioOn"></span>
+									Posting Period Settings
+								</label>
+							</td>
+						</tr>
+						<tr class="time-check-change none">
+							<th>
+								<span th:text="#{portal.eduRegist.postingPeriod}">게시기간</span>
+							</th>
+							<td><input type="date" class="input-date" name="postStrDe"> ~ <input type="date" class="input-date" name="postEndDe"></td>
+						</tr>
+		                <tr>
+		                    <th>
+								<span th:text="#{portal.eduRegist.exposure}">노출여부</span>
+							</th>
+		                    <td>
+		                    	<input type="hidden" name="expYn" id="expYn" value="Y">
+                  				<input type="checkbox" name="expYn-chkbox" id="expYn-chkbox"> <label th:text="#{portal.common.exposure}">노출</label>
+                  			</td>
+		                </tr>
+		                <tr>
+		                    <th th:text="#{portal.eduRegist.attachment}">첨부파일</th>
+		                    <td colspan="3">
+								<input type="file" id="uploadFiles" name="uploadFiles"/>
+								<div id="dragArea">
+								<div class="drag-area">
+									<div class="dragText">
+									   	File name cannot be more than 50 characters<br>
+										The file size can only be uploaded under 5MB<br>
+										Only WORD, XLSX, PDF, and ZIP file can be uploaded
+									</div>
+									<div>
+										<input type="file" id="uploadFiles" onchange="addFiles(this);" style="display: none;">
+										<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+									</div>
+								</div>
+								</div>
+								<div class="upload_wrap none">
+								<div id="upload_list_box"></div>	
+								</div>
+							</td>
+		                </tr>
+		                <tr>
+		                    <th th:text="#{portal.eduRegist.content}">상세</th>
+							<td>
+								<textarea class="form-control detail-table-textarea" id="postCn" name="postCn" th:placeholder="#{portal.eduRegist.content.placeholder}"></textarea>
+							</td>
+		                </tr>
+	                </tbody>
+	            </table>
+            </form>
+		
+		<div class="btn-wrap-center">
+			<button th:text="#{penalty.common.list}" type="button" id="btnGoList"
+			class="sub-btn form-button" onclick="javascript:window.history.back()">목록</button>
+			<button th:text="#{portal.faq.regist}" type="button" id="btnRegist"
+				class="main-btn form-button">등록</button>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	$("#btnRegist").click(function () {
+		var expYn = $("#expYn-chkbox").prop("checked")? "Y" :"N";
+		$("#expYn").val(expYn);
+		$.ajax({
+			url: /*[[@{/portal/sftyEdu/save.ajax}]]*/ "/portal/sftyEdu/save.ajax",
+			type: "post",
+			data: new FormData($("#sftyEducnRegistFrm")[0]),
+			enctype: 'multipart/form-data',
+		    processData: false,
+		    contentType: false,
+		    cache: false,
+			success: function (result) {
+				var resultCode = result.code;
+				var resultMessage = result.message;
+				if (resultCode == '200') {
+					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){
+						modal.close();
+						location.href =/*[[@{/portal/sftyEdu/list.do}]]*/ "";
+					}).open();
+				} else {
+					new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+				}
+			}
+		});
+	})
+</script>

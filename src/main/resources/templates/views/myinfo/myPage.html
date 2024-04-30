@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+	<div id="container-fluid">
+		<h1 id="detail-content-title">My Page</h1>
+		
+		
+		<div class="detail-table-wrap">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{myinfo.myPage.id}">아이디</th>
+						<td th:text="${myInfoDetail.oprtrAccountId}"></td>
+						<th th:text="#{myinfo.myPage.password}">비밀번호</th>
+						<td class="tdFlex"><a href="/myinfo/password/confirmPw.do" class="border-btn" th:text="#{myinfo.common.btn.modify.password}">Password Modify</a></td>
+					</tr>
+					<tr>
+						<th th:text="#{myinfo.myPage.name}">이름</th>
+						<td th:text="${myInfoDetail.oprtrNm}"></td>
+						<th th:text="#{myinfo.myPage.contact}">연락처</th>
+						<td th:text="${myInfoDetail.oprtrPno}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{myinfo.myPage.email}">이메일</th>
+						<td th:text="${myInfoDetail.oprtrEmail}"></td>
+						<th th:text="#{myinfo.myPage.authNm}">권한명</th>
+						<td th:text="${myInfoDetail.oprtrPermissionName}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{myinfo.myPage.company}">소속</th>
+						<td th:text="${myInfoDetail.oprtrDeptNm}"></td>
+						<th th:text="#{myinfo.myPage.joindate}">가입날짜</th>
+						<td th:text="${#dates.format(myInfoDetail.oprtrRegDt, 'yyyy-MM-dd')}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class="registor-btn-right">
+			<a href="/myinfo/user/confirmPw.do" class="main-btn" th:text="#{myinfo.common.btn.modify.myInfo}">Myinfo Modify</a>
+		</div>
+	</div>
+	
+</th:block>
+</html>
+<script th:inline="javascript">
+</script>

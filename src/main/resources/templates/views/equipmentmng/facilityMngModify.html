@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{equipment.facilityModify.title}">교통시설물 수정</h1>
+
+
+			<form id="frmFacilityModify" enctype="multipart/form-data">
+				<input type="hidden" name="tfcFacilityId" th:value="${tfcFacilityMaster.tfcFacilityId}">
+				
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{equipment.facilityModify.trafficFacilityType}">단속장비 유형</th>
+							<td>
+								<select id="eqpTy" class="filter-select filter95" name="facilityTy">
+									<th:block th:each="cdItem : ${cdList}">
+										<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}" th:selected="${tfcFacilityMaster.facilityTy} == ${cdItem.cdId}"></option>
+									</th:block>
+								</select>
+							</td>
+							<th th:text="#{equipment.facilityModify.trafficFacilityName}">단속장비 이름</th>
+							<td><input type="text" class="main-input" name="facilityNm" placeholder="Please Enter Traffic Facility Name" th:value="${tfcFacilityMaster.facilityNm}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{equipment.facilityModify.modelNm}">모델명</th>
+							<td><input type="text" id="txtEqpTy" class="main-input" name="modelNm" placeholder="Please Enter Model Name" th:value="${tfcFacilityMaster.modelNm}"></td>
+							<th th:text="#{equipment.facilityModify.manufacturer}">제조업체</th>
+							<td><input type="text" id="txtMnfctr" class="main-input" name="mnfctr" placeholder="Please Enter Manufacturer" th:value="${tfcFacilityMaster.mnfctr}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{equipment.facilityModify.installationStatus}">설치 여부</th>
+							<td colspan="3">
+								<label for="useY" class="radioBox">
+									<input type="radio" id="useY" name="instlYn" value="Y"
+									th:checked="${tfcFacilityMaster.instlYn} == 'Y'">
+									<span class="radioOn"></span>
+									Installed
+								</label>
+								<label for="useN" class="radioBox">
+									<input type="radio" id="useN" name="instlYn" value="N"
+									th:checked="${tfcFacilityMaster.instlYn} == 'N'">
+									<span class="radioOn"></span>
+									Not installed
+								</label>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{equipment.facilityModify.installationLocation}">설치 위치</th>
+							<td colspan="3" class="modal-find-line">
+								<input type="text" class="main-input" name="roadAddr" placeholder="Please Enter Installation Location" th:value="${tfcFacilityMaster.roadAddr}">
+								<i class="search-icon mapSearch"></i>
+								<br><br>
+								<div id="map" class="detailMap"></div>
+							</td>							
+						</tr>
+						<tr>
+							<th th:text="#{equipment.facilityModify.installationDate}">설치일자</th>
+							<td>
+								<input type="date" class="input-date" name="instlDate" th:value="${#dates.format(tfcFacilityMaster.instlDate, 'yyyy-MM-dd')}">
+							</td>
+							<th th:text="#{equipment.facilityModify.installer}">설치자</th>
+							<td><input type="text" class="main-input" name="instler" placeholder="Please Enter Installer" th:value="${tfcFacilityMaster.instler}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{equipment.facilityModify.personInCharge}">담당자</th>
+							<td class="modal-find-line">
+								<input type="text" class="main-input" placeholder="Please Enter Person in Charge" id="crOprtrNm"  th:value="${tfcFacilityMaster.webOprtr.oprtrNm}">
+								<input type="hidden" name="crOprtrId" id="crOprtrId" th:value="${tfcFacilityMaster.crOprtrId}">
+								<i class="search-icon" onclick="changeDeptListModal('show')"></i>
+							</td>
+							<th th:text="#{equipment.facilityModify.department}">담당자부서</th>
+							<td><input type="text" class="main-input" id="crOprtrDept" name="crOprtrDept"
+								placeholder="Please Enter Department" th:value="${tfcFacilityMaster.crOprtrDept}"></td>
+						</tr>
+						<tr id="imageTr">
+							<th th:text="#{equipment.facilityModify.image}">현재 등록 사진</th>
+							<td colspan="3">
+								<input type="file" id="uploadFiles" name="uploadFiles" multiple/>
+								<div id="dragArea">
+									<div class="drag-area">
+										<div class="dragText">
+										   	File name cannot be more than 50 characters<br>
+											The file size can only be uploaded under 5MB<br>
+											Only JPG, JPEG, PNG, and MP4 files can be uploaded
+										</div>
+										<div>
+											<input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
+											<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+										</div>
+									</div>
+								</div>
+								<div class="upload_wrap">
+									<div id="upload_list_box">
+										<th:block th:each="fileItem : ${tfcFacilityMaster.tfcFacilityFileInfoList}">
+											<div class="upload_list">
+												<div class="list_item input_same group_box flex-center">
+						                			<div class="file_list" th:text="${fileItem.fileOrgNm}"></div>
+							                		<button type="button" th:data-name="${fileItem.fileOrgNm}" th:data-value="${fileItem.tfcFacilityFileNo}" class="fileDelBtn">
+															<img src="/images/upload_close.png" alt="업로드파일 삭제">
+							                		</button>
+	                							</div>
+											</div>
+										</th:block>
+									</div>	
+								</div>
+							</td>
+						</tr>
+							<tr id="trImage" style="display: none;">
+							<th th:text="#{equipment.mngModify.newImg}">새 단속장비 사진 등록</th>
+							<td colspan="3">
+								<input type="file" id="txttfcEnfEqpImage" name="imageFiles" onchange="setThumbnail(event);"
+									multiple />
+								<div id="image_container">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{equipment.facilityModify.details}">상세정보</th>
+							<td colspan="3"><textarea class="detail-table-textarea" name="facilityDesc" placeholder="Please Enter Details" th:text="${tfcFacilityMaster.facilityDesc}"></textarea></td>
+						</tr>
+
+					</tbody>
+				</table>
+			</form>
+			
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn form-button"
+				onclick="javascript:window.history.back()" th:text="#{equipment.mngModify.cancelButton}">취소</button>
+				<button type="button" id="btnModify" class="main-btn form-button"
+				th:text="#{equipment.mngModify.modifyFinish}">수정완료</button>
+			</div>
+	</div>
+	
+	<div class="modal-wrap" id="modal">
+
+	</div>
+</th:block>
+
+</html>
+
+<script th:inline="javascript">
+	
+		// 모달 수정 여부 확인필요?
+	const modalContent = document.getElementById("modal");
+	
+		// modal control
+	function changeDeptListModal(type) {
+
+		if (type == "show") {
+			$.ajax({
+				url: '/common/modal/oprtr/list.ajax',
+				type: "get",
+				dataType: 'html',
+				success: function (data) {
+					modalContent.innerHTML += data;
+					modalContent.style.display = 'block';
+				}
+			});
+		} else if (type == "hide") {
+			modalContent.innerHTML = '';
+			modalContent.style.display = 'none';
+		}
+
+	}
+	
+
+	$("#btnimageModify").click(function () {
+		if ($(this).attr('data-flag') == 'N') {
+			$("#btnimageDelete").show();
+			$("#trImage").show();
+			$(this).text("변경 취소");
+			$(this).attr('data-flag', 'Y');
+		} else if ($(this).attr('data-flag') == 'Y') {
+			$("#btnimageDelete").hide();
+			$("#trImage").hide();
+			$(this).text("변경");
+			$(this).attr('data-flag', 'N');
+		}
+	})
+
+	$("#btnimageDelete").click(function () {
+		if (confirm("Do you want to delete?") == true) {
+			$("#imageTr").hide();
+
+			var form = $("#frmFacilityModify")[0];
+			var data = new FormData(form);
+
+			$.ajax({
+				url: /*[[@{/eqp/facility/image/delete.ajax}]]*/ "/eqp/facility/image/delete.ajax",
+				type: "post",
+				enctype: 'multipart/form-data',
+				data: data,
+				processData: false,
+				contentType: false,
+				success: function (data) {
+					alert("이미지가 삭제되었습니다.");
+				},
+				error: function (data) {
+					alert("이미지 삭제에 실패하였습니다.");
+				}
+			});
+		} else {
+			return;
+		}
+	})
+
+	$("#btnModify").click(function () {
+		if($("#frmFacilityRegist").soValid()) {
+			var form = $("#frmFacilityModify")[0];
+			var data = new FormData(form);
+			
+			deleteFilesArr.forEach((value, index) => {
+				data.append("tfcFacilityFileInfoList[" + index + "].tfcFacilityFileNo", value);
+			})
+			
+			$.ajax({
+				url: /*[[@{/eqp/facility/update.ajax}]]*/ "/eqp/facility/update.ajax",
+				type: "post",
+				enctype: 'multipart/form-data',
+				data: data,
+				processData: false,
+				contentType: false,
+				success: function (result) {
+					if(result.code == 200){
+						new ModalBuilder().init().successBody(result.message).footer(4,'확인',function(button, modal){
+							modal.close();
+							var baseUrl = /*[[@{/eqp/facility/detail.do}]]*/ '';
+							window.location.href = baseUrl + "?tfcFacilityId=" + [[${tfcFacilityMaster.tfcFacilityId}]];
+						}).open();
+					} else {
+						new ModalBuilder().init().alertBoby(result.message).footer(4,'확인',function(button, modal){modal.close();}).open();
+					}
+				}
+			});
+		}
+	})
+
+	function setThumbnail(event) {
+		var reader = new FileReader();
+		reader.onload = function (event) {
+			var img = document.createElement("img");
+			img.setAttribute('width', '900px');
+			img.setAttribute('height', '300px');
+			img.setAttribute("src", event.target.result);
+			document.querySelector("div#image_container").appendChild(img);
+		};
+		reader.readAsDataURL(event.target.files[0]);
+	}
+
+	//TODO 좌표값 확인하기
+	const lng = /*[[${tfcFacilityMaster.lng}]]*/;
+	const lat = /*[[${tfcFacilityMaster.lat}]]*/;
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : lng,
+		center_lat : lat,
+		isInitDrawCenterMarker : true
+	});
+	
+	function findOprtrBtn(){
+		$("#modalTbody > tr").remove();
+		$("#modalPaging > div").remove();
+		
+		var page = $("#modalPage").val();
+		var searchTxt = $("#searchContent").val();
+		var start = $("#modalStart").val();
+		$.ajax({
+			type : "get",
+			data : {"searchType" : "oprtrNm", "searchTxt" : searchTxt, "page" : page, "start" : start},
+			url: '/common/modal/oprtr/search/list.ajax',
+			success : function(result) {
+				var html = '';
+				$(result.data.list).each(function(index, item){
+					var oprtrDeptNm = item.oprtrDeptNm;
+					var oprtrNm = item.oprtrNm;
+					if(isNull(oprtrDeptNm)){
+						oprtrDeptNm = '-';
+					}
+					if(isNull(oprtrNm)){
+						oprtrNm = '-';
+					}					
+					html += '<tr onclick="selectDept(\''+item.oprtrId+'\', \''+oprtrNm+'\', \''+ oprtrDeptNm +'\')">'+
+								'<td>'+item.rnum+'</td>'+
+								'<td>'+oprtrDeptNm+'</td>'+								
+								'<td>'+oprtrNm+'</td>'+
+							'</tr>';
+		    	})
+				$("#modalTbody").append(html);			
+		    	var paging = result.data.pagination;
+				if(paging != null && paging != ''){
+					$("#modalPaging").append(getPagingHtml(paging,page));
+				}
+				$("#totalCnt").text(paging.totalListCnt);
+				var start = result.data.webOprtr.start;
+				$("#modalStart").val();
+			}
+		});
+	}
+	
+	function fnPageMove(page) {
+		$("#modalPage").val(page);
+		findOprtrBtn();
+	}
+	
+	function selectDept(oprtrId, oprtrNm, oprtrDeptNm){
+		$("#crOprtrNm").val(oprtrNm);
+		$("#crOprtrId").val(oprtrId);
+		$("#crOprtrDept").val(oprtrDeptNm);
+		changeDeptListModal('hide');
+	}
+	
+	var deleteFilesArr = new Array();
+	let $fileInput = $("#uploadFiles");
+	$(".fileDelBtn").on('click',function(){
+        var $this = $(this);
+        var fileNm = $this.data('name');
+        var fileId = $this.data('value');
+        const dataTransfer = new DataTransfer();
+        let trans = $('#uploadFiles')[0].files;
+        let fileArray = Array.from(trans);
+
+        $this.closest('.upload_list').remove();
+        fileArray.filter(file => file.name != fileNm).forEach(file => {
+            dataTransfer.items.add(file);
+        });
+        $fileInput.prop('files',dataTransfer.files);
+        
+        let uploadLength = $('#upload_list_box').children('.upload_list').length;
+		if(uploadLength <= 0){
+			$('.upload_wrap').addClass('none');
+		}
+		deleteFilesArr.push(fileId);
+    });
+</script>

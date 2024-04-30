@@ -19,13 +19,17 @@ public class InterceptorConfig implements WebMvcConfigurer {
 	
 	@Autowired
 	MenuInterceptor menuInterceptor;
+	
+	@Autowired
+	AuthorityCheckerInterceptor authorityCheckerInterceptor;
 
     @Bean
     public LocaleResolver localeResolver() {
 
         CookieLocaleResolver resolver = new CookieLocaleResolver();
         resolver.setCookieName("lang");
-        resolver.setDefaultLocale(new Locale("eng"));
+        resolver.setDefaultLocale(new Locale("por"));
+//        resolver.setDefaultLocale(new Locale("eng"));
         return resolver;
     }
 
@@ -51,20 +55,41 @@ public class InterceptorConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(localeChangeInterceptor());
         
+        //권한 체크
+        registry.addInterceptor(authorityCheckerInterceptor)
+        .addPathPatterns("/**")
+				.excludePathPatterns("/login")
+				.excludePathPatterns("/loginAjax")
+				.excludePathPatterns("/id/**")
+				.excludePathPatterns("/password/**")
+				.excludePathPatterns("/myinfo/**")
+				.excludePathPatterns("/joinUs")
+				.excludePathPatterns("/joinUsAjax")
+				.excludePathPatterns("/favicon.ico")
+				.excludePathPatterns("/error")
+				.excludePathPatterns("/css/**")
+				.excludePathPatterns("/fonts/**")
+				.excludePathPatterns("/images/**")
+				.excludePathPatterns("/modal/**")
+				.excludePathPatterns("/js/**")
+				.excludePathPatterns("/common/**");
+        
         //사이드 메뉴관련 추가
-		registry.addInterceptor(menuInterceptor)
-		.addPathPatterns("/**")
-		.excludePathPatterns("/login")
-		.excludePathPatterns("/loginAjax")
-		.excludePathPatterns("/joinUs")
-		.excludePathPatterns("/joinUsAjax")
-		.excludePathPatterns("/bootstrap/css/**")
-		.excludePathPatterns("/bootstrap/img/**")
-		.excludePathPatterns("/bootstrap/js/**")
-		.excludePathPatterns("/bootstrap/scss/**")
-		.excludePathPatterns("/bootstrap/vendor/**")
-		.excludePathPatterns("/favicon.ico")
-		.excludePathPatterns("/error")
-		.excludePathPatterns("/bootstrap/**");
+				registry.addInterceptor(menuInterceptor)
+				.addPathPatterns("/**")
+				.excludePathPatterns("/login")
+				.excludePathPatterns("/loginAjax")
+				.excludePathPatterns("/id/**")
+				.excludePathPatterns("/password/**")
+				.excludePathPatterns("/joinUs")
+				.excludePathPatterns("/joinUsAjax")
+				.excludePathPatterns("/favicon.ico")
+				.excludePathPatterns("/error")
+				.excludePathPatterns("/css/**")
+				.excludePathPatterns("/fonts/**")
+				.excludePathPatterns("/images/**")
+				.excludePathPatterns("/modal/**")
+				.excludePathPatterns("/js/**")
+				.excludePathPatterns("/common/**");
     }
 }

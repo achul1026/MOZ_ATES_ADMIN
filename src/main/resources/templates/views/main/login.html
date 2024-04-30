@@ -1,83 +1,100 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
 
 <head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
 
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
-	
-    <title>SB Admin 2 - Login</title>
+	<title>MOZ-ATES</title>
 
-    <!-- Custom fonts for this template-->
-    
-    <link href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i" rel="stylesheet">
-    <link rel="stylesheet" th:href="@{/bootstrap/css/admin.css}" type="text/css">
-
-    <!-- Custom styles for this template-->
+	<!-- Custom styles for this template-->
 
 	<!-- Context Path add -->
-	<link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}"/>
-	<script th:src="@{/bootstrap/vendor/jquery/jquery.min.js}"></script>
-<script th:src="@{/bootstrap/vendor/jquery/jquery.cookie.min.js}"></script>
-	<script>
-	var contextPath = document.getElementById('contextPathHolder').getAttribute("data-contextpath");
+	<link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}" />
+	<link rel="stylesheet" th:href="@{/css/login.css}">
+	<link rel="stylesheet" th:href="@{/css/reset.css}">
+	<script type="javascript" th:src="@{/js/lib/jquery-1.12.4.min.js}"></script>
+	<script th:src="@{/js/custom/common.js}"></script>
+
+	<script type="javascript">
+		var contextPath = document.getElementById('contextPathHolder').getAttribute("data-contextpath");
 	</script>
 </head>
 
 <body>
-	<div class="admin_wrap">
-		<div class="admin_center">
-			<div class="admin_title">
+	<div class="admin-wrap">
+		<div class="admin-center">
+			<div class="admin-title">
 				MOZ-ATES<br>
-				<p>for ADMIN</p>
+				<!--				<p>for ADMIN</p>-->
 			</div>
-			 <form class="user" th:action="@{/loginAjax}" method="post">
-				<div class="admin_form">
-					<div class="admin_input">
+			<form class="user" th:action="@{/loginAjax}" method="post">
+				<div class="admin-form">
+					<div class="admin-input">
 						<label>Endereço electrónico</label>
-						<input type="text" id="txtOprtrAccountId" name="oprtrAccountId" aria-describedby="emailHelp" placeholder="Por favor entre o seu e-mail.">
-						<p class="none">
-							Por favor entre a sua ID.Por favor,<br>
+						<input type="text" class="form-input" id="txtOprtrAccountId" name="oprtrAccountId"
+							aria-describedby="emailHelp" placeholder="Por favor entre o seu e-mail.">
+						<div class="none">
+							Por favor entre a sua ID.Por favor,
 							preencha o formulário de correio electrónico.
-						</p>
+						</div>
 					</div>
-					<div class="admin_input">
+					<div class="admin-input">
 						<label>Pó de passe</label>
-						<input type="password" id="txtOprtrAccountPw" name="oprtrAccountPw" placeholder="Por favor entre a sua palavra de passe">
-						<p class="none">
+						<input type="password" class="form-input" id="txtOprtrAccountPw" name="oprtrAccountPw"
+							placeholder="Por favor entre a sua palavra de passe">
+						<i id="eye" class="" onclick="passWordEye('txtOprtrAccountPw')"></i>
+						<div class="none">
 							Por favor entre a sua palavra de passe.<br>
 							Password é de 8 dígitos ou mais, inglês,<br>
 							número, Deve conter caracteres especiais.
-						</p>
+						</div>
 					</div>
-					<div class="admin_input check">
-						<div class=""><input type="checkbox"></div>
-						<div class=""><label>Save ID</label></div>	
+					<div class="admin-input check">
+						<div id="saveId"><input type="checkbox" id="saveIdBtn"><label>Save ID</label></div>
+<!--						<div class="pass-find">-->
+<!--							Find <a th:href="@{/id/find.do}">ID</a> / <a th:href="@{/passwordFind}">Password</a>-->
+<!--						</div>-->
 					</div>
-					<div class="admin_input login">
-						<button type="submit" th:text="#{enforcement.admin.login}">logar</button>
-<!--						<button type="button" id="loginBtn" th:text="#{enforcement.admin.login}">logar</button>-->
-						<button type="button" id="joinUsBtn">
-							Administrador<br>
+					<div class="admin-input login">
+						<button type="submit" class="main-btn form-button" th:text="#{enforcement.admin.login}">logar</button>
+						<!--						<button type="button" id="loginBtn" th:text="#{enforcement.admin.login}">logar</button>-->
+						<button type="button" class="sub-btn form-button" id="joinUsBtn" th:onclick="|location.href='@{/joinUs}'|">
+							<!--							 -->
+							Administrador
 							de registo
 						</button>
 					</div>
 				</div>
 			</form>
-			<div class="pass_find">
-				<a href="">Você se esqueceu da sua password?</a>
+			<div class="pass-find">
+				Login Info Find (<a th:href="@{/id/find.do}">ID</a> / <a th:href="@{/password/find.do}">Password</a>)
 			</div>
 		</div>
 	</div>
 	<script>
-		$("#joinUsBtn").on('click',function(){
-			window.location.href="/joinUs";
-		});
-		
-	
 	</script>
 </body>
+
 </html>
+<script th:inline="javascript">
+	document.addEventListener("DOMContentLoaded", function(){
+		if(sessionStorage.getItem("userId") != null){
+			document.getElementById("txtOprtrAccountId").value = sessionStorage.getItem("userId");
+			saveIdChkbox.checked = true;
+		}
+	});
+	
+	document.getElementById("saveIdBtn").addEventListener("change", function(e) {
+		const is_checked = saveIdChkbox.checked;
+	   	if(is_checked){
+			var saveId = document.getElementById("txtOprtrAccountId");
+	   		sessionStorage.setItem("userId", saveId.value);
+	   	}else{
+	   		sessionStorage.removeItem("userId");
+	  	}
+	});
+</script>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	<div id="container-fluid">
+		<h1 id="content-title" th:text="#{finentc.mngList.title}">고지 대상자</h1>
+		<div id="content-sub-title" th:text="#{finentc.mngList.descr}">고지 대상자를 관리할 수 있습니다.</div>
+		<form id="frmSearch">
+			<input type="hidden" id="page" name="page" th:value="${pagination.page}">
+			<div id="filter-table">
+				<table class="">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{finentc.common.search.searchOp}">유형 선택</th>
+							<td>
+								<select name="searchType" id="searchType" class="filter-select" th:field="${fineNtcInfo.searchType}">
+									<option value="all" th:text="#{finentc.common.search.selectAll}">전체</option>
+									<option value="enfId" th:text="#{finentc.common.fine.enforcementNumber}">단속번호</option>
+									<option value="vioNm" th:text="#{finentc.common.fine.driverNm}">대상자</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{finentc.common.search.dateOp}">날짜 선택</th>
+							<td>
+								<input class="input-date" id="sDate" name="sDate" type="date" th:value="${fineNtcInfo.sDate}"> ~
+								<input class="input-date" id="eDate" name="eDate" type="date" th:value="${fineNtcInfo.eDate}">
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{finentc.common.search.serchTerm}">내용 검색</th>
+							<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" th:value="${fineNtcInfo.searchTxt}"
+								th:placeholder="#{finentc.common.search.placeholder}">
+								<input type="hidden" id="ntcTy" name="ntcTy" th:value="${fineNtcInfo.ntcTy}"/>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</form>
+		<div class="btn-wrap-center">
+			<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{finentc.mngList.check}">조회</button>
+			<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')" th:text="#{finentc.common.search.reset}">검색 초기화</button>
+		</div>
+
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'>"10"</span> result found.
+			</div>
+			<div id="table-regist-btn">
+
+			</div>
+		</div>
+
+		<div class="">
+			<table class="main-table" id="tblList">
+				<thead>
+					<tr role="">
+						<th th:text="#{finentc.mngList.tableNumber}">No.</th>
+						<th th:text="#{finentc.mngList.enforcementNumber}">단속번호</th>
+						<th th:text="#{finentc.common.fine.vioTy}"></th>
+						<th th:text="#{finentc.common.fine.driverNm}">대상자</th>
+						<th th:text="#{finentc.common.fine.ntcDt}">고지일자</th>
+						<th th:text="#{finentc.common.fine.paymentAmount}">납부금액</th>
+						<th th:text="#{finentc.common.fine.ntcDdln}">납부기한</th>
+<!--						<th th:text="#{finentc.common.fine.bill}">고지서 보기</th>-->
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="ntcItem : ${fineNtcList}" th:onclick="viewFineNtcDetail([[${ntcItem.fineNtcId}]])">
+						<td th:text="${ntcItem.rnum}"></td>
+						<td th:text="${ntcItem.tfcEnfId}"></td>
+						<td th:text="${1 < ntcItem.fineInfoCnt ? ntcItem.lawType + ' &hellip; (' + ntcItem.fineInfoCnt + ')' : ntcItem.lawType}"></td>
+						<td th:text="${ntcItem.vioInfo.vioNm}"></td>
+						<td th:text="${#dates.format(ntcItem.secondFineNtcDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						<td th:text="${@mozatesCommonUtils.priceFmt(ntcItem.secondFineNtcPrice,'MOZAMBIQUE_METICAL')}"></td>
+						<td th:text="${#dates.format(ntcItem.secondFineNtcDdln, 'yyyy-MM-dd HH:mm:ss')}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="page_wrap">
+			<div th:insert="tags/paging :: pagingFragment"></div>
+		</div>
+	</div>
+
+
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();		
+	})
+	
+	function searchByNtcTy($this){
+		const selectValue = $this.options[$this.selectedIndex].value;
+		const ntcTy = document.getElementById("ntcTy");
+		const frmSearch = document.getElementById("frmSearch");
+		
+		ntcTy.value = selectValue;
+		
+		frmSearch.submit();
+	}
+	
+	/*<![CDATA[*/
+	function viewFineNtcDetail(fineNtcId) {
+		var baseUrl = /*[[@{/finentc/second/detail.do}]]*/ '';
+		window.location.href = baseUrl + "?fineNtcId=" + fineNtcId;
+	}
+	/*]]>*/
+	
+</script>

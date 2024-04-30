@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 id="content-title" th:text="#{administ.law.list.title}">전체 법령 수</h1>
+		<div id="content-sub-title" th:text="#{administ.law.list.descr}">교통 단속 상세 정보를 확인할 수 있습니다.</div>
+		
+		<form id="frmSearch">
+			<input type="hidden" id="page" name="page" th:value="${pagination.page}">
+			<input type="hidden" id="hdnStart" name="start" th:value="${tfcLwInfo.start}">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{administ.common.searchCon}">유형 선택</th>
+						<td>
+							<select name="searchType" id="searchType" class="filter-select" th:field="${tfcLwInfo.searchType}">
+								<option value="all" th:text="#{administ.common.search.selectAll}">전체</option>
+								<option value="lawNm" th:text="#{administ.law.list.nameOfLaw}">법령명</option>
+								<option value="crtr" th:text="#{administ.law.list.constructer}">작성자</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{administ.common.search.dateOp}">날짜 선택</th>
+						<td>
+							<select name="dateSearchType" id="dateSearchType" class="filter-select" th:field="${tfcLwInfo.dateSearchType}">
+								<option value="all" th:text="#{administ.common.search.selectAll}">전체</option>
+								<option value="prmgtn" th:text="#{administ.law.common.lawPubDate}">공표일자</option>
+								<option value="eftv" th:text="#{administ.law.common.lawActDate}">시행일자</option>
+								<option value="rvsn" th:text="#{administ.law.common.lawRevisionDate}">개정일자</option>
+							</select>
+							<input class="input-date" id="sDate" name="sDate" type="date" th:value="${tfcLwInfo.sDate}"> ~
+							<input class="input-date" id="eDate" name="eDate" type="date" th:value="${tfcLwInfo.eDate}">
+						</td>
+					</tr>
+					<tr>
+						<th>Search</th>
+						<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text"
+								th:placeholder="#{administ.common.search.placeholder}" th:value="${tfcLwInfo.searchTxt}"></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="btn-wrap-center">
+				<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{administ.law.list.check}">조회</button>
+				<!-- TODO 검색초기화 -->
+				<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')" th:text="#{administ.common.search.reset}">검색 초기화</button>
+			</div>
+		</form>
+		
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				<!--<h6 class="" th:text="#{administ.log.list.trafficadministLogList}">교통단속 로그 리스트</h6>-->
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+			</div>
+			<div id="table-regist-btn">
+				<button type="button" class="main-btn form-button" th:onclick="|location.href='/administCourt/law/save.do'|" th:text="#{administ.law.list.lawRegistration}">법률 등록하기</button>
+			</div>
+		</div>
+
+		<div class="">
+			<table class="main-table" id="tblList" aria-describedby="dataTable_info">
+				<colgroup>
+
+				</colgroup>
+				<thead>
+					<tr>
+						<th th:text="#{administ.law.list.tableNumber}">No.</th>
+						<th th:text="#{administ.law.list.nameOfLaw}">법률명</th>
+						<th th:text="#{administ.law.list.dateOfPromulgation}">공포일자</th>
+						<th th:text="#{administ.law.list.legalNumber}">법률번호</th>
+						<th th:text="#{administ.law.list.enforceDate}">시행일자</th>
+						<th th:text="#{administ.law.list.dateOfRevision}">개정일자</th>
+						<th th:text="#{administ.law.list.constructer}">생성자</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr th:each="lawList, varstaus : ${lawLists}" th:onclick="|location.href='@{/administCourt/law/detail.do(lawId=${lawList.tfcLawId})}'|">
+						<td th:text="${lawList.rnum}"></td>
+						<td th:text="${lawList.lawNm}"></td>
+						<td th:text="${#dates.format(lawList.prmgtnDe, 'yyyy-MM-dd')}"></td>
+						<td th:text="${lawList.lawArticleNo}"></td>
+						<td th:text="${#dates.format(lawList.eftvDe, 'yyyy-MM-dd')}"></td>
+						<td th:text="${#dates.format(lawList.rvsnDe, 'yyyy-MM-dd')}"></td>
+						<td th:text="${lawList.crtr}"></td>
+					</tr>
+				</tbody>
+			</table>
+
+		</div>
+		<div class="page_wrap">
+			<div th:insert="tags/paging :: pagingFragment"></div>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	
+	
+	/*<![CDATA[*/
+	function goDetail(idx) {
+		var baseUrl = /*[[@{/administCourt/law/datail.do}]]*/ '';
+		window.location.href = baseUrl + "?lawId=" + idx;
+	}
+	/*]]>*/
+	
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();
+	})
+</script>

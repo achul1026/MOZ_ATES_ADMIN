@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	<div id="container-fluid">
+
+		<h1 id="detail-content-title" th:text="#{sitemng.codeRegist.title}">코드 추가</h1>
+		<form id="codeRegistForm">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{sitemng.common.code.codeId}">코드 ID</span>
+						</th>
+						<td><input class="search-box main-input data-validate" type="text" name="cdId" th:placeholder="#{common.placeholder.enterId}"
+						th:data-valid-name="#{sitemng.common.code.codeId}" data-valid-required></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{sitemng.common.code.codeNm}">코드 이름</span>
+						</th>
+						<td>
+							<input class="search-box main-input data-validate" type="text" name="cdNm" th:placeholder="#{common.placeholder.enterName}"
+						th:data-valid-name="#{sitemng.common.code.codeNm}" data-valid-required>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.common.code.codeDescription}">코드 설명</th>
+						<td>
+							<textarea name="cdDesc" class="detail-table-textarea" th:placeholder="#{common.placeholder.enterDescription}"></textarea>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn form-button" th:onclick="|location.href='@{/siteMng/code/list.do}'|" th:text="#{common.button.list}">목록</button>
+				<button type="button" id="saveBtn" class="main-btn form-button" onclick="saveInfo()" th:text="#{common.button.register}">저장</button>
+			</div>
+		</form>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	$("#saveBtn").click(function () {
+		if($("#codeRegistForm").soValid()) {
+	
+			//  validation
+			$.ajax({
+			     url: /*[[@{/siteMng/code/save.ajax}]]*/ "/siteMng/code/save.ajax",
+			     type: "post",
+			     data: $("#codeRegistForm").serialize(),
+			     success: function (data) {
+						if (data.code == '200') {
+							new ModalBuilder().init().successBody(/*[[#{common.message.completeRegister}]]*/).footer(4,'확인',function(button, modal){
+							location.href = "/siteMng/code/list.do";
+							}).open();
+						} else {
+							new ModalBuilder().init().alertBody(data.message).footer(4,'확인',function(button, modal){modal.close();}).open();
+						}
+					}
+			 });
+		}
+	
+	})
+</script>

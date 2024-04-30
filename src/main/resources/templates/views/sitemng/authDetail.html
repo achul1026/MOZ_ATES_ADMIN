@@ -1,14 +1,311 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-	권한 관리 상세
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="#{sitemng.authDetail.title}">권한 상세</h1>
+		<form id="authRegistForm">
+			<!-- table -->
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="90%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<input type="hidden" th:value="${mozAuth.authId}" id="authId">
+						<th th:text="|#{sitemng.common.auth.name} (#{common.message.required})|">권한 이름(필수)</th>
+						<td><input class="search-box main-input" id="authNm" name="authNm" type="text"
+								th:placeholder="#{common.placeholder.enterName}" maxlength="64" th:value="${mozAuth.authNm}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.common.auth.descr}">권한 설명</th>
+						<td><input class="search-box main-input" id="authDesc" name="authDesc" type="text"
+								th:placeholder="#{common.placeholder.enterDescription}" maxlength="100" th:value="${mozAuth.authDesc}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.common.auth.code}">권한 코드</th>
+						<td th:if="${#strings.equals(mozAuth.authCd, 'AUC000')}">
+							<span th:text="#{sitemng.common.auth.superAdmin}">슈퍼 관리자</span>
+							<input type="hidden" id="authCd" name="authCd" th:value="${mozAuth.authCd}"/>
+						</td>
+						<td th:if="${mozAuth.authCd != 'AUC000'}">
+							<select id="authCd" name="authCd" class="filter-select">
+								<option value="" th:text="#{common.search.select}">select</option>
+<!--								<option value="AUC000" th:selected="${#strings.equals(mozAuth.authCd, 'AUC000')}">Super Admin</option>-->
+								<option value="AUC001" th:selected="${#strings.equals(mozAuth.authCd, 'AUC001')}">Admin User</option>
+								<option value="AUC002" th:selected="${#strings.equals(mozAuth.authCd, 'AUC002')}">Office Operator</option>
+								<option value="AUC003" th:selected="${#strings.equals(mozAuth.authCd, 'AUC003')}">Police Operator</option>
+							</select>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<!-- table END -->
+			<div class="authority-wrap">
+				<h1 id="content-title" th:text="#{common.title.settings}">권한 설정</h1>
+				
+				<div class="authority-list" th:each="menuItm : ${authDetail}">
+					
+					<!-- auth HEAD -->
+					<div class="authority-head" th:classappend="${#strings.equals(menuItm.menuUrl, '/dashboard')} ? 'authority-dash-head' : ''">
+						<div class="authority-title" th:text="${menuItm.menuNmEng}">main menu name</div>
+						<div class="toggle-wrap">
+							<input type="hidden" th:id="|authMenuId_${menuItm.menuId}|" th:value="${menuItm.authMenuId}">
+							<input type="checkbox" th:id="|toggle_${menuItm.menuId}|" class="toggle-input mainMenuCheckBox"
+								th:checked="${#strings.equals(menuItm.readYn, 'Y')}" hidden th:data-menuid="${menuItm.menuId}">
+							<label th:for="|toggle_${menuItm.menuId}|" class="toggle" th:classappend="${#strings.equals(menuItm.menuUrl, '/dashboard')} ? 'is_disabled' : ''">
+								<span class="toggleButton"></span>
+							</label>
+							<input type="hidden" th:id="|menuUrlPattrn_${menuItm.menuId}|" th:value="${menuItm.menuUrlPattrn}">
+						</div>
+						<div class="toggle-off" th:id="|toggleOff_${menuItm.menuId}|" th:style="${#strings.equals(menuItm.createYn, 'Y') ? 'display:none' : 'display:block'}"></div>
+					</div>
+	
+					<!-- auth BODY -->
+					<div class="authority-body" th:if="${not #lists.isEmpty(menuItm.subMenuInfoList)}">
+	
+						<div class="authority-body-list" th:each="subMenuItm : ${menuItm.subMenuInfoList}">
+							<div class="authority-sub-title" th:text="${subMenuItm.menuNmEng}">sub menu name</div>
+							<div th:class="|subMenu_${menuItm.menuId} subMenu authority-sub-list|"
+								th:data-submenuid="${subMenuItm.menuId}">
+								<input type="hidden" th:id="|authMenuId_${subMenuItm.menuId}|" th:value="${subMenuItm.authMenuId}">
+								<input type="checkbox" class="check-none subMenuAllCheckBox" th:id="|selectAll_${subMenuItm.menuId}|">
+								<label th:for="|selectAll_${subMenuItm.menuId}|" class="check-button border-sub-btn"
+									th:text="#{common.button.selectAll}">전체 선택</label>
+	
+								<input type="checkbox" class="subMenuCheckBox check-none" th:id="|readYn_${subMenuItm.menuId}|"
+									th:checked="${#strings.equals(subMenuItm.readYn, 'Y')}">
+								<label th:for="|readYn_${subMenuItm.menuId}|" class="check-button border-sub-btn"
+									th:text="#{sitemng.common.auth.read}">조회</label>
+	
+								<input type="checkbox" class="subMenuCheckBox check-none" th:id="|createYn_${subMenuItm.menuId}|"
+									th:checked="${#strings.equals(subMenuItm.createYn, 'Y')}">
+								<label th:for="|createYn_${subMenuItm.menuId}|" class="check-button border-sub-btn"
+									th:text="#{sitemng.common.auth.create}">등록</label>
+	
+								<input type="checkbox" class="subMenuCheckBox check-none" th:id="|updateYn_${subMenuItm.menuId}|"
+									th:checked="${#strings.equals(subMenuItm.updateYn, 'Y')}">
+								<label th:for="|updateYn_${subMenuItm.menuId}|" class="check-button border-sub-btn"
+									th:text="#{sitemng.common.auth.update}">수정</label>
+	
+								<input type="checkbox" class="subMenuCheckBox check-none" th:id="|deleteYn_${subMenuItm.menuId}|"
+								 th:checked="${#strings.equals(subMenuItm.deleteYn, 'Y')}">
+								<label th:for="|deleteYn_${subMenuItm.menuId}|" class="check-button border-sub-btn"
+									th:text="#{sitemng.common.auth.delete}">삭제</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn form-button"
+					th:onclick="|location.href='@{/siteMng/auth/list.do}'|" th:text="#{common.button.list}">목록</button>
+				<button type="button" id="saveBtn" class="main-btn form-button" th:text="#{common.button.register}" onclick="updateAuth()">저장</button>
+			</div>
+		</form>
+	</div>
 </th:block>
+
 </html>
 <script th:inline="javascript">
-    /*<![CDATA[*/
+	/*<![CDATA[*/
+	
+	// toggle on off
+	const mainMenuCheckBox = document.getElementsByClassName('mainMenuCheckBox');
+	for(const element of mainMenuCheckBox) {
+		element.addEventListener('click', function(){
+			let _this = $(this);
+			let isToggleOn = _this.is(':checked');
+			let menuId = _this.data("menuid");
+			if (isToggleOn) {
+				$("#toggleOff_" + menuId).hide();
+			} else {
+				$("#toggleOff_" + menuId).show();
+			}
+    });
+	};
 
-    /*]]>*/
+
+	//서브 메뉴 > 전체 선택/해제 클릭 함수
+	const subMenuAllCheckBox = document.getElementsByClassName("subMenuAllCheckBox");
+	for(const element of subMenuAllCheckBox) {
+		element.addEventListener('click', function () {
+			let _this = $(this);
+			_this.siblings().prop("checked", _this.is(':checked'));
+		});
+	};
+
+
+	// 서브 메뉴 > 전체 선택 되었는지 체크
+	function checkAllSelected(element, type) {
+			let subMenuDiv;
+			if(type == 'child') {
+				subMenuDiv = $(element).parent();
+			} else {
+				subMenuDiv = $(element);
+			}
+			let allChkBtnVal = false;
+
+			let subMenuCheckBoxLength = subMenuDiv.find('.subMenuCheckBox').length;
+			let subMenuCheckedLength = subMenuDiv.find('.subMenuCheckBox:checked').length;
+			
+			//메뉴들이 전체가 선택되었으면 전체 선택 Checkbox True Else False
+			if (subMenuCheckBoxLength == subMenuCheckedLength) allChkBtnVal = true;
+			subMenuDiv.find('.subMenuAllCheckBox').prop('checked', allChkBtnVal);
+	}
+	
+	const subMenuCheckBox = document.getElementsByClassName("subMenuCheckBox");
+	for(const element of subMenuCheckBox) {
+		element.addEventListener('click', function() {
+			checkAllSelected(element, 'child');
+		});
+	};
+	
+	// 최초 1회 실행
+	const subMenu = document.getElementsByClassName("subMenu");
+	for(const element of subMenu) {
+		checkAllSelected(element, 'parent')
+	}
+
+
+	// 권한 수정
+	function updateAuth() {
+		let confirmMsg = /*[[#{sitemng.authDetail.message.confirmModify}]]*/;
+
+		var authId = $("#authId").val();
+		var authNm = $('#authNm').val().trim();
+		var authDesc = $('#authDesc').val().trim();
+		var authCd = $("#authCd").val().trim();
+		
+		if(authNm == null || authNm == ''){
+			alert(/*[[#{sitemng.common.auth.message.enterAuthName}]]*/);
+			return false;
+		};
+		if(authDesc == null || authDesc == ''){
+			alert(/*[[#{sitemng.common.auth.message.enterAuthDesc}]]*/);
+			return false;
+		};
+		if(authCd == null || authCd == ''){
+			alert(/*[[#{sitemng.common.auth.message.selectAuthCode}]]*/);
+			return false;
+		};
+
+		if(!confirm(confirmMsg)){
+			return false;
+		}
+		
+		var result = new Object();
+		var authMenuList = new Array();
+		var mainMenu = $(".mainMenuCheckBox");
+
+		for (var i = 0; i < mainMenu.length; i++) {
+			var mainMenuId = $(".mainMenuCheckBox").eq(i).data("menuid");
+			var mainAuthMenuId = $("#authMenuId_" + mainMenuId).val();
+			var mainMenuIsChecked = mainMenu.eq(i).is(":checked");
+			var menuUrlPattrn = $("#menuUrlPattrn_"+mainMenuId).val();
+			
+			var mainAuthMenu = new Object();
+			var subMenu = $(".subMenu_" + mainMenuId);
+			
+			mainAuthMenu.menuUrlPattrn = menuUrlPattrn;
+			
+			if (mainMenuIsChecked) {
+				// 메인메뉴 Y인 경우
+				let isSubMenuHasAnyY = false;
+				
+				mainAuthMenu.menuId = mainMenuId;
+				mainAuthMenu.authMenuId = mainAuthMenuId;
+				mainAuthMenu.createYn = "Y";
+				mainAuthMenu.readYn = "Y";
+				mainAuthMenu.deleteYn = "Y";
+				mainAuthMenu.updateYn = "Y";
+
+				for (var j = 0; j < subMenu.length; j++) {
+					var subAuthMenu = new Object();
+					var subMenuId = subMenu.eq(j).data("submenuid");
+					var subauthMenuId = $("#authMenuId_" + subMenuId).val();
+					
+					var readYn = $("#readYn_" + subMenuId).is(":checked") ? "Y" : "N";
+					var createYn = $("#createYn_" + subMenuId).is(":checked") ? "Y" : "N";
+					var deleteYn = $("#deleteYn_" + subMenuId).is(":checked") ? "Y" : "N";
+					var updateYn = $("#updateYn_" + subMenuId).is(":checked") ? "Y" : "N";
+						
+					if(readYn == "Y" || createYn == "Y" || deleteYn == "Y" || updateYn == "Y") {
+						isSubMenuHasAnyY = true;
+					}	
+						
+						
+					subAuthMenu.menuId = subMenuId;
+					subAuthMenu.authMenuId = subauthMenuId;
+					subAuthMenu.createYn = createYn;
+					subAuthMenu.readYn = readYn;
+					subAuthMenu.deleteYn = deleteYn;
+					subAuthMenu.updateYn = updateYn;
+
+					authMenuList.push(subAuthMenu);
+				}
+				
+				// 서브메뉴에 부여된 권한이 하나도 없는 경우
+				if(!isSubMenuHasAnyY) {
+					mainAuthMenu.createYn = "N";
+					mainAuthMenu.readYn = "N";
+					mainAuthMenu.deleteYn = "N";
+					mainAuthMenu.updateYn = "N";
+				}
+				authMenuList.push(mainAuthMenu);
+				
+			} else {
+				// 메인메뉴 N인 경우
+				mainAuthMenu.menuId = mainMenuId;
+				mainAuthMenu.authMenuId = mainAuthMenuId;
+				mainAuthMenu.createYn = "N";
+				mainAuthMenu.readYn = "N";
+				mainAuthMenu.deleteYn = "N";
+				mainAuthMenu.updateYn = "N";
+
+				authMenuList.push(mainAuthMenu);
+
+				for (var j = 0; j < subMenu.length; j++) {
+					var subAuthMenu = new Object();
+					var subMenuId = subMenu.eq(j).data("submenuid");
+					var subauthMenuId = $("#authMenuId_" + subMenuId).val();
+					subAuthMenu.menuId = subMenuId;
+					subAuthMenu.authMenuId = subauthMenuId;
+					subAuthMenu.createYn = "N";
+					subAuthMenu.readYn = "N";
+					subAuthMenu.deleteYn = "N";
+					subAuthMenu.updateYn = "N";
+
+					authMenuList.push(subAuthMenu);
+				}
+			}
+		}
+
+		result.authId = authId;
+		result.authNm = authNm;
+		result.authCd = authCd;
+		result.authDesc = authDesc;
+		result.authMenuList = authMenuList;
+		
+		$.ajax({
+			type: "post",
+			dataType: "json",
+			contentType: "application/json",
+			data : JSON.stringify(result),
+			url: '/siteMng/auth/update.ajax',
+			success: function (data) {
+				if (data.code == '200') {
+					alert(data.message);
+					location.href="/siteMng/auth/list.do";
+				} else {
+					alert(data.message);
+				}
+			}
+		});
+	}
+
+	/*]]>*/
 </script>

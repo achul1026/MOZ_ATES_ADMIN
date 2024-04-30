@@ -2,20 +2,25 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="EUC-KR">
-<title>SB Admin</title>
+  <link th:href="@{/css/main.css}" rel="stylesheet">
 </head>
 <body>
-	<script>
-		const backBtn = function(){
-			history.back();
-		}
-	</script>
-	<div>
-		<h1>Error Page</h1>
-	</div>
-	
-	<div>
-		<button onclick="backBtn()">뒤로가기</button>
+	<div id="error-wrap">
+		<div id="error-container">
+			<div id="error-img">
+				<img src="/images/error_img.png" alt="에러이미지">
+			</div>
+			<div id="error-title">
+				<h2>요청하신 페이지를 찾을수 없습니다.</h2>
+			</div>
+			<div id="error-sub-title">
+				존재하지 않거나 만료된 페이지입니다.<br>
+	            페이지 확인 후 다시 시도해 주세요.
+			</div>
+			<div id="error-btn">
+				<a href="">메인페이지 이동</a>
+			</div>
+		</div>
 	</div>
 </body>
 </html>

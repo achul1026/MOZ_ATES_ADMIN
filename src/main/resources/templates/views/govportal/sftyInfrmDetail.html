@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{portal.infrmDetail.title}">상세 내용</h1>
+		
+		<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{portal.infrmDetail.ttl}">제목</th>
+						<td th:text="${sftyInfrm.postTtl}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.infrmDetail.posting}">게시기간</th>
+						<td>
+							<th:block th:if="${sftyInfrm.postStrDe == null && sftyInfrm.postEndDe == null}" th:text="#{portal.common.alwaysPosted}">
+								항상 게시
+							</th:block>
+							
+							<th:block th:if="${sftyInfrm.postStrDe != null && sftyInfrm.postEndDe != null}">
+								<input type="date" class="input-date" name="postStrDt" th:value="${#dates.format(sftyInfrm.postStrDe, 'yyyy-MM-dd')}" disabled> 
+								~ 
+								<input type="date" class="input-date" name="postEndDt" th:value="${#dates.format(sftyInfrm.postEndDe, 'yyyy-MM-dd')}" disabled>
+							</th:block>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.infrmDetail.attachment}">첨부파일</th>
+						<td th:text="${sftyInfrm.atchFile != null ? sftyInfrm.atchFile.fileOrgNm : '-'}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.infrmDetail.exposure}">노출여부</th>
+						<td><input type="checkbox" th:checked="${sftyInfrm.expYn == 'Y'}" disabled> <label th:text="#{portal.common.exposure}">노출</label></td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.infrmDetail.content}">내용</th>
+						<td><pre th:text="${sftyInfrm.postCn}"></pre></td>
+					</tr>
+				</tbody>
+			</table>
+			
+			<div class="btn-wrap-center">
+				<button th:text="#{penalty.common.list}" type="button" id="btnGoList" class="sub-btn left-btn" 
+					th:onclick="|location.href='@{/portal/sftyInfrm/list.do}'|">목록</button>
+				<button th:text="#{portal.common.delete}" type="button" id="btnDelete" class="delete-btn">삭제</button>
+				<button th:text="#{portal.common.modifyBtn}" type="button" id="btnModify" class="main-btn form-button"
+					th:onclick="|location.href='@{/portal/sftyInfrm/update.do(tfcSftyInfrmId=${sftyInfrm.tfcSftyInfrmId})}'|">수정</button>
+			</div>
+	</div>
+
+</th:block>
+
+</html>
+
+<script th:inline="javascript">
+
+	$("#btnDelete").click(function () {
+		new ModalBuilder().init().alertBody([[#{portal.infrmDetail.deleteMessage}]]).footer(2,'확인',function(button, modal){
+			modal.close();
+			var idx = [[${sftyInfrm.tfcSftyInfrmId}]];
+			$.ajax({
+				url: /*[[@{/portal/sftyInfrm/delete.ajax}]]*/ "/portal/sftyInfrm/delete.ajax",
+				type: "post",
+				data: {"tfcSftyInfrmId": idx},
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+					if (resultCode == '200') {
+						new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
+							location.href = /*[[@{/portal/sftyInfrm/list.do}]]*/ '/portal/sftyInfrm/delete.ajax';
+						}).open();
+					} else {
+						new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+					}
+				}
+			});
+			}, '취소', function(button, modal){}).open();
+	});
+</script>

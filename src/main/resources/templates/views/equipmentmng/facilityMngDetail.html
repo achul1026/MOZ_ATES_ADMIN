@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{equipment.facilityDetail.title}">교통시설물 상세</h1>
+
+		<div class="">
+			<table class="sub-table detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					
+					<tr>
+						<th th:text="#{equipment.facilityDetail.trafficFacilityType}">장비종류</th>
+						<td th:text="${tfcFacilityMaster.cmCd.cdNm}"></td>
+						<th th:text="#{equipment.facilityDetail.trafficFacilityName}">단속장비 이름</th>
+						<td th:text="${tfcFacilityMaster.facilityNm}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.facilityDetail.modelNm}">모델명</th>
+						<td th:text="${tfcFacilityMaster.modelNm}"></td>
+						<th th:text="#{equipment.facilityDetail.manufacturer}">제조업체</th>
+						<td th:text="${tfcFacilityMaster.mnfctr}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.facilityDetail.installationStatus}">설치여부</th>
+						<td colspan="3" class="tdFlex">
+							<div class="statusComplete">
+								<img src="/images/status_icon01.png" alt="설치" class="statusImg">
+								<span th:text="${tfcFacilityMaster.instlYn}=='Y' ? 'Installed':'Not installed'" class="statusText"></span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.facilityDetail.installationLocation}">장치위치정보</th>
+						<td colspan="3">
+							<p th:text="${tfcFacilityMaster.roadAddr}"></p><br>
+							<div id="map" class="detailMap"></div>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.facilityDetail.installationDate}">설치일자</th>
+						<td th:text="${#dates.format(tfcFacilityMaster.instlDate, 'yyyy-MM-dd')}"></td>
+						<th th:text="#{equipment.facilityDetail.installer}">설치자</th>
+						<td th:text="${tfcFacilityMaster.instler}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.facilityDetail.personInCharge}">담당자</th>
+						<td th:text="${tfcFacilityMaster.webOprtr.oprtrNm}"></td>
+						<th th:text="#{equipment.facilityDetail.department}">담당자소속</th>
+						<td th:text="${tfcFacilityMaster.crOprtrDept}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.facilityDetail.image}">단속장비 사진수정</th>
+						
+						<td colspan="3">
+							<th:block th:each="fileInfo : ${tfcFacilityMaster.tfcFacilityFileInfoList}">
+								<p th:text="${fileInfo.fileOrgNm}"></p>
+							</th:block>
+							<!-- 여기서부터 /block까지 이미지 생성<block th:each="images : ${#strings.arraySplit(tfcEnfEqpMaster.tfcEnfEqpImageorgn,',')}"
+								th:remove="tag">
+								<img th:src="@{/images/}+${images}" style="width:250px;height:250px; margin-left:10px;"
+									alt=" " />
+								<!--                                    <td colspan="3"> 
+                    	<img th:src="@{/images/}+${tfcEnfEqpMaster.tfcEnfEqpImage_OrgFile_name}" style="width:900px;height:300px;" alt=" " />
+							</block>-->
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.facilityDetail.details}">상세내용</th>
+						<td colspan="3"><pre th:text="${tfcFacilityMaster.facilityDesc}"></pre></td>
+					</tr>
+
+				</tbody>
+			</table>
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn left-btn" th:onclick="|location.href='@{/eqp/facility/list.do(pageType=list)}'|"
+					th:text="#{equipment.common.button.list}">목록</button>
+				<button type="button" id="btnDelete" class="delete-btn" th:text="#{equipment.common.button.delete}">삭제</button>
+				<button type="button" id="btnRegist" class="main-btn" th:text="#{equipment.common.button.modify}"
+					th:onclick="|location.href='@{/eqp/facility/update.do(tfcFacilityId=${tfcFacilityMaster.tfcFacilityId})}'|">수정</button>
+			</div>
+			
+		</div>
+		
+	</div>
+
+
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	const lng = /*[[${tfcFacilityMaster.lng}]]*/;
+	const lat = /*[[${tfcFacilityMaster.lat}]]*/;
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : lng,
+		center_lat : lat,
+		isInitDrawCenterMarker : true
+	});
+	
+	$("#btnDelete").click(function () {
+		new ModalBuilder().init().alertBody([[#{equipment.facilityDetail.deleteMessage}]]).footer(2,'확인',function(button, modal){
+			modal.close();
+			var idx = [[${tfcFacilityMaster.tfcFacilityId}]];
+			$.ajax({
+				url: /*[[@{/eqp/facility/delete.ajax}]]*/ "/eqp/facility/delete.ajax",
+				type: "post",
+				data: {"tfcFacilityId": idx},
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+					if (resultCode == '200') {
+						new ModalBuilder().init().alertBody(resultMessage).footer(2,'확인',function(button, modal){
+							modal.close();
+							location.href = /*[[@{/eqp/facility/list.do}]]*/ '/eqp/facility/list.do';
+							}, '취소', function(button, modal){
+						}).open();
+					} else {
+						alert(resultMessage);
+					}
+				}
+			});
+			}, '취소', function(button, modal){}).open();
+	});
+</script>

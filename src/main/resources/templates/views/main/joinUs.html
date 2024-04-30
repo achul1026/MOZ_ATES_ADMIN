@@ -1,129 +1,318 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
-
-<head>
-
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta name="description" content="">
-    <meta name="author" content="">
 	
-    <title>SB Admin 2 - Join Us </title>
+<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<meta name="description" content="">
+	<meta name="author" content="">
+	<title>MOZ-ATES</title>
+	<!-- Custom fonts for this template-->
+	<link rel="stylesheet" th:href="@{/css/login.css}">
+	<link rel="stylesheet" th:href="@{/css/reset.css}">
 
-    <!-- Custom fonts for this template-->
-    <link th:href="@{/bootstrap/vendor/fontawesome-free/css/all.min.css}" rel="stylesheet" type="text/css">
-    <link 
-    		href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
-            rel="stylesheet">
-
-    <!-- Custom styles for this template-->
-    <link th:href="@{/bootstrap/css/sb-admin-2.min.css}" rel="stylesheet">
+	<!-- Custom styles for this template-->
 	<!-- Context Path add -->
-	<link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}"/>
+	<link id="contextPathHolder" th:data-contextPath="${#httpServletRequest.getContextPath()}" />
 	<script>
-	var contextPath = document.getElementById('contextPathHolder').getAttribute("data-contextpath");
+		var contextPath = document.getElementById('contextPathHolder').getAttribute("data-contextpath");
 	</script>
+	<script th:src="@{/js/lib/jquery-1.12.4.min.js}"></script>
+	<!--custom JS-->
+	<script th:src="@{/js/custom/common.js}"></script>
+	<script type="javascript" th:src="@{/js/lib/jquery-1.12.4.min.js}"></script>
 </head>
 
-<body class="bg-gradient-primary">
-<div class="container">
+<body>
+	<div class="admin-wrap">
+		<div class="admin-center">
+			<form class="" id="joinUsForm">
+				<div id="introWrap">
+					<div class="admin-title">		
+						Select Membership Category
+					</div>
+					<div class="intro-wrap">
+						<div class="intro-list">
+							<img src="/images/intro01.svg" class="hover-color-svg">
+							<h2 class="intro-type-title hover-color-cg">Police</h2>
+							<p class="intro-sub-text hover-color-cg">Sign Up For Police-Operator Membership</p>
 
-    <!-- Outer Row -->
-    <div class="row justify-content-center">
+							<div class="join-btn-show hover-border-cg">
+								<label for="policeOprtr" class="hover-color-cg" onclick="chnageRegInput('show')">
+									Select
+									<input type="radio" id="policeOprtr" name="oprtrPermission" class="hover-color-cg" value="Police Operator">
+								</label>
 
-        <div class="col-xl-10 col-lg-12 col-md-9">
+							</div>
+						</div>
+						<div class="intro-list">
+							<img src="/images/intro02.svg" class="hover-color-svg">
+							<h2 class="intro-type-title hover-color-cg">Office</h2>
+							<p class="intro-sub-text hover-color-cg">Sign Up For Office-Operator Membership</p>
 
-            <div class="card o-hidden border-0 shadow-lg my-5">
-                <div class="card-body p-0">
-                    <!-- Nested Row within Card Body -->
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="p-5">
-                                <div class="text-center">
-                                    <h1 class="h4 text-gray-900 mb-4">Mozates</h1>
-                                </div>
-                                <form class="user" id="joinUsForm">
-                                    <div class="form-group">
-                                        <input type="text"  id="oprtrAccountId" name="oprtrAccountId"  placeholder="email">
-                                        <input type="password"  id="oprtrAccountPw" name="oprtrAccountPw" placeholder="Password">
-                                        <input type="text"  id="oprtrEmail" name="oprtrEmail"  placeholder="external email">
-                                        <input type="text"  id="oprtrNm" name="oprtrNm"  placeholder="name">
-                                        <input type="text"  id="oprtrDeptNm" name="oprtrDeptNm"  placeholder="Department">
-                                    </div>
-                                    </div>
-                                    <div class="col-xl-4">
-                                   		<button type="button" class="btn btn-primary btn-block btn-user" id="joinSubmit"> 완료 </button>
-                                    </div>
-                                </form>
-                                <hr>
-                                
-                                <!-- 다국어 번역 버튼 -->
-									<select id="language" name="language">
-										<option value="eng"> English </option>
-										<option value="kor"> Korean </option>
-										<option value="por"> Porutuguese </option>
-									</select>
-								
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+							<div class="join-btn-show hover-border-cg">
+								<label for="officeOprtr" class="hover-color-cg" onclick="chnageRegInput('show')">
+									Select
+									<input type="radio" id="officeOprtr" name="oprtrPermission" class="hover-color-cg" value="Office Operator">
+								</label>
+							</div>
+						</div>
+						<div class="intro-list">
+							<img src="/images/intro03.svg" class="hover-color-svg">
+							<h2 class="intro-type-title hover-color-cg">Admin</h2>
+							<p class="intro-sub-text hover-color-cg">Sign Up For Adminastor-Operator Membership</p>
 
-</div>
+							<div class="join-btn-show hover-border-cg">
+								<label for="adminUser" class="hover-color-cg" onclick="chnageRegInput('show')">
+									Select
+									<input type="radio" id="adminUser" name="oprtrPermission" class="hover-color-cg" value="Admin User">
+								</label>
+
+							</div>
+						</div>
+<!--						<div>-->
+<!--							<button type="button" class="sub-btn form-button" onclick="location.href='/login'">Login</button>-->
+<!--						</div>-->
+					</div>
+				</div>
+
+				<div class="admin-form join-form" id="adminInput">
+					<div id="admin-sub-logo">
+						<div onclick="chnageRegInput('hide')"><img src="/images/login-back.png" alt="뒤로가기"></div>
+						<div>
+							<img src="/images/inatro-logo2.png" alt="로고">
+						</div>
+					</div>
+<!--					<div class="admin-sub-title"> Administrator Registration</div>-->
+
+					<div class="admin-input jf-input">
+						<label class="cm-label-bf">ID</label>
+						<input type="text" class="form-input" id="oprtrAccountId" name="oprtrAccountId" placeholder="ID">
+						<p class="none infoText idInfo">
+							Por favor entre a sua ID.Por favor
+						</p>
+					</div>
+					
+					<div class="admin-input jf-input">
+						<label class="cm-label-bf">Password</label>
+						<input type="password" class="form-input" id="oprtrAccountPw" name="oprtrAccountPw" placeholder="Password">
+						<i id="eye" onclick="passWordEye('oprtrAccountPw')"></i>
+						<p class="none infoText pwInfo">
+							Por favor entre a sua palavra de passe.
+							Password é de 8 dígitos ou mais, inglês,
+							número, Deve conter caracteres especiais.
+						</p>
+					</div>
+					
+					<div class="admin-input jf-input">
+						<label class="cm-label-bf">Name</label>
+						<input type="text" class="form-input" id="oprtrNm" name="oprtrNm" placeholder="name">
+						<p class="none infoText nmInfo">
+							Please enter your name
+						</p>
+					</div>
+
+					<div class="admin-input jf-input">
+						<label class="cm-label-bf">Contact</label>
+						<input type="text" class="form-input" id="oprtrPno" name="oprtrPno" placeholder="01000000000">
+						<p class="none infoText pnoInfo">
+							Please enter your contact information
+							Please check the contact form
+						</p>
+					</div>
+
+					<div class="admin-input jf-input">
+						<label class="cm-label-bf">Affiliated administrative agency</label>
+						<input type="text" class="form-input" id="oprtrDeptNm" placeholder="Department" readonly>
+						<input type="hidden" id="oprtrDeptId" name="oprtrDeptId">
+						<i class="find" onclick="changeDeptListModal('show')"></i>
+						<p class="none infoText deptInfo">
+							Please select your institution
+						</p>
+					</div>
+
+					<div class="admin-input complete">
+						<button type="button" class="sub-btn form-button" id="backToMain"
+							th:onclick="|location.href='@{/login}'|">Login</button>
+						<!--							<button type="button" class="main-btn" id="joinSubmit">등록 신청</button>-->
+						<button type="button" class="main-btn form-button" id="joinSubmit" onclick="join()">Apply for
+							registration</button>
+<!--						<button type="button" class="sub-btn form-button" onclick="chnageRegInput('hide')">회원가입 분류 재선택</button>-->
+					</div>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<div class="modal-wrap" id="modal">
+
+	</div>
+
+	<!-- 다국어 번역 버튼 -->
+<!--			<select id="language" name="language">-->
+<!--				<option value="eng"> English </option>-->
+<!--				<option value="kor"> Korean </option>-->
+<!--				<option value="por"> Porutuguese </option>-->
+<!--			</select>-->
 
 </body>
-<!-- Bootstrap core JavaScript-->
-<script th:src="@{/bootstrap/vendor/jquery/jquery.min.js}"></script>
-<script th:src="@{/bootstrap/vendor/jquery/jquery.cookie.min.js}"></script>
-<script th:src="@{/bootstrap/vendor/bootstrap/js/bootstrap.bundle.min.js}"></script>
-<script th:src="@{/bootstrap/js/mz-validation.js}"></script>
 
-<!-- Core plugin JavaScript-->
-<script th:src="@{/bootstrap/vendor/jquery-easing/jquery.easing.min.js}"></script>
 <script>
-	$("#joinSubmit").on('click',function(){
-		var oprtrAccountId = $("#oprtrAccountId").val();
-		var oprtrAccountPw = $("#oprtrAccountPw").val();
-		var oprtrEmail = $("#oprtrEmail").val();
+
+	const introWrap = document.getElementById("introWrap");
+	const adminInput = document.getElementById("adminInput");
+	const modalContent = document.getElementById("modal");
+	
+	const oprtrDeptNmElement = document.getElementById("oprtrDeptNm");
+	const oprtrDeptIdElement = document.getElementById("oprtrDeptId");
+	
+	
+	const oprtrPnoElement = document.getElementById("oprtrPno");
+	oprtrPnoElement.addEventListener('keyup', onlyNum);
+	
+	function onlyNum(event) {
+		let processedVal = event.target.value.trim().replace(/[^0-9]/g, "");
+		event.target.value = processedVal;
+	}
+
+	function join() {
+		// TODO :: validation
+		// TODO :: 소속 부서 선택, 저장
 		
-		if(!validationChecker.isNull(oprtrAccountId)){
-			alert("사용하실 이메일을 입력해주세요")
-			return false;
-		} else if(!validationChecker.isNull(oprtrAccountPw)){
-			alert("사용하실 비밀번호를 입력해주세요")
-			return false;
-		} else if(!validationChecker.isNull(oprtrEmail)){
-			alert("외부 이메일 주소를 입력해주세요")
+		// 안내 문구 초기화
+		const infoTextList = document.getElementsByClassName('infoText');
+		for(const element of infoTextList) {
+			if(!element.classList.contains('none')) {
+				element.classList.add('none');
+			}
+		}
+		
+		const oprtrPermissionList = document.getElementsByName('oprtrPermission');
+		let oprtrPermission = '';
+
+		for (const element of oprtrPermissionList) {
+			if (element.checked === true) {
+				oprtrPermission = element.value;
+				break;
+			}
+		}
+
+		// 계정 ID입력값 확인
+		const oprtrAccountId = document.getElementById('oprtrAccountId');
+		if (oprtrAccountId.value == '') {
+			oprtrAccountId.focus();
+			document.getElementsByClassName('idInfo')[0].classList.remove('none');
 			return false;
 		}
 		
-		if(!validationChecker.isRegexValidation(oprtrAccountId,"EMAIL")){
-			alert("이메일 양식을 확인해주세요");
-			return false;
-		} else if(!validationChecker.isRegexValidation(oprtrAccountPw,"PASSWORD")){
-			alert("사용하실 비밀번호 양식을 확인해주세요");
-			return false;
-		} else if(!validationChecker.isRegexValidation(oprtrEmail,"EMAIL")){
-			alert("외부 이메일 양식을 확인해주세요");
+		// 비밀번호 입력값 확인
+		const oprtrAccountPwElement = document.getElementById('oprtrAccountPw');
+		if(oprtrAccountPwElement.value == '') {
+			oprtrAccountPwElement.focus();
+			document.getElementsByClassName('pwInfo')[0].classList.remove('none');
 			return false;
 		}
 		
-        $.ajax({
-            url: "/joinUsAjax",
-            type: "post",
-            data: $("#joinUsForm").serialize(),
-            success: function(data){
-                if(data.code == 200){
-                    alert("회원 등록이 완료되었습니다.");
-                    location.href="/login";
-                }
-            }
-        });
-	});
+		// 이름 입력값 확인
+		const oprtrNmElement = document.getElementById('oprtrNm');
+		if(oprtrNmElement.value == '') {
+			oprtrNmElement.focus();
+			document.getElementsByClassName('nmInfo')[0].classList.remove('none');
+			return false;
+		}
+		
+		// 연락처 입력값 확인
+		if(oprtrPnoElement.value == '') {
+			oprtrPnoElement.focus();
+			document.getElementsByClassName('pnoInfo')[0].classList.remove('none');
+			return false;
+		}
+
+		// 소속 부서 입력 확인
+		if(oprtrDeptNmElement.value == '') {
+			document.getElementsByClassName('deptInfo')[0].classList.remove('none');
+			return false;
+		}
+		
+		
+		
+		$.ajax({
+			url: "/joinUsAjax",
+			type: "post",
+			data: $("#joinUsForm").serialize(),
+			success: function (data) {
+				if (data.code == 200) {
+					alert(data.message);
+				  location.href = "/login";
+				} else {
+					alert(data.message);
+				}
+			}
+		});
+		
+	}
+	
+	// user input control
+	function chnageRegInput(type) {
+		if (type == 'show') {
+			introWrap.classList.add('none');
+			adminInput.style.display = "flex";
+		} else if (type == 'hide') {
+			introWrap.classList.remove('none');
+			adminInput.style.display = "none";
+		}
+	}
+
+	// modal control
+	function changeDeptListModal(type) {
+		if (type == "show") {
+			changeListData(1);
+		} else if (type == "hide") {
+			modalContent.innerHTML = '';
+			modalContent.style.display = 'none';
+		}
+	}
+	
+	function changeListData(idx){
+		let startInput = document.getElementById('start');
+		let searchTxtInput = document.getElementById('searchTxt');
+		
+		let page = idx != null ? idx : 1;
+		let start = startInput != null ? startInput.value : 0;
+		let searchTxt = searchTxtInput != null ? searchTxtInput.value : '';
+		
+		$.ajax({
+				url: '/modal/dept/list.do',
+				type: "get",
+				data : {
+					"page" : page,
+					"start" : start,
+					"searchTxt" : searchTxt
+				},
+				dataType: 'html',
+				success: function (data) {
+					modalContent.empty();
+					modalContent.innerHTML = data;
+					modalContent.style.display = 'block';
+				}
+		});
+	}
+
+	function selectDept(oprtrDeptId, oprtrDeptNm) {
+		oprtrDeptIdElement.value = oprtrDeptId;
+		oprtrDeptNmElement.value = oprtrDeptNm;
+		changeDeptListModal('hide')
+	}
+	
+	function fnAjaxPageMove(idx){
+		changeListData(idx);
+	}
+	
+	function search(){
+		changeListData(1);
+	}
+	
 </script>
 
 </html>

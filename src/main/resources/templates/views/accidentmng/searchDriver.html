@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	<div id="container-fluid">
+		<!-- Page Heading -->
+		<!--<h1 th:text="#{accident.driver.search.title}" class="search-result">운전자 조회</h1>-->
+		<h1 id="content-title" th:text="|#{accident.driver.search.title}|">운전자 조회</h1>
+		<div id="content-sub-title" th:text="#{accident.driver.search.descr}">이름 또는 연락처를 통해 운전자를 검색할 수 있습니다.</div>
+		<div id="frmDriverSearch">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{accident.common.search.searchOp}">유형 선택</th>
+						<td>
+							<select name="searchType" id="searchType" class="filter-select">
+<!--								<option th:text="#{accident.common.search.selectAll}">전체</option>-->
+								<option value="driverNm" th:text="#{accident.driver.search.name}">이름</option>
+								<option value="dvrLcenId" th:text="#{accident.driver.search.driverLicense}">운전면허증 번호</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{accident.common.search.serchTerm}">내용 검색</th>
+						<td><input type="text" id="searchContent" name="searchContent" class="search-box main-input" th:placeholder="#{accident.common.search.placeholder}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+			<div class="btn-wrap-center">
+				<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{accident.driver.search.check}">조회</button>
+				<button type="button" id="resetSearch" onclick="resetForm()" class="sub-btn form-button" th:text="#{accident.common.search.reset}">검색 초기화</button>
+			</div>
+			
+			<div class="">
+				<table id="api_table" class="main-table" style="display:none">
+					<thead>
+						<tr>
+							<th th:text="#{accident.driver.search.driverLicense}">Driver License Id</th>
+							<th th:text="#{accident.driver.search.driverType}">Driver License Type</th>
+							<th th:text="#{accident.driver.search.expiration}">Driver License Expiration Date</th>
+							<th th:text="#{accident.driver.search.name}">Driver Name</th>
+							<th th:text="#{accident.driver.search.birth}">Driver Brth</th>
+							<th th:text="#{accident.driver.search.searchAddress}">Driver Addr</th>
+							<th th:text="#{accident.driver.search.phNum}">Driver Phone Number</th>
+							<th th:text="#{accident.driver.search.vehicleNo}">Vehicle No</th>
+							<th th:text="#{accident.driver.search.vehicleType}">Vehicle Type</th>
+						</tr>
+					</thead>
+					<tbody id="resultTbody">
+					</tbody>
+				</table>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script>
+	const resultTable = document.getElementById('api_table');
+	
+	function apiResultDetail(_this){
+		let resultData = _this.dataset != null ? _this.dataset.prop : null;
+		let obj = JSON.parse(resultData);
+	    const form = document.createElement('form');
+	    form.method = 'post';
+	    form.action = '/acdnt/driver/detail.do';
+//		console.log(_this.dataset.prop);
+	    Object.keys(obj).forEach(key => {
+	        const result = document.createElement('input');
+	        result.type = 'hidden';
+	        result.name = key;
+	        result.value = obj[key];
+	        form.appendChild(result);
+	    });
+	
+	    document.body.appendChild(form);
+	    form.submit();
+	}
+	
+	$("#btnSearch").click(function () {
+        const searchType = document.getElementById('searchType').value;
+        const searchValue = document.getElementById('searchContent').value;
+        
+        if(searchType == null || searchType == '' || searchValue == null || searchValue == ''){
+			alert("Please Input SearchType and SearchContent");
+			return;
+		}
+        
+		const fetcher = new DriverSelectAPI();
+		
+        fetcher.fetchData(searchType, searchValue, function(data) {
+            const tbody = document.getElementById('resultTbody');
+            tbody.empty();
+
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.dataset.prop = JSON.stringify(item);
+                //console.log(JSON.stringify(item));
+                tr.setAttribute('onclick','apiResultDetail(this)');
+                tr.innerHTML = `
+	               	<td>${item.driverLicenseId}</td>
+	               	<td>${item.driverLicenseType}</td>
+	               	<td>${item.expirationDate}</td>
+	               	<td>${item.driverNm}</td>
+	               	<td>${item.driverBrth}</td>
+	               	<td>${item.driverPno}</td>
+	               	<td>${item.driverAddr}</td>
+	               	<td>${item.vehicleNo}</td>
+	               	<td>${item.vehicleType}</td>
+               	`;
+               	
+                tbody.appendChild(tr);
+                
+                resultTable.style.display = 'table';
+            });
+        });
+	});
+	
+	function resetForm(){
+        const searchType = document.getElementById('searchType');
+        
+	    if (searchType && searchType.options.length > 0) {
+	        searchType.value = searchType.options[0].value;
+	    }
+	    
+        document.getElementById('searchContent').value = '';
+        resultTable.style.display = 'none';
+	}
+
+</script>

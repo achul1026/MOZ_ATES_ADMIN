@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	 <div id="container-fluid">
+        <!-- Page Heading -->
+        <h1 id="detail-content-title" th:text="#{sitemng.codeModify.title}">코드 상세</h1>
+   
+        <div class="detail-table">
+            <form id="frmCodeModify">
+	            <table class="">
+	                <colgroup>
+	                    <col width="15%">
+	                    <col width="85%">
+	                </colgroup>
+	                <tbody>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{sitemng.common.code.codeId}">코드 ID</span>
+							</th>
+							<td>
+								<input type="text" class="main-input" name="cdId" th:value="${mozCmCd.cdId}" th:readonly="${#lists.size(subMozCmCdList) > 0}">
+								<input type="hidden" name="cdIdOg" th:value="${mozCmCd.cdId}">
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{sitemng.common.code.codeNm}"></span>
+							</th>
+							<td>
+								<input type="text" class="main-input" name="cdNm" th:value="${mozCmCd.cdNm}">
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{sitemng.common.code.codeDesc}">코드 설명</th>
+							<td>
+								<input type="text" class="main-input" name="cdDesc" th:value="${mozCmCd.cdDesc}">
+							</td>
+						</tr>
+	                </tbody>
+	            </table>
+            </form>
+        </div>
+        <div class="btn-wrap-center">
+            <button type="button" id="btnModify" class="main-btn form-button" th:onclick="updateSubCode(this, [[${mozCmCd.cdId}]], [[${mozCmCd.cdGroupId}]])" th:text="#{common.button.modify}">수정</button>
+			<button type="button" class="sub-btn form-button" th:onclick="cancleInfo([[${mozCmCd.cdId}]])" th:text="#{common.button.cancel}">취소</button>
+		</div>
+
+	        <table class="main-table code-table">
+	        	<thead>
+	        		<tr>
+						<th th:text="#{sitemng.common.code.codeId}">코드 ID</th>
+						<th th:text="#{sitemng.common.code.codeNm}">코드 이름</th>
+						<th th:text="#{sitemng.common.code.codeDesc}">코드 설명</th>
+						<th th:text="#{common.table.action}">기능</th>
+					</tr>
+	        	</thead>
+	        	<tbody>
+	        		<tr th:if="${#lists.size(subMozCmCdList) > 0}" th:each="item : ${subMozCmCdList}">
+	        			<td>
+	        				<input type="text" class="main-input" name="cdId" th:value="${item.cdId}"/>
+	        				<input type="hidden" name="cdIdOg" th:value="${item.cdId}">
+	        			</td>
+	        			<td>
+	        				<input type="text" class="main-input" id="cdNm" name="cdNm" th:value="${item.cdNm}"/>
+	        			</td>
+	        			<td>
+	        				<input type="text" class="main-input" name="cdDesc" th:value="${item.cdDesc}"/>
+	        			</td>
+	        			<td>
+	        				<input type="hidden" name="cdGroupId" th:value="${item.cdGroupId}"/>
+	        				<input type="button" class="main-btn detail-table-button" th:value="#{common.button.modify}" th:data-item-num="${itemStat.index}" th:onclick="updateSubCode(this, [[${item.cdId}]], [[${item.cdGroupId}]])"/>
+	        				<input type="button" class="delete-btn detail-table-button" th:value="#{common.button.delete}" th:onclick="deleteSubCode([[${item.cdId}]], [[${item.cdGroupId}]])"/>
+	        			</td>
+	        		</tr>
+	        		<tr th:if="${#lists.size(subMozCmCdList) == 0}">
+						<td colspan="3" th:text="#{common.search.notFound}">검색 결과를 찾을 수 없습니다.</td>
+					</tr>
+        			<tr>
+	        			<td>
+	        				<input type="text" class="main-input" id="subCdId" th:placeholder="#{sitemng.common.code.placeholder.codeId}"/>
+	        			</td>
+	        			<td>
+	        				<input type="text" class="main-input" id="subCdNm" th:placeholder="#{sitemng.common.code.placeholder.codeName}"/>
+	        			</td>
+	        			<td>
+	        				<input type="text" class="main-input" id="subCdDesc" th:placeholder="#{sitemng.common.code.placeholder.codeDesc}"/>
+	        			</td>
+	        			<td>
+	        				<input type="button" class="main-btn detail-table-button" th:value="#{common.button.add}" th:onclick="saveSubCode([[${mozCmCd.cdId}]])"/>
+	        			</td>
+	        		</tr>
+	        	</tbody>
+	        </table>
+    </div>
+</th:block>
+</html>
+<script th:inline="javascript">
+	function cancleInfo(cdId) {
+		new ModalBuilder().init().successBody(/*[[#{common.message.completeCancel}]]*/).footer(4,'확인',function(button, modal){
+			window.location.href = '/siteMng/code/detail.do?cdId=' + cdId;
+		}).open();
+	}
+	
+	function updateSubCode(element, cdId, cdGroupId) {
+		if($("#frmCodeModify").soValid()) {
+			
+			let itemNum = element.getAttribute('data-item-num');
+			let selectedTr = $(element).closest('tr');
+			let formData = {};
+			let url = cdGroupId == null ? cdId : cdGroupId;
+			if (cdGroupId == null) {
+				formData = $("#frmCodeModify").serialize();
+			} else {
+				let isValid = true;
+				selectedTr.find('input').each(function () {
+					if(isValid){
+						let input = $(this); // 현재 input 요소
+						if(isNull(input.val()) && (input.attr('name') === 'cdId'|| input.attr('name') === 'cdNm')){
+							isValid = false;
+						}
+						formData[input.attr('name')] = input.val(); // input의 name과 value를 formData 객체에 추가
+						
+					}
+				});
+				formData = $.param(formData); // 객체를 쿼리 스트링으로 변환
+			}
+			if (confirm(/*[[#{sitemng.codeModify.message.confirmModify}]]*/)) {
+				$.ajax({
+					url: /*[[@{/siteMng/code/update.ajax}]]*/ "/siteMng/code/update.ajax",
+					type: "post",
+					data: formData,
+					success: function (result) {
+						var resultCode = result.code;
+						var resultMessage = result.message;
+						if (result.code == '200') {
+							new ModalBuilder().init().successBody(/*[[#{common.message.completeModify}]]*/).footer(4, '확인', function (button, modal) {
+								window.location.href = "/siteMng/code/detail.do?cdId=" + url;
+							}).open();
+						} else {
+							new ModalBuilder().init().alertBody(result.message).footer(4,'확인',function(button, modal){modal.close();}).open();
+						}
+					}
+				});
+				
+			} else {
+				return;
+			}
+		}
+	}
+    
+    function deleteSubCode(cdId, cdGroupId){
+		if (confirm(/*[[#{sitemng.common.code.message.confirmDelete}]]*/)) {
+			$.ajax({
+				url: /*[[@{/siteMng/code/subDelete.ajax}]]*/ "/siteMng/code/subDelete.ajax",
+				type: "post",
+				data: {
+					"cdId" : cdId,
+					"cdGroupId" : cdGroupId
+				},
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+					if (result.code == '200') {
+						window.location.href = "/siteMng/code/detail.do?cdId="+ cdGroupId;
+					} else {
+						alert(result.message);
+					}
+				}
+			});
+		} else {
+			return false;
+		}
+	}
+	
+    function saveSubCode(cdGroupId){
+		if($("#frmCodeModify").soValid()) {
+			const cdId = document.getElementById("subCdId").value;
+			const cdNm = document.getElementById("subCdNm").value;
+			const cdDesc = document.getElementById("subCdDesc").value;
+			
+			if(cdId == null || cdId == ''){
+				alert('Please enter your code ID');
+				cdId.focus();
+				return false;
+			}
+			if(cdNm == null || cdNm == ''){
+				alert('Please enter your code Nm');
+				cdId.focus();
+				return false;
+			}
+			
+			$.ajax({
+				url: /*[[@{/siteMng/code/subSave.ajax}]]*/ "/siteMng/code/subSave.ajax",
+				type: "post",
+				data: {
+					"cdId" : cdId,
+					"cdGroupId" : cdGroupId,
+					"cdNm" : cdNm,
+					"cdDesc" : cdDesc
+				},
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+					if (result.code == '200') {
+						window.location.href = "/siteMng/code/detail.do?cdId="+ cdGroupId;
+					} else {
+						alert(result.message);
+					}
+				}
+			});	
+		}
+	}
+</script>

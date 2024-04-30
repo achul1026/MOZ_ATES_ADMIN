@@ -1,10 +1,10 @@
 package com.moz.ates.traffic.admin.penaltymng;
 
-import com.moz.ates.traffic.admin.common.DataTableVO;
-import com.moz.ates.traffic.common.entity.payment.MozFinePymntInfo;
-
 import java.util.List;
 import java.util.Map;
+
+import com.moz.ates.traffic.common.entity.payment.MozFinePymntInfo;
+import com.moz.ates.traffic.common.enums.PymntMethod;
 
 public interface PenaltyService {
 	
@@ -17,20 +17,6 @@ public interface PenaltyService {
      * @return : 
      */
     void registPenalty(MozFinePymntInfo finePymntInfo);
-    
-//    /**
-//     * @brief : 범칙금 리스트 조회
-//     * @details : 범칙금 리스트 조회
-//     * @author : KC.KIM
-//     * @date : 2023.08.04
-//     * @param : finePymntInfo
-//     * @return : DataTableVO
-//     */
-//    DataTableVO getPenaltyListDatatable(MozFinePymntInfo finePymntInfo);
-//
-//    List getPenaltyList(MozFinePymntInfo finePymntInfo);
-//
-//    int getPenaltyListCnt(MozFinePymntInfo finePymntInfo);
     
     /**
      * @brief : 범칙금 상세 조회
@@ -67,7 +53,7 @@ public interface PenaltyService {
 	void paymentCencal(String pymntId);
 
 
-	Map<String, Object> penaltySendEmail(String pymntId, String emailAddr, String content);
+//	Map<String, Object> penaltySendEmail(String pymntId, String emailAddr, String content);
 
     /**
      * @brief : 범칙금 리스트 조회
@@ -90,5 +76,25 @@ public interface PenaltyService {
 	int getPenaltyListCnt(MozFinePymntInfo finePymntInfo);
 
 
-	
+	void updatePayStatus(MozFinePymntInfo finePymntInfo);
+
+   /**
+     * @brief : 현장 결제 로직
+     * @details : 현장 결제 로직
+     * @author : KY.LEE
+     * @date : 2024.03.20
+     * @param : onsitePayment
+     * @return : 
+     */
+	public void onsitePayment(MozFinePymntInfo mozFinePymntInfo);
+
+	/**
+	 * @brief : 결제 취소
+	 * @details : 결제 취소
+	 * @author : KY.LEE
+	 * @date : 2024.03.29
+	 * @param : cancelPayment
+	 * @return : 
+	 */
+	public void cancelPayment(String pymntId , PymntMethod pymntMethod);
 }

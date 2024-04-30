@@ -1,0 +1,248 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="modal-contents">
+	<div class="modal-title">
+		<div class="modal-title-text" th:text="#{sitemng.common.menu.mainMenu.title}">메인 메뉴 정보</div>
+		<div class="close"><img src="/images/close.png"></div>
+	</div>
+
+	<!--			<div class="modal-sub-title">-->
+	<!--				<p>- 서브 메뉴 리스트</p>-->
+	<!--			</div>-->
+
+	<div class="modal-body">
+		<table>
+			<thead>
+				<tr>
+					<th th:text="#{sitemng.common.menu.nameEng}">메뉴 이름 ENG</th>
+					<th th:text="#{sitemng.common.menu.namePor}">메뉴 이름 POR</th>
+					<th th:text="#{sitemng.common.menu.mainMenuOrder}">메인 메뉴 순서</th>
+					<th th:text="#{sitemng.common.menu.urlPttrn}">URL 패턴</th>
+					<th th:text="#{sitemng.common.menu.url}">URL</th>
+					<th th:text="#{sitemng.common.menu.abbreviation}">Menu Abbreviation</th>
+					<th th:text="#{sitemng.common.menu.exposedStatus}">노출여부</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<td>
+						<input type="hidden" id="menuId" value="${parentMenu.menuId}">
+						<input type="text" id="menuNmEng" th:value="${parentMenu.menuNmEng}">
+					</td>
+					<td>
+						<input type="text" id="menuNmPor" th:value="${parentMenu.menuNmPor}">
+					</td>
+					<td>
+						<input type="number" id="mainSortNo" th:value="${parentMenu.mainSortNo}">
+					</td>
+					<td>
+						<input type="text" id="menuUrlPattrn" th:value="${parentMenu.menuUrlPattrn}">
+					</td>
+					<td>
+						<input type="text" id="menuUrl" th:value="${parentMenu.menuUrl}">
+					</td>
+					<td>
+						<input type="text" id="menuAbv" th:value="${parentMenu.menuAbv}">
+					</td>
+					<td>
+						<select id="useYn">
+							<option value="Y" th:selected="${parentMenu.useYn == 'Y'}" th:text="#{sitemng.common.menu.exposed}">노출</option>
+							<option value="N" th:selected="${parentMenu.useYn == 'N'}" th:text="#{sitemng.common.menu.nonExposed}">비노출</option>
+						</select>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<p th:text="|- #{sitemng.common.menu.subMenu.title}|">- 서브 메뉴 리스트</p>
+		<table class="manage-table" id="tblList">
+			<thead>
+				<tr>
+					<th th:text="#{sitemng.common.menu.nameEng}">ENG</th>
+					<th th:text="#{sitemng.common.menu.namePor}">POR</th>
+					<th th:text="#{sitemng.common.menu.subMenuOrder}">서브 메뉴 순서</th>
+					<th th:text="#{sitemng.common.menu.urlPttrn}">URL 패턴</th>
+					<th th:text="#{sitemng.common.menu.url}">URL</th>
+					<th th:text="#{sitemng.common.menu.abbreviation}">Menu Abbreviation</th>
+					<th th:text="#{sitemng.common.menu.exposedStatus}">노출여부</th>
+					<th th:text="#{common.button.modify}">수정</th>
+				</tr>
+			</thead>
+			<tbody th:if="${not #lists.isEmpty(subMenuList)}">
+
+				<tr th:each="subMenuItem, subMenuStatus : ${subMenuList}" class="isNotActive"
+					th:id="'subMenu' + ${subMenuItem.menuId}">
+					<td>
+						<input type="text" th:id="'menuNmEng' + ${subMenuItem.menuId}" class="is_disabled"
+							th:value="${subMenuItem.menuNmEng}">
+					</td>
+					<td>
+						<input type="text" th:id="'menuNmPor' + ${subMenuItem.menuId}" class="is_disabled"
+							th:value="${subMenuItem.menuNmPor}">
+					</td>
+					<td>
+						<input type="number" th:id="'subSortNo' + ${subMenuItem.menuId}" class="is_disabled"
+							th:value="${subMenuItem.subSortNo}">
+					</td>
+					<td>
+						<input type="text" th:id="'menuUrlPattrn' + ${subMenuItem.menuId}" class="is_disabled"
+							th:value="${subMenuItem.menuUrlPattrn}">
+					</td>
+					<td>
+						<input type="text" th:id="'menuUrl' + ${subMenuItem.menuId}" class="is_disabled"
+							th:value="${subMenuItem.menuUrl}">
+					</td>
+					<td>
+						<input type="text" th:id="'menuAbv' + ${subMenuItem.menuId}" class="is_disabled"
+							th:value="${subMenuItem.menuAbv}">
+					</td>
+					<td>
+						<select th:id="'useYn' + ${subMenuItem.menuId}" class="is_disabled">
+							<option value="Y" th:selected="${subMenuItem.useYn == 'Y'}" th:text="#{sitemng.common.menu.exposed}">노출</option>
+							<option value="N" th:selected="${subMenuItem.useYn == 'N'}" th:text="#{sitemng.common.menu.nonExposed}">비노출</option>
+						</select>
+					</td>
+					<td>
+						<div class="menu_update_box">
+							<button type="button" class="on-button menu_update_btn"
+								th:onclick="changeSubMenu([[${subMenuItem.menuId}]])" th:text="#{common.button.modify}">수정하기</button>
+						</div>
+						<div id="" class="menu_update_sub_btn_box d-none">
+							<button type="button" class="main-btn" onclick="" th:text="#{common.button.save}">저장</button>
+							/
+							<button type="button" class="sub-btn menu_update_btn_item"
+								th:onclick="changeSubMenu([[${subMenuItem.menuId}]])" th:text="#{common.button.cancel}">취소</button>
+						</div>
+					</td>
+				</tr>
+			</tbody>
+
+			<tbody th:if="${#lists.isEmpty(subMenuList)}">
+				<!-- sub menu empty -->
+				<tr>
+					<td colspan="8" th:text="#{sitemng.common.menu.subMenuEmpty}">등록된 서브 메뉴가 없습니다.</td>
+				</tr>
+			</tbody>
+		</table>
+
+	</div>
+
+	<div class="modal-btn">
+		<input type="button" class="main-btn" onclick="updateMainMenu()" th:value="#{common.button.save}">
+	</div>
+</div>
+
+<script th:inline="javascript">
+	function changeSubMenu(menuId) {
+		let subMenu = $("#subMenu" + menuId);
+		let menuNmEng = $("#menuNmEng" + menuId);
+		let menuNmPor = $("#menuNmPor" + menuId);
+		let subSortNo = $("#subSortNo" + menuId);
+		let menuUrlPattrn = $("#menuUrlPattrn" + menuId);
+		let menuUrl = $("#menuUrl" + menuId);
+		let menuAbv = $("#menuAbv" + menuId);
+		let useYn = $("#useYn" + menuId);
+
+		if (subMenu.hasClass("isNotActive")) {
+			subMenu.removeClass("isNotActive");
+
+			menuNmEng.removeClass("is_disabled");
+			menuNmPor.removeClass("is_disabled");
+			subSortNo.removeClass("is_disabled");
+			menuUrlPattrn.removeClass("is_disabled");
+			menuUrl.removeClass("is_disabled");
+			menuAbv.removeClass("is_disabled");
+			useYn.removeClass("is_disabled");
+
+			// menuNmEng.attr("readonly",false);
+
+			// TODO :: validation 클래스 추가 필요
+			// menuNmEng.addClass("data-validate");
+
+			subMenu.addClass("isActive");
+		} else {
+			// TODO :: validation removeClass 추가 필요
+			// menuNmEng.removeClass("data-validate");
+
+			menuNmEng.addClass("is_disabled");
+			menuNmPor.addClass("is_disabled");
+			subSortNo.addClass("is_disabled");
+			menuUrlPattrn.addClass("is_disabled");
+			menuUrl.addClass("is_disabled");
+			menuAbv.addClass("is_disabled");
+			useYn.addClass("is_disabled");
+
+			subMenu.addClass("isNotActive");
+		}
+	}
+
+	function updateMainMenu() {
+		let menuId = $("#menuId").val();
+		let menuNmEng = $("#menuNmEng").val();
+		let menuNmPor = $("#menuNmPor").val();
+		let mainSortNo = $("#mainSortNo").val();
+		let menuUrlPattrn = $("#menuUrlPattrn").val();
+		let menuUrl = $("#menuUrl").val();
+		let menuAbv = $("#menuAbv").val();
+		let useYn = $("#useYn").val();
+
+		// TODO :: validation 필요
+
+		let obj = new Object();
+		obj.menuNmEng = menuNmEng;
+		obj.menuNmPor = menuNmPor;
+		obj.mainSortNo = mainSortNo;
+		obj.menuUrlPattrn = menuUrlPattrn;
+		obj.menuUrl = menuUrl;
+		obj.menuAbv = menuAbv;
+		obj.useYn = useYn;
+
+		$.ajax({
+			type: "post",
+			dataType: "json",
+			contentType: "application/json; charset=UTF-8",
+			data: JSON.stringify(obj),
+			url: "${pageContext.request.contextPath}/system/menu/main/update.ajax",
+			success: function (data) {
+				if (data.code == 200) {
+					new ModalBuilder().init().successBody("메인 메뉴 수정을 성공하였습니다.").footer(4, '확인', function (button, modal) {modal.close();}).open();
+					modalAlertWrap();
+				} else {
+					new ModalBuilder().init().alertBoby("메인 메뉴 수정을 실패하였습니다.").footer(4, '확인', function (button, modal) {modal.close();}).open();
+					modalAlertWrap();
+				}
+			}
+		});
+
+	}
+
+	$('.close').click(function () {
+		$('.modal-wrap').hide();
+	});
+
+	/* 수정하기, 저장하기 버튼 */
+	$(document).on('click', '.menu_update_btn', function () {
+		$(this).parent('.menu_update_box').addClass('d-none');
+		$(this).parent('.menu_update_box').siblings('.menu_update_sub_btn_box').removeClass('d-none');
+	})
+
+	$(document).on('click', '.menu_update_btn_item', function () {
+		$(this).parent('.menu_update_sub_btn_box').addClass('d-none');
+		$(this).parent('.menu_update_sub_btn_box').siblings('.menu_update_box').removeClass('d-none');
+	})
+
+</script>
+
+<style>
+	table input {
+		width: 200px;
+	}
+
+	.modal-body {
+		height: 500px;
+		overflow: auto;
+	}
+</style>
+
+
+</html>

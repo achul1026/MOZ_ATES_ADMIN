@@ -1,18 +1,91 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
 
-    <div class="container-fluid">
+	<div id="container-fluid">
 
-        <!-- Page Heading -->
-        <h1 class="h3 mb-4 text-gray-800" th:text="#{equipment.facilityMngList.title}">교통시설물 관리</h1>
-
-    </div>
+		<!-- Page Heading -->
+		<h1 id="content-title" th:text="#{equipment.facilityMngList.title}">전체 교통시설물 수</h1>
+		<div id="content-sub-title" th:text="#{equipment.facilityMngList.descr}">교통시설물을 관리할 수 있습니다.</div>
+		
+		<div class="btn-wrap-left tab-btn-wrap">
+			<button type="button" class="main-btn form-button" id="mapBtn" th:text="#{equipment.facilityMngList.mapBtn}">지도 확인</button>
+			<button type="button" class="sub-btn form-button" id="listBtn" th:text="#{equipment.facilityMngList.listBtn}">전체 시설물 현황 관리</button>
+		</div>
+		
+		<div id="ajaxContent"></div>
+			
+	</div>
+	
+	
 </th:block>
+
 </html>
 <script th:inline="javascript">
-   
+	var listBtn = $("#listBtn");
+	var mapBtn = $("#mapBtn");
+	var ajaxContent = $("#ajaxContent");
+	
+	$(function(){
+		var pageType = /*[[${pageType}]]*/;
+		if(pageType == "list"){
+			ajaxContent.text('');
+			mapBtn.removeClass('main-btn');
+			mapBtn.addClass('sub-btn');
+			listBtn.removeClass('sub-btn');
+			listBtn.addClass('main-btn');
+			getListAjax();
+		}else{
+			getMapAjax();
+		}
+	})
+	
+	listBtn.click(function() {
+		ajaxContent.text('');
+		mapBtn.removeClass('main-btn');
+		mapBtn.addClass('sub-btn');
+		listBtn.removeClass('sub-btn');
+		listBtn.addClass('main-btn');
+		getListAjax();
+	})
+	
+	mapBtn.click(function() {
+		ajaxContent.text('');
+		mapBtn.removeClass('sub-btn');
+		mapBtn.addClass('main-btn');
+		listBtn.removeClass('main-btn');
+		listBtn.addClass('sub-btn');
+		getMapAjax();
+	})
+	
+	function getMapAjax() {
+		$.ajax({
+			url: /*[[@{/eqp/facility/facilityMngMapAjax}]]*/ '/eqp/facility/facilityMngMapAjax',
+			// url: "/eqp/facilityMngMapAjax",
+			type: "POST",
+			data: $("#frmSearch").serialize(),
+			dataType: 'html',
+			cache: false,
+			success: function (data) {
+				ajaxContent.html(data);
+			}
+		});
+	}
+	
+	function getListAjax() {
+		$.ajax({
+			url: /*[[@{/eqp/facility/facilityMngListAjax}]]*/ '/eqp/facility/facilityMngListAjax',
+			// url: "/eqp/facilityMngListAjax",
+			type: "POST",
+			data: $("#frmSearch").serialize(),
+			dataType: 'html',
+			cache: false,
+			success: function (data) {
+				ajaxContent.html(data);
+			}
+		});
+	}
+	
 </script>

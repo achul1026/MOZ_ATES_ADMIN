@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div id="container-fluid">
+		 <!-- Page Heading -->
+        <h1 id="detail-content-title" th:text="#{administ.lawModify.title}">법률 수정</h1>
+        
+        <div class="detail-table">
+            <input type="hidden" id="tfcLawId" th:value="${tfcLwInfo.tfcLawId}">
+            <table class="">
+                <colgroup>
+                    <col width="15%">
+                    <col width="85%">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th>
+						<span class="requiredMark" th:text="#{administ.lawModify.legalNumber}">법률 번호</span>
+					</th>
+                    <td><input type="text" class="main-input" id="lawArticleNo" placeholder="Please Enter Law No." name="lawArticleNo" th:value="${tfcLwInfo.lawArticleNo}"></td>
+                </tr>
+				<tr>
+                   
+                </tr>
+				<tr>
+                    <th>
+						<span class="requiredMark" th:text="#{administ.lawModify.lawType}">법률챕터</span>
+					</th>
+                    <td>
+						<select id="lawChapter" name="lawChapter" class="filter-select">
+							<option th:each="item : ${lawChtrCd}" th:value="${item.cdId}" th:text="${item.cdNm}" th:selected="${item.cdNm == tfcLwInfo.lawChapter}"></option>
+						</select>
+					</td>
+                </tr>
+                <tr>
+                    <th>
+						<span class="requiredMark" th:text="#{administ.lawModify.nameOfLow}">법률명</span>
+					</th>
+                    <td><input type="text" class="main-input" id="lawNm" name="lawNm" placeholder="Please Enter Title" th:value="${tfcLwInfo.lawNm}"></td>
+
+                </tr>
+                 <tr>
+                    <th>
+						<span class="requiredMark" th:text="#{administ.lawModify.enforceDate}">시행일자</span>
+					</th>
+					<td>
+						<input type="date" class="input-date" id="eftvDe" name="eftvDe" th:value="${#dates.format(tfcLwInfo.eftvDe, 'yyyy-MM-dd')}">
+					</td>
+                </tr>
+                <tr>
+                    <th>
+						<span class="requiredMark" th:text="#{administ.lawModify.dateOfPromulgation}">공포일자</span>
+					</th>
+					<td>
+						<input type="date" class="input-date" id="prmgtnDe" name="prmgtnDe" th:value="${#dates.format(tfcLwInfo.prmgtnDe, 'yyyy-MM-dd')}">
+					</td>
+                </tr>
+                 <tr>
+                    <th th:text="#{administ.lawModify.constructer}">작성기관</th>
+                    <td th:text="${tfcLwInfo.crtr}"></td>
+                </tr>
+                <tr>
+                    <th th:text="#{administ.lawModify.legalExplanation}">법률 설명</th>
+                    <td><textarea class="detail-table-textarea" id="lawDesc" name="lawDesc" placeholder="Please Enter Details" th:text="${tfcLwInfo.lawDesc}"></textarea></td>
+                </tr>
+				<tr th:if="${#lists.size(tfcLwAdtnRvsnList) > 0}">
+					<th th:text="#{administ.lawModify.adtnRvsnDt}">추가 개정일</th>
+					<th th:text="#{administ.lawModify.adtnRvsnDetail}">추가 개정 내용</th>							
+				</tr>
+				<tr th:if="${#lists.size(tfcLwAdtnRvsnList) > 0}" th:each="item : ${tfcLwAdtnRvsnList}">
+					<th th:text="${#dates.format(item.adtnRvsnDt, 'yyyy-MM-dd')}"></th>
+                	<td>
+						<input type="text" class="main-input adtnRvsnDesc" placeholder="Please Enter Additional Revision Details" th:value="${item.adtnRvsnDesc}">
+                		<input type="hidden" class="main-input tfcLawAdtnRvsnId" th:value="${item.tfcLawAdtnRvsnId}">
+                	</td>
+				</tr>
+                </tbody>
+            </table>
+        </div>
+        <div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				<h1 id="content-title" th:text="#{administ.lawModify.fineList}">범칙금 목록</h1>
+			</div>
+		</div>
+		
+		<div class="sub-table detail-table">
+				<table class="table-col2">
+					<colgroup>
+						<col width="15%">
+						<col width="45%">
+						<col width="25%">
+						<col width="15%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{administ.lawModify.lastUpdDt}">최신 수정 일</th>
+							<th th:text="#{administ.lawModify.fineDescription}">범칙금 설명</th>
+							<th th:text="#{administ.lawModify.finePrice}">범칙금 금액</th>
+							<th th:text="#{administ.lawModify.fineDelete}">범칙금 삭제</th> 
+						</tr>
+						<tr th:if="${#lists.size(tfcLwFineInfoList) > 0}" th:each="item : ${tfcLwFineInfoList}">
+							<th th:text="${#dates.format(item.lastUpdDt, 'yyyy-MM-dd')}"></th>
+							<td>
+								<input type="text" class="main-input fineDesc" th:value="${item.fineDesc}">
+								<input type="hidden" class="main-input tfcLawFineId" th:value="${item.tfcLawFineId}">
+							</td>
+							<td><input type="text" class="main-input finePrice" th:value="${item.finePrice}"></td>
+							<td class="textCenter"> 
+								<button type="button" class="delete-btn innerDeleteBtn" th:text="#{administ.lawModify.fineDelete}" th:onclick="removeFineInfo([[${item.tfcLawFineId}]])">범칙금 제거</button>
+							</td>
+						</tr>
+						<tr th:if="${#lists.size(tfcLwFineInfoList) == 0}">
+							<td colspan="4" th:text="#{common.search.notFound}">검색 결과를 찾을 수 없습니다.</td>
+						</tr>
+					</tbody>
+				</table>
+		</div>
+        <div class="btn-wrap-center">
+			<button type="button" class="sub-btn form-button" th:onclick="|location.href='@{/administCourt/law/detail.do(lawId=${tfcLwInfo.tfcLawId})}'|" th:text="#{administ.lawModify.cancelButton}">취소</button>
+            <button type="button" class="main-btn form-button" th:text="#{administ.lawModify.modifyFinish}" onclick="saveLaw()">수정완료</button>
+		</div>
+    </div>
+</th:block>
+</html>
+<script th:inline="javascript">
+	
+	function removeFineInfo(tfcLawFineId){
+		if(tfcLawFineId == null || tfcLawFineId == ''){
+			return false;
+		}
+				
+		if (confirm("범칙금 정보를 삭제 하시겠습니까?")) {
+			 $.ajax({
+	            url: /*[[@{/administCourt/law/fineDelete.ajax}]]*/ "/administCourt/law/fineDelete.ajax",
+	            type: "post",
+	            data: {
+					"tfcLawFineId" : tfcLawFineId
+				},
+	            success: function (data) {
+					if (data.code == '200') {
+						alert(data.message);
+						location.reload();
+					} else {
+						alert(data.message);
+					}
+				}
+	        });
+        }
+	}
+
+	function saveLaw(){
+		var mozTfcLwInfo = new Object();
+		
+		const tfcLawId = document.getElementById("tfcLawId").value;
+		const lawArticleNo = document.getElementById("lawArticleNo").value;
+		const lawNm = document.getElementById("lawNm").value;
+		const lawType = document.getElementById("lawType").value;
+		const lawChapter = document.getElementById("lawChapter").value;
+		const lawDesc = document.getElementById("lawDesc").value;
+		const eftvDe = document.getElementById("eftvDe").value;
+		const prmgtnDe = document.getElementById("prmgtnDe").value;
+		
+		if(lawDesc == null || lawDesc == ''){
+			return false;
+		}
+		
+		if(lawType == null || lawType == ''){
+			return false;
+		}
+		
+		if(lawChapter == null || lawChapter == ''){
+			return false;
+		}
+		
+		if(lawArticleNo == null || lawArticleNo == ''){
+			return false;
+		}
+		
+		if(lawNm == null || lawNm == ''){
+			return false;
+		}
+		
+		if(eftvDe == null || eftvDe == ''){
+			return false;
+		}
+		
+		if(prmgtnDe == null || prmgtnDe == ''){
+			return false;
+		}
+		
+		var mozTfcLwAdtnRvsnArr = new Array();
+
+		var mozTfcLwFineInfoArr = new Array();
+
+		//추가개정	
+		const adtnRvsnDescList = document.querySelectorAll(".adtnRvsnDesc");
+		const tfcLawAdtnRvsnIdList = document.querySelectorAll(".tfcLawAdtnRvsnId");
+
+		//범칙금
+		const tfcLawFineIdList = document.querySelectorAll(".tfcLawFineId");
+		const fineDescList = document.querySelectorAll(".fineDesc");
+		const finePriceList = document.querySelectorAll(".finePrice");
+		
+		if(adtnRvsnDescList != null){
+			for(var i = 0; i < adtnRvsnDescList.length; i++){
+				const mozTfcLwAdtnRvsn = new Object();
+				
+				const tfcLawAdtnRvsnId = tfcLawAdtnRvsnIdList[i].value;
+				const adtnRvsnDesc = adtnRvsnDescList[i].value;
+				
+				mozTfcLwAdtnRvsn.tfcLawAdtnRvsnId = tfcLawAdtnRvsnId;
+				mozTfcLwAdtnRvsn.adtnRvsnDesc = adtnRvsnDesc;
+				mozTfcLwAdtnRvsn.tfcLawId = tfcLawId;
+				mozTfcLwAdtnRvsnArr.push(mozTfcLwAdtnRvsn);
+			}
+			mozTfcLwInfo.mozTfcLwAdtnRvsnArr = mozTfcLwAdtnRvsnArr;
+		}
+		
+		if(tfcLawFineIdList != null){
+			for(var i = 0; i < tfcLawFineIdList.length; i++){
+				const mozTfcLwFineInfo = new Object();
+				
+				const tfcLawFineId = tfcLawFineIdList[i].value;
+				const fineDesc = fineDescList[i].value;
+				const finePrice = finePriceList[i].value;
+				
+				mozTfcLwFineInfo.tfcLawId = tfcLawId;
+				mozTfcLwFineInfo.tfcLawFineId = tfcLawFineId;
+				mozTfcLwFineInfo.fineDesc = fineDesc;
+				mozTfcLwFineInfo.finePrice = finePrice;
+				
+				mozTfcLwFineInfoArr.push(mozTfcLwFineInfo);
+			}
+			mozTfcLwInfo.mozTfcLwFineInfoArr = mozTfcLwFineInfoArr;
+		}
+		
+		mozTfcLwInfo.tfcLawId = tfcLawId;
+		mozTfcLwInfo.lawArticleNo = lawArticleNo;
+		mozTfcLwInfo.lawNm = lawNm;
+		mozTfcLwInfo.lawType = lawType;
+		mozTfcLwInfo.lawChapter = lawChapter;
+		mozTfcLwInfo.eftvDe = eftvDe;
+		mozTfcLwInfo.prmgtnDe = prmgtnDe;
+		mozTfcLwInfo.lawDesc = lawDesc;
+		
+		 $.ajax({
+            url: /*[[@{/administCourt/law/update.ajax}]]*/ "/administCourt/law/update.ajax",
+            type: "post",
+			contentType : "application/json; charset=UTF-8",
+			dataType : "json",
+			data : JSON.stringify(mozTfcLwInfo),
+            success: function (data) {
+				if (data.code == '200') {
+					alert(data.message);
+					location.href = "/administCourt/law/detail.do?lawId="+tfcLawId;
+				} else {
+					alert(data.message);
+				}
+			}
+        });
+		
+	}
+
+</script>

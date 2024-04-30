@@ -1,8 +1,8 @@
 package com.moz.ates.traffic.admin.common;
 
-import lombok.Data;
-
 import java.util.List;
+
+import lombok.Data;
 
 @Data
 public class DataTableVO {

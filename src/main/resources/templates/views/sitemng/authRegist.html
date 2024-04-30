@@ -1,204 +1,279 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-	권한 관리 등록
-	<form id="authRegistForm">
-		권한 코드	
-		<input type="text" id="authCd" name="authCd"/>
-		권한 이름 
-		<input type="text" id="authNm" name="authNm"/>
-		
-		<div th:if="${!#lists.isEmpty(menuAllList)}">
-				<ul th:each="menuList, parVarStatus : ${menuAllList}">
-					<li>
-						<div style="display:flex; align-items:center; gap:8px;">
-							<div style="width:300px">
-								[[${lang == 'por' ? menuList.mainMenu.menuNmPor : menuList.mainMenu.menuNmEng}]]
-								<input type="hidden" class="parentMenu" th:value="${menuList.mainMenu.menuId}"/>
-							</div>
-							<label style="display:flex; flex-direction:column;">
-								전체
-							<input th:id="'parAllCheck'+${parVarStatus.index}" th:attr="onclick=|parCheckAll('${parVarStatus.index}')|" type="checkbox">
+	<div id="container-fluid">
+
+		<h1 id="detail-content-title" th:text="#{sitemng.authRegist.title}">권한 추가</h1>
+		<form id="authRegistForm">
+			<!-- table -->
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="90%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="|#{sitemng.common.auth.name} (#{common.message.required})|">권한 이름(필수)</span>
+						</th>
+						<td><input class="search-box main-input" id="authNm" name="authNm" type="text"
+								th:placeholder="#{common.placeholder.enterName}" maxlength="64"></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{sitemng.common.auth.descr}">권한 설명</span>
+						</th>
+						<td><input class="search-box main-input" id="authDesc" name="authDesc" type="text"
+								th:placeholder="#{common.placeholder.enterDescription}" maxlength="100"></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{sitemng.common.auth.code}">권한 코드</span>
+						</th>
+						<td>
+							<select id="authCd" name="authCd" class="filter-select">
+								<option value="" th:text="#{common.search.select}">select</option>
+<!--								<option value="AUC000">Super Admin</option>-->
+								<option value="AUC001">Admin User</option>
+								<option value="AUC002">Office Operator</option>
+								<option value="AUC003">Police Operator</option>
+							</select>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<!-- table END -->
+			<div class="authority-wrap">
+				<h1 id="content-title" th:text="#{common.title.settings}">권한 설정</h1>
+				
+				<div class="authority-list" th:each="menuItm : ${menuAllList}">
+					
+					<!-- auth HEAD -->
+					<div class="authority-head" th:classappend="${#strings.equals(menuItm.menuUrl, '/dashboard')} ? 'authority-dash-head' : ''">
+						<div class="authority-title" th:text="${menuItm.menuNmEng}">main menu name</div>
+						<div class="toggle-wrap">
+							<input type="checkbox" th:id="|toggle_${menuItm.menuId}|" class="toggle-input mainMenuCheckBox" hidden th:data-menuid="${menuItm.menuId}" 
+								th:checked="${#strings.equals(menuItm.menuUrl, '/dashboard')}">
+							<label th:for="|toggle_${menuItm.menuId}|" class="toggle" th:classappend="${#strings.equals(menuItm.menuUrl, '/dashboard')} ? 'is_disabled' : ''">
+								<span class="toggleButton"></span>
 							</label>
-							<label style="display:flex; flex-direction:column;">
-								생성
-							<input th:id="'parCreateYn'+${parVarStatus.index}" class="parentCreateYn" type="checkbox">
-							</label>
-							<label style="display:flex; flex-direction:column;">
-								삭제
-							<input th:id="'parDeleteYn'+${parVarStatus.index}" class="parentDeleteYn" type="checkbox">
-							</label>
-							<label style="display:flex; flex-direction:column;">
-								수정
-							<input th:id="'parUpdateYn'+${parVarStatus.index}" class="parentUpdateYn" type="checkbox">
-							</label>
-							<label style="display:flex; flex-direction:column;">
-								읽기
-							<input th:id="'parReadYn'+${parVarStatus.index}" type="checkbox" class="parentReadYn">
-							</label>
+							<input type="hidden" th:id="|menuUrlPattrn_${menuItm.menuId}|" th:value="${menuItm.menuUrlPattrn}">
 						</div>
-						<ul th:each="subMenuList, childVarStatus : ${menuList.subMenuList}">
-							<li>
-								<div style="display:flex; align-items:center; gap:8px;">
-									<div style="width:260px">
-										[[${lang == 'por' ? subMenuList.menuNmPor : subMenuList.menuNmEng}]]
-										<input type="hidden" th:class="'childMenu'+${parVarStatus.index}" th:id="'childMenuId'+${parVarStatus.index}+'-'+${childVarStatus.index}" th:value="${subMenuList.menuId}"/>
-									</div>
-									<label style="display:flex; flex-direction:column;">
-										전체
-									<input th:id="'childAllCheck'+${parVarStatus.index}+'-'+${childVarStatus.index}" th:attr="onclick=|childCheckAll('${parVarStatus.index}', '${childVarStatus.index}')|" type="checkbox">
-									</label>
-									<label style="display:flex; flex-direction:column;">
-										생성
-									<input th:id="'childCreateYn'+${parVarStatus.index}+'-'+${childVarStatus.index}" th:class="'childCreateYn'+${parVarStatus.index}" type="checkbox">
-									</label>
-									<label style="display:flex; flex-direction:column;">
-										삭제
-									<input th:id="'childDeleteYn'+${parVarStatus.index}+'-'+${childVarStatus.index}" th:class="'childDeleteYn'+${parVarStatus.index}" type="checkbox">
-									</label>
-									<label style="display:flex; flex-direction:column;">
-										수정
-									<input th:id="'childUpdateYn'+${parVarStatus.index}+'-'+${childVarStatus.index}" th:class="'childUpdateYn'+${parVarStatus.index}" type="checkbox">
-									</label>
-									<label style="display:flex; flex-direction:column;">
-										읽기
-									<input th:id="'childReadYn'+${parVarStatus.index}+'-'+${childVarStatus.index}" th:class="'childReadYn'+${parVarStatus.index}" type="checkbox">
-									</label>
-								</div>
-							</li>
-						</ul>
-					</li>
-				</ul>
-		</div>
-		<button type="button" id="saveBtn">저장</button>
-	</form>
+						<div class="toggle-off" th:id="|toggleOff_${menuItm.menuId}|" th:classappend="${#strings.equals(menuItm.menuUrl, '/dashboard')} ? 'd-none' : ''"></div>
+					</div>
+	
+					<!-- auth BODY -->
+					<div class="authority-body" th:if="${not #lists.isEmpty(menuItm.subMenuInfoList)}">
+						<div class="authority-body-list" th:each="subMenuItm : ${menuItm.subMenuInfoList}">
+							<div class="authority-sub-title" th:text="${subMenuItm.menuNmEng}">sub menu name</div>
+							<div th:class="|subMenu_${menuItm.menuId} authority-sub-list|"
+								th:data-submenuid="${subMenuItm.menuId}">
+								<input type="checkbox" class="check-none subMenuAllCheckBox" th:id="|selectAll_${subMenuItm.menuId}|">
+								<label th:for="|selectAll_${subMenuItm.menuId}|" class="check-button border-sub-btn"
+									th:text="#{common.button.selectAll}">전체 선택</label>
+	
+								<input type="checkbox" class="subMenuCheckBox check-none" th:id="|readYn_${subMenuItm.menuId}|">
+								<label th:for="|readYn_${subMenuItm.menuId}|" class="check-button border-sub-btn"
+									th:text="#{sitemng.common.auth.read}">조회</label>
+	
+								<input type="checkbox" class="subMenuCheckBox check-none" th:id="|createYn_${subMenuItm.menuId}|">
+								<label th:for="|createYn_${subMenuItm.menuId}|" class="check-button border-sub-btn"
+									th:text="#{sitemng.common.auth.create}">등록</label>
+	
+								<input type="checkbox" class="subMenuCheckBox check-none" th:id="|updateYn_${subMenuItm.menuId}|">
+								<label th:for="|updateYn_${subMenuItm.menuId}|" class="check-button border-sub-btn"
+									th:text="#{sitemng.common.auth.update}">수정</label>
+	
+								<input type="checkbox" class="subMenuCheckBox check-none" th:id="|deleteYn_${subMenuItm.menuId}|">
+								<label th:for="|deleteYn_${subMenuItm.menuId}|" class="check-button border-sub-btn"
+									th:text="#{sitemng.common.auth.delete}">삭제</label>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn form-button"
+					th:onclick="|location.href='@{/siteMng/auth/list.do}'|" th:text="#{common.button.list}">목록</button>
+				<button type="button" id="saveBtn" class="main-btn form-button" th:text="#{common.button.register}" onclick="saveAuth()">저장</button>
+			</div>
+		</form>
+	</div>
 </th:block>
+
 </html>
 <script th:inline="javascript">
-    /*<![CDATA[*/
-	function parCheckAll(idx){
-		var isChecked = $("#parAllCheck"+idx).is(":checked");
-		if(isChecked){
-			$("#parCreateYn"+idx).prop("checked",true);
-			$("#parReadYn"+idx).prop("checked",true);
-			$("#parUpdateYn"+idx).prop("checked",true);
-			$("#parDeleteYn"+idx).prop("checked",true);
-		} else {
-			$("#parCreateYn"+idx).prop("checked",false);
-			$("#parReadYn"+idx).prop("checked",false);
-			$("#parUpdateYn"+idx).prop("checked",false);
-			$("#parDeleteYn"+idx).prop("checked",false);
-		}
-	}
+	/*<![CDATA[*/
 	
-	function childCheckAll(parIdx,childIdx){
-		var isChecked = $("#childAllCheck"+parIdx+'-'+childIdx).is(":checked");
-		if(isChecked){
-			$("#childCreateYn"+parIdx+'-'+childIdx).prop("checked",true);
-			$("#childReadYn"+parIdx+'-'+childIdx).prop("checked",true);
-			$("#childUpdateYn"+parIdx+'-'+childIdx).prop("checked",true);
-			$("#childDeleteYn"+parIdx+'-'+childIdx).prop("checked",true);
-		} else {
-			$("#childCreateYn"+parIdx+'-'+childIdx).prop("checked",false);
-			$("#childReadYn"+parIdx+'-'+childIdx).prop("checked",false);
-			$("#childUpdateYn"+parIdx+'-'+childIdx).prop("checked",false);
-			$("#childDeleteYn"+parIdx+'-'+childIdx).prop("checked",false);
-		}
-	}
-	
-	$("#saveBtn").on('click', function(){
-		//최종 보낼 객체 List<Map<String,Object>>
-		var resultObj = new Object();
-		var authCd = $("#authCd").val().trim();
-		var authNm = $("#authNm").val().trim();
-		
-		if(authCd == null || authCd == ''){
-			alert("권한 코드를 입력해주세요.");
-			return false;
-		}
-		
-		if(authNm == null || authNm == ''){
-			alert("권한 이름을 입력해주세요.");
-			return false;
-		}
-		
-		resultObj.authCd = authCd;
-		resultObj.authNm = authNm;
-		
-		//대메뉴 배열 
-		var parMenuArr = new Array();
-		
-		var parMenuLength = $(".parentMenu").length;
-		
-		for(var i = 0; i < parMenuLength; i++){
-			var parMenu = new Object();
-			var parentMenuId = $(".parentMenu").eq(i).val();
-			var parCreateYn = $("#parCreateYn"+i).is(":checked")?'Y':'N';
-			var parReadYn = $("#parReadYn"+i).is(":checked")?'Y':'N';
-			var parUpdateYn = $("#parUpdateYn"+i).is(":checked")?'Y':'N';
-			var parDeleteYn = $("#parDeleteYn"+i).is(":checked")?'Y':'N';
-			
-			parMenu.parentMenuId = parentMenuId;
-			parMenu.parCreateYn = parCreateYn;
-			parMenu.parReadYn = parReadYn;
-			parMenu.parUpdateYn = parUpdateYn;
-			parMenu.parDeleteYn = parDeleteYn;
-			
-			//소메뉴 배열
-			var childMenuArr = new Array();
-			var childMenuLength = $(".childMenu"+i).length;
-			for(var j = 0; j < childMenuLength; j++){
-				var childMenu = new Object();
-				var childMenuId = $(".childMenu"+i).eq(j).val();
-				var childCreateYn = $("#childCreateYn"+i+'-'+j).is(":checked")?'Y':'N';
-				var childReadYn = $("#childReadYn"+i+'-'+j).is(":checked")?'Y':'N';
-				var childUpdateYn = $("#childUpdateYn"+i+'-'+j).is(":checked")?'Y':'N';
-				var childDeleteYn = $("#childDeleteYn"+i+'-'+j).is(":checked")?'Y':'N';
-				
-				childMenu.childMenuId = childMenuId;
-				childMenu.childCreateYn = childCreateYn;
-				childMenu.childReadYn = childReadYn;
-				childMenu.childUpdateYn = childUpdateYn;
-				childMenu.childDeleteYn = childDeleteYn;
-				
-				childMenuArr.push(childMenu);
-				
-//				console.log(childMenuId);
-//				console.log('childCreateYn:'+childCreateYn);
-//				console.log('childReadYn:'+childReadYn);
-//				console.log('childUpdateYn:'+childUpdateYn);
-//				console.log('childDeleteYn:'+childDeleteYn);
+	// toggle on off
+	const mainMenuCheckBox = document.getElementsByClassName('mainMenuCheckBox');
+	for(const element of mainMenuCheckBox) {
+		element.addEventListener('click', function(){
+			let _this = $(this);
+			let isToggleOn = _this.is(':checked');
+			let menuId = _this.data("menuid");
+			if (isToggleOn) {
+				document.getElementById("toggleOff_" + menuId).classList.add('d-none');
+			} else {
+				document.getElementById("toggleOff_" + menuId).classList.remove('d-none');
 			}
+    });
+	
+	};
+
+	//서브 메뉴 > 전체 선택/해제 클릭 함수
+	const subMenuAllCheckBox = document.getElementsByClassName("subMenuAllCheckBox");
+	for(const element of subMenuAllCheckBox) {
+		element.addEventListener('click', function () {
+			let _this = $(this);
+			_this.siblings().prop("checked", _this.is(':checked'));
+		});
+	};
+	
+
+	// 서브 메뉴 > CRUD 옵션 선택시 전체 선택되었는지 체크 
+	const subMenuCheckBox = document.getElementsByClassName("subMenuCheckBox");
+	for(const element of subMenuCheckBox) {
+		element.addEventListener('click', function() {
+			let _this = $(this);
+			let allChkBtnVal = false;
+			let subMenuDiv = _this.parent();
+			let subMenuCheckBoxLength = subMenuDiv.find('.subMenuCheckBox').length;
+			let subMenuCheckedLength = subMenuDiv.find('.subMenuCheckBox:checked').length;
 			
-			parMenu.childMenuArr = childMenuArr;
-			parMenuArr.push(parMenu);
-			
-//			console.log(parentMenuId);
-//			console.log('parCreateYn:'+parCreateYn);
-//			console.log('parReadYn:'+parReadYn);
-//			console.log('parUpdateYn:'+parUpdateYn);
-//			console.log('parDeleteYn:'+parDeleteYn);
-		}
-		resultObj.authMenuList = parMenuArr;
-		console.log(resultObj);
+			//메뉴들이 전체가 선택되었으면 전체 선택 Checkbox True Else False
+			if (subMenuCheckBoxLength == subMenuCheckedLength) allChkBtnVal = true;
+			subMenuDiv.find('.subMenuAllCheckBox').prop('checked', allChkBtnVal);
+		});
+	};
+
+	// 권한 저장
+	function saveAuth() {
+		let confirmMsg = /*[[#{sitemng.authDetail.message.confirmRegist}]]*/;
+
+		var authNm = $('#authNm').val().trim();
+		var authDesc = $('#authDesc').val().trim();
+		var authCd = $("#authCd").val().trim();
+
+		if(authNm == null || authNm == ''){
+			alert(/*[[#{sitemng.common.auth.message.enterAuthName}]]*/);
+			return false;
+		};
+		if(authDesc == null || authDesc == ''){
+			alert(/*[[#{sitemng.common.auth.message.enterAuthDesc}]]*/);
+			return false;
+		};
+		if(authCd == null || authCd == ''){
+			alert(/*[[#{sitemng.common.auth.message.selectAuthCode}]]*/);
+			return false;
+		};
 		
-		$.ajax({
-			type : "post",
-			dataType : "json",
-			contentType : "application/json",
-			data : JSON.stringify(resultObj) ,
-			url : '/siteMng/auth/save.ajax',
-			success : function(data) {
-				if(data.code == '200'){
-					alert(data.message);
-				} else {
-					alert(data.message);
+		if(!confirm(confirmMsg)){
+			return false;
+		}
+		
+		var result = new Object();
+		var authMenuList = new Array();
+		var mainMenu = $(".mainMenuCheckBox");
+
+		for (var i = 0; i < mainMenu.length; i++) {
+			var mainMenuId = $(".mainMenuCheckBox").eq(i).data("menuid");
+			var mainMenuIsChecked = mainMenu.eq(i).is(":checked");
+			var menuUrlPattrn = $("#menuUrlPattrn_"+mainMenuId).val();
+			
+			var mainAuthMenu = new Object();
+			var subMenu = $(".subMenu_" + mainMenuId);
+
+			mainAuthMenu.menuUrlPattrn = menuUrlPattrn;
+			
+			if (mainMenuIsChecked) {
+				// 메인메뉴 Y인 경우
+				let isSubMenuHasAnyY = false;
+				
+				mainAuthMenu.menuId = mainMenuId;
+				mainAuthMenu.createYn = "Y";
+				mainAuthMenu.readYn = "Y";
+				mainAuthMenu.deleteYn = "Y";
+				mainAuthMenu.updateYn = "Y";
+
+				for (var j = 0; j < subMenu.length; j++) {
+					var subAuthMenu = new Object();
+					var subMenuId = subMenu.eq(j).data("submenuid");
+					var readYn = $("#readYn_" + subMenuId).is(":checked") ? "Y" : "N";
+					var createYn = $("#createYn_" + subMenuId).is(":checked") ? "Y" : "N";
+					var deleteYn = $("#deleteYn_" + subMenuId).is(":checked") ? "Y" : "N";
+					var updateYn = $("#updateYn_" + subMenuId).is(":checked") ? "Y" : "N";
+					
+					if(readYn == "Y" || createYn == "Y" || deleteYn == "Y" || updateYn == "Y") {
+						isSubMenuHasAnyY = true;
+					}	
+					
+					subAuthMenu.menuId = subMenuId;
+					subAuthMenu.createYn = createYn;
+					subAuthMenu.readYn = readYn;
+					subAuthMenu.deleteYn = deleteYn;
+					subAuthMenu.updateYn = updateYn;
+
+					authMenuList.push(subAuthMenu);
+				}
+				
+				// 서브메뉴에 부여된 권한이 하나도 없는 경우
+				if(!isSubMenuHasAnyY) {
+					mainAuthMenu.createYn = "N";
+					mainAuthMenu.readYn = "N";
+					mainAuthMenu.deleteYn = "N";
+					mainAuthMenu.updateYn = "N";
+				}
+				authMenuList.push(mainAuthMenu);
+				
+			} else {
+				// 메인메뉴 N인 경우
+				mainAuthMenu.menuId = mainMenuId;
+				mainAuthMenu.createYn = "N";
+				mainAuthMenu.readYn = "N";
+				mainAuthMenu.deleteYn = "N";
+				mainAuthMenu.updateYn = "N";
+
+				authMenuList.push(mainAuthMenu);
+
+				for (var j = 0; j < subMenu.length; j++) {
+					var subAuthMenu = new Object();
+					var subMenuId = subMenu.eq(j).data("submenuid");
+					subAuthMenu.menuId = subMenuId;
+					subAuthMenu.createYn = "N";
+					subAuthMenu.readYn = "N";
+					subAuthMenu.deleteYn = "N";
+					subAuthMenu.updateYn = "N";
+
+					authMenuList.push(subAuthMenu);
 				}
 			}
-		});
-	});
-    /*]]>*/
+		}
+
+		result.authNm = authNm;
+		result.authCd = authCd;
+		result.authDesc = authDesc;
+		result.authMenuList = authMenuList;
+		
+ 		$.ajax({
+ 			type: "post",
+ 			dataType: "json",
+ 			contentType: "application/json",
+ 			data : JSON.stringify(result),
+ 			url: '/siteMng/auth/save.ajax',
+ 			success: function (data) {
+ 				if (data.code == '200') {
+ 					alert(data.message);
+ 					location.href="/siteMng/auth/list.do";
+ 				} else {
+ 					alert(data.message);
+ 				}
+ 			}
+ 		});
+	}
+
+	/*]]>*/
 </script>

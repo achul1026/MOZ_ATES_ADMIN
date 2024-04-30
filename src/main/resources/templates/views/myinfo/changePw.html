@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+	<form id="frmModifyPassword">
+		<div id="container-fluid">
+			<h1 id="detail-content-title" th:text="#{myinfo.password.changePw.title}">Password Change</h1>
+			<div class="detail-table-wrap">
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{myinfo.password.confirmPw.password}">비밀번호</th>
+							<td >
+								<input type="password" class="main-input data-validate" id="passwordCheck" name="oprtrAccountPw"
+								th:data-valid-name="#{myinfo.password.confirmPw.password}" placeholder="Please Enter Password" data-valid-required>
+								<i class="eye eyePassCheck" id="eyePassCheck" onclick="passWordEye('passwordCheck', 'eyePassCheck')"></i>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{myinfo.password.confirmPw.passwordConfirm}">비밀번호</th>
+							<td >
+								<input type="password" class="main-input data-validate" id="passwordConfirm" name="oprtrAccountPwChk"
+								th:data-valid-name="#{myinfo.password.confirmPw.password}" placeholder="Please Enter Password Confirm" data-valid-required>
+								<i class="eye eyePassCheck" id="eyePassConfirm" onclick="passWordEye('passwordConfirm', 'eyePassConfirm')"></i>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="registor-btn-right">
+				<button type="button" class="main-btn" onclick="updatePassword()" th:text="#{myinfo.common.btn.modify.password}">Password Modify</button>
+				<a href="/myinfo/myPage.do" class="border-btn" th:text="#{myinfo.common.btn.cancel}">Cancel</a>
+			</div>
+		</div>
+	</form>
+</th:block>
+</html>
+<script th:inline="javascript">
+	function updatePassword(){
+		if($("#frmModifyPassword").soValid()) {
+			
+			const newPw = document.getElementById('passwordCheck').value;
+			const newPwChk = document.getElementById('passwordConfirm').value;
+			
+			const validationMsg = /*[[#{myinfo.password.changePw.mismatch}]]*/;
+			const successMsg = /*[[#{myinfo.password.changePw.success}]]*/;
+			const failedMsg = /*[[#{myinfo.password.changePw.failed}]]*/
+			
+			if(newPw != newPwChk){
+				new ModalBuilder().init().alertBody(validationMsg).footer(4,'Confirm',function(button, modal){
+					modal.close();
+					
+				}).open();
+				return;
+			}
+			
+			
+			const formData = new FormData(document.getElementById('frmModifyPassword'));
+			
+			//const loading = loading("Saving...").start();
+			
+			fetch('/myinfo/password/modify',{
+				method : "post",
+				body : formData
+			})
+			.then(response => response.json())
+			.then((result) => {
+				 if (result.code === 200) {
+					 	alert(successMsg);
+						location.href="/myinfo/myPage.do";
+		            } else {
+		                alert(failedMsg);
+		            }
+			}).finally(() => {
+				//loading.end();
+			});
+		}
+		
+	}
+</script>

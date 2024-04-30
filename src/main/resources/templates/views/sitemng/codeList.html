@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+		<!-- Page Heading -->
+		<h1 id="content-title" th:text="#{sitemng.codeList.title}">Code Management</h1>
+		<div id="content-sub-title" th:text="#{sitemng.codeList.subTitle}">Manage the code.</div>
+			<form id="frmSearch">
+				<input type="hidden" name="page" id="page" value="1">
+				<table id="filter-table">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{common.search.searchOption}">유형 선택</th>
+							<td>
+								<select name="searchType" class="filter-select" id="searchType" th:field="${mozCmCd.searchType}">
+									<option value="all" th:text="#{common.search.searchOption.all}">전체</option>
+									<option value="cdId" th:text="#{sitemng.common.code.codeId}">코드 ID</option>
+									<option value="cdNm" th:text="#{sitemng.common.code.codeNm}">코드 명칭</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{common.search.searchOption.date}">날짜 선택</th>
+							<td>
+								<input class="input-date" id="sDate" name="sDate" type="date" th:value="${mozCmCd.sDate}"> ~
+								<input class="input-date" id="eDate" name="eDate" type="date" th:value="${mozCmCd.eDate}">
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{common.search.search}">내용 검색</th>
+							<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" 
+									th:value="${mozCmCd.searchTxt}" th:placeholder="#{common.placeholder.enterKeyword}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+			<div class="btn-wrap-center">
+				<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{common.button.search}">조회</button>
+				<!-- TODO 검색초기화 -->
+				<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')" th:text="#{common.button.resetSearch}">검색 초기화</button>
+			</div>
+
+
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+			</div>
+			<th:block th:if="${currentMenuAuthInfo.createYn eq 'Y' and courtDcsnInfo == null}">
+				<div id="table-regist-btn">
+					<button type="button" th:onclick="moveRegist()" class="main-btn form-button" th:text="#{common.button.register}"> 생성 </button>
+				</div>
+			</th:block>
+		</div>
+
+		<div class="">
+			<table class="main-table" id="tblList">
+				<thead>
+					<tr>
+						<th th:text="#{common.table.order}"></th>
+<!--						<th>분류명</th>-->
+						<th th:text="#{sitemng.common.code.codeId}"></th>
+						<th th:text="#{sitemng.common.code.codeNm}"></th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="codeItem : ${mozCodeList}" th:onclick="|location.href='@{/siteMng/code/detail.do(cdId=${codeItem.cdId})}'|">
+						<td th:text="${codeItem.rnum}"></td>
+<!--						<td>교통사고</td>-->
+						<td th:text="${codeItem.cdId}"></td>
+						<td th:text="${codeItem.cdNm}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		
+		<div class="page_wrap">
+			<div th:insert="tags/paging :: pagingFragment"></div>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+		/*<![CDATA[*/
+	function moveDetail(cdId) {
+		var baseUrl = /*[[@{/siteMng/code/detail.do}]]*/ '';
+		window.location.href = baseUrl + "?cdId=" + cdId;
+	};
+	
+	function moveRegist() {
+		var baseUrl = /*[[@{/siteMng/code/save.do}]]*/ '';
+		window.location.href = baseUrl;
+	}
+    /*]]>*/
+    
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();		
+	})
+</script>

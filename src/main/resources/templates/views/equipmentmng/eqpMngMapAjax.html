@@ -1,0 +1,89 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<form id="frmSearch">
+	<input type="hidden" id="page" name="page" th:value="1">
+	<input type="hidden" id="pageType" name="pageType" th:value="map">
+</form>
+
+<div id="map-wrap">
+	<div id="map" class="listMap"></div>
+	<div id="map-search-wrap">
+		<div id="map-search-title">Equipment List</div>
+		<div id="map-search">
+			<input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" 
+				th:placeholder="#{equipment.mngList.placeholder}" th:value="${tfcEnfEqpMaster.searchTxt}">
+			<div id="map-search-icon-wrap" class="btnSearch">
+				<i class="search-icon"></i>
+			</div>
+		</div>
+		<div>
+			<table class="main-table map-list-table">
+				<colgroup>
+				</colgroup>
+				<thead>
+					<tr>
+						<th>Equipment Type</th>
+						<th>Equipment Name</th>
+						<th>Installation location</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="eqpItem, status : ${eqpList}"
+					    th:attr="onclick=${eqpItem.eqpTy == 'EQT001'} ? 'findLocation(' + ${eqpItem.lat} + ',' + ${eqpItem.lng} + ')' : null"
+					    th:id="'eqp' + ${status.index}"
+					    th:data-lat="${eqpItem.lat}" th:data-lng="${eqpItem.lng}">
+						<td th:text="${eqpItem.cmCd.cdNm}"></td>
+						<td th:text="${eqpItem.eqpNm}"></td>
+						<td th:text="${eqpItem.roadAddr}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="page_wrap">
+			<div th:insert="tags/paging :: pagingFragment"></div>
+		</div>
+	</div>
+</div>
+<script th:inline="javascript">
+	
+	let map = null;
+	 
+	$(document).ready(function(){
+		var lat = $("#eqp0").data("lat");
+		var lng = $("#eqp0").data("lng");
+		map = new MozAtesMap({
+			elementId : 'map',
+			center_lng : lng,
+			center_lat : lat,
+			isInitDrawCenterMarker : false,
+			isFacility : false,
+			isEquipment : true
+		});
+	});
+	
+	$(".btnSearch").on("click", function(){
+		$.ajax({
+			url: /*[[@{/eqp/mng/eqpMngMapAjax}]]*/ '/eqp/mng/eqpMngMapAjax',
+			type: "POST",
+			data: {"searchTxt": $.trim($("#searchTxt").val())},
+			dataType: 'html',
+			cache: false,
+			success: function (data) {
+				ajaxContent.html(data);
+			}
+		});
+	});
+
+	function findLocation(lat, lng){
+		map.flyToMove(lng,lat);
+	}
+	
+	function fnPageMove(page) {
+		$("#page").val(page);
+		getMapAjax();
+	}
+	
+
+</script>
+</html>
+

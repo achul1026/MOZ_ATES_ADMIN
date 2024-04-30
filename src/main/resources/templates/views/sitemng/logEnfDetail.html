@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="#{enforcement.log.detail.title}">로그 상세 정보</h1>
+		<div class="detail-table">
+			<form id="frmLawRegist">
+				<table class="table">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{enforcement.log.common.reqId}">요청 ID</th>
+							<td th:text="${tfcEnfHst.hstId}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.creationDate}">발생일자</th>
+							<td th:text="${#dates.format(tfcEnfHst.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.successOrNot}">성공여부</th>
+							<td>
+								<th:block th:switch="${tfcEnfHst.tfcEnfPrcCd}">
+								    <span th:case="TEP001">Regist</span>
+								    <span th:case="TEP002">Update</span>
+								    <span th:case="TEP003">delete</span>
+								</th:block>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.list.registerType}">작성자유형</th>
+							<td>
+								<th:block th:switch="${tfcEnfHst.tfcEnfRegTy}">
+								    <span th:case="RTC000">Super Admin</span>
+								    <span th:case="RTC001">Admin User</span>
+								    <span th:case="RTC002">Office Operator</span>
+								    <span th:case="RTC003">Police Operator</span>
+								    <span th:case="RTC004">Police Officer</span>
+								</th:block>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.requestor}">요청자</th>
+							<td>
+								<th:block th:if="${tfcEnfHst.tfcEnfRegTy == 'RTC000' || tfcEnfHst.tfcEnfRegTy == 'RTC001' || tfcEnfHst.tfcEnfRegTy == 'RTC002'}">
+									<span th:text="${tfcEnfHst.webOprtr.OprtrNm}"></span>
+								</th:block>
+								<th:block th:if="${tfcEnfHst.tfcEnfRegTy == 'RTC003' || tfcEnfHst.tfcEnfRegTy == 'RTC004'}">
+									<span th:text="${tfcEnfHst.polInfo.polNm}"></span>
+								</th:block>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.reqIp}">요청자 IP</th>
+							<td th:text="${tfcEnfHst.crtrIpAddr}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.reqDetail}">요청 상세 내용</th>
+							<td th:text="${tfcEnfHst.cmnt}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+		</div>
+
+		<div class="btn-wrap-center">
+            <button type="button" class="sub-btn form-button" th:text="#{common.button.list}"
+            	th:onclick="|location.href='@{/siteMng/log/list.do(logType=${logType})}'|">List</button>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+
+
+</script>

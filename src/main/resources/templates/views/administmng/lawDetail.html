@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<h1 id="detail-content-title" th:text="#{administ.lawDetail.title}">법률 관리 상세</h1>
+		<div id="search-form-result-wrap">
+			<div></div>
+			<div id="table-regist-btn" th:if="${tfcLwInfo.repealYn eq 'Y'}">
+				<button type="button" class="main-btn" th:onclick="lawRecovery([[${tfcLwInfo.tfcLawId}]])" th:text="#{administ.lawDetail.lawRecovery}">법률 복구</button>
+			</div>
+			<div id="table-regist-btn" th:if="${tfcLwInfo.repealYn eq 'N'}">
+				<button type="button" id="btnModify" class="sub-btn"
+				th:onclick="|location.href='@{/administCourt/law/update.do(tfcLawId=${tfcLwInfo.tfcLawId})}'|"
+				th:text="#{administ.lawDetail.modifyButton}">수정</button>
+				<button type="button" class="main-btn table-plus-btn" onclick="addRevisedContent()" th:text="#{administ.lawDetail.addButton}">개정사항 추가</button>
+				<button type="button" class="delete-btn" th:onclick="abolitionLaw([[${tfcLwInfo.tfcLawId}]])" th:text="#{administ.lawDetail.deleteButton}">전면폐지</button>
+			</div>
+		</div>
+
+		<div class="sub-table detail-table">
+				<table class="table-col2">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+	                        <th th:text="#{administ.lawDetail.legalNumber}">법률번호</th>
+	                        <td th:text="${tfcLwInfo.lawArticleNo}"></td>
+	                    </tr>
+						<tr>
+							<th th:text="#{administ.lawDetail.nameOfLow}">법령명</th>
+							<td ㄲth:text="${tfcLwInfo.lawNm}">
+								법령명
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{administ.lawDetail.lawType}">법령 유형</th>
+							<td th:text="${tfcLwInfo.lawType}">
+								법령 유형
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{administ.lawDetail.lawChapter}">법령 챕터</th>
+							<td th:text="${tfcLwInfo.lawChapter}">
+								법령 챕터
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{administ.lawDetail.enforceDate}">시행일자</th>
+							<td th:text="${#dates.format(tfcLwInfo.eftvDe, 'yyyy-MM-dd')}">
+								시행일자
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{administ.lawDetail.dateOfPromulgation}">공포일자</th>
+							<td th:text="${#dates.format(tfcLwInfo.prmgtnDe, 'yyyy-MM-dd')}">
+								공포일자
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{administ.lawDetail.legalExplanation}">법률 설명</th>
+							<td colspan="3" class="text-pre-line" th:text="${tfcLwInfo.lawDesc}">
+							</td>
+						</tr>
+						<tr th:if="${#lists.size(tfcLwAdtnRvsnList) > 0}">
+							<th th:text="#{administ.lawDetail.adtnRvsnDt}">추가 개정일</th>
+							<th th:text="#{administ.lawDetail.adtnRvsnDetail}">추가 개정 내용</th>							
+						</tr>
+						<tr th:if="${#lists.size(tfcLwAdtnRvsnList) > 0}" th:each="item : ${tfcLwAdtnRvsnList}">
+							<th th:text="${#dates.format(item.adtnRvsnDt, 'yyyy-MM-dd')}"></th>
+							<td th:text="${item.adtnRvsnDesc}"></td>
+						</tr>
+						<tr th:if="${tfcLwInfo.repealYn eq 'Y'}">
+							<th th:text="#{administ.lawDetail.repealDe}">폐지 일자</th>
+							<td th:text="${#dates.format(tfcLwInfo.repealDe, 'yyyy-MM-dd')}"></td>
+						</tr>
+						<tr th:if="${tfcLwInfo.repealYn eq 'Y'}">
+							<th colspan="4" th:text="#{administ.lawDetail.repealLaw}">
+								폐지된 법률 입니다.
+							</th>
+						</tr>
+					</tbody>
+				</table>
+		</div>
+		<div id="btnActionWarp" class="btn-wrap-center d-none">
+<!--			            <button type="button" id="btnDelete" class="sub-btn" th:text="#{administ.lawDetail.deleteButton}">삭제</button>-->
+			<button type="button" th:onclick="saveRevisedContent([[${tfcLwInfo.tfcLawId}]])" class="main-btn form-button" th:text="#{administ.lawDetail.addButton}">저장</button>
+		</div>
+		
+		
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				<h1 id="content-title" th:text="#{administ.lawDetail.fineList}">범칙금 목록</h1>
+			</div>
+			<div id="table-regist-btn" th:if="${tfcLwInfo.repealYn eq 'N'}">
+				<button type="button" class="main-btn table-plus-btn" onclick="addFineWarp()" th:text="#{administ.lawDetail.addFineButton}">범칙금 추가</button>
+			</div>
+		</div>
+		
+		
+		<div class="sub-table detail-table">
+			<table class="table-col2">
+				<colgroup>
+					<col width="15%">
+					<col width="45%">
+					<col width="40%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{administ.lawDetail.lastUpdDt}">최신 수정 일</th>
+						<th th:text="#{administ.lawDetail.fineDescription}">범칙금 설명</th>
+						<th th:text="#{administ.lawDetail.finePrice}">범칙금 금액</th>
+					</tr>
+					<tr th:if="${#lists.size(tfcLwFineInfoList) > 0}" th:each="item : ${tfcLwFineInfoList}">
+						<th th:text="${#dates.format(item.lastUpdDt, 'yyyy-MM-dd')}"></th>
+						<td th:text="${item.fineDesc}"></td>
+						<td class="comma" th:text="${item.finePrice}"></td>
+					</tr>
+					<tr th:if="${#lists.size(tfcLwFineInfoList) == 0}">
+						<td colspan="3" th:text="#{common.search.notFound}">검색 결과를 찾을 수 없습니다.</td>
+					</tr>
+                   	<tr id="fineAddTr" class="d-none">
+						<th th:text=#{administ.lawDetail.fineInput}>범칙금 정보 입력</th>
+						<td><input type="text"  class="main-input" id="fineDesc" th:placeholder="#{administ.lawDetail.placeholder.finePrice}" style="width:100%"/></td>
+						<td>
+							<input type="text" class="main-input" id="finePrice" th:placeholder="#{administ.lawDetail.placeholder.fineDesc}" style="width:70%" onkeyup="keyupNumberEvent(this)">
+							<button type="button" class="main-btn" onclick="addFineTr()"><img src="/images/table_option_icon01.png"></button>
+							<button type="button" class="sub-btn" onclick="cancelFineWarp()"><img src="/images/table_option_icon02.png"></button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div id="btnFineActionWarp" class="btn-wrap-center d-none" th:if="${tfcLwInfo.repealYn eq 'N'}">
+				<button type="button" th:onclick="saveFineInfo([[${tfcLwInfo.tfcLawId}]])" class="main-btn form-button" th:text="#{administ.lawDetail.addFineButton}">저장</button>
+			</div>
+		</div>
+		
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+   function removeRevisedContent(_this){
+	   $(_this).parent('td').parent('tr').remove();
+
+		const adtnRvsnDescArr =  document.querySelector(".adtnRvsnDesc");
+
+		if(adtnRvsnDescArr == null || adtnRvsnDescArr.length == 0){
+			document.getElementById("btnActionWarp").classList.add('d-none');
+		}
+   }
+
+	function addRevisedContent(){
+		let revisedContentTxt = [[#{administ.lawDetail.revisedContent}]];
+		let placeholderTxt = [[#{administ.lawDetail.placeholder}]];
+		let removeTxt = [[#{administ.lawDetail.removeButton}]];
+		
+	   const html = document.createElement('tr');
+	   	
+	   	html.innerHTML = `<th>${revisedContentTxt}</th>
+	   					  <td>
+							<textarea placeholder="${placeholderTxt}" class="detail-table-textarea adtnRvsnDesc"></textarea>
+							<button type="button" onclick="removeRevisedContent(this)">${removeTxt}</button>
+	   					  </td>`;
+		
+		document.querySelector('.table-col2 tbody').append(html);
+		
+		document.getElementById("btnActionWarp").classList.remove('d-none');
+	}
+	
+	function saveRevisedContent(tfcLawId){
+		const adtnRvsnDescList = document.querySelectorAll(".adtnRvsnDesc");
+		
+		var mozTfcLwInfo = new Object();
+		
+		var mozTfcLwAdtnRvsnArr = new Array();
+		
+		if(adtnRvsnDescList == null || adtnRvsnDescList.length == 0){
+			return false;
+		}
+		
+		for(var i = 0; i < adtnRvsnDescList.length ; i++){
+			const mozTfcLwAdtnRvsn = new Object();
+			const adtnRvsnDesc = adtnRvsnDescList[i].value;
+			
+			mozTfcLwAdtnRvsn.adtnRvsnDesc = adtnRvsnDesc;
+			
+			mozTfcLwAdtnRvsnArr.push(mozTfcLwAdtnRvsn);
+		}
+		
+		mozTfcLwInfo.tfcLawId = tfcLawId;
+		mozTfcLwInfo.mozTfcLwAdtnRvsnArr = mozTfcLwAdtnRvsnArr;
+		
+		 $.ajax({
+            url: /*[[@{/administCourt/law/revise.ajax}]]*/ "/administCourt/law/revise.ajax",
+            type: "post",
+			contentType : "application/json; charset=UTF-8",
+			dataType : "json",
+			data : JSON.stringify(mozTfcLwInfo),
+            success: function (data) {
+				if (data.code == '200') {
+					alert(data.message);
+					location.href = "/administCourt/law/detail.do?lawId="+tfcLawId;
+				} else {
+					alert(data.message);
+				}
+			}
+        });
+	}
+	
+	function addFineWarp(){
+		document.getElementById('fineAddTr').classList.remove('d-none');
+		document.getElementById('btnFineActionWarp').classList.remove('d-none');
+	}
+	
+	function cancelFineWarp(){
+		document.getElementById('fineAddTr').classList.add('d-none');
+		document.getElementById('btnFineActionWarp').classList.add('d-none');
+	}
+	
+   function deleteFineTr(_this){
+	   $(_this).parent('td').parent('tr').remove();
+   }
+   
+   function addFineTr(){
+	   const fineDesc = document.getElementById('fineDesc').value;
+	   const finePrice = document.getElementById('finePrice').value;
+	   const pattern = /(^\d+$)|(^\d{1,}.\d{0,2}$)/;
+	   
+	   if(!pattern.test(finePrice)){
+		   alert("가격이 올바르지 않습니다.")
+		   return false;
+	   }
+	   
+	   const fmtPrice = numberComma(finePrice);
+	   
+	   if(fineDesc == null || fineDesc == ''){
+		   return false;
+	   }
+	   
+	   if(finePrice == null || finePrice == ''){
+		   return false;
+	   }
+	   
+	   const addTr = document.createElement('tr');
+	   
+	   	addTr.classList.add('fineTr');
+	   	
+	    addTr.innerHTML =  `<th>범칙금</th>
+							<td><span class="fineDesc">${fineDesc}</span></td>
+							<td>
+								<span>${fmtPrice}MT</span>
+								<span class="finePrice d-none">${finePrice}</span>
+								<button type="button" onclick="deleteFineTr(this)">삭제</button>
+							</td>`
+		document.querySelector('#fineAddTr').before(addTr);
+   }
+   
+   function saveFineInfo(tfcLawId){
+   		var mozTfcLwInfo = new Object();
+		
+		var mozTfcLwFineInfoArr = new Array();
+	
+		const fineTr = document.querySelectorAll(".fineTr");
+		const fineDescList = document.querySelectorAll(".fineDesc");
+		const finePriceList = document.querySelectorAll(".finePrice");
+		
+		
+		for(var i = 0; i < fineTr.length; i++){
+			const mozTfcLwFineInfo = new Object();
+			const fineDesc = fineDescList[i].innerText;
+			const finePrice = finePriceList[i].innerText;
+			
+			mozTfcLwFineInfo.fineDesc = fineDesc;
+			mozTfcLwFineInfo.finePrice = finePrice;
+			
+			mozTfcLwFineInfoArr.push(mozTfcLwFineInfo);
+		}
+		
+		mozTfcLwInfo.tfcLawId = tfcLawId;
+		mozTfcLwInfo.mozTfcLwFineInfoArr = mozTfcLwFineInfoArr;
+		
+		 $.ajax({
+            url: /*[[@{/administCourt/law/addFine.ajax}]]*/ "/administCourt/law/addFine.ajax",
+            type: "post",
+			contentType : "application/json; charset=UTF-8",
+			dataType : "json",
+			data : JSON.stringify(mozTfcLwInfo),
+            success: function (data) {
+				if (data.code == '200') {
+					alert(data.message);
+					location.href = "/administCourt/law/detail.do?lawId="+tfcLawId;
+				} else {
+					alert(data.message);
+				}
+			}
+        });
+	}
+	
+	function abolitionLaw(tfcLawId){
+		if(tfcLawId == null || tfcLawId == ''){
+			return false;
+		}
+				
+		if (confirm("법률을 폐지하시겠습니까?")) {
+			 $.ajax({
+	            url: /*[[@{/administCourt/law/abolition.ajax}]]*/ "/administCourt/law/abolition.ajax",
+	            type: "post",
+	            data: {
+					"tfcLawId" : tfcLawId
+				},
+	            success: function (data) {
+					if (data.code == '200') {
+						alert(data.message);
+						location.href = "/administCourt/law/detail.do?lawId="+tfcLawId;
+					} else {
+						alert(data.message);
+					}
+				}
+	        });
+        }
+	}
+	
+	function lawRecovery(tfcLawId){
+				if(tfcLawId == null || tfcLawId == ''){
+			return false;
+		}
+				
+		if (confirm("법률을 복구하시겠습니까?")) {
+			 $.ajax({
+	            url: /*[[@{/administCourt/law/lawRecovery.ajax}]]*/ "/administCourt/law/lawRecovery.ajax",
+	            type: "post",
+	            data: {
+					"tfcLawId" : tfcLawId
+				},
+	            success: function (data) {
+					if (data.code == '200') {
+						alert(data.message);
+						location.href = "/administCourt/law/detail.do?lawId="+tfcLawId;
+					} else {
+						alert(data.message);
+					}
+				}
+	        });
+        }
+	}
+	
+	$("#btnDelete").click(function () {
+		if (confirm("삭제하시겠습니까")) {
+
+			var idx = [[${tfcLwInfo.tfcLawId}]];
+			$.ajax({
+				url: /*[[@{/administCourt/law/delete.ajax}]]*/ "/administCourt/law/delete.ajax",
+				type: "post",
+				data: {"tfcLawId": idx},
+				success: function (data) {
+					if (data.code == "1") {
+						alert("삭제했습니다. 현재 보안에 취약 idx값 하나만 넘기기 때문에 추후에 보안 강화해야함");
+						location.href = /*[[@{/administCourt/lawList}]]*/ '/administCourt/law/list.do';
+					}
+				},
+				error: function (data) {
+					alert(data.responseJSON.message)
+				}
+
+			});
+		} else {
+			return;
+		}
+	});
+
+	$(document).ready(function(){
+		var commaEl = $(".comma");
+		for(var i = 0; i < commaEl.length; i++){
+			var commaElStr = commaEl.eq(i).text();
+
+			commaEl.eq(i).text(numberComma(commaElStr)+'MT');
+		}
+	})
+	
+</script>

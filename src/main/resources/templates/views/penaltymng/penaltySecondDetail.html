@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+S<th:block layout:fragment="content">
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="'Second bill of payment'">2차 납부 고지서(배치 생성 후 적용 필요)</h1>
+		<div class="btn-wrap-right" th:switch="${finePymntInfo.pymntStts}">
+			<button th:case="N" type="button" class="main-btn big-menu-plus form-button" th:text="#{penalty.penaltyDetail.btn.payment}" th:onclick="viewOnSitePaymentModal('[[${finePymntInfo.totalPrice}]]')">On-site payment</button>
+			<button th:case="Y" type="button" class="delete-btn big-menu-plus form-button" th:text="#{penalty.penaltyDetail.btn.paymentCancel}" th:onclick="cancelPayment()">결제철회</button>
+		</div>
+		<div class="detail-table-wrap">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{penalty.penaltyDetail.vioNm}">운전자명</th>
+						<td th:text="${finePymntInfo.vioInfo?.vioNm}"></td>
+						<th th:text="#{penalty.penaltyDetail.payYn}">관할 경찰서</th>
+						<td class="tdFlex" th:switch="${finePymntInfo.pymntStts}">
+							<div class="statusComplete" th:case="Y">
+								<img src="/images/status_icon01.png" alt="설치" class="statusImg">
+								<span class="" th:text="#{penalty.penaltyDetail.payY}">결제완료</span>
+							</div>
+							<div class="statusFail" th:case="N">
+								<img src="/images/status_icon02.png" alt="설치" class="statusImg">
+								<span class="" th:text="#{penalty.penaltyDetail.payN}">결제미완료</span>
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{penalty.penaltyDetail.vehicleTy}">차량</th>
+						<td th:text="${finePymntInfo.tfcEnfMaster?.vhTy}"></td>
+						<th th:text="#{penalty.penaltyDetail.vehicleNo}">차량번호</th>
+						<td th:text="${finePymntInfo.tfcEnfMaster?.vhRegNo}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{penalty.penaltyDetail.vioPno}">연락처</th>
+						<td th:text="${finePymntInfo.vioInfo?.vioPno}"></td>
+						<th th:text="#{penalty.penaltyDetail.vioEmail}">E-Mail</th>
+						<td th:text="${finePymntInfo.vioInfo?.vioEmail}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{penalty.penaltyDetail.tfcEnfocation}">적발지역</th>
+						<td th:text="${finePymntInfo.tfcEnfMaster?.roadAddr}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{penalty.penaltyDetail.vioLaws}">위반법령</th>
+						<td th:text="${finePymntInfo.tfcLwInfo?.lawNm}"></td>
+						<th th:text="#{penalty.penaltyDetail.lawType}">법률유형</th>
+						<td th:text="${finePymntInfo.tfcLwInfo?.lawType}">법률 유형</td>
+					</tr>
+					<tr>
+						<th th:text="#{penalty.penaltyDetail.manage}">담당 경찰명</th>
+						<td th:text="${finePymntInfo.polInfo?.polNm}"></td>
+						<th th:text="#{penalty.penaltyDetail.policeSt}">관할 경찰서</th>
+						<td th:text="${finePymntInfo.polInfo?.jur}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{penalty.penaltyDetail.finePrice}">범칙금</th>
+						<td th:text="${finePymntInfo.totalPrice > 0 && finePymntInfo.totalPrice != null ? @mozatesCommonUtils.priceFmt(finePymntInfo.totalPrice,'MOZAMBIQUE_METICAL') : '0'}">법률 테이블 ERD/DB 수정 후 가져오기</td>
+						<th th:text="#{penalty.penaltyDetail.paymentPrice}">납부금액</th>
+						<td th:text="${finePymntInfo.pymntPrice > 0 && finePymntInfo.pymntPrice != null ? @mozatesCommonUtils.priceFmt(finePymntInfo.pymntPrice,'MOZAMBIQUE_METICAL') : '0'}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{penalty.penaltyDetail.paymentDueDate}">납부기한</th>
+						<td th:text="${#dates.format( finePymntInfo.fineNtcInfo.secondFineNtcDdln, 'yyyy-MM-dd')}"></td>
+						<th th:text="#{penalty.penaltyDetail.paymentPlace}">납부처</th>
+						<td th:text="${finePymntInfo.plPymntInfo?.placePymntNm}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{penalty.penaltyDetail.tfcEnfDetails}">상세 내용</th>
+						<td colspan="3" th:text="${finePymntInfo.tfcEnfMaster.tfcEnfDetail}"></td>
+					</tr>
+					<th:block th:if="${finePymntInfo.pymntStts == 'Y'}">
+						<tr>
+							<th th:text="#{penalty.penaltyDetail.paymentDate}">결제일</th>
+							<td th:text="${#dates.format(finePymntInfo.pymntDt, 'yyyy-MM-dd')}"></td>
+							<th th:text="#{penalty.penaltyDetail.paymentMethod}">결제 수단</th>
+							<td th:text="${finePymntInfo.pymntMethod}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{penalty.penaltyDetail.payer}">결제자</th>
+							<td th:text="${finePymntInfo.payerNm}"></td>
+							<th th:text="#{penalty.penaltyDetail.penaltyDetail}">Penalty Details</th>
+							<td th:text="${finePymntInfo.penaltydetail}"></td>
+						</tr>
+					</th:block>
+				</tbody>
+			</table>
+		</div>
+		<div class="bill-text">
+			<div th:text="#{penalty.penaltyDetail.firstCautionMessage}">- If you are in arrears for more than 15 days after the first notice, the second notice will proceed.</div>
+			<div th:text="#{penalty.penaltyDetail.secondCautionMessage}">- If you are in arrears for more than 15 days for the second notice, you will be subject to administrative disposition.</div>
+			<div th:text="#{penalty.penaltyDetail.adminContect}">- contact : INATRO 002-023-12347</div>
+		</div>
+		<div class="btn-wrap-center">
+			<button th:text="#{penalty.common.list}" type="button" id="btnGoList" class="sub-btn" th:onclick="|location.href='@{/penalty/second/list.do}'|">목록</button>
+<!--			<button th:text="#{penalty.penaltyDetail.modify}" type="button" id="btnModify" class="main-btn" th:onclick="'location.href=\''+@{/penalty/second/update.do(pymntId=${finePymntInfo.pymntId})}+'\''">수정</button>-->
+			<button th:if="${finePymntInfo.pymntStts == 'Y'}" th:text="#{penalty.penaltyDetail.receipt}" type="button" id="btnReceipt" class="main-btn" onclick="printReceipt()">영수증 출력</button>
+		</div>
+	</div>
+	<div class="modal-wrap" id="modal">
+
+	</div>
+</th:block>
+</html>
+<script th:inline="javascript">
+	const pymntId = /*[[${finePymntInfo.pymntId}]]*/;
+	
+	function viewOnSitePaymentModal(totalPrice){
+		const modalContent = document.getElementById("modal");
+		
+		$.ajax({
+				url: '/common/modal/payment/onsite.ajax',
+				data : {
+					"totalPrice" : totalPrice
+				},
+				type: "get",
+				dataType: 'html',
+				success: function (data) {
+					modalContent.innerHTML = data;
+					modalContent.style.display = 'block';
+					
+					document.getElementById('modalOff').addEventListener('click', function() {
+						modalContent.style.display = 'none';
+						modalContent.innerHTML = ""
+					});
+					
+					document.getElementById('paymentBtn').addEventListener('click', function() {
+						const pymntPrice = document.getElementById('pymntPrice').value;
+						const payerNm = document.getElementById('payerNm').value;
+						const penaltydetail = document.getElementById('penaltydetail').value;
+						const placePymntId = document.getElementById('placePymntId').value;
+						
+						
+						if(payerNm == null || payerNm == '' ||pymntPrice == null || pymntPrice == '' || placePymntId == null) {
+							alert('PayerName or Payment Amount a required value.');
+							return;
+						}
+
+						if(totalPrice != parseFloat(pymntPrice)){
+							alert('Please enter the payment amount accurately');
+							return;
+						}
+						
+						const confirmMsg =  /*[[#{penalty.penaltyDetail.confirm.payment}]]*/;
+						const successMsg =  /*[[#{penalty.penaltyDetail.payment.success}]]*/;
+						const failedMsg =  /*[[#{penalty.penaltyDetail.payment.failed}]]*/;
+						
+						if(confirm(confirmMsg)){
+							$.ajax({
+								url: '/penalty/second/onsite/payment.ajax',
+								data : {
+									"pymntId"	   : pymntId,
+									"pymntPrice" : pymntPrice,
+									"payerNm" : payerNm,
+									"penaltydetail"	   : penaltydetail,
+									"placePymntId"	: placePymntId
+								},
+								type: "post",
+								dataType: 'json',
+								success: function (data) {
+									if(data.code == '200'){
+										alert(successMsg);
+										location.reload();
+									} else {
+										alert(failedMsg);
+									}
+								}
+							});
+						} else {
+							return;
+						}
+					});
+				}
+		});
+	}
+	
+	function cancelPayment(){
+		const confirmMsg =  /*[[#{penalty.penaltyDetail.confirm.paymentCancel}]]*/;
+		const successMsg =  /*[[#{penalty.penaltyDetail.paymentCancel.success}]]*/;
+		const failedMsg =  /*[[#{penalty.penaltyDetail.paymentCancel.failed}]]*/;
+		
+		if(confirm(confirmMsg)){
+			$.ajax({
+				url: '/penalty/second/cancel/onsite/payment.ajax',
+				data : {
+					"pymntId" : pymntId
+				},
+				type: "post",
+				dataType: 'json',
+				success: function (data) {
+					if(data.code == '200'){
+						alert(successMsg);
+						location.reload();
+					} else {
+						alert(failedMsg);
+					}
+				},
+				error : function (err) {
+					alert(failedMsg);
+				}
+			})
+		}
+		//new ModalBuilder().init().alertBody(result.message).footer(4,'확인',function(button, modal){
+		//	modal.close();
+		//}).open();
+		//modalAlertWrap();
+	}
+	
+	function printReceipt(){
+		console.log("TODO:: 영수증 출력");
+	}
+</script>

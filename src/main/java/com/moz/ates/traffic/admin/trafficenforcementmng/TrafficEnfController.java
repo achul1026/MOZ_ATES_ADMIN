@@ -1,14 +1,15 @@
 package com.moz.ates.traffic.admin.trafficenforcementmng;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,31 +17,36 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.moz.ates.traffic.admin.common.DataTableVO;
+import com.moz.ates.traffic.admin.common.enums.MethodType;
+import com.moz.ates.traffic.admin.config.Authority;
 import com.moz.ates.traffic.admin.gis.service.GisService;
 import com.moz.ates.traffic.common.component.Pagination;
 import com.moz.ates.traffic.common.component.validate.ValidateBuilder;
 import com.moz.ates.traffic.common.component.validate.ValidateChecker;
 import com.moz.ates.traffic.common.component.validate.ValidateResult;
+import com.moz.ates.traffic.common.entity.common.ApiDriverInfoDTO;
+import com.moz.ates.traffic.common.entity.common.CommonResponse;
 import com.moz.ates.traffic.common.entity.common.EnforcementDomain;
-import com.moz.ates.traffic.common.entity.enforcement.MozTfcEnfHst;
 import com.moz.ates.traffic.common.entity.enforcement.MozTfcEnfMaster;
+import com.moz.ates.traffic.common.entity.equipment.MozCameraEnfOrg;
+import com.moz.ates.traffic.common.entity.law.MozTfcLwFineInfo;
 import com.moz.ates.traffic.common.entity.law.MozTfcLwInfo;
-import com.moz.ates.traffic.common.entity.payment.MozFinePymntInfo;
+import com.moz.ates.traffic.common.entity.payment.MozPlPymntInfo;
+import com.moz.ates.traffic.common.support.exception.CommonException;
+import com.moz.ates.traffic.common.support.exception.ErrorCode;
+import com.moz.ates.traffic.common.util.MozatesCommonUtils;
 
 @Controller
-@RequestMapping(value = "enf")
+@RequestMapping(value = "/enf")
 public class TrafficEnfController {
-
-	@Value("${file.upload.path}")
-	private String applPath;
 
 	@Autowired
 	private TrafficEnfService trafficEnfService;
-
+	
 	@Autowired
 	private GisService gService;
 
@@ -52,18 +58,30 @@ public class TrafficEnfController {
 	 * @param : finePymntInfo
 	 * @return :
 	 */
-	@GetMapping("/search/driver/list.do")
-	public String searchDriver(Model model, @ModelAttribute EnfSearchVO enfSearchVO) {
+	@Authority(type = MethodType.READ)
+	@GetMapping("/driver/list.do")
+	public String searchDriver(Model model) {
 
-		DriverVO driverDetail = new DriverVO();
-
-		if (enfSearchVO.getName() != null) {
-			driverDetail = trafficEnfService.getDriverDetail(enfSearchVO);
-		}
-
-		model.addAttribute("driverDetail", driverDetail);
-		model.addAttribute("enfSearchVO", enfSearchVO);
 		return "views/enforcementmng/searchDriver";
+	}
+
+	/**
+	 * @brief : 운전자 정보 조회 상세 화면
+	 * @details : 운전자 정보 조회 상세 화면
+	 * @author : KY.LEE
+	 * @date : 2023.04.10
+	 * @param : searchDriverDetail
+	 */
+	@Authority(type = MethodType.READ)
+	@PostMapping("/driver/detail.do")
+	public String searchDriverDetail(Model model, @ModelAttribute ApiDriverInfoDTO apiDriverInfoDTO) {
+		if(apiDriverInfoDTO != null && MozatesCommonUtils.isNull(apiDriverInfoDTO.getDriverLicenseId())) {
+			throw new CommonException(ErrorCode.INVALID_PARAMETER);
+		}
+		
+		model.addAttribute("driverInfo", apiDriverInfoDTO);
+		model.addAttribute("violationList", trafficEnfService.getViolationInfoList(apiDriverInfoDTO.getDriverLicenseId()));
+		return "views/enforcementmng/searchDriverDetail";
 	}
 
 	/**
@@ -74,27 +92,20 @@ public class TrafficEnfController {
 	 * @param : finePymntInfo
 	 * @return :
 	 */
-	@PostMapping(value = "searchDriverAjax")
-	public String searchDriverAjax(Model model, @ModelAttribute EnfSearchVO enfSearchVO) {
-		DriverVO driverDetail = new DriverVO();
-
-		if (enfSearchVO.getCarNum() != null) {
-			driverDetail = trafficEnfService.getDriverDetail(enfSearchVO);
-		}
-
-		model.addAttribute("driverDetail", driverDetail);
-		model.addAttribute("enfSearchVO", enfSearchVO);
-
-		return "views/enforcementmng/searchDriverAjax";
-	}
-
-//    @GetMapping(value = "searchDriverDetail")
-//    public String searchDriverAjax(Model model, @RequestParam("tfcEnfId")String tfcEnfId){
-//        DriverVO driverDetail = new DriverVO();
+//	@Authority(type = MethodType.READ)
+//	@PostMapping(value = "/searchDriverAjax")
+//	public String searchDriverAjax(Model model, @ModelAttribute EnfSearchVO enfSearchVO) {
+//		DriverVO driverDetail = new DriverVO();
 //
-//        model.addAttribute("driverDetail", driverDetail);
-//        return "views/enforcementmng/searchDriverDetail";
-//    }
+//		if (enfSearchVO.getCarNum() != null) {
+//			driverDetail = trafficEnfService.getDriverDetail(enfSearchVO);
+//		}
+//
+//		model.addAttribute("driverDetail", driverDetail);
+//		model.addAttribute("enfSearchVO", enfSearchVO);
+//
+//		return "views/enforcementmng/searchDriverAjax";
+//	}
 
 	/**
 	 * @brief : 차량 정보 조회 화면
@@ -104,7 +115,8 @@ public class TrafficEnfController {
 	 * @param : finePymntInfo
 	 * @return :
 	 */
-	@GetMapping("/search/car/list.do")
+	@Authority(type = MethodType.READ)
+	@GetMapping("/vehicle/list.do")
 	public String searchCar(Model model, @ModelAttribute EnfSearchVO enfSearchVO) {
 		DriverVO driverDetail = new DriverVO();
 
@@ -117,16 +129,29 @@ public class TrafficEnfController {
 
 		return "views/enforcementmng/searchCar";
 	}
+	
+	@Authority(type = MethodType.READ)
+	@PostMapping(value = "/vehicle/detail.do")
+	public String searchVehicleDetail(Model model, @ModelAttribute ApiDriverInfoDTO apiDriverInfoDTO) {
+		if(apiDriverInfoDTO != null && MozatesCommonUtils.isNull(apiDriverInfoDTO.getDriverLicenseId())) {
+			throw new CommonException(ErrorCode.INVALID_PARAMETER);
+		}
+		
+		model.addAttribute("driverInfo", apiDriverInfoDTO);
+		model.addAttribute("violationList", trafficEnfService.getViolationInfoList(apiDriverInfoDTO.getDriverLicenseId()));
+		return "views/enforcementmng/searchCarDetail";
+	}
 
-//	/**
-//	 * @brief : 차량 정보 조회
-//	 * @details : 차량 정보 조회
-//	 * @author : KC.KIM
-//	 * @date : 2023.08.08
-//	 * @param : finePymntInfo
-//	 * @return :
-//	 */
-//	@PostMapping(value = "searchCarAjax")
+	/**
+	 * @brief : 차량 정보 조회
+	 * @details : 차량 정보 조회
+	 * @author : KC.KIM
+	 * @date : 2023.08.08
+	 * @param : finePymntInfo
+	 * @return :
+	 */
+//	@Authority(type = MethodType.READ)
+//	@PostMapping(value = "/vehicle/searchCarAjax")
 //	public String searchCarAjax(Model model, @ModelAttribute EnfSearchVO enfSearchVO) {
 //		CarVO carDetail = new CarVO();
 //
@@ -148,19 +173,97 @@ public class TrafficEnfController {
 	 * @param : tfcEnfMaster
 	 * @return :
 	 */
+	@Authority(type = MethodType.READ)
 	@GetMapping(value = "/info/list.do")
 	public String infoList(Model model, @ModelAttribute MozTfcEnfMaster tfcEnfMaster) {
-		
-		int page = 1;
+
+		int page = tfcEnfMaster.getPage();
 		int totalCnt = trafficEnfService.getInfoListCnt(tfcEnfMaster);
 		Pagination pagination = new Pagination(totalCnt, page);
-		
-		
+
+		tfcEnfMaster.setStart((page - 1) * pagination.getPageSize());
+
 		model.addAttribute("tfcEnfMaster", tfcEnfMaster);
 		model.addAttribute("infoList", trafficEnfService.getInfoList(tfcEnfMaster));
 		model.addAttribute("pagination", pagination);
-//		model.addAttribute("totalCnt", trafficEnfService.getInfoListCnt(tfcEnfMaster));
+
 		return "views/enforcementmng/infoList";
+	}
+
+	/**
+	 * @brief : 교통단속 정보 등록 화면
+	 * @details : 교통단속 정보 등록 화면
+	 * @author : IK.MOON
+	 * @date : 2024.01.10
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/info/save.do")
+	public String infoRegist(Model model,@ModelAttribute ApiDriverInfoDTO apiDriverInfoDTO) {
+		//법률 목록
+		List<MozTfcLwInfo> trafficLawList = trafficEnfService.getTrafficLawsListByNotNullFineInfo();
+		//납부지 목록
+		List<MozPlPymntInfo> placePaymentList = trafficEnfService.getPlacePaymentList();
+		
+		model.addAttribute("apiDriverInfo",apiDriverInfoDTO);
+		model.addAttribute("trafficLawList",trafficLawList);
+		model.addAttribute("placePaymentList",placePaymentList);
+		return "views/enforcementmng/infoRegist";
+	}
+	
+	/**
+	 * @brief : 교통단속 정보 법률 조회
+	 * @details : 교통단속 정보 법률 조회
+	 * @author : KC.KIM
+	 * @date : 2024.03.19
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@PostMapping(value="/info/lwFineInfo.ajax")
+	@ResponseBody
+	public CommonResponse<?> viewFineNtcInfo(Model model , @RequestParam("tfcLawId") String tfcLawId) {
+		List<MozTfcLwFineInfo> lawFineInfoList = trafficEnfService.getLawFineInfoList(tfcLawId);
+		return CommonResponse.ResponseSuccess(HttpStatus.OK,"범칙금 정보 조회 성공", null, lawFineInfoList);
+	}
+	
+	/**
+	 * @brief : 교통단속 정보 등록
+	 * @details : 교통단속 정보 등록
+	 * @author : KC.KIM
+	 * @date : 2024.03.06
+	 * @param : tfcAcdntMaster
+	 * @return :
+	 */
+	@Authority(type = MethodType.CREATE)
+	@PostMapping(value = "/info/save.ajax")
+	public @ResponseBody CommonResponse<?>  infoRegistAjax(@ModelAttribute MozTfcEnfMaster tfcEnfMaster
+			,	@RequestPart(required = false) MultipartFile[] uploadFiles){
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfMaster);
+		
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("tfcEnfTtl", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("tfcEnfDt", new ValidateChecker().setRequired())
+				.addRule("vhTy", new ValidateChecker().setRequired().setMaxLength(200, "Classification cannot be more than 200 characters"))
+				.addRule("vhRegNo", new ValidateChecker().setRequired().setMaxLength(200, "Vehicle Plate No cannot be more than 200 characters"))
+				.addRule("polId", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Location cannot be more than 200 characters"))
+				.addRule("lat", new ValidateChecker().setRequired())
+				.addRule("lng", new ValidateChecker().setRequired())
+				.isValid();
+		
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
+		}
+		
+		try {
+			trafficEnfService.insertMozTfcEnfMaster(tfcEnfMaster, uploadFiles);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+		
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Enforcement Information has been registered.");
 	}
 
 	/**
@@ -171,11 +274,18 @@ public class TrafficEnfController {
 	 * @param : tfcEnfId
 	 * @return :
 	 */
-	@RequestMapping(value = "/info/detail.do")
+	@Authority(type = MethodType.READ)
+	@GetMapping("/info/detail.do")
 	public String infoDetail(Model model, @RequestParam("tfcEnfId") String tfcEnfId) {
-
-		MozTfcEnfMaster tfcEnfMaster = trafficEnfService.getTrafficEnfDetail(tfcEnfId);
-		EnforcementDomain eDomain = gService.getMapInfo(tfcEnfId);
+		MozTfcEnfMaster tfcEnfMaster = null;
+		EnforcementDomain eDomain = null;
+		try {
+			tfcEnfMaster = trafficEnfService.getTrafficEnfDetail(tfcEnfId);
+			eDomain = gService.getMapInfo(tfcEnfId);
+		} catch (CommonException e){
+			throw new CommonException(ErrorCode.DEFAULT);
+		}
+		
 		model.addAttribute("eDomain", eDomain);
 		model.addAttribute("tfcEnfMaster", tfcEnfMaster);
 		return "views/enforcementmng/infoDetail";
@@ -189,12 +299,19 @@ public class TrafficEnfController {
 	 * @param : tfcEnfId
 	 * @return :
 	 */
+	@Authority(type = MethodType.READ)
 	@GetMapping(value = "/info/update.do")
 	public String infoUpdate(Model model, @RequestParam("tfcEnfId") String tfcEnfId) {
-		System.out.println(applPath);
-
 		MozTfcEnfMaster tfcEnfMaster = trafficEnfService.getTrafficEnfDetail(tfcEnfId);
 
+		//납부지 목록
+		List<MozPlPymntInfo> placePaymentList = trafficEnfService.getPlacePaymentList();
+		
+		//법률 목록
+		List<MozTfcLwInfo> trafficLawList = trafficEnfService.getTrafficLawsListByNotNullFineInfo();
+		
+		model.addAttribute("placePaymentList",placePaymentList);
+		model.addAttribute("trafficLawList",trafficLawList);
 		model.addAttribute("tfcEnfMaster", tfcEnfMaster);
 		return "views/enforcementmng/infoModify";
 	}
@@ -209,256 +326,218 @@ public class TrafficEnfController {
 	 * @param : totalPrice
 	 * @return :
 	 */
+	@Authority(type = MethodType.UPDATE)
 	@PostMapping(value = "/info/update.ajax")
-	@ResponseBody
-	public Map<String, Object> infoUpdateAjax(@ModelAttribute MozTfcEnfMaster tfcEnfMaster,
-			@RequestParam("uploadFile") MultipartFile[] imageFile, @RequestParam("totalPrice") String totalPrice)
-			throws IOException {
-		Map<String, Object> result = new HashMap<>();
-		
-		// validation check
+	public @ResponseBody CommonResponse<?> infoUpdateAjax(@ModelAttribute MozTfcEnfMaster tfcEnfMaster,
+			@RequestPart(required = false) MultipartFile[] uploadFiles){
 		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfMaster);
-		dtoValidator.addRule("roadAddr", new ValidateChecker().setRequired());
-		ValidateResult dtoValidateResult = dtoValidator.isValid();
-		if(!dtoValidateResult.isSuccess()) {
-			// validation FAIL
-			System.out.println("validation FAIL");
-			result.put("code", "0");
-			return result;
+		
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("tfcEnfTtl", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("tfcEnfDt", new ValidateChecker().setRequired())
+				.addRule("vhTy", new ValidateChecker().setRequired().setMaxLength(200, "Classification cannot be more than 200 characters"))
+				.addRule("vhRegNo", new ValidateChecker().setRequired().setMaxLength(200, "Vehicle Plate No cannot be more than 200 characters"))
+				.addRule("polId", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Location cannot be more than 200 characters"))
+				.addRule("lat", new ValidateChecker().setRequired())
+				.addRule("lng", new ValidateChecker().setRequired())
+				.isValid();
+		
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
 		}
 		
-
-		if (!imageFile[0].isEmpty()) {
-			String uuid = UUID.randomUUID().toString();
-			String DBfileName = "";
-			String fileName = "";
-			String projectPath = System.getProperty("user.dir") + applPath;
-			File makeFolder = new File(projectPath);
-			String default_Path = projectPath;
-			String default_Name = "notimage.png";
-
-			if (!makeFolder.exists()) {
-				makeFolder.mkdir();
-				System.out.println("폴더 생성 성공");
-			} else {
-				System.out.println("해당 폴더가 존재 합니다");
-			}
-			for (int i = 0; i < imageFile.length; i++) {
-				fileName = uuid + "_" + imageFile[i].getOriginalFilename();
-				if (i == imageFile.length - 1) {
-					DBfileName += fileName;
-				} else {
-					DBfileName += fileName + ",";
-				}
-				String file_path = projectPath + fileName;
-				File file = new File(file_path);
-				if (!imageFile[i].isEmpty()) {
-					FileOutputStream fo = new FileOutputStream(file);
-					byte[] fileBytes = imageFile[i].getBytes();
-					fo.write(fileBytes);
-					fo.close();
-					tfcEnfMaster.setTfcEnfImagepath(file_path);
-					tfcEnfMaster.setTfcEnfInfoimage(DBfileName);
-				} else {
-					tfcEnfMaster.setTfcEnfImagepath(default_Path);
-					tfcEnfMaster.setTfcEnfInfoimage(default_Name);
-				}
-			}
-		} else {
-			System.out.println("사진파일 수정x");
-		}
-
 		try {
-			trafficEnfService.updateInfo(tfcEnfMaster);
-			// 벌금 수정
-			String chgPrice = totalPrice != null && !"".equals(totalPrice) ? totalPrice : "0";
-			MozFinePymntInfo finePymntInfo = new MozFinePymntInfo();
-			finePymntInfo.setTfcEnfId(tfcEnfMaster.getTfcEnfId());
-			finePymntInfo.setTotalPrice(chgPrice);
-			trafficEnfService.updateInfoPrice(finePymntInfo);
-			result.put("code", "1");
+			trafficEnfService.updateInfo(tfcEnfMaster, uploadFiles);
 		} catch (Exception e) {
-			result.put("code", "0");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-
-		return result;
+		
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Enforcement Information has been modified.");
 	}
-
+	
 	/**
-	 * @brief : 위반 차량 사진 삭제
-	 * @details : 위반 차량 사진 삭제
+	 * @brief : 교통단속 정보 삭제(soft Delete)
+	 * @details : 교통단속 정보 삭제(soft Delete)
 	 * @author : KC.KIM
-	 * @date : 2023.08.08
-	 * @param : tfcEnfMaster
+	 * @date : 2024.03.11
+	 * @param : tfcEnfId
 	 * @return :
 	 */
-	@PostMapping(value = "/info/image/delete.ajax") //infoImageDelteAjax
-	public String imageDelete(@ModelAttribute MozTfcEnfMaster tfcEnfMaster) {
-		String default_Name = "notimage.png";
-		String default_Path = System.getProperty("user.dir") + applPath;
-		tfcEnfMaster.setTfcEnfInfoimage(default_Name);
-		tfcEnfMaster.setTfcEnfImagepath(default_Path);
-
-		try {
-			trafficEnfService.deleteEnfImage(tfcEnfMaster);
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return "views/enforcementmng/infoModify";
-	}
-
-	/**
-	 * @brief : 교통단속 법률관리 리스트 화면
-	 * @details : 교통단속 법률관리 리스트 화면
-	 * @author : KC.KIM
-	 * @date : 2023.08.08
-	 * @param : tfcLwInfo
-	 * @return :
-	 */
-	@RequestMapping(value = "/law/list.do")
-	public String lawList(Model model, @ModelAttribute MozTfcLwInfo tfcLwInfo) {
-
-		model.addAttribute("tfcLwInfo", tfcLwInfo);
-		model.addAttribute("lawLists", trafficEnfService.getLawList(tfcLwInfo));
-		model.addAttribute("totalCnt", trafficEnfService.getLawListCnt(tfcLwInfo));
-		return "views/enforcementmng/lawList";
-	}
-
-	/**
-	 * @brief : 교통단속 법률관리 등록 화면
-	 * @details : 교통단속 법률관리 등록 화면
-	 * @author : KC.KIM
-	 * @date : 2023.08.08
-	 * @param :
-	 * @return :
-	 */
-	@RequestMapping(value = "/law/save.do")
-	public String lawRegist(Model model) {
-
-		return "views/enforcementmng/lawRegist";
-	}
-
-	/**
-	 * @brief : 교통단속 법률관리 등록
-	 * @details : 교통단속 법률관리 등록
-	 * @author : KC.KIM
-	 * @date : 2023.08.08
-	 * @param : tfcLwInfo
-	 * @return :
-	 */
-	@PostMapping(value = "/law/save.ajax")
+	@Authority(type = MethodType.UPDATE)
+	@PostMapping("/info/deleteByTfcEnfId.ajax")
 	@ResponseBody
-	public Map<String, Object> lawSaveAjax(@ModelAttribute MozTfcLwInfo tfcLwInfo) {
-		Map<String, Object> result = new HashMap<>();
+	public CommonResponse<?> tfcEnfDeleteAjax(@RequestParam("tfcEnfId") String tfcEnfId) {
 
-		try {
-			trafficEnfService.lawSave(tfcLwInfo);
-			result.put("code", "1");
-		} catch (Exception e) {
-			result.put("code", "0");
+		MozTfcEnfMaster tfcEnfMaster = new MozTfcEnfMaster();
+		tfcEnfMaster.setTfcEnfId(tfcEnfId);
+
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfMaster);
+
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("tfcEnfId", new ValidateChecker().setRequired())
+				.isValid();
+
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
 		}
 
-		return result;
+		try {
+			trafficEnfService.deleteTfcEnfMaster(tfcEnfMaster);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Enforcement Information has been deleted");
 	}
-
+	
 	/**
-	 * @brief : 교통단속 법률관리 상세 조회
-	 * @details : 교통단속 법률관리 상세 조회
+	 * @brief : 교통단속 정보 삭제
+	 * @details : 교통단속 정보 삭제
 	 * @author : KC.KIM
-	 * @date : 2023.08.08
-	 * @param : tfcLawId
+	 * @date : 2024.03.11
+	 * @param : tfcEnfId
 	 * @return :
 	 */
-	@GetMapping(value = "/law/datail.do")
-	public String lawDetail(Model model, @RequestParam("lawId") String tfcLawId) {
-
-		MozTfcLwInfo tfcLwInfo = trafficEnfService.getLawDetail(tfcLawId);
-		model.addAttribute("tfcLwInfo", tfcLwInfo);
-
-		return "views/enforcementmng/lawDetail";
-	}
-
-	/**
-	 * @brief : 교통단속 법률관리 수정 화면
-	 * @details : 교통단속 법률관리 수정 화면
-	 * @author : KC.KIM
-	 * @date : 2023.08.08
-	 * @param : tfcLawId
-	 * @return :
-	 */
-	@GetMapping(value = "/law/update.do")
-	public String lawUpdate(Model model, @RequestParam("tfcLawId") String tfcLawId) {
-
-		MozTfcLwInfo tfcLwInfo = trafficEnfService.getLawDetail(tfcLawId);
-		model.addAttribute("tfcLwInfo", tfcLwInfo);
-
-		return "views/enforcementmng/lawModfy";
-	}
-
-	/**
-	 * @brief : 교통단속 법률관리 정보 수정
-	 * @details : 교통단속 법률관리 정보 수정
-	 * @author : KC.KIM
-	 * @date : 2023.08.08
-	 * @param : tfcLwInfo
-	 * @return :
-	 */
-	@PostMapping(value = "/law/update.ajax")
+	@Authority(type = MethodType.DELETE)
+	@PostMapping("/info/delete.ajax")
 	@ResponseBody
-	public Map<String, Object> lawUpdateAjax(@ModelAttribute MozTfcLwInfo tfcLwInfo) {
-		Map<String, Object> result = new HashMap<>();
+	public CommonResponse<?> sftyInfrmDeleteAjax(@RequestParam("tfcEnfId") String tfcEnfId) {
 
-		try {
-			trafficEnfService.updateLaw(tfcLwInfo);
-			result.put("code", "1");
-		} catch (Exception e) {
-			result.put("code", "0");
+		MozTfcEnfMaster tfcEnfMaster = new MozTfcEnfMaster();
+		tfcEnfMaster.setTfcEnfId(tfcEnfId);
+
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfMaster);
+
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("tfcEnfId", new ValidateChecker().setRequired())
+				.isValid();
+
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
 		}
 
-		return result;
-
+		try {
+			trafficEnfService.deleteTfcEnfMasterByTfcEnfId(tfcEnfMaster);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Enforcement Information has been deleted");
 	}
 
 	/**
-	 * @brief : 교통단속 법률관리 정보 수정
-	 * @details : 교통단속 법률관리 정보 수정
-	 * @author : KC.KIM
-	 * @date : 2023.08.08
-	 * @param : tfcLawId
-	 * @return :
+	 * @brief : 단속장비 단속자 리스트
+	 * @details : 단속장비 단속자 리스트
+	 * @author : KY.LEE
+	 * @date : 2024.04.06
 	 */
-	@PostMapping(value = "/law/delete.ajax")
-	@ResponseBody
-	public Map<String, Object> lawDeleteAjax(@RequestParam("tfcLawId") String tfcLawId) {
-		Map<String, Object> result = new HashMap<>();
-
-		try {
-			trafficEnfService.deleteLaw(tfcLawId);
-			result.put("code", "1");
-		} catch (Exception e) {
-			result.put("code", "0");
-		}
-
-		return result;
-
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/detection/list.do")
+	public String detectionList(Model model , MozCameraEnfOrg mozCameraEnfOrg) {
+		int page = mozCameraEnfOrg.getPage();
+		int totalCnt = trafficEnfService.getViolationCount(mozCameraEnfOrg);
+		
+		Pagination pagination = new Pagination(totalCnt, page);
+		mozCameraEnfOrg.setStart((page - 1) * pagination.getPageSize());
+		
+		model.addAttribute("pagination", pagination);
+		model.addAttribute("detectionList", trafficEnfService.getViolationList(mozCameraEnfOrg));
+		model.addAttribute("searchOption", mozCameraEnfOrg);
+		
+		return "views/enforcementmng/detectionList";
 	}
-
+	
 	/**
-	 * @brief : 교통단속 로그 리스트 화면
-	 * @details : 교통단속 로그 리스트 화면
+	 * @brief : 단속장비 단속자 리스트
+	 * @details : 단속장비 단속자 리스트
+	 * @author : KY.LEE
+	 * @date : 2024.04.06
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/detection/detail.do")
+	public String detectionList(Model model , @RequestParam(name="idx", required=true) Long idx) {
+		model.addAttribute("detectionDetail", trafficEnfService.getViolationDetail(idx));
+		model.addAttribute("detectionImageList", trafficEnfService.getViolationImageList(idx));
+		return "views/enforcementmng/detectionDetail";
+	}
+	
+	/**
+	 * @brief : 단속 장비 촬영 이미지 view
+	 * @details : 단속 장비 촬영 이미지 view
+	 * @author : KY.LEE
+	 * @date : 2024.04.06
+	 */
+	@Authority(type = MethodType.READ)
+    @GetMapping("/detection/viewImage.do")
+    public ResponseEntity<Resource> viewImage(@RequestParam(name="idx",required = true) Long idx) {
+    	String filePath = trafficEnfService.getViolationImage(idx);
+    	
+        try {
+            Path file = Paths.get(filePath);
+            Resource resource = new UrlResource(file.toUri());
+            if (resource.exists() || resource.isReadable()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG) // MIME 타입 설정
+                        .body(resource);
+            } else {
+                // 파일이 존재하지 않거나 읽을 수 없는 경우의 처리
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+        	ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+	
+	/**
+	 * @brief : 단속장비 단속 등록
+	 * @details : 단속장비 단속 등록
+	 * @author : KY.LEE
+	 * @date : 2024.04.06
+	 */
+	@Authority(type = MethodType.CREATE)
+	@GetMapping(value = "/detection/save.do")
+	public String detectionSave(Model model , @RequestParam(name="idx", required=true) Long idx) {
+		//법률 목록
+		List<MozTfcLwInfo> trafficLawList = trafficEnfService.getTrafficLawsListByNotNullFineInfo();
+		//납부지 목록
+		List<MozPlPymntInfo> placePaymentList = trafficEnfService.getPlacePaymentList();
+		
+		model.addAttribute("detectionDetail", trafficEnfService.getViolationDetail(idx));
+		model.addAttribute("detectionImageList", trafficEnfService.getViolationImageList(idx));
+		model.addAttribute("trafficLawList",trafficLawList);
+		model.addAttribute("placePaymentList",placePaymentList);
+		return "views/enforcementmng/detectionRegist";
+	}
+	
+	/**
+	 * @brief : 교통단속 정보 등록
+	 * @details : 교통단속 정보 등록
 	 * @author : KC.KIM
-	 * @date : 2023.08.08
-	 * @param : tfcEnfHst
+	 * @date : 2024.03.06
+	 * @param : tfcAcdntMaster
 	 * @return :
 	 */
-	@GetMapping(value = "/log/list.do")
-	public String logList(Model model, @ModelAttribute MozTfcEnfHst tfcEnfHst) {
-
-		model.addAttribute("tfcEnfHst", tfcEnfHst);
-		model.addAttribute("logLists", trafficEnfService.getLogList(tfcEnfHst));
-		model.addAttribute("totalCnt", trafficEnfService.getLogListCnt(tfcEnfHst));
-
-		return "views/enforcementmng/logList";
+	@Authority(type = MethodType.CREATE)
+	@PostMapping(value = "/detection/save.ajax")
+	public @ResponseBody CommonResponse<?>  detectionRegistAjax(@ModelAttribute MozTfcEnfMaster tfcEnfMaster){
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfMaster);
+		
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("tfcEnfDt", new ValidateChecker().setRequired())
+				.addRule("totalPrice", new ValidateChecker().setRequired())
+				.addRule("idx", new ValidateChecker().setRequired())
+				.isValid();
+		
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
+		}
+		
+		try {
+			trafficEnfService.insertMozTfcEnfMasterForEquipment(tfcEnfMaster);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+		
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Enforcement Information has been registered.");
 	}
-
 }

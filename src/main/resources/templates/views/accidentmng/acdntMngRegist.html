@@ -1,135 +1,687 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
 
-    <div class="container-fluid">
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="#{accident.mngRegist.title}">교통사고 정보 등록</h1>
+		<div class="">
+			<form id="frmAcdntRegist" enctype="multipart/form-data">
+				<input type="hidden" name="lng" class="lng" th:value="${lng}">
+				<input type="hidden" name="lat" class="lat" th:value="${lat}">
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{accident.mngRegist.accidentDate}">사고일시</span>
+							</th>
+							<td>
+								<input type="hidden" name="acdntDt">
+								<input type="datetime-local" class="input-time data-validate" id="acdntDt" th:data-valid-name="#{accident.mngRegist.accidentDate}" data-valid-required>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{accident.mngRegist.typeOfAccident}">사고 유형</span>
+							</th>
+							<td>
+								<select class="filter-select filter95 data-validate" name="acdntTyCd" th:data-valid-name="#{accident.mngRegist.typeOfAccident}" data-valid-required>
+									<option value="">Select</option>
+									<th:block th:each="acdntCd : ${acdntCdList}">
+										<option th:value="${acdntCd.cdId}" th:text="${acdntCd.cdNm}"></option>
+									</th:block>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{accident.mngRegist.accidentPlace}">사고장소</span>
+							</th>
+							<td colspan="3" class="modal-find-line">
+								<input type="text" class="main-input data-validate" id="roadAddr" name="roadAddr" th:placeholder="#{accident.mngRegist.accidentPlaceholder}" th:data-valid-name="#{accident.mngRegist.accidentPlace}" data-valid-required>
+								<i class="search-icon mapSearch"></i>
+								<br><br>
+								<div id="map" class="detailMap">
+									<img src="/images/mapLocation_icon.png" alt="My Location" class="mapLocationIcon">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{accident.mngRegist.policeOfficerInCharge}"></span>
+							</th>
+							<td class="modal-find-line">
+								<input type="hidden" name="polId" id="polId">
+								<input type="text" class="main-input data-validate" id="polNm" name="polNm" th:placeholder="#{accident.mngRegist.officer}" th:data-valid-name="#{accident.mngRegist.policeOfficerInCharge}" readonly data-valid-required>
+								<i class="search-icon" onclick="changePolListModal('show')"></i>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{accident.mngRegist.department}"></span>
+							</th>
+							<td><input type="text" class="main-input" id="polDeptNm" th:placeholder="#{accident.mngRegist.deptPlaceholer}" readonly ></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{accident.mngRegist.childAcdnt}">어린이 사고 여부</span>
+							</th>
+							<td>
+								<select class="filter-select acdntChildYn data-validate" name="acdntChildYn" th:data-valid-name="#{accident.mngRegist.childAcdnt}" data-valid-required>
+									<option value="N">N</option>
+									<option value="Y">Y</option>
+								</select>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{accident.mngRegist.accidentDetails}"></span>
+							</th>
+							<td>
+								<input type="text" class="main-input data-validate acdntTyDtls" name="acdntTyDtls" th:placeholder="#{accident.mngRegist.accidentDetailsPlaceholder}" th:data-valid-name="#{accident.mngRegist.accidentDetails}" data-valid-required>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.mngRegist.attachment}">첨부파일</th>
+							<td colspan="3">
+								<input type="file" id="uploadFiles" name="uploadFiles" multiple />
+								<div id="dragArea">
+								<div class="drag-area">
+								    <div class="dragText">
+								       File name cannot be more than 50 characters<br>
+										The file size can only be uploaded under 5MB<br>
+										Only JPG, JPEG, PNG, and MP4 files can be uploaded
+								    </div>
+								    <div>
+								        <input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
+								        <button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+								    </div>
+								</div>
+							</div>
+							<div class="upload_wrap none">
+								<div id="upload_list_box"></div>	
+							</div>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.mngRegist.report}">사고 조서</th>
+							<td colspan="3">
+								<textarea class="detail-table-textarea" id="acdntReport" name="acdntReport" th:placeholder="#{accident.mngRegist.reportPlaceholder}"></textarea>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<div class="trgtInfoDiv pnrInfoDiv">
+					<div class="pnrBox rgTableTitle" data-type="driver">
+						<h1><span th:text="#{accident.mngRegist.accidentParty}"></span><span class="tableNum"> 1</span></h1>
+					</div>
+					<table class="detail-table">
+						<colgroup>
+							<col width="15%">
+							<col width="35%">
+							<col width="15%">
+							<col width="35%">
+						</colgroup>
+						<tbody>
+							<!-- VEHICLE -->
+							<tr>
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.accidentTarget}">사고 대상</span>
+								</th>
+								<td colspan="3">
+									<select class="filter-select acdntTrgtCd data-validate" th:data-valid-name="#{accident.mngRegist.accidentTarget}" onchange="viewAcdntTrgtWrap(this)" data-valid-required>
+										<option value="ATT000">Vehicle</option>
+										<option value="ATT001">Person</option>
+									</select>
+								</td>
+							</tr>
+							<tr class="vehicleWrap">
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.driverLicenseId}">운전면허 ID</span>
+								</th>
+								<td><input type="text" class="main-input data-validate dvrLcenId vhclValidTrgt" data-class="dvrLcenId" th:placeholder="#{accident.mngRegist.driverLicenseIdPlaceholder}" th:data-valid-name="#{accident.mngRegist.driverLicenseId}" data-valid-required></td>
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.vehicleNo}">차량번호</span>
+								</th>
+								<td><input type="text" class="main-input data-validate vhRegNo vhclValidTrgt" data-class="vhRegNo" th:placeholder="#{accident.mngRegist.vehicleNoPlaceholder}" th:data-valid-name="#{accident.mngRegist.vehicleNo}" data-valid-required></td>
+							</tr>
+							<tr class="vehicleWrap">
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.vehicleType}">차종</span>
+								</th>
+								<td>
+									<input type="text" class="main-input data-validate vhTy vhclValidTrgt" data-class="vhTy" th:placeholder="#{accident.mngRegist.vehicleTypePlaceholder}" th:data-valid-name="#{accident.mngRegist.vehicleType}" data-valid-required>
+								</td>
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.DrivingStatus}">운행 상태</span>
+								</th>
+								<td>
+									<select class="filter-select data-validate dvYn vhclValidTrgt" data-class="dvYn" th:data-valid-name="#{accident.mngRegist.DrivingStatus}" data-valid-required>
+										<option value="Y">Running</option>
+										<option value="N">Stopping</option>
+									</select>
+								</td>
+							</tr>
+							<tr class="vehicleWrap">
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.accidentDamage}">Accident Damage</span>
+								</th>
+								<td>
+									<select class="filter-select data-validate acdntDmgCd vhclValidTrgt" data-class="acdntDmgCd" th:data-valid-name="#{accident.mngRegist.damageLevel}" data-valid-required>
+										<option value="ADC000">Fatal Injury</option>
+										<option value="ADC001">Minor Injury</option>
+										<option value="ADC002">Material Damage</option>
+										<option value="ADC003">None Injury</option>
+									</select>
+								</td>
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.phoneNumber}">휴대폰 번호</span>
+								</th>
+								<td><input type="text" class="main-input data-validate acdntTrgtPno vhclValidTrgt" data-class="acdntTrgtPno" th:placeholder="#{accident.mngRegist.phoneNumberPlaceholder}" th:data-valid-name="#{accident.mngRegist.phoneNumber}" data-valid-required></td>
+							</tr>
+							<tr class="vehicleWrap">
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.accidentTargetBirthday}">Accident Target Birthday</span></th>
+								<td>
+									<input type="text" class="main-input data-validate acdntTrgtBrth vhclValidTrgt" data-class="acdntTrgtBrth" th:placeholder="#{accident.mngRegist.accidentTargetBirthdayPlaceholder}" th:data-valid-name="#{accident.mngRegist.accidentTargetBirthday}" data-valid-required>
+								</td>
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.name}">이름</span>
+								</th>
+								<td>
+									<input type="text" class="main-input data-validate acdntTrgtNm vhclValidTrgt" data-class="acdntTrgtNm" th:placeholder="#{accident.mngRegist.namePlaceholder}" th:data-valid-name="#{accident.mngRegist.name}" data-valid-required>
+								</td>
+							</tr>
+							<tr class="vehicleWrap">
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.deathStatus}">사망여부</span>
+								</th>
+								<td colspan="3">
+									<select class="filter-select data-validate deadYn vhclValidTrgt" data-class="deadYn" th:data-valid-name="#{accident.mngRegist.deathStatus}" data-valid-required>
+										<option value="Y">Death</option>
+										<option value="N">Not Death</option>
+									</select>
+								</td>
+							</tr>
+							
+							<!-- PERSON -->
+							<tr class="personWrap" style="display:none">
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.accidentDamage}">Accident Damage</span>
+								</th>
+								<td>
+									<select class="filter-select acdntDmgCd pesValidTrgt" data-class="acdntDmgCd" th:data-valid-name="#{accident.mngRegist.damageLevel}">
+										<option value="ADC000">Fatal Injury</option>
+										<option value="ADC001">Minor Injury</option>
+										<option value="ADC002">Material Damage</option>
+										<option value="ADC003">None Injury</option>
+									</select>
+								</td>
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.accidentTargetPhoneNumber}">Accident Target Phone Number</span></th>
+								<td>
+									<input type="text" class="main-input acdntTrgtPno pesValidTrgt" data-class="acdntTrgtPno" th:placeholder="#{accident.mngRegist.accidentTargetPhoneNumber}" th:data-valid-name="#{accident.mngRegist.accidentTargetPhoneNumber}" data-valid-required disabled>
+								</td>
+							</tr>
+							<tr class="personWrap" style="display:none">
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.accidentTargetBirthday}">Accident Target Birthday</span></th>
+								<td>
+									<input type="text" class="main-input acdntTrgtBrth pesValidTrgt" data-class="acdntTrgtBrth" th:placeholder="#{accident.mngRegist.accidentTargetBirthday}"  th:data-valid-name="#{accident.mngRegist.accidentTargetBirthday}" data-valid-required disabled>
+								</td>
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.accidentTargetName}">Accident Target Name</span></th>
+								<td>
+									<input type="text" class="main-input acdntTrgtNm pesValidTrgt" data-class="acdntTrgtNm" th:placeholder="#{accident.mngRegist.accidentTargetName}" th:data-valid-name="#{accident.mngRegist.accidentTargetName}" data-valid-required disabled>
+								</td>
+							</tr>
+							<tr class="personWrap" style="display:none">
+								<th>
+									<span class="requiredMark" th:text="#{accident.mngRegist.deathStatus}">Death Status</span></th>
+								<td colspan="3">
+									<select class="filter-select deadYn pesValidTrgt" data-class="deadYn" th:data-valid-name="#{accident.mngRegist.deathStatus}">
+										<option value="Y">Death</option>
+										<option value="N">Not Death</option>
+									</select>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<div class="pnrInfo vehicleWrap"></div>
+					<div class="tableAddWrap vehicleWrap">
+						<div onclick="tablePassenger(this)" class="tableAddBtn tableOneAdd">
+							<img src="/images/table-plus.png" alt="교통사고 테이블 추가"> <span th:text="#{accident.mngRegist.addPassenger}">동승자 추가</span>
+						</div>
+					</div>
+				</div>
+			</form>
+			
+			<div class="tableAddWrap">
+				<div onclick="tableDriver()" class="tableAddBtn">
+					<img src="/images/table-plus.png" alt="교통사고 테이블 추가"> <span th:text="#{accident.mngRegist.addaccidentParty}">사고 대상자 추가</span>
+				</div>
+			</div>
+			
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn form-button" th:onclick="|location.href='@{/acdnt/mng/list.do}'|"
+					th:text="#{accident.mngRegist.list}">목록</button>
+				<button type="button" id="btnRegist" class="main-btn" onclick="saveInfo()"
+				th:text="#{accident.mngRegist.registrationButton}">등록</button>
+			</div>
+		</div>
+	</div>
 
-        <!-- Page Heading -->
-        <h1 class="h3 mb-4 text-gray-800" th:text="#{accident.mngRegist.title}">교통사고 등록</h1>
+	<div class="modal-wrap" id="modal">
 
-        <div class="row">
-
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{accident.mngRegist.registrationTitle}">등록</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <form id="frmAcdntRegist">
-                                <table class="table table-bordered">
-                                    <colgroup>
-                                        <col width="20%">
-                                        <col width="30%">
-                                        <col width="20%">
-                                        <col width="30%">
-
-                                    </colgroup>
-                                    <tbody>
-                                    <tr>
-                                        <th th:text="#{accident.mngRegist.accidentNumber}">사고번호</th>
-                                        <td><input type="text" class="form-control" id="txtTfcAcdntId" name="tfcAcdntId"></td>
-                                        <th th:text="#{accident.mngRegist.accidentDate}">사고일시</th>
-                                        <td><input type="date" class="form-control" id="txtAcdntDt" name="acdntDt"></td>
-                                    </tr>
-                                    <tr>
-                                        <th th:text="#{accident.mngRegist.accidentPlace}">사고장소</th>
-                                        <td><input type="text" class="form-control" id="txtRoadAddr" name="roadAddr"></td>
-                                        <th th:text="#{accident.mngRegist.accidentCarNumber}">사고차번호</th>
-                                        <td><input type="text" class="form-control" id="txtVhRegNo" name="vhRegNo"></td>
-                                    </tr>
-                                    <tr>
-                                        <th th:text="#{accident.mngRegist.typeOfAccident}">사고 종류</th>
-                                        <td>
-                                            <select class="form-control" id="txtLastAcdntPrcCd" name="lastAcdntPrcCd">
-                                                <th:block th:each="cd : ${cdList}">
-                                                    <option th:value="${cd.cdId}" th:text="${cd.cdNm}"></option>
-                                                </th:block>
-                                            </select>
-                                        </td>
-                                        <th th:text="#{accident.mngRegist.policeOfficerInCharge}">담당경찰관</th>
-                                        <td><input type="text" class="form-control" id="txtPolId" name="polId"></td>
-                                    </tr>
-
-
-                                    </tbody>
-                                </table>
-                            </form>
-                            <button type="button" id="btnGoList" class="btn btn-outline-secondary" onclick="javascript:window.history.back()" th:text="#{accident.mngRegist.list}">목록</button>
-                            <button type="button" id="btnRegist" class="btn btn-outline-warning" th:text="#{accident.mngRegist.registrationButton}">등록</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-
-        </div>
-
-    </div>
-
-
+	</div>
 
 </th:block>
+
 </html>
 <script th:inline="javascript">
-    $("#btnRegist").click(function () {
-
-
-        if($.trim($("#txtTfcAcdntId").val())==''){
-            alert("사고번호를 입력해주세요.");
-            $("#txtTfcAcdntId").focus();
-            return false;
-        }
-        if($.trim($("#txtAcdntDt").val())==''){
-            alert("사고일시를 입력해주세요.");
-            $("#txtAcdntDt").focus();
-            return false;
-        }
-
-        if($.trim($("#txtRoadAddr").val())==''){
-            alert("사고장소를 입력해주세요.");
-            $("#txtRoadAddr").focus();
-            return false;
-        }
-
-        if($.trim($("#txtVhRegNo").val())==''){
-            alert("사고차번호를 입력해주세요.");
-            $("#txtVhRegNo").focus();
-            return false;
-        }
-        if($.trim($("#txtLastAcdntPrcCd").val())==''){
-            alert("사고종류를 입력해주세요.");
-            $("#txtLastAcdntPrcCd").focus();
-            return false;
-        }
-
-        if($.trim($("#txtPolId").val())==''){
-            alert("담당경찰관을 입력해주세요.");
-            $("#txtPolId").focus();
-            return false;
-        }
-
-        $.ajax({
-            url: /*[[@{/acdnt/mng/save.ajax}]]*/ "/acdnt/mng/save.ajax",
-            type: "post",
-            data: $("#frmAcdntRegist").serialize(),
-            success: function(data){
-                if(data.code == "1"){
-                    alert("등록했습니다.");
-                    location.href=/*[[@{/acdnt/mng/list.do}]]*/ "";
-                }else{
-                    alert(data.msg);
-                }
-            }
-        });
-
-    })
-
-
-
+	const lng = /*[[${lng}]]*/;
+	const lat = /*[[${lat}]]*/;
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : lng,
+		center_lat : lat,
+		isInitDrawCenterMarker : true
+	});
+	
+	function saveInfo() {
+		if($("#frmAcdntRegist").soValid()) {	
+		//$(".lng").val(map.getLng());
+		//$(".lat").val(map.getLat());
+		var form = $("#frmAcdntRegist")[0];
+		var data = new FormData(form);
+		
+		//타겟 정보 저장
+		var trgtInfoDiv = $(".trgtInfoDiv");
+		$(trgtInfoDiv).each(function(i, value){
+			var trgtInfo = trgtInfoDiv.eq(i);
+			data.append("tfcAcdntTrgtInfo[" + i + "].acdntTrgtCd", trgtInfo.find(".acdntTrgtCd").val());
+			data.append("tfcAcdntTrgtInfo[" + i + "].dvrLcenId", trgtInfo.find(".dvrLcenId").val());
+			data.append("tfcAcdntTrgtInfo[" + i + "].vhRegNo", trgtInfo.find(".vhRegNo").val());
+			data.append("tfcAcdntTrgtInfo[" + i + "].vhTy", trgtInfo.find(".vhTy").val());
+			data.append("tfcAcdntTrgtInfo[" + i + "].dvYn", trgtInfo.find(".dvYn").val());
+			data.append("tfcAcdntTrgtInfo[" + i + "].acdntDmgCd", trgtInfo.find(".acdntDmgCd").val());
+			data.append("tfcAcdntTrgtInfo[" + i + "].acdntTrgtPno", trgtInfo.find(".acdntTrgtPno").val());
+			data.append("tfcAcdntTrgtInfo[" + i + "].acdntTrgtBrth", trgtInfo.find(".acdntTrgtBrth").val());
+			data.append("tfcAcdntTrgtInfo[" + i + "].acdntTrgtNm", trgtInfo.find(".acdntTrgtNm").val());
+			data.append("tfcAcdntTrgtInfo[" + i + "].deadYn", trgtInfo.find(".deadYn").val());
+			var pnrInfoDiv = $(trgtInfo).find(".pnrInfoDiv");
+			if($(pnrInfoDiv).length > 0){
+				$(pnrInfoDiv).each(function(j, value){
+					var pnrInfo = pnrInfoDiv.eq(j);					
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrSortNo", j+1);
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].drvYn", pnrInfo.find(".drvYn").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrDvrLcenId", pnrInfo.find(".pnrDvrLcenId").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].dvrLcenTy", pnrInfo.find(".dvrLcenTy").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrNm", pnrInfo.find(".pnrNm").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrAddr", pnrInfo.find(".pnrAddr").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrBrth", pnrInfo.find(".pnrBrth").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrEmail", pnrInfo.find(".pnrEmail").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrPno", pnrInfo.find(".pnrPno").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrDmgCd", pnrInfo.find(".pnrDmgCd").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrDmgDesc", pnrInfo.find(".pnrDmgDesc").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrDrvrRltnCd", pnrInfo.find(".pnrDrvrRltnCd").val());
+					data.append("tfcAcdntTrgtInfo[" + i + "].tfcAcdntTrgtPnrInfo[" + j + "].pnrDeadYn", pnrInfo.find(".pnrDeadYn").val());
+				});
+			};
+		});
+		
+		$.ajax({
+			url: /*[[@{/acdnt/mng/save.ajax}]]*/ "/acdnt/mng/save.ajax",
+			type: "post",
+			enctype: 'multipart/form-data',
+			data : data,
+			processData: false,
+			contentType: false,
+			success: function (result) {
+				if(result.code == 200){
+					new ModalBuilder().init().successBody(result.message).footer(4,'확인',function(button, modal){
+						modal.close();
+						location.href =/*[[@{/acdnt/mng/list.do}]]*/ "";
+					}).open();
+				} else {
+					new ModalBuilder().init().alertBoby(result.message).footer(4,'확인',function(button, modal){modal.close();}).open();
+				}
+			}
+		});		
+	   }
+	}
+	
+	// 모달 수정 여부 확인필요?
+	const modalContent = document.getElementById("modal");
+	
+	// modal control
+	function changePolListModal(type) {
+		if (type == "show") {
+			$.ajax({
+				url: '/common/modal/pol/list.ajax',
+				type: "get",
+				dataType: 'html',
+				success: function (data) {
+					modalContent.innerHTML += data;
+					modalContent.style.display = 'block';
+				}
+			});
+		}else if (type == "hide") {
+			modalContent.innerHTML = '';
+			modalContent.style.display = 'none';
+		}
+	}
+	
+	function viewAcdntTrgtWrap(_this){
+		let accidentTrgtType = _this.value;
+		let trgtTable = $(_this).parents(".trgtInfoDiv");
+		if(accidentTrgtType === 'ATT000'){
+			$(trgtTable).find(".personWrap").css('display', 'none');	
+			$(trgtTable).find(".personWrap").find("input").attr("disabled", true);	
+			$(trgtTable).find(".vehicleWrap").css('display', '');
+			$(trgtTable).find(".vehicleWrap").find("input").attr("disabled", false);
+			$(trgtTable).find(".pesValidTrgt").removeClass("data-validate");
+			$(trgtTable).find(".vhclValidTrgt").addClass("data-validate");
+			
+			let pesTrgt = $(trgtTable).find(".pesValidTrgt");
+			$(pesTrgt).each(function(index, item){
+				$(item).removeClass($(item).data("class"));
+				$(item).removeClass("data-validate");
+			});
+			
+			let vhclTrgt = $(trgtTable).find(".vhclValidTrgt");
+			$(vhclTrgt).each(function(index, item){
+				$(item).addClass($(item).data("class"));
+				$(item).addClass("data-validate");
+			});
+			
+		} else {
+			$(trgtTable).find(".vehicleWrap").css('display', 'none');
+			$(trgtTable).find(".vehicleWrap").find("input").attr("disabled", true);
+			$(trgtTable).find(".personWrap").css('display', '');
+			$(trgtTable).find(".personWrap").find("input").attr("disabled", false);
+			$(trgtTable).find(".vhclValidTrgt").removeClass("data-validate");
+			$(trgtTable).find(".pesValidTrgt").addClass("data-validate");
+			
+			let pesTrgt = $(trgtTable).find(".pesValidTrgt");
+			$(pesTrgt).each(function(index, item){
+				$(item).addClass($(item).data("class"));
+				$(item).addClass("data-validate");
+			});
+			
+			let vhclTrgt = $(trgtTable).find(".vhclValidTrgt");
+			$(vhclTrgt).each(function(index, item){
+				$(item).removeClass($(item).data("class"));
+				$(item).removeClass("data-validate");
+			});
+		}
+	}
+	
+	var pnrLength = 2;
+	function tablePassenger(_this){
+		let html = '';
+		
+		html += '<div class="pnrInfoDiv">';
+		html += '	<div class="pnrBox rgTableTitle" data-type="passenger"><h1>'+[[#{accident.mngRegist.passenger}]]+'<span></span></h1>'
+		html += '	<button type="button" class="delete-btn" onclick="deletePnrInfo(this)">Delete</button>';
+		html += '</div>';
+		html +=	'<table class="detail-table">';
+		html +=	'<colgroup>';
+		html += ' <col width="15%">';
+		html += ' <col width="35%">';
+		html += ' <col width="15%">';
+		html += ' <col width="35%">';
+		html += ' </colgroup>';
+		html += ' 		<tbody>';
+		html += '			<tr>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.isDriver}]]+'</span></th>';
+		html += '				<td>';
+		html += '					<select class="filter-select data-validate drvYn" data-valid-required>';
+		html += '							<option value="Y">Y</option>';
+		html += '							<option value="N">N</option>';
+		html += '					</select>';
+		html += '				</td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerDriverLicenseId}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate pnrDvrLcenId" data-class="pnrDvrLcenId" placeholder="'+[[#{accident.mngRegist.passengerDriverLicenseIdPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.passengerDriverLicenseId}]]+'" data-valid-required></td>';
+		html += '			</tr>';
+		html +=	'			<tr>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerDriverLicenseType}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate dvrLcenTy" data-class="dvrLcenTy" placeholder="'+[[#{accident.mngRegist.passengerDriverLicenseTypePlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.passengerDriverLicenseType}]]+'" data-valid-required></td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerName}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate pnrNm" data-class="pnrNm" placeholder="'+[[#{accident.mngRegist.pnrNamePlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.passengerName}]]+'" data-valid-required></td>';
+		html += '			</tr>';
+		html += '			<tr>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerAddress}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate pnrAddr" data-class="pnrAddr" placeholder="'+[[#{accident.mngRegist.passengerAddressPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.passengerAddress}]]+'" data-valid-required></td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerBirthday}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate pnrBrth" data-class="pnrBrth" placeholder="'+[[#{accident.mngRegist.passengerBirthdayPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.passengerBirthday}]]+'" data-valid-required></td>';
+		html +=	'			</tr>';
+		html += '			<tr>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerEmail}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate pnrEmail" data-class="pnrEmail" placeholder="'+[[#{accident.mngRegist.passengerEmailPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.passengerEmail}]]+'" data-valid-required></td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerPhoneNumber}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate pnrPno" data-class="pnrPno" placeholder="'+[[#{accident.mngRegist.passengerPhoneNumberPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.passengerPhoneNumber}]]+'" data-valid-required></td>';
+		html += '			</tr>';
+		html += '			<tr>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerDamage}]]+'</span></th>';
+		html += '				<td>';
+		html += '					<select class="filter-select pnrDmgCd data-validate" data-class="pnrDmgCd" data-valid-name="'+[[#{accident.mngRegist.passengerDamage}]]+'" data-valid-required>';
+		html += '							<option value="PDC000">No Injuries</option>';
+		html += '							<option value="PDC001">Injury</option>';
+		html += '							<option value="PDC002">Minor Injurye</option>';
+		html += '							<option value="PDC003">Moderate Injury</option>';
+		html += '							<option value="PDC004">Fatality</option>';
+		html += '					</select>';
+		html += '				</td>';
+		html += '				<th><span>'+[[#{accident.mngRegist.damageDiscription}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate pnrDmgDesc" data-class="pnrDmgDesc" placeholder="'+[[#{accident.mngRegist.damageDiscriptionPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.damageDiscription}]]+'" data-valid-required></td>';
+		html += '			</tr>';
+		html += '			<tr>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.relationshipWithDriver}]]+'</span></th>';
+		html += '				<td>';
+		html += '					<select id="pnrDrvrRltnCd" class="filter-select data-validate pnrDrvrRltnCd" data-class="pnrDrvrRltnCd" data-valid-name="'+[[#{accident.mngRegist.relationshipWithDriver}]]+'" data-valid-required>';
+		html += '						<option value="PDR000">Self</option>';
+		html += '						<option value="PDR001">Family</option>';
+		html += '						<option value="PDR002">Friend</option>';
+		html += '						<option value="PDR003">Stranger</option>';
+		html += '					</select>';
+		html += '				</td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.deathStatus}]]+'</span></th>';
+		html += '				<td>';
+		html += '					<select class="filter-select data-validate pnrDeadYn" data-class="pnrDeadYn" data-valid-name="'+[[#{accident.mngRegist.deathStatus}]]+'" data-valid-required>';
+		html += '							<option value="Y">Death</option>';
+		html += '							<option value="N">Not Death</option>';
+		html += '					</select>';
+		html += '				</td>';		
+		html += '			</tr>';
+		html += '		</tbody>';
+		html += '	 </table>	';
+		html += '</div>';
+		var infoDiv = $(_this).parents(".trgtInfoDiv").find(".pnrInfo");
+		$(infoDiv).append(html);
+	}
+	
+	function tableDriver() {
+		let html = '';
+		
+		html += '<div class="trgtInfoDiv pnrInfoDiv">';
+		html += '	<div class="pnrBox rgTableTitle" data-type="driver">';
+		html += '		<h1><span>'+[[#{accident.mngRegist.accidentParty}]]+'</span><span class="tableNum"> '+ pnrLength +'</span></h1>';
+		html += '       <button type="button" class="delete-btn" onclick="deletePnrInfo(this)">Delete</button>';
+		html += '	</div>';
+		html += '	<table class="detail-table">';
+		html += '		<colgroup>';
+		html += '			<col width="15%">';
+		html += '			<col width="35%">';
+		html += '			<col width="15%">';
+		html += '			<col width="35%">';
+		html += '		</colgroup>';
+		html += '		<tbody>';
+							<!-- VEHICLE -->
+		html +=	'			<tr>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.accidentTarget}]]+'</span></th>';
+		html += '				<td colspan="3">';
+		html += '					<select class="filter-select acdntTrgtCd" data-class="acdntTrgtCd" data-valid-name="'+[[#{accident.mngRegist.accidentTarget]}]]+'" onchange="viewAcdntTrgtWrap(this)" data-valid-required>';
+		html += '						<option value="ATT000">Vehicle</option>';
+		html += '						<option value="ATT001">Person</option>';
+		html += '					</select>';
+		html += '				</td>';
+		html +=	'			</tr>';
+		html += '			<tr class="vehicleWrap">';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.driverLicenseId}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate dvrLcenId vhclValidTrgt" data-class="dvrLcenId" placeholder="'+[[#{accident.mngRegist.driverLicenseIdPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.driverLicenseId}]]+'" data-valid-required></td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.vehicleNo}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate vhRegNo vhclValidTrgt" data-class="vhRegNo" placeholder="'+[[#{accident.mngRegist.vehicleNoPlaceholder}]]+'"  data-valid-name="'+[[#{accident.mngRegist.vehicleNo}]]+'" data-valid-required></td>';
+		html += '			</tr>';
+		html +=	'			<tr class="vehicleWrap">';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.vehicleType}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate vhTy vhclValidTrgt" data-class="vhTy" placeholder="'+[[#{accident.mngRegist.vehicleTypePlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.vehicleType}]]+'" data-valid-required></td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.DrivingStatus}]]+'</span></th>';
+		html += '					<td>';
+		html += '						<select class="filter-select data-validate dvYn vhclValidTrgt" data-class="dvYn" data-valid-name="'+[[#{accident.mngRegist.DrivingStatus}]]+'" data-valid-required>';
+		html += '							<option value="Y">Running</option>';
+		html += '							<option value="N">Stopping</option>';
+		html += '						</select>';
+		html += '					</td>';
+		html +=	'			</tr>';
+		html +=	'			<tr class="vehicleWrap">';
+		html +=	'				<th><span class="requiredMark">'+[[#{accident.mngRegist.accidentDamage}]]+'</span></th>';
+		html +=	'				<td>';
+		html +=	'					<select class="filter-select acdntDmgCd data-validate vhclValidTrgt" data-class="acdntDmgCd" data-valid-name="'+[[#{accident.mngRegist.accidentDamage}]]+'" data-valid-required>';
+		html +=	'						<option value="ADC000">Fatal Injury</option>';
+		html +=	'						<option value="ADC001">Minor Injury</option>';
+		html +=	'						<option value="ADC002">Material Damage</option>';
+		html +=	'						<option value="ADC003">None Injury</option>';
+		html +=	'					</select>';
+		html +=	'				</td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.phoneNumber}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate acdntTrgtPno vhclValidTrgt" data-class="acdntTrgtPno" placeholder="'+[[#{accident.mngRegist.phoneNumberPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.phoneNumber}]]+'" data-valid-required></td>';
+		html +=	'			</tr>';
+		html += '			<tr class="vehicleWrap">';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.accidentTargetBirthday}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate acdntTrgtBrth vhclValidTrgt" data-class="acdntTrgtBrth" placeholder="'+[[#{accident.mngRegist.accidentTargetBirthdayPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.accidentTargetBirthday}]]+'" data-valid-required></td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.name}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input data-validate acdntTrgtNm vhclValidTrgt" data-class="acdntTrgtNm" placeholder="'+[[#{accident.mngRegist.namePlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.name}]]+'" data-valid-required></td>';
+		html += '			</tr>';
+		html += '			<tr class="vehicleWrap">';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.deathStatus}]]+'</span></th>';
+		html += '				<td colspan="3">';
+		html += '					<select class="filter-select data-validate deadYn vhclValidTrgt" data-class="deadYn" data-valid-name="'+[[#{accident.mngRegist.deathStatus}]]+'" data-valid-required>';
+		html += '						<option value="Y">Death</option>';
+		html += '						<option value="N">Not Death</option>';
+		html += '					</select>';
+		html += '				</td>';
+		html += '			</tr>';
+							<!-- PERSON -->
+		html +=	'			<tr class="personWrap" style="display:none">';
+		html +=	'				<th><span class="requiredMark">'+[[#{accident.mngRegist.accidentDamage}]]+'</span></th>';
+		html +=	'				<td>';
+		html +=	'					<select class="filter-select acdntDmgCd pesValidTrgt data-validate" data-class="acdntDmgCd" data-valid-name="'+[[#{accident.mngRegist.accidentDamage}]]+'" data-valid-required>';
+		html +=	'						<option value="ADC000">Fatal Injury</option>';
+		html +=	'						<option value="ADC001">Minor Injury</option>';
+		html +=	'						<option value="ADC002">Material Damage</option>';
+		html +=	'						<option value="ADC003">None Injury</option>';
+		html +=	'					</select>';
+		html +=	'				</td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.accidentTargetPhoneNumber}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input acdntTrgtPno pesValidTrgt data-validate" data-class="acdntTrgtPno" placeholder="'+[[#{accident.mngRegist.accidentTargetPhoneNumberPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.accidentTargetPhoneNumber}]]+'" data-valid-required></td>';
+		html += '			</tr>';
+		html += '			<tr class="personWrap" style="display:none">';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.accidentTargetBirthday}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input acdntTrgtBrth pesValidTrgt data-validate" data-class="acdntTrgtBrth" placeholder="'+[[#{accident.mngRegist.accidentTargetBirthdayPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.accidentTargetBirthday}]]+'" data-valid-required></td>';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.accidentTargetName}]]+'</span></th>';
+		html += '				<td><input type="text" class="main-input acdntTrgtNm pesValidTrgt data-validate" data-class="acdntTrgtNm" placeholder="'+[[#{accident.mngRegist.accidentTargetNamePlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.accidentTargetName}]]+'" data-valid-required></td>';
+		html += '			</tr>';
+		html += '			<tr class="personWrap" style="display:none">';
+		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.deathStatus}]]+'</span></th>';
+		html += '				<td colspan="3">';
+		html += '					<select class="filter-select deadYn pesValidTrgt data-validate" data-class="pesValidTrgt" data-valid-name="'+[[#{accident.mngRegist.deathStatus}]]+'" data-valid-required>';
+		html += '						<option value="Y">Death</option>';
+		html += '						<option value="N">Not Death</option>';
+		html += '					</select>';
+		html += '				</td>';
+		html += '			</tr>';
+		html += '		</tbody>';
+		html += '	</table>';
+		html += '	 <div class="pnrInfo vehicleWrap"></div>';
+		html += '    <div class="tableAddWrap vehicleWrap">';
+		html += '	    <div onclick="tablePassenger(this)" class="tableAddBtn tableOneAdd">';
+		html += '		   <img src="/images/table-plus.png" alt="교통사고 테이블 추가"><span text="'+[[#{accident.mngRegist.addPassenger}]]+'">Add Passenger</span>';
+		html += '	    </div>';
+		html += '    </div>';
+		html += '</div>';
+		$("#frmAcdntRegist").append(html);
+		pnrLength++;
+	}
+		
+	function findPolBtn(){
+		$("#modalTbody > tr").remove();
+		$("#modalPaging > div").remove();
+		
+		var page = $("#modalPage").val();
+		var searchTxt = $("#searchContent").val();
+		var start = $("#modalStart").val();
+		$.ajax({
+			type : "get",
+			data : {"searchType" : "oprtrNm", "searchTxt" : searchTxt, "page" : page, "start" : start},
+			url: '/common/modal/pol/search/list.ajax',
+			success : function(result) {
+				var html = '';
+				$(result.data.list).each(function(index, item){
+					var polDeptNm = item.polDeptNm;
+					var polNm = item.polNm;
+					if(isNull(polDeptNm)){
+						polDeptNm = '-';
+					}
+					if(isNull(polNm)){
+						polNm = '-';
+					}					
+					html += '<tr onclick="selectPol(\''+item.polId+'\', \''+polNm+'\', \''+ polDeptNm +'\')">'+
+								'<td>'+item.rnum+'</td>'+
+								'<td>'+polDeptNm+'</td>'+								
+								'<td>'+polNm+'</td>'+
+							'</tr>';
+		    	})
+				$("#modalTbody").append(html);			
+		    	var paging = result.data.pagination;
+				if(paging != null && paging != '' && paging.totalCntList > 0){
+					$("#modalPaging").append(getPagingHtml(paging,page));
+				}
+				$("#totalCnt").text(paging.totalListCnt);
+				var start = result.data.polInfo.start;
+				$("#modalStart").val();
+			}
+		});
+	}
+	
+	function fnPageMove(page) {
+		$("#modalPage").val(page);
+		findPolBtn();
+	}
+	
+	function selectPol(polId, polNm, polDeptNm){
+		$("#polId").val(polId);
+		$("#polNm").val(polNm);
+		$("#polDeptNm").val(polDeptNm);
+		changePolListModal('hide');
+	}
+	
+	function deletePnrInfo(_this){
+		$(_this).closest(".pnrInfoDiv").remove();
+		$(".tableNum").each(function(index, item){
+			$(item).text(" "+(index + 1));
+		});
+		pnrLength--;
+	}
+	
+	var datetimeInput = $("#acdntDt");
+	
+	$("#acdntDt").on('change', function(){
+	 	var value = this.value;
+        var date = new Date(value);
+        var formattedDateTime = formatDate(date);
+        $("input[name=acdntDt]").val(formattedDateTime);
+	})
 </script>

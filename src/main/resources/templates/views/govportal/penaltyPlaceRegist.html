@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div id="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{portal.pp.title.regist}" id="detail-content-title">범칙금 납부처 등록</h1>
+
+        <div class="">
+            <form id="frmPenaltyPlaceRegist">
+            <table class="sub-table detail-table">
+                <colgroup>
+                    <col width="15%">
+                    <col width="85%">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th>
+						<span class="requiredMark" th:text="#{portal.pp.name}">납부처 이름</span>
+					</th>
+                    <td><input type="text" class="main-input data-validate" name="placePymntNm" id="placePymntNm"
+                    th:data-valid-name="#{portal.pp.name}" placeholder="Please Enter Name" data-valid-required></td>
+                </tr>
+                <tr>
+                    <th>
+						<span class="requiredMark" th:text="#{portal.pp.dw}"></span>
+					</th>
+                    <td>
+						<input type="text" class="main-input data-validate" name="placePymntAddr" id="placePymntAddr"
+						th:data-valid-name="#{portal.pp.dw}" placeholder="Please Enter Address" data-valid-required>
+<!-- 						<br><br> -->
+<!-- 						<div id="map" class="detail-map"></div> -->
+					</td>
+                </tr>
+                <tr>
+                    <th>
+						<span class="requiredMark" th:text="#{portal.pp.contact}">연락처</span>
+					</th>
+                    <td><input type="text" class="main-input data-validate" name="placePymntCntc" id="placePymntCntc"
+                    th:data-valid-name="#{portal.pp.contact}" placeholder="Please Enter Contact" data-valid-required></td>
+                </tr>
+                <tr>
+                    <th>
+						<span class="requiredMark" th:text="#{portal.pp.operatingTime}">운영시간</span>
+					</th>
+                    <td>
+						<input type="time" class="input-time data-validate" name="operStrTm" id="operStrTm"
+						th:data-valid-name="#{portal.pp.operatingTime}" data-valid-required> ~
+						<input type="time" class="input-time data-validate" name="operEndTm" id="operEndTm"
+						th:data-valid-name="#{portal.pp.operatingTime}" data-valid-required>
+					</td>
+                </tr>
+                <tr>
+                    <th>
+						<span class="requiredMark" th:text="#{portal.pp.closedDays}">휴무일</span>
+					</th>
+                    <td>
+                    	<input type="hidden" name="clsdDt" id="clsdDt">
+						<input type="checkbox" class="data-validate" id="Mon" name="clsdChkBox" value="Mon"
+						th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+						<label for="Mon">Mon</label>
+						
+						<input type="checkbox" class="data-validate" name="clsdChkBox" value="Tue"
+						th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+						<label for="Tue">Tue</label>
+						
+						<input type="checkbox" class="data-validate" name="clsdChkBox" value="Wed"
+						th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+						<label for="Wed">Wed</label>
+						
+						<input type="checkbox" class="data-validate" name="clsdChkBox" value="Thu"
+						th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+						<label for="Thu">Thu</label>
+						
+						<input type="checkbox" class="data-validate" name="clsdChkBox" value="Fri"
+						th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+						<label for="Fri">Fri</label>
+						
+						<input type="checkbox" class="data-validate" name="clsdChkBox" value="Sat"
+						th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+						<label for="Sat">Sat</label>
+						
+						<input type="checkbox" class="data-validate" name="clsdChkBox" value="Sun"
+						th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+						<label for="Sun">Sun</label>
+						
+						<input type="checkbox" class="data-validate" name="clsdChkBox" value="Hol"
+						th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+						<label for="Hol">Hol</label>
+					</td>
+                </tr>
+                <tr>
+                    <th>
+						<span class="requiredMark" th:text="#{portal.pp.preName}">담당자</span>
+					</th>
+                    <td><input type="text" class="main-input data-validate" name="placePymntRprsvNm" id="placePymntRprsvNm"
+                    th:data-valid-name="#{portal.pp.preName}" placeholder="Please Enter Representative Name" data-valid-required></td>
+                </tr>
+
+                </tbody>
+            </table>
+           </form>
+        </div>
+        <div class="btn-wrap-center">
+			 <button th:text="#{penalty.common.list}" type="button" id="btnGoList" class="sub-btn" onclick="javascript:window.history.back()">목록</button>
+            <button th:text="#{portal.pp.btnRegist}" type="button" id="btnRegist" class="main-btn">등록</button>
+		</div>
+    </div>
+</th:block>
+</html>
+<script th:inline="javascript">
+    $("#btnRegist").click(function(){
+		if($("#frmPenaltyPlaceRegist").soValid()) {
+			
+			var clsdDt = '';
+			$("input[name='clsdChkBox']:checked").each(function(index, item){
+				if(index == 0){
+					clsdDt += $(item).val();			
+				}else{
+					clsdDt +=  ',' + $(item).val();					
+				}
+			})
+			
+			$("#clsdDt").val(clsdDt);
+			
+	        $.ajax({
+	            url: /*[[@{/portal/penaltyplace/save.ajax}]]*/ "/portal/penaltyplace/save.ajax",
+	            type: "post",
+	            data: $("#frmPenaltyPlaceRegist").serialize(),
+	            success: function(data){
+					var resultCode = data.code;
+					var resultMessage = data.message;
+	                if(resultCode == '200'){
+	                    new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
+	                     location.href=/*[[@{/portal/penaltyplace/list.do}]]*/ "";
+	                    }).open();
+	                } else {
+						 new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+					}
+	            }
+	        })
+			
+		}
+    })
+    
+    	////TODO 좌표값 확인하기
+		const lng = 22;
+		const lat = 60;
+		let map = new MozAtesMap({
+			elementId : 'map',
+			center_lng : lng,
+			center_lat : lat,
+			isInitDrawCenterMarker : true
+		});
+</script>

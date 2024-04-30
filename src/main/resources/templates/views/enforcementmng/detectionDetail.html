@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	<div id="container-fluid">
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{enforcement.detectionDetail.title}">교통시설물 상세</h1>
+		<div class="">
+			<table class="sub-table detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{enforcement.detectionDetail.eqpNm}">장비종류</th>
+						<td th:text="${detectionDetail.tfcEnfEqpMatser.eqpNm}"></td>
+						<th th:text="#{enforcement.detectionDetail.eqpTime}">단속장비 이름</th>
+						<td th:text="${#dates.format(detectionDetail.enforceTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.detectionDetail.carPlate}">차량번호</th>
+						<td th:text="${detectionDetail.carPlate}"></td>
+						<th th:text="#{enforcement.detection.common.signalInfo}">신호 정보</th>
+						<td th:switch="${detectionDetail.signalInfo}">
+							<span th:case="0" th:text="#{enforcement.detection.common.signalInfo.0}"></span>							
+							<span th:case="1" th:text="#{enforcement.detection.common.signalInfo.1}"></span>							
+							<span th:case="2" th:text="#{enforcement.detection.common.signalInfo.2}"></span>							
+							<span th:case="3" th:text="#{enforcement.detection.common.signalInfo.3}"></span>							
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.detectionDetail.roadAddr}">장비종류</th>
+						<td th:text="${detectionDetail.tfcEnfEqpMatser.roadAddr}"></td>
+						<th th:text="#{enforcement.detectionDetail.eqpYn}">단속등록 상태</th>
+						<td th:switch="${detectionDetail.tfcEqpEnfYn}" class="tdFlex">
+							<div th:case="Y" class="statusComplete"><img src="/images/status_icon01.png" alt="완료" class="statusImg"> <span th:text="#{enforcement.detectionDetail.eqpYnY}" class="statusText">단속 등록 완료</span></div>
+							<div th:case="N" class="statusFail"><img src="/images/status_icon02.png" alt="실패" class="statusImg"> <span th:text="#{enforcement.detectionDetail.eqpYnN}" class="statusText">단속 등록 미완료</span></div>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.detection.common.enforceCode}">단속 코드</th>
+						<td th:switch="${detectionDetail.enforceCode}">
+							<span th:case="0" th:text="#{enforcement.detection.common.enforceCode.0}"></span>							
+							<span th:case="1" th:text="#{enforcement.detection.common.enforceCode.1}"></span>							
+							<span th:case="2" th:text="#{enforcement.detection.common.enforceCode.2}"></span>							
+						</td>
+						<th th:text="#{enforcement.detection.common.enforceMode}">단속 모드</th>
+						<td th:switch="${detectionDetail.enforceMode}">
+							<span th:case="0" th:text="#{enforcement.detection.common.enforceMode.0}"></span>							
+							<span th:case="1" th:text="#{enforcement.detection.common.enforceMode.1}"></span>							
+							<span th:case="2" th:text="#{enforcement.detection.common.enforceMode.2}"></span>							
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.detectionDetail.avgSpeed}">평균 속도</th>
+						<td th:text="${detectionDetail.avgSpeed}"></td>
+						<th th:text="#{enforcement.detectionDetail.enforceSpeed}">단속 속도</th>
+						<td th:text="${detectionDetail.enforceSpeed}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.detectionDetail.lmtSpeed}">제한 속도</th>
+						<td th:text="${detectionDetail.speedLimit}"></td>
+						<th th:text="#{enforcement.detectionDetail.enforceLane}">단속 차선</th>
+						<td th:text="${detectionDetail.enforceLane}"></td>
+					</tr>
+					<tr>
+						<th colspan="4" th:text="#{enforcement.detectionDetail.enforceImageList}">단속 이미지</th>
+					</tr>
+					<th:block th:each="imageItem,status : ${detectionImageList}">
+						<tr>
+							<th th:text="#{enforcement.detectionDetail.enforceImage}+ ' ' + ${status.count}"></th>
+							<td colspan="3">
+								<img th:src="@{/enf/detection/viewImage.do(idx=${imageItem.idx})}" th:alt="#{enforcement.detectionDetail.enforceImage}">
+							</td>
+						</tr>
+					</th:block>
+				</tbody>
+			</table>
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn" th:onclick="|location.href='@{/enf/detection/list.do}'|" th:text="#{enforcement.common.button.list}">목록</button>
+				<button type="button" id="btnRegist" class="main-btn" th:text="#{enforcement.common.button.tfcEnfRegist}" th:if="${detectionDetail.tfcEqpEnfYn == 'N'}"
+				th:onclick="|location.href='@{/enf/detection/save.do(idx=${detectionDetail.idx})}'|">단속 등록</button>
+			</div>
+		</div>
+	</div>
+</th:block>
+</html>
+<script th:inline="javascript">
+</script>

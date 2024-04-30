@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+		<div id="detail-content-title">Main Menu Info</div>
+		
+			<form id="menuSaveform">
+				<table class="sub-table detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{sitemng.common.menu.nameEng}">메뉴 이름 ENG</span>
+						</th>
+						<td>
+							<input type="text" id="menuNmEng" class="main-input data-validate" name="menuNmEng" placeholder="Traffic Accident"
+							th:data-valid-name="#{enforcement.infoDetail.enfInfo}">
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{sitemng.common.menu.namePor}"></span>
+						</th>
+						<td>
+							<input type="text" id="menuNmPor" class="main-input" name="menuNmPor" placeholder="ACIDENTE DE TRÂNSITO">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{sitemng.common.menu.mainMenuOrder}">메인 메뉴 순서</span>
+						</th>
+						<td>
+							<input type="number" id="mainSortNo" class="main-input" name="mainSortNo" placeholder="15">
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{sitemng.common.menu.urlPttrn}">URL 패턴</span>
+						</th>
+						<td>
+							<input type="text" id="menuUrlPattrn" class="main-input" name="menuUrlPattrn" placeholder="/acdnt/**">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{sitemng.common.menu.url}">URL</span>
+						</th>
+						<td>
+							<input type="text" id="menuUrl" class="main-input" name="menuUrl" placeholder="/acdnt/mng/list.do">
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{common.common.status}">노출여부</span>
+						</th>
+						<td>
+							<select id="useYn" name="useYn" class="filter-select">
+								<option value="Y" th:text="#{sitemng.common.menu.exposed}">노출</option>
+								<option value="N" th:text="#{sitemng.common.menu.nonExposed}">비노출</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{sitemng.common.menu.abbreviation}">Menu Abbreviation</span>
+						</th>
+						<td>
+							<input type="text" class="main-input" id="menuAbv" name="menuAbv" placeholder="acdnt">
+						</td>
+					</tr>
+				</table>
+			</form>
+			
+			<div class="btn-wrap-center">
+				<button type="button" class="sub-btn form-button" onclick="location.href='/siteMng/menu/list.do'">List</button>
+				<button type="button" class="main-btn form-button" onclick="fnSaveMainMenu()">Save</button>
+			</div>
+		
+		
+	</div>
+
+
+
+</th:block>
+
+</html>
+<script>
+	function fnSaveMainMenu() {
+		let confirmMsg = /*[[#{sitemng.common.menu.message.confirmRegist}]]*/;
+		let successMsg = /*[[#{common.message.success}]]*/;
+		let failMsg = /*[[#{common.message.fail}]]*/;
+		if(confirm(confirmMsg)) {
+			$.ajax({
+				type: "post",
+				data: $("#menuSaveform").serialize(),
+				url: "/siteMng/menu/save.ajax",
+				success: function (data) {
+					let code = data.code;
+					if (code == 200) {
+						alert(successMsg);
+						location.href = "/siteMng/menu/list.do";
+					} else {
+						alert(failMsg);
+					}
+				}
+			});
+		}
+	}
+
+</script>

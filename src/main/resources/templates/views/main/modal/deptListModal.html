@@ -1,0 +1,41 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<div class="modal-contents modal-company-group">
+	
+	<div class="modal-title">
+		<div class="modal-title-text">Content Find</div>
+		<img src="/images/close.png" alt="close" class="close" onclick="changeDeptListModal('hide')">
+	</div>
+	
+	<div class="modal-body">
+		<div class="modal-form-wrap">
+			<input type="text" id="searchTxt" class="modal-search" placeholder="Please enter administrative agency">
+			<input type="hidden" id="page" th:value="${mozCmCd.page}"/>
+			<input type="hidden" id="start" th:value="${mozCmCd.start}"/>
+			<i class="modal-search-icon" onclick="search()"></i>
+		</div>
+		
+		<div class="ex-group-name">ex) Maputo , Matola Please enter at least two characters</div>
+
+		<div class="modal-search-list">
+			
+			<div class="modal-search-result">There are a total of <span id="AftotalCnt" th:text="${pagination.totalListCnt}"></span> results</div>
+			<table class="main-table">
+				<thead>
+					<th>Number</th>
+					<th>Affiliation</th>
+				</thead>
+				<tbody id="listWrap">
+					<tr th:each="affiliationItem : ${affiliationList}" th:onclick="selectDept([[${affiliationItem.cdId}]], [[${affiliationItem.cdNm}]])">
+						<td th:text="${affiliationItem.rnum}">1</td>
+						<td th:text="${affiliationItem.cdNm}">마푸토경찰서</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="page_wrap">
+				<div th:insert="tags/pagingAjax :: pagingFragment"></div>
+			</div>
+		</div>
+	</div>
+</div>
+</html>

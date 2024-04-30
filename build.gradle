@@ -12,6 +12,10 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
+    developmentOnly
+    runtimeClasspath {
+        extendsFrom developmentOnly
+    }
     compileOnly {
         extendsFrom annotationProcessor
     }
@@ -39,7 +43,7 @@ dependencies {
 
     implementation 'nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect'
 
-    implementation group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.5.8'
+    developmentOnly group: 'org.springframework.boot', name: 'spring-boot-devtools', version: '2.5.8'
 
     implementation group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.5.4'
 
@@ -51,6 +55,7 @@ dependencies {
     
     implementation group: 'commons-fileupload', name: 'commons-fileupload', version: '1.4'
 	implementation group: 'commons-io', name: 'commons-io', version: '2.7'
+	implementation group: 'org.apache.commons', name: 'commons-lang3', version: '3.14.0'
 	
 	implementation project(':moz_ates_common')
 	

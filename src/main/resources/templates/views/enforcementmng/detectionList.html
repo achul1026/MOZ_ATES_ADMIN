@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	<div id="container-fluid">
+		<h1 id="content-title" th:text="#{enforcement.detectionList.title}">단속장비 단속</h1>
+		<div id="content-sub-title" th:text="#{enforcement.detectionList.subTitle}">교통 단속 장비로 단속된 위반자 목록입니다.</div>
+		
+		<form id="frmSearch">
+			<input type="hidden" id="page" name="page" th:value="${pagination.page}">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{enforcement.common.search.searchOp}">유형 선택</th>
+						<td>
+							<select name="searchType" class="filter-select" id="searchType">
+								<option value="all" th:text="#{common.search.searchOption.all}">전체</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.common.search.serchTerm}">내용 검색</th>
+						<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" 
+							th:value="${searchOption.searchTxt}" th:placeholder="#{common.placeholder.enterKeyword}"></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="btn-wrap-center">
+				<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{common.search.search}">조회</button>
+			</div>
+		</form>
+		
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+			</div>
+		</div>
+		<div class="">
+			<table class="main-table" id="tblList" aria-describedby="dataTable_info">
+				<colgroup>
+				</colgroup>
+				<thead>
+					<tr>
+						<th th:text="#{common.table.order}">No.</th>
+						<th th:text="#{enforcement.detectionList.eqpNm}">단속장비 명</th>
+						<th th:text="#{enforcement.detectionList.roadAddr}">단속 장소</th>
+						<th th:text="#{enforcement.detectionList.eqpTime}">단속 날짜</th>
+						<th th:text="#{enforcement.detectionList.carPlate}">단속 차량번호</th>
+						<th th:text="#{enforcement.detectionList.eqpYn}">단속 등록 상태</th>
+					</tr>
+				</thead>
+				<tbody>
+					<tr th:each="detectionItem : ${detectionList}" th:onclick="|location.href='@{/enf/detection/detail.do(idx=${detectionItem.idx})}'|">
+						<td th:text="${detectionItem.rnum}"></td>
+						<td th:text="${detectionItem.tfcEnfEqpMatser.eqpNm}"></td>
+						<td th:text="${detectionItem.tfcEnfEqpMatser.roadAddr}"></td>
+						<td th:text="${#dates.format(detectionItem.enforceTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						<td th:text="${detectionItem.carPlate}"></td>
+						<td th:switch="${detectionItem.tfcEqpEnfYn}">
+							<span th:case="Y" th:text="#{enforcement.detectionList.eqpYnY}">단속 등록 완료</span>
+							<span th:case="N" th:text="#{enforcement.detectionList.eqpYnN}">단속 등록 미완료</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="page_wrap">
+			<div th:insert="tags/paging :: pagingFragment"></div>
+		</div>
+	</div>
+</th:block>
+</html>
+<script th:inline="javascript">
+	/*<![CDATA[*/
+	function moveDetail(idx) {
+		var baseUrl = /*[[@{/enf/detection/detail.do}]]*/ '';
+		window.location.href = baseUrl + "?idx=" + idx;
+	};
+    /*]]>*/
+    
+    function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();		
+	})
+</script>

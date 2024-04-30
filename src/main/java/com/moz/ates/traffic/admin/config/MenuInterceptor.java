@@ -1,31 +1,29 @@
 package com.moz.ates.traffic.admin.config;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+
 import java.util.List;
-import java.util.Map;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
-import org.apache.ibatis.annotations.ResultMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpCookie;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.moz.ates.traffic.admin.main.SecurityAccount;
-import com.moz.ates.traffic.common.entity.menu.MozMenu;
+import com.moz.ates.traffic.admin.common.enums.UrlType;
+import com.moz.ates.traffic.admin.common.util.LoginOprtrUtils;
+import com.moz.ates.traffic.admin.sitemng.menu.MenuService;
+import com.moz.ates.traffic.admin.user.UserService;
+import com.moz.ates.traffic.common.entity.menu.MozMenuRouteDTO;
+import com.moz.ates.traffic.common.entity.menu.MozSideMenuDTO;
 import com.moz.ates.traffic.common.entity.operator.MozWebOprtr;
-import com.moz.ates.traffic.common.enums.MenuIcon;
+import com.moz.ates.traffic.common.entity.operator.MozWebOprtrDTO;
 import com.moz.ates.traffic.common.repository.menu.MozMenuRepository;
 import com.moz.ates.traffic.common.repository.operator.MozWebOprtrRepository;
 import com.moz.ates.traffic.common.support.exception.NoLoginException;
+import com.moz.ates.traffic.common.util.MozatesCommonUtils;
 
-import groovyjarjarantlr4.v4.parse.ANTLRParser.throwsSpec_return;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -33,10 +31,16 @@ import lombok.extern.slf4j.Slf4j;
 public class MenuInterceptor implements HandlerInterceptor {
 
 	@Autowired
-	MozWebOprtrRepository	mozWebOprtrRepository;
+	MozWebOprtrRepository mozWebOprtrRepository;
+	
+	@Autowired
+	MenuService menuService;
 	
 	@Autowired
 	MozMenuRepository menuRepository;
+	
+	@Autowired
+	UserService userService;
 	
     /**
      * @brief 사이드메뉴 설정
@@ -48,55 +52,55 @@ public class MenuInterceptor implements HandlerInterceptor {
 		log.info("==============Menu Interceptor preHandle Start ===============");
 		log.info("Request Url : {}", request.getRequestURL());
 		
-		//반환 객체
-		List<Map<String,Object>> result = new ArrayList<Map<String,Object>>();
-		SecurityAccount securityAccount = (SecurityAccount) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-		
-		
+		MozWebOprtrDTO mozWebOprtrDTO = LoginOprtrUtils.getMozWebOprtr();
 		//세션 정보 못가져올때
-		if(securityAccount == null) {
-			//TO DO : NO LOGIN EXCEPTION;
+		if(mozWebOprtrDTO == null) {
 			throw new NoLoginException();
 		}
-		String userNm = securityAccount.getUsername();
-		log.info(securityAccount.getAuthorities().toString());
-		MozWebOprtr mozWebOprtr = new MozWebOprtr(userNm);
-		//사용자 권한 조회
-		MozWebOprtr dbWebOprtr = mozWebOprtrRepository.selectUserByUserId(mozWebOprtr);
 		
-		//대 메뉴 리스트 조회
-		List<MozMenu> mainMenuList = menuRepository.selectParentMenuListByMenuAuth(dbWebOprtr.getAuthId());
-		Map<String,Object> paramMap = new HashMap<String,Object>();
-		paramMap.put("authId", dbWebOprtr.getAuthId());
-		if(!mainMenuList.isEmpty()) {
-			for(int i = 0; i < mainMenuList.size(); i++) {
-				Map<String,Object> resultMap = new HashMap<String,Object>();
-				MozMenu dbMenu = mainMenuList.get(i);
-				String menuId = dbMenu.getMenuId();
-				paramMap.put("menuId", menuId);
-				List<MozMenu> subMenuList = menuRepository.selectSubMenuListByMenuAuthAndMenuId(paramMap);
-				MenuIcon menuIcon = MenuIcon.getCNameForMenuAbv(mainMenuList.get(i).getMenuAbv());
-				
-				resultMap.put("mainMenu", mainMenuList.get(i));
-				resultMap.put("menuIcon", menuIcon!=null?menuIcon.getCName():"");
-				resultMap.put("subMenuList", subMenuList);
-				result.add(resultMap);
-			}
-		}
+		MozWebOprtr dbMozWebOprtr = userService.getUserDetail(mozWebOprtrDTO.getOprtrId());
+		mozWebOprtrDTO.setAuthId(dbMozWebOprtr.getAuthId());
+		
+		List<MozSideMenuDTO> data = menuService.getSidebarAuthMenuList(mozWebOprtrDTO); 
+		
 		//쿠키값 비교 다국어 처리
 		Cookie[] cookies = request.getCookies();
-		
+		String lang = "eng";
 		for(Cookie cookie : cookies) {
 			if("lang".equals(cookie.getName())) {
-				request.setAttribute("lang", cookie.getValue());
+				lang = cookie.getValue();
 			}
 		}
-		request.setAttribute("sideMenuList", result);
-		//로그 찍기
-//		for(int i=0; i < result.size();  i++) {
-//			log.info("main :::::::::::::"+ result.get(i).get("mainMenu"));
-//			log.info("sub :::::::::::::"+ result.get(i).get("subMenuList"));
-//		}
+		
+		//메뉴 경로 세팅
+		//페이지 이동 하는 화면에서만 체크(GET방식)
+		if("GET".equals(request.getMethod())) {
+			MozMenuRouteDTO menuRouteInfo = new MozMenuRouteDTO();
+			menuRouteInfo.setLang(lang);
+			String currentUrl = request.getRequestURI();
+			
+			menuRouteInfo.setMenuUrlPattrn(MozatesCommonUtils.getUrlPattrn(request.getRequestURI(), '/'));
+			//URL PATH DB데이터 조회
+			menuRouteInfo = menuRepository.selectMenuRouteInfo(menuRouteInfo);
+
+			//데이터가 존재 하는 경우에만
+			if(menuRouteInfo != null && !MozatesCommonUtils.isNull(menuRouteInfo.getMenuId())){
+				//3 DEPTH MENU 일 경우
+				if(!menuRouteInfo.getSubMenuUrl().equals(currentUrl)){
+					menuRouteInfo.setCurrentMenuUrl(currentUrl);
+					
+					String currentMenuNm = UrlType.getCodeByName(lang, MozatesCommonUtils.getUrlType(currentUrl, '/'));
+					menuRouteInfo.setMenuActiveLocation("THREE");
+					menuRouteInfo.setCurrentMenuNm(currentMenuNm);
+				}
+				request.setAttribute("menuRouteInfo", menuRouteInfo);
+			}
+		}
+		
+		request.setAttribute("lang", lang);
+		request.setAttribute("sideMenuList", data);
+		request.setAttribute("webOprtrInfo", mozWebOprtrDTO);
+		
 		return true;
 	}
 }

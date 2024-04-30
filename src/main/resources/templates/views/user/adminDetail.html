@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="#{user.adminList.title}">관리자/운영자</h1>
+			<form id="userModifyForm">
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
+					<tbody id="userInfoTable">
+						<tr>
+							<th th:text="#{common.user.name}">Name</th>
+							<td th:text="${webOprtr.oprtrNm}">oprtrNm</td>
+							<th th:text="#{common.user.id}">ID</th>
+							<td th:text="${webOprtr.oprtrAccountId}">oprtrAccountId</td>
+						</tr>
+						<tr>
+							<th th:text="#{common.user.contact}">연락처</th>
+							<td th:text="${webOprtr.oprtrPno}">oprtrPno</td>
+							<th th:text="#{common.user.authority}">권한</th>
+							<td th:text="${webOprtr.authNm}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{common.common.status}">상태</th>
+							<td th:switch="${webOprtr.oprtrStts}">
+								<span th:case="'OSC000'" th:text="#{user.common.statusOk}"></span>							
+								<span th:case="'OSC001'" th:text="#{user.common.statusStopped}"></span>							
+								<span th:case="'OSC002'" th:text="#{user.common.statusWaiting}"></span>							
+								<span th:case="'OSC003'" th:text="#{user.common.statusWithdraw}"></span>							
+							</td>
+							<th th:text="#{common.user.department}">기관</th>
+							<td th:text="${webOprtr.oprtrDeptNm}">oprtrDeptNm</td>
+						</tr>
+						<tr>
+							<th th:text="#{common.user.permission}">역할</th>
+							<td th:text="${webOprtr.oprtrPermissionName}">oprtrStts</td>
+							<th th:text="#{common.common.option}">옵션</th>
+							<th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
+								<td>
+									<button type="button" class="main-btn detail-table-button" th:text="#{common.button.modify}" onclick="displayTable('modify')">수정</button>
+									<button type="button" class="delete-btn detail-table-button" th:text="#{common.button.delete}" th:onclick="deleteUser([[${webOprtr.oprtrId}]])">삭제</button>
+								</td>
+							</th:block>
+						</tr>
+					</tbody>
+					<th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
+						<tbody id="userInfoModifyTable" class="d-none">
+							<tr>
+								<th th:text="#{common.user.name}">Name</th>
+								<td th:text="${webOprtr.oprtrNm}"></td>
+								<th>ID</th>
+								<td th:text="${webOprtr.oprtrAccountId}"></td>
+							</tr>
+<!-- 							<tr> -->
+<!-- 								<th th:text="#{common.user.address}">주소</th> -->
+<!-- 								<td> -->
+<!-- 									<input type="text" class="main-input" name="" value="-"/> -->
+<!-- 								</td> -->
+<!-- 								<th th:text="#{common.user.email}">E-MAIL</th> -->
+<!-- 								<td> -->
+<!-- 									<input type="text" class="main-input" name="oprtrEmail" placeholder="Please Enter Email" th:value="${webOprtr.oprtrEmail}"/> -->
+<!-- 								</td> -->
+<!-- 							</tr> -->
+							<tr>
+								<th>
+									<span class="requiredMark" th:text="#{common.user.contact}">연락처</span>
+								</th>
+								<td>
+									<input type="text" class="main-input" name="oprtrPno" placeholder="Please Enter Contact" th:value="${webOprtr.oprtrPno}"/>
+								</td>
+								<th>
+									<span class="requiredMark" th:text="#{common.user.authority}">권한</span>
+								</th>
+								<td>
+									<select name="authId" class="filter-select">
+										<option value="" th:text="SELECT"></option>
+										<option th:each="item : ${authList}" th:value="${item.authId}" th:selected="${webOprtr.authId eq item.authId}" th:text="${item.authNm}"></option>
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span class="requiredMark" th:text="#{common.common.status}">상태</span>
+								</th>
+								<td>
+									<select name="oprtrStts" class="filter-select">
+										<option value="OSC000" th:selected="${webOprtr.oprtrStts eq 'OSC000'}" th:text="#{user.common.statusOk}"></option>
+										<option value="OSC001" th:selected="${webOprtr.oprtrStts eq 'OSC001'}" th:text="#{user.common.statusStopped}"></option>
+										<option value="OSC002" th:selected="${webOprtr.oprtrStts eq 'OSC002'}" th:text="#{user.common.statusWaiting}"></option>
+										<option value="OSC003" th:selected="${webOprtr.oprtrStts eq 'OSC003'}" th:text="#{user.common.statusWithdraw}"></option>
+									</select>						
+								</td>
+								<th>
+									<span class="requiredMark" th:text="#{common.user.department}">기관</span>
+								</th>
+								<td>
+									<input type="text" class="main-input" name="" placeholder="Please Enter Department" th:value="${webOprtr.oprtrDeptNm}"/>
+								</td>
+							</tr>
+							<tr>
+								<th>
+									<span class="requiredMark" th:text="#{common.user.permission}">역할</span>
+								</th>
+								<th:block th:if="${webOprtr.oprtrPermission ne 'OPC000'}">
+									<td>
+										<select name="oprtrPermission" class="filter-select">
+											<option th:each="item : ${permissionList}" th:value="${item.cdId}" th:selected="${webOprtr.oprtrPermission eq item.cdId}" th:text="${item.cdNm}"></option>
+										</select>
+									</td>
+								</th:block>
+								<th:block th:if="${webOprtr.oprtrPermission eq 'OPC000'}">
+									<td th:text="${webOprtr.oprtrPermissionName}">
+									</td>
+									<input type="hidden" name="oprtrPermission" th:value="${webOprtr.oprtrPermission}" />
+								</th:block>
+								<th th:text="#{common.common.option}">옵션</th>
+								<th:block th:if="${webOprtrInfo.oprtrPermission eq 'OPC000'}">
+									<td>
+										<input type="hidden" name="oprtrId" th:value="${webOprtr.oprtrId}"/>
+										<input type="hidden" name="oprtrNm" th:value="${webOprtr.oprtrNm}"/>
+										<input type="hidden" name="oprtrAccountId" th:value="${webOprtr.oprtrAccountId}"/>
+										<button type="button" th:text="#{common.button.cancel}" class="sub-btn" onclick="displayTable('cancel')">취소</button>
+										<button type="button" th:text="#{common.button.save}" class="main-btn" th:onclick="modifyUser([[${webOprtr.oprtrId}]])">저장</button>
+									</td>
+								</th:block>
+							</tr>
+						</tbody>
+					</th:block>
+				</table>
+			</form>
+		<div class="contents-wrap">			
+			<div id="search-form-result-wrap">
+				<div id="table-search-result-text">
+					Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+				</div>
+				<div id="table-regist-btn">
+				</div>
+			</div>
+			<div class="table-wrap">
+				<table class="main-table">
+					<colgroup>
+						<!--<col width="5%">
+						<col width="50%">
+						<col width="45%">-->
+					</colgroup>
+
+					<thead>
+						<tr>
+							<th th:text="#{common.table.order}">번호</th>
+							<th th:text="#{user.common.usageHistory}">사용이력</th>
+							<th th:text="#{user.common.usageTime}">시간</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${#lists.size(oprtrAudLogList) > 0}" th:each="item : ${oprtrAudLogList}">
+							<td th:text="${itemStat.index} + 1"></td>
+							<td th:text="${item.audNm}"></td>
+							<td th:text="${item.crDt}"></td>
+						</tr>
+						<tr th:if="${#lists.size(oprtrAudLogList) == 0}">
+							<td colspan="3" th:text="#{common.search.notFound}">검색 결과를 찾을 수 없습니다.</td>
+						</tr>
+					</tbody>
+				</table>
+				
+			</div>
+		</div>
+		<div class="btn-wrap-center">
+			<button type="button" id="btnGoList" class="sub-btn" onclick="javascript:window.history.back()"
+				th:text="#{common.button.list}">목록</button>
+		</div>
+	</div>
+</th:block>
+</html>
+<script th:inline="javascript">
+	
+function displayTable(type){
+    var infoTable = document.getElementById('userInfoTable');
+    var modifyTable = document.getElementById('userInfoModifyTable');
+	if (type == 'modify') {
+	    infoTable.classList.add('d-none');
+	    modifyTable.classList.remove('d-none');
+	} else {
+		modifyTable.classList.add('d-none');
+		infoTable.classList.remove('d-none');
+		new ModalBuilder().init().successBody([[#{common.message.completeCancel}]]).footer(4,'확인',function(button, modal){modal.close();}).open();
+	}
+}
+
+function modifyUser(oprtrId){
+	new ModalBuilder().init().alertBody([[#{common.message.confirmSave}]]).footer(2,'확인',function(button, modal){
+		modal.close();
+		$.ajax({
+			type: "post",
+			data: $("#userModifyForm").serialize(),
+			url: "/user/admin/update.ajax",
+			success: function (data) {
+				if (data.code == 1) {
+					new ModalBuilder().init().successBody([[#{common.message.completeModify}]]).footer(4,'확인',function(button, modal){
+						window.location.href="/user/admin/detail.do?oprtrId=" + oprtrId;
+					}).open();
+				} else {
+				}
+			}
+		});
+	}, '취소', function(button, modal){}).open();
+}
+
+function deleteUser(oprtrId){
+	new ModalBuilder().init().alertBody([[#{common.message.confirmDelete}]]).footer(2,'확인',function(button, modal){
+		modal.close();
+		$.ajax({
+			type: "post",
+			data: {oprtrId : oprtrId},
+			url: "/user/admin/delete.ajax",
+			success: function (data) {
+				if (data.code == 1) {
+					window.location.href="/user/admin/list.do";
+				} else {
+				}
+			}
+		});
+		}, '취소', function(button, modal){}).open();
+	};
+</script>

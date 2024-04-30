@@ -4,67 +4,207 @@
       layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
+    <div id="container-fluid">
+        <h1 id="detail-content-title" th:text="#{user.polDetail.title.detail}">사용자 상세정보</h1>
+        <form id="policeModifyForm">
+	        <table class="detail-table">
+	            <colgroup>
+	                <col width="15%">
+	                <col width="35%">
+	                <col width="15%">
+	                <col width="35%">
+	            </colgroup>
+	            <tbody id="policeInfoTable">
+				<tr>
+	                <th th:text="#{common.user.name}">이름</th>
+	                <td th:text="${polInfo.polNm}"></td>
+	                <th th:text="#{common.user.id}">ID</th>
+	                <td th:text="${polInfo.polLcenId}">DKAS23123</td>
+	            </tr>
+	             <tr>
+	                <th th:text="#{common.user.address}">Address</th>
+	                <td>-</td>
+	                <th th:text="#{common.user.email}">E-mail</th>
+	                <td th:text="${polInfo.email}">das12@naver.com</td>
+	            </tr>
+	            <tr>
+	                <th th:text="#{common.user.contact}">Number</th>
+	                <td th:text="${polInfo.phone}">010-4100-3123</td>
+	                <th th:text="#{common.common.status}">상태</th>
+	                <td th:switch="${polInfo.polStts}">
+						<span th:case="'PSC000'" th:text="#{user.common.statusOk}"></span>							
+						<span th:case="'PSC001'" th:text="#{user.common.statusStopped}"></span>							
+						<span th:case="'PSC002'" th:text="#{user.common.statusWaiting}"></span>							
+						<span th:case="'PSC003'" th:text="#{user.common.statusWithdraw}"></span>							
+					</td>
+	            </tr>
+	            <tr>
+	               <th th:text="#{user.common.jur}">관할</th>
+	               <td th:text="${polInfo.jur}"></td>
+	                <th th:text="#{common.common.option}">옵션</th>
+	                <th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
+						<td>
+							<button type="button" class="main-btn detail-table-button" th:text="#{common.button.modify}" onclick="displayTable('modify')">수정</button>
+							<button type="button" class="delete-btn detail-table-button"  th:text="#{common.button.delete}" th:onclick="deletePolice([[${polInfo.polId}]])">삭제</button>
+						</td>
+					</th:block>
+	            </tr>
+	            </tbody>
+	            <th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
+					<tbody id="policeInfoModifyTable" class="d-none">
+						<tr>
+							<th th:text="#{common.user.name}">Name</th>
+							<td th:text="${polInfo.polNm}"></td>
+							<th>ID</th>
+							<td th:text="${polInfo.polLcenId}">DKAS23123</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{common.user.address}">주소</span>
+							</th>
+							<td>
+								<input type="text" class="main-input" name="" value="-" placeholder="Please Enter Address"/>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{common.user.email}">E-MAIL</span>
+							</th>
+							<td>
+								<input type="text" class="main-input" name="email" placeholder="Please Enter Email" th:value="${polInfo.email}"/>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{common.user.contact}">연락처</span>
+							</th>
+							<td>
+								<input type="text" class="main-input" name="phone" placeholder="Please Enter Contact" th:value="${polInfo.phone}"/>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{common.common.status}">상태</span>
+							</th>
+							<td>
+								<select name="polStts" class="filter-select">
+									<option value="PSC000" th:selected="${polInfo.polStts eq 'PSC000'}" th:text="#{user.common.statusOk}"></option>
+									<option value="PSC001" th:selected="${polInfo.polStts eq 'PSC001'}" th:text="#{user.common.statusStopped}"></option>
+									<option value="PSC002" th:selected="${polInfo.polStts eq 'PSC002'}" th:text="#{user.common.statusWaiting}"></option>
+									<option value="PSC003" th:selected="${polInfo.polStts eq 'PSC003'}" th:text="#{user.common.statusWithdraw}"></option>
+								</select>						
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{user.common.jur}">관할</span>
+							</th>
+							<td>
+								<input type="text" class="main-input" name="jur" placeholder="Please Enter Jurisdiction" th:value="${polInfo.jur}"/>
+							</td>
+							<th th:text="#{common.common.option}">옵션</th>
+							<th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
+								<td>
+									<input type="hidden" name="polId" th:value="${polInfo.polId}"/>
+									<input type="hidden" name="polNm" th:value="${polInfo.polNm}"/>
+									<input type="hidden" name="polLcenId" th:value="${polInfo.polLcenId}"/>
+									<input type="hidden" name="appPermission" th:value="${polInfo.appPermission}"/>
+									<button type="button" class="sub-btn" th:text="#{common.button.cancel}" onclick="displayTable('cancel')">취소</button>
+									<button type="button" class="main-btn" th:text="#{common.button.save}" th:onclick="modifyPolice([[${polInfo.polId}]])">저장</button>
+								</td>
+							</th:block>
+						</tr>
+					</tbody>
+				</th:block>
+	        </table>
+     	</form>
+       	<div class="contents-wrap">			
+			<div id="search-form-result-wrap">
+				<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+				</div>
+				<div id="table-regist-btn">
+				</div>
+			</div>
+			<div class="table-wrap">
+				<table class="main-table">
+					<colgroup>
+ 						<col width="5%">
+						<col width="50%">
+						<col width="45%">
+					</colgroup>
 
-    <div class="container-fluid">
-
-        <!-- Page Heading -->
-        <h1 th:text="#{police.polDetail.title.detail}" class="h3 mb-4 text-gray-800">사용자 상세정보</h1>
-
-        <div class="row">
-
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 th:text="#{police.polDetail.detail}" class="m-0 font-weight-bold text-primary" >상세</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <colgroup>
-                                    <col width="20%">
-                                    <col width="30%">
-                                    <col width="20%">
-                                    <col width="30%">
-
-                                </colgroup>
-                                <tbody>
-                                <tr>
-                                    <th th:text="#{police.polDetail.name}">이름</th>
-                                    <td th:text="${polInfo.polNm}"></td>
-                                    <th th:text="#{police.polDetail.email}">E-mail</th>
-                                    <td th:text="${polInfo.email}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{police.polDetail.polLcenId}">아이디</th>
-                                    <td th:text="${polInfo.polLcenId}"></td>
-                                    <th th:text="#{police.polDetail.polDeptNm}">담당 부서</th>
-                                    <td th:text="${polInfo.polDeptNm}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{police.polDetail.phone}">담당자 휴대전화</th>
-                                    <td th:text="${polInfo.phone}"></td>
-                                    <th th:text="#{police.polDetail.jur}">관할</th>
-                                    <td th:text="${polInfo.jur}"></td>
-                                </tr>
-                                </tbody>
-                            </table>
-<!--                            <button th:text="#{admin.admin.listBack}" type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/user/userList}'|">목록</button>-->
-<!--                            <button th:text="#{admin.admin.modify}" type="button" id="btnRegist" class="btn btn-outline-warning" th:onclick="'location.href=\''+@{/user/userModify(oprtrId=${webOprtr.oprtrId})}+'\''">수정</button>-->
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-
-
-        </div>
-
-    </div>
-
-
-
+					<thead>
+						<tr>
+							<th th:text="#{common.table.order}">번호</th>
+							<th th:text="#{user.common.usageHistory}">사용이력</th>
+							<th th:text="#{user.common.usageTime}">시간</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${#lists.size(oprtrAudLogList) > 0}" th:each="item : ${oprtrAudLogList}">
+							<td th:text="${itemStat.index} + 1"></td>
+							<td th:text="${item.audNm}"></td>
+							<td th:text="${item.crDt}"></td>
+						</tr>
+						<tr th:if="${#lists.size(oprtrAudLogList) == 0}">
+							<td colspan="3" th:text="#{common.search.notFound}">검색 결과를 찾을 수 없습니다.</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+		<div class="btn-wrap-center">
+			<button type="button" id="btnGoList" class="sub-btn" onclick="javascript:window.history.back()"
+				th:text="#{common.button.list}">목록</button>
+		</div>
+	</div>
 </th:block>
 </html>
-<script>
+<script th:inline="javascript">
+function displayTable(type){
+    var infoTable = document.getElementById('policeInfoTable');
+    var modifyTable = document.getElementById('policeInfoModifyTable');
+	if (type == 'modify') {
+	    infoTable.classList.add('d-none');
+	    modifyTable.classList.remove('d-none');
+	} else {
+		modifyTable.classList.add('d-none');
+		infoTable.classList.remove('d-none');
+		new ModalBuilder().init().successBody([[#{common.message.completeCancel}]]).footer(4,'확인',function(button, modal){
+			modal.close();
+		}).open();
+	}
+}
+
+function modifyPolice(polId){
+		new ModalBuilder().init().alertBody([[#{common.message.confirmSave}]]).footer(2,'확인',function(button, modal){
+		modal.close();
+		$.ajax({
+			type: "post",
+			data: $("#policeModifyForm").serialize(),
+			url: "/user/police/update.ajax",
+			success: function (data) {
+				if (data.code == 1) {
+					new ModalBuilder().init().successBody([[#{common.message.completeModify}]]).footer(4,'확인',function(button, modal){
+						window.location.href="/user/police/detail.do?polId=" + polId;
+					}).open();
+				} else {
+				}
+			}
+		});
+	}, '취소', function(button, modal){}).open();
+}
+
+function deletePolice(polId){
+	new ModalBuilder().init().alertBody([[#{common.message.confirmDelete}]]).footer(2,'확인',function(button, modal){
+		$.ajax({
+			type: "post",
+			data: {polId : polId},
+			url: "/user/police/delete.ajax",
+			success: function (data) {
+				if (data.code == 1) {
+					window.location.href="/user/police/list.do";
+				} else {
+				}
+			}
+		});
+	}).open();
+}
 </script>

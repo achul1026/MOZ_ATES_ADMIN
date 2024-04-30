@@ -1,17 +1,65 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-	메뉴리스트페이지
-   
+	<div id="container-fluid">
+		<h1 id="content-title" th:text="#{sitemng.menuMngList.title}">메뉴 관리</h1>
+		<div id="content-sub-title" th:text="#{sitemng.menuMngList.descr}">메뉴를 관리할 수 있습니다.</div>
+
+		<div class="search-form-result-wrap">
+			<div class="table-search-result-text">
+			</div>
+			<th:block th:if="${currentMenuAuthInfo.createYn eq 'Y' and courtDcsnInfo == null}">
+				<div class="btn-wrap-right">
+					<button type="button" class="main-btn big-menu-plus form-button" th:text="#{sitemng.menuMngList.addMainMenu}" 
+						onclick="location.href='/siteMng/menu/save.do'">대메뉴 추가</button>
+				</div>
+			</th:block>
+		</div>
+		<div class="main-table">
+			<table class="manage-table" id="tblList">
+				<thead>
+					<tr>
+						<th th:text="#{sitemng.common.menu.order}">노출 순서</th>
+						<th th:text="#{sitemng.common.menu.nameEng}">메뉴 이름</th>
+						<th th:text="#{sitemng.common.menu.subMenu}">서브 메뉴</th>
+						<th th:text="#{sitemng.common.menu.urlPttrn}">URL 패턴</th>
+						<th th:text="#{sitemng.common.menu.url}">URL</th>
+						<th th:text="#{common.common.status}">노출여부</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr th:each="mozMenuItem, mozMenuStatus : ${mozMenuList}"
+						th:onclick="moveDetailPage([[${mozMenuItem.menuId}]])">
+						<td th:text="${mozMenuStatus.count}">1</td>
+						<td th:text="${mozMenuItem.menuNmEng}"></td>
+						<td th:text="${mozMenuItem.subMenuTotalCnt}">5개</td>
+						<td th:text="${mozMenuItem.menuUrlPattrn}">/dashboard/**</td>
+						<td th:text="${mozMenuItem.menuUrl}">/dashboard/main</td>
+						<td>
+							<span class="tableStausOn" th:if="${mozMenuItem.useYn} == 'Y'" th:text="#{sitemng.common.menu.exposed}">노출</span>
+							<span class="tableStausOff" th:unless="${mozMenuItem.useYn} == 'Y'" th:text="#{sitemng.common.menu.nonExposed}">노출</span>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+	</div>
 
 </th:block>
-</html>
-<script th:inline="javascript">
-    /*<![CDATA[*/
 
-   
-    /*]]>*/
+</html>
+
+<script th:inline="javascript">
+	/*<![CDATA[*/
+
+
+	/*]]>*/
+	
+	function moveDetailPage(menuId) {
+		let url = '/siteMng/menu/detail.do?menuId='+menuId;
+		location.href=url;
+	}
 </script>

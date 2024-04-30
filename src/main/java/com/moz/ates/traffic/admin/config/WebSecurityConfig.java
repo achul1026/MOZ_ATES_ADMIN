@@ -14,8 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
-import javax.mail.Message;
-
 
 @Configuration
 @EnableWebSecurity
@@ -34,25 +32,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-
         http.csrf().disable();
-
-        
         http.authorizeRequests()
-                .antMatchers("/joinUs","/joinUsAjax","/bootstrap/css/**","/bootstrap/img/**","/bootstrap/js/**","/bootstrap/scss/**","/bootstrap/vendor/**").permitAll()
-                .antMatchers("/**").hasAnyRole("sup")
+                .antMatchers("/joinUs","/joinUsAjax","/password/**" ,"/id/**" ,"/css/**","/js/**", "/images/**", "/modal/**", "/common/**").permitAll()
+//                .antMatchers("/**").hasAnyRole("sup","pol","opr")
+                .antMatchers("/**").hasAnyRole("OPC000","OPC001","OPC002", "OPC003")
                 .anyRequest().authenticated();
 
         http.formLogin()
                 .loginPage("/login")
                 .loginProcessingUrl("/loginAjax")
-                .successHandler(successHandler())
-                .failureHandler(failureHandler())
                 .usernameParameter("oprtrAccountId")
                 .passwordParameter("oprtrAccountPw")
                 .defaultSuccessUrl("/dashboard",true)
+                .successHandler(successHandler())
+                .failureHandler(failureHandler())
                 .permitAll();
-
 
         http.logout()
                 .logoutUrl("/logout")
@@ -60,7 +55,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .permitAll();
 
     }
-
+    
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
         auth.userDetailsService(authenticationService).passwordEncoder(passwordEncoder());

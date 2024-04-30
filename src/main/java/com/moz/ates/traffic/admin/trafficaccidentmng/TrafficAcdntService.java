@@ -1,10 +1,12 @@
 package com.moz.ates.traffic.admin.trafficaccidentmng;
 
-import com.moz.ates.traffic.admin.common.DataTableVO;
+import java.util.List;
+
+import org.springframework.web.multipart.MultipartFile;
+
 import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntChgHst;
 import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntMaster;
-
-import java.util.List;
+import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntTrgtInfo;
 
 public interface TrafficAcdntService {
     /**
@@ -13,9 +15,10 @@ public interface TrafficAcdntService {
      * @author : KC.KIM
      * @date : 2023.08.04
      * @param : tfcAcdntMaster
+     * @param : uploadFiles 
      * @return : 
      */
-    void mozTfcAcdntMasterSave(MozTfcAcdntMaster tfcAcdntMaster);
+    void mozTfcAcdntMasterSave(MozTfcAcdntMaster tfcAcdntMaster, MultipartFile[] uploadFiles);
     
     /**
      * @brief : 교통사고 중복 체크
@@ -43,9 +46,10 @@ public interface TrafficAcdntService {
      * @author : KC.KIM
      * @date : 2023.08.04
      * @param : tfcAcdntMaster
+     * @param uploadFiles 
      * @return : 
      */
-    void upateAcdnt(MozTfcAcdntMaster tfcAcdntMaster);
+    void upateAcdnt(MozTfcAcdntMaster tfcAcdntMaster, MultipartFile[] uploadFiles);
 
     /**
      * @brief : 교통사고 정보 조회
@@ -67,23 +71,12 @@ public interface TrafficAcdntService {
      */
 	int getAcdntListCnt(MozTfcAcdntMaster tfcAcdntMaster);
 
-    /**
-     * @brief : 교통사고 로그 리스트 조회
-     * @details : 교통사고 로그 리스트 조회
-     * @author : KC.KIM
-     * @date : 2023.09.13
-     * @param : tfcAcdntChgHst
-     * @return : 
-     */
-	List<MozTfcAcdntChgHst> getAcdntLogList(MozTfcAcdntChgHst tfcAcdntChgHst);
-
-    /**
-     * @brief : 교통사고 로그 리스트 개수 조회
-     * @details : 교통사고 로그 리스트 개수 조회
-     * @author : KC.KIM
-     * @date : 2023.09.13
-     * @param : tfcAcdntChgHst
-     * @return : 
-     */
-	int getAcdntLogListCnt(MozTfcAcdntChgHst tfcAcdntChgHst);
+	/**
+	 * @brief 사고타겟 이력 조회
+	 * @details : 사고타겟 이력 조회
+	 * @author KY.LEE
+	 * @date 2024. 4. 11.
+	 * @method getAcdntTrgtList
+	 */
+	List<MozTfcAcdntTrgtInfo> getAcdntTrgtList(String dvrLcenId);
 }

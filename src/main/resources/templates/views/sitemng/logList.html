@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	<div id="ajaxContent"></div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	let ajaxContent = $("#ajaxContent");
+	let logType = [[${logType}]];
+	let searchType = [[${searchType}]];
+	let sDate = [[${sDate}]];
+	let eDate = [[${eDate}]];
+	let searchTxt = [[${searchTxt}]];
+	let page = [[${page}]];
+	
+	var obj = new Object();
+	obj.logType=logType;
+	obj.sDate=sDate;
+	obj.eDate=eDate;
+	obj.searchTxt=searchTxt;
+	obj.searchType=searchType;
+	obj.page = page;
+	
+	function getlogListAjax(logType) {
+		let url = '';
+		if(logType == "enf") {
+			url = "/siteMng/log/enf/list.ajax";
+		} else if(logType == "acdnt") {
+			url = "/siteMng/log/acdnt/list.ajax";
+		} else if(logType == "eqp") {
+			url = "/siteMng/log/eqp/list.ajax";
+		} else if(logType == "user") {
+			url = "/siteMng/log/user/list.ajax";
+		} else if(logType == "sysFail") {
+			url = '/siteMng/log/sysFail/list.ajax';
+		} else if(logType == "colFail"){
+			url = '/siteMng/log/colFail/list.ajax';
+		}
+		
+		$.ajax({
+			url: url,
+			type: "POST",
+			data: obj,
+			dataType: 'html',
+			cache: false,
+			success: function (data) {
+				ajaxContent.html(data);
+			}
+		});
+	}
+	
+	$(function(){
+		getlogListAjax(logType);
+	})
+
+</script>

@@ -4,13 +4,541 @@
       layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
+	<div id="">
+		<div class="dashContainer">
 
-    <div class="container-fluid">
-
-        <!-- Page Heading -->
-        <h1 class="h3 mb-4 text-gray-800" th:text="#{enforcement.admin.dashBoardMain}">대시보드 메인</h1>
-        todo....
-    </div>
-
+			
+			<h2 class="dashTitle dashFlex" th:text="#{main.dashboard.stats.title}">Statistical Information</h2>
+			<!------단속 차트------>
+				<div class="dashCmList dashFlex">
+					<div class="dashInerCon dashCm30">
+						<div class="dashTableTitle">
+							<div>
+								<h2 th:text="#{main.dashboard.enforcement.stats.circle.title}">Enforcement</h2>
+								<p class="dashStatusAbout" th:text="#{main.dashboard.enforcement.stats.circle.subTitle}">총 교통 단속 통계 정보 입니다.</p>
+							</div>
+							<a href="/stat/enforce/chart.do" class="dashMoreBtn" th:text="#{main.common.btn.more}">More</a>
+						</div>
+						<div class="dashchartWrap mt30">
+							<canvas id="dashEnfPie"></canvas>
+						</div>
+					</div>
+					<div class="dashInerCon dashcm70">
+						<div class="dashTableTitle">
+							<div>
+								<h2 th:text="#{main.dashboard.enforcement.stats.bar.title}">Enforcement</h2>
+								<p class="dashStatusAbout" th:text="#{main.dashboard.enforcement.stats.bar.subTitle}">단속 1년치 통계 입니다.</p>
+							</div>
+							<a href="/stat/enforce/chart.do" class="dashMoreBtn" th:text="#{main.common.btn.more}">More</a>
+						</div>
+						
+<!--						<div class="dashTab">-->
+<!--							<button type="button" class="dashTabBtn on">Today</button>-->
+<!--							<button type="button" class="dashTabBtn">1 Week</button>-->
+<!--							<button type="button" class="dashTabBtn">6 Months</button>-->
+<!--						</div>-->
+						<div class="dashchartWrap">
+							<canvas id="dashEnfGraph"></canvas>
+						</div>
+					</div>
+				</div>
+				<!------단속 차트끝------>
+				<!------사고 차트------>
+				<div class="dashCmList dashFlex">
+					<div class="dashInerCon dashCm30">
+						<div class="dashTableTitle">
+							<div>
+								<h2 th:text="#{main.dashboard.accident.stats.circle.title}">Accident</h2>
+								<p class="dashStatusAbout" th:text="#{main.dashboard.accident.stats.circle.subTitle}">사고 전체 통계 입니다.</p>
+							</div>
+							<a href="/stat/accident/chart.do" class="dashMoreBtn" th:text="#{main.common.btn.more}">More</a>
+						</div>
+						<div class="dashchartWrap mt30">
+							<canvas id="dashAccPie"></canvas>
+						</div>
+					</div>
+					<div class="dashInerCon dashcm70">
+						<div class="dashTableTitle">
+							<div>
+								<h2 th:text="#{main.dashboard.accident.stats.bar.title}">Accident</h2>
+								<p class="dashStatusAbout" th:text="#{main.dashboard.accident.stats.bar.subTitle}">사고 1년치 통계 입니다.</p>
+							</div>
+							<a href="/stat/accident/chart.do" class="dashMoreBtn" th:text="#{main.common.btn.more}">More</a>
+						</div>
+						<div class="dashchartWrap">
+							<canvas id="dashAccGraph"></canvas>
+						</div>
+					</div>
+				</div>
+				<!------사고 차트끝------>
+			
+			<!------페이먼트 차트------>
+			<div class="dashCmList dashFlex">
+				<div class="dashInerCon dashCm30">
+					<div class="dashTableTitle">
+						<div>
+							<h2 th:text="#{main.dashboard.payment.stats.circle.title}">Payment Status<span class="dashStatustext">(All)</span></h2>
+							<p class="dashStatusAbout" th:text="#{main.dashboard.payment.stats.circle.subTitle}">납부자 전체 통계 입니다.</p>
+						</div>
+						<a href="/stat/penalty/chart.do" class="dashMoreBtn" th:text="#{main.common.btn.more}">More</a>
+					</div>
+					
+					<div class="dashchartWrap">
+						<canvas id="dashPayer2"></canvas>
+					</div>
+				</div>	
+				<div class="dashInerCon dashcm70">
+					<div class="dashTableTitle">
+						<div>
+							<h2 th:text="#{main.dashboard.payment.stats.bar.title}">Payment Status<span class="dashStatustext">(1Year)</span></h2>
+							<p th:text="#{main.dashboard.payment.stats.bar.subTitle}" class="dashStatusAbout">납부자 1년치 통계 입니다.</p>
+						</div>
+						<a href="/stat/penalty/chart.do" class="dashMoreBtn" th:text="#{main.common.btn.more}">More</a>
+					</div>
+					
+					<div class="dashchartWrap">
+						<canvas id="dashPayer1"></canvas>
+					</div>
+				</div>
+			</div>
+			<!------페이먼트 차트끝------>
+			
+			<!------장비 차트------>
+			<h2 class="dashTitle dashFlex" th:text="#{main.dashboard.equipment.list.title}"> Equipment Status</h2>
+			<div class="dashCmList dashFlex">
+				<div class="dashInerCon dashCm30">
+					<div class="dashTableTitle">
+						<div>
+							<h2 class="cameraTitle" th:text="#{main.dashboard.equipment.list.title}"></h2>
+							<p class="dashStatusAbout" th:text="#{main.dashboard.equipment.list.subTitle}">전체 장비 상태 입니다.</p>
+						</div>
+						<a href="/eqp/mng/list.do" class="dashMoreBtn" th:text="#{main.common.btn.more}">More</a>
+					</div>
+					<div class="dashCameraScroll">
+						<div class="dashCameraListConWrap">
+							<div class="dashCameraListCon">
+								<div class="cameraImgWrap">
+									<img src="/images/dashequiment01.png">
+								</div>
+								<div class="cameraState">
+									<div class="stateTitle">
+										<h2 th:text="#{main.dashboard.equipment.info.camera}">Câmeras</h2>
+									</div>
+									<div class="stateList">
+										<div>Todas</div>
+										<div><span class="cameraAll">8</span></div>
+									</div>
+									<div class="stateList">
+										<div>Ligado</div>
+										<div><span class="cameraOn">8</span></div>
+									</div>
+								</div>
+							</div>
+							<div class="dashCameraListCon">
+								<div class="cameraImgWrap">
+									<img src="/images/dashequiment02.png">
+								</div>
+								<div class="cameraState">
+									<div class="stateTitle">
+										<h2 th:text="#{main.dashboard.equipment.info.light}">신호등</h2>
+									</div>
+									<div class="stateList">
+										<div>Todas</div>
+										<div><span class="cameraAll">1</span></div>
+									</div>
+									<div class="stateList">
+										<div>Ligado</div>
+										<div><span class="cameraOn">1</span></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="dashCameraListConWrap">
+							<div class="dashCameraListCon">
+								<div class="cameraImgWrap">
+									<img src="/images/dashequiment03.png">
+								</div>
+								<div class="cameraState">
+									<div class="stateTitle">
+										<h2 th:text="#{main.dashboard.equipment.info.cross}">횡단보도</h2>
+									</div>
+									<div class="stateList">
+										<div>Todas</div>
+										<div><span class="cameraAll">1</span></div>
+									</div>
+									<div class="stateList">
+										<div>Ligado</div>
+										<div><span class="cameraOn">1</span></div>
+									</div>
+								</div>
+							</div>
+							<div class="dashCameraListCon">
+								<div class="cameraImgWrap">
+									<img src="/images/dashequiment04.png">
+								</div>
+								<div class="cameraState">
+									<div class="stateTitle">
+										<h2 th:text="#{main.dashboard.equipment.info.sign}">안내표지판</h2>
+									</div>
+									<div class="stateList">
+										<div>Todas</div>
+										<div><span class="cameraAll">1</span></div>
+									</div>
+									<div class="stateList">
+										<div>Ligado</div>
+										<div><span class="cameraOn">1</span></div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="dashCameraListConWrap">
+							<div class="dashCameraListCon">
+								<div class="cameraImgWrap">
+									<img src="/images/dashequiment05.png">
+								</div>
+								<div class="cameraState">
+									<div class="stateTitle">
+										<h2 th:text="#{main.dashboard.equipment.info.overpass}">육교</h2>
+									</div>
+									<div class="stateList">
+										<div>Todas</div>
+										<div><span class="cameraAll">1</span></div>
+									</div>
+									<div class="stateList">
+										<div>Ligado</div>
+										<div><span class="cameraOn">1</span></div>
+									</div>
+								</div>
+							</div>
+							<div class="dashCameraListCon">
+								<div class="cameraImgWrap">
+									<img src="/images/dashequiment06.png">
+								</div>
+								<div class="cameraState">
+									<div class="stateTitle">
+										<h2 th:text="#{main.dashboard.equipment.info.bump}">방지턱</h2>
+									</div>
+									<div class="stateList">
+										<div>Todas</div>
+										<div><span class="cameraAll">1</span></div>
+									</div>
+									<div class="stateList">
+										<div>Ligado</div>
+										<div><span class="cameraOn">1</span></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="dashInerCon dashcm70">
+					<p class="dashStatusAbout mg0 mb20" th:text="#{main.dashboard.mapbox.desc}">* 맵에서 장비현황, 단속, 사고 리스트를 확인 하실 수 있습니다.</p>
+					<div id="dashboardmap"></div>
+				</div>
+			</div>
+			<!------장비 차트끝------>
+			
+			<!------사고/단속 테이블------>
+			<h2 class="dashTitle dashFlex" th:text="#{main.dashboard.list.title}">Today's traffic enforcement and accident list</h2>
+			<div class="dashTableWrap dashFlex">
+				<div class="dashInerCon dashTableCon">
+					<div class="dashTableTitle">
+						<div>
+							<h2 th:text="#{main.dashboard.enforcement.list.title}">Enforcement List</h2>
+							<div class="dashCount-wrap">
+								<div>
+									<span th:text="#{main.dashboard.enforcement.list.today}">오늘</span> : 
+									"<span class="dashCount" th:text="${tfcEnfCnt}">0</span>"
+									<span th:text="#{main.dashboard.enforcement.list.result}">Result</span>
+								</div>
+								
+							</div>
+							<p class="dashStatusAbout" th:text="#{main.dashboard.enforcement.list.subTitle}">금일 단속 리스트 입니다. (리스트 클릭시 지도에 표시됩니다.)</p>
+						</div>
+						<a href="/enf/info/list.do" class="dashMoreBtn" th:text="#{main.common.btn.more}">More</a>
+					</div>
+					<div class="dashMainTableWrap">
+						<table class="main-table dashMainTable">
+						<thead>
+							<tr>
+								<th th:text="#{main.dashboard.enforcement.list.date}">EnforcementDate</th>
+								<th th:text="#{main.dashboard.enforcement.list.tableNo}">Case No.</th>
+								<th th:text="#{main.dashboard.enforcement.list.enfType}">Enforcement Type</th>
+								<th th:text="#{main.dashboard.enforcement.list.addr}">Address</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:if="${#lists.isEmpty(tfcEnfList)}">
+								<td colspan="4" th:text="#{main.dashboard.enforcement.list.none}">None Result</td>
+							</tr>
+							<tr th:if="!${#lists.isEmpty(tfcEnfList)}" th:each="enfItem, status : ${tfcEnfList}"
+							    th:attr="onclick='findLocation(' + ${enfItem.lat} + ',' + ${enfItem.lng} + ')'"
+							    th:data-lat="${enfItem.lat}" th:data-lng="${enfItem.lng}">
+							    <td th:text="${#dates.format(enfItem.tfcEnfDt, 'yyyy-MM-dd')}"></td>
+								<td th:text="${enfItem.tfcEnfId}"></td>
+								<td th:text="${1 < enfItem.enfFineInfoCnt ? enfItem.title + ' &hellip; (' + enfItem.enfFineInfoCnt + ')' : enfItem.title}"></td>
+								<td th:text="${enfItem.roadAddr}"></td>
+							</tr>
+						</tbody>
+					</table>
+					</div>
+				</div>
+				
+				<div class="dashInerCon dashTableCon">
+					<div class="dashTableTitle">
+						<div>
+							<h2 th:text="#{main.dashboard.accident.list.title}">Accident List</h2>
+							<div class="dashCount-wrap">
+								<div>
+									<span th:text="#{main.dashboard.accident.list.today}">오늘</span> : 
+									"<span class="dashCount" th:text="${tfcAcdntCnt}">0</span>"
+									<span th:text="#{main.dashboard.accident.list.result}">Result</span>
+								</div>
+								
+							</div>
+							<p class="dashStatusAbout" th:text="#{main.dashboard.accident.list.subTitle}">금일 사고 리스트 입니다. (리스트 클릭시 지도에 표시됩니다.)</p>
+						</div>
+						<a href="/acdnt/mng/list.do" class="dashMoreBtn" th:text="#{main.common.btn.more}">More</a>
+					</div>
+					<div class="dashMainTableWrap">
+						<table class="main-table dashMainTable">
+						<thead>
+							<tr>
+								<th th:text="#{main.dashboard.accident.list.date}">Accident Date</th>
+								<th th:text="#{main.dashboard.accident.list.tableNo}">Case No.</th>
+								<th th:text="#{main.dashboard.accident.list.acdntType}">Enforcement Type</th>
+								<th th:text="#{main.dashboard.accident.list.addr}">Address</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:if="${#lists.isEmpty(tfcAcdntList)}">
+								<td colspan="4" th:text="#{main.dashboard.accident.list.none}">None Result</td>
+							</tr>
+							<tr th:if="!${#lists.isEmpty(tfcAcdntList)}" th:each="acdntItem, status : ${tfcAcdntList}"
+							    th:attr="onclick='findLocation(' + ${acdntItem.lat} + ',' + ${acdntItem.lng} + ')'"
+							    th:data-lat="${acdntItem.lat}" th:data-lng="${acdntItem.lng}">
+							    <td th:text="${#dates.format(acdntItem.acdntDt, 'yyyy-MM-dd')}"></td>
+								<td th:text="${acdntItem.tfcAcdntId}"></td>
+								<td th:text="${acdntItem.acdntTyCd}"></td>
+								<td th:text="${acdntItem.roadAddr}"></td>
+							</tr>
+						</tbody>
+					</table>
+					</div>
+				</div>
+			</div>
+			<!------사고/단속 테이블 끝------>
+		</div>
+	</div>
 </th:block>
 </html>
+<script th:inline="javascript">
+	
+	let map = new MozAtesMap({
+		elementId : 'dashboardmap',
+		center_lng : null,
+		center_lat : null,
+		isInitDrawCenterMarker : false,
+		isFacility : true,
+		isEquipment : true,
+		isEnforcement : true,
+		isAccident : true
+	});
+	
+	function findLocation(lat, lng){
+		map.flyToMove(lng,lat);
+	}
+	
+	const dashboardChartInfo = /*[[${dashboardChartInfo}]]*/;
+	
+	const enfLabel1 = /*[[#{main.dashboard.enforcement.stats.circle.label1}]]*/;
+	const enfLabel2 = /*[[#{main.dashboard.enforcement.stats.circle.label2}]]*/;
+	
+	/**단속 차트***/
+	new MozChart(ChartType.DOUGHNUT).init("dashEnfPie")
+	    .setData({
+	        labels: [enfLabel1,enfLabel2],
+	        datasets: [{
+				data: [dashboardChartInfo.enforcementCircularGraph.policeEnfCnt,dashboardChartInfo.enforcementCircularGraph.cameraEnfCnt],
+		        backgroundColor: ["#00AEB9", "#6447D6"],
+	        }]
+	    })
+	    .draw();
+	    
+	const enfTypeLabel1 = /*[[#{main.dashboard.enforcement.stats.bar.label1}]]*/;
+	const enfTypeLabel2 = /*[[#{main.dashboard.enforcement.stats.bar.label2}]]*/;
+	const enfTypeLabel3 = /*[[#{main.dashboard.enforcement.stats.bar.label3}]]*/;
+	const enfTypeLabel4 = /*[[#{main.dashboard.enforcement.stats.bar.label4}]]*/;
+	const enfTypeLabel5 = /*[[#{main.dashboard.enforcement.stats.bar.label5}]]*/;
+	const enfTypeLabel6 = /*[[#{main.dashboard.enforcement.stats.bar.label6}]]*/;
+	const enfTypeLabel7 = /*[[#{main.dashboard.enforcement.stats.bar.label7}]]*/;
+
+	  /**단속 차트***/
+	   new MozChart(ChartType.LINE).init("dashEnfGraph")
+	    .setData({
+	        labels: JSON.parse(dashboardChartInfo.enforcementChartGraph.enfDtList),
+	        datasets: [{
+	            data: JSON.parse(dashboardChartInfo.enforcementChartGraph.speedCntList),
+	            label: enfTypeLabel1,
+		        borderColor: "#24BA60",
+	      		backgroundColor: '#24BA60',
+	        },{ 
+	        data: JSON.parse(dashboardChartInfo.enforcementChartGraph.signalCntList),
+	        label: enfTypeLabel2,
+	        borderColor: "#D68C47",
+		    backgroundColor: '#D68C47',
+	      },{ 
+	        data: JSON.parse(dashboardChartInfo.enforcementChartGraph.drunkCntList),
+	        label: enfTypeLabel3,
+	        borderColor: "#D64750",
+		    backgroundColor: '#D64750',
+	      },{ 
+	        data: JSON.parse(dashboardChartInfo.enforcementChartGraph.noneLicenseCntList),
+	        label: enfTypeLabel4,
+	        borderColor: "#BAA01A",
+		    backgroundColor: '#BAA01A',
+	      },{ 
+	        data: JSON.parse(dashboardChartInfo.enforcementChartGraph.centerLineCntList),
+	        label: enfTypeLabel5,
+	        borderColor: "#6447D6",
+		    backgroundColor: '#6447D6',
+	      },{ 
+	        data: JSON.parse(dashboardChartInfo.enforcementChartGraph.crosswalkCntList),
+	        label: enfTypeLabel6,
+	        borderColor: "#003FB9",
+		    backgroundColor: '#003FB9',
+	      },{ 
+	        data: JSON.parse(dashboardChartInfo.enforcementChartGraph.sidewalkCntList),
+	        label: enfTypeLabel7,
+	        borderColor: "#00AEB9",
+		    backgroundColor: '#00AEB9',
+	      },]
+	    })
+	    .draw();
+	    
+    	const acdntType0 = /*[[#{main.dashboard.accident.common.acdntType.ACT000}]]*/;
+    	const acdntType1 = /*[[#{main.dashboard.accident.common.acdntType.ACT001}]]*/;
+    	const acdntType2 = /*[[#{main.dashboard.accident.common.acdntType.ACT002}]]*/;
+    	const acdntType3 = /*[[#{main.dashboard.accident.common.acdntType.ACT003}]]*/;
+    	const acdntType4 = /*[[#{main.dashboard.accident.common.acdntType.ACT004}]]*/;
+    	const acdntType5 = /*[[#{main.dashboard.accident.common.acdntType.ACT005}]]*/;
+    	const acdntType6 = /*[[#{main.dashboard.accident.common.acdntType.ACT006}]]*/;
+    	const acdntType7 = /*[[#{main.dashboard.accident.common.acdntType.ACT007}]]*/;
+	    
+	    /**사고 차트***/
+		new MozChart(ChartType.DOUGHNUT).init("dashAccPie")
+		    .setData({
+		        labels: [
+		        	acdntType0,
+		        	acdntType1,
+		        	acdntType2,
+		        	acdntType3,
+		        	acdntType4,
+		        	acdntType5,
+		        	acdntType6,
+		        	acdntType7
+		        ],
+		        datasets: [{
+		            data: [
+		            	dashboardChartInfo.accidentCircularGraph.crsng,
+		            	dashboardChartInfo.accidentCircularGraph.crsngRoadway,
+		            	dashboardChartInfo.accidentCircularGraph.crsngRoadEdgeZone,
+		            	dashboardChartInfo.accidentCircularGraph.crsngSidewalk,
+		            	dashboardChartInfo.accidentCircularGraph.frtCollision,
+		            	dashboardChartInfo.accidentCircularGraph.sideCollision,
+		            	dashboardChartInfo.accidentCircularGraph.revCollision,
+		            	dashboardChartInfo.accidentCircularGraph.collision
+		            	],
+			        backgroundColor: ["#00B94A", "#00B981","#00AEB9","#008DB9","#0055B9","#5D50EB","#B050EB","#CB3B89"],
+		        }]
+		    })
+	    .draw();
+	    
+	  /**사고 차트***/
+	   new MozChart(ChartType.LINE).init("dashAccGraph")
+	    .setData({
+	        labels: JSON.parse(dashboardChartInfo.accidentChartGraph.acdntDtList),
+	        datasets: [{
+	            data: JSON.parse(dashboardChartInfo.accidentChartGraph.crsngList),
+		       label: acdntType0,
+		        borderColor: "#00B94A",
+		        backgroundColor: '#00B94A',
+	        },{ 
+			data: JSON.parse(dashboardChartInfo.accidentChartGraph.crsngRoadwayList),
+	        label: acdntType1,
+	        borderColor: "#00B981",
+	        backgroundColor: '#00B981',
+	      },{ 
+			data: JSON.parse(dashboardChartInfo.accidentChartGraph.crsngRoadEdgeZoneList),
+	        label: acdntType2,
+	        borderColor: "#00AEB9",
+	        backgroundColor: '#00AEB9',
+	      },{ 
+			data: JSON.parse(dashboardChartInfo.accidentChartGraph.crsngSidewalkList),
+	        label: acdntType3,
+	        borderColor: "#008DB9",
+	        backgroundColor: '#008DB9',
+	      },{ 
+			data: JSON.parse(dashboardChartInfo.accidentChartGraph.frtCollisionList),
+	        label: acdntType4,
+	        borderColor: "#0055B9",
+	        backgroundColor: '#0055B9',
+	      },{ 
+			data: JSON.parse(dashboardChartInfo.accidentChartGraph.sideCollisionList),
+	        label: acdntType5,
+	        borderColor: "#5D50EB",
+	        backgroundColor: '#5D50EB',
+	      },{ 
+			data: JSON.parse(dashboardChartInfo.accidentChartGraph.revCollisionList),
+	        label: acdntType6,
+	        borderColor: "#B050EB",
+	        backgroundColor: '#B050EB',
+	      },{ 
+			data: JSON.parse(dashboardChartInfo.accidentChartGraph.collisionList),
+	        label: acdntType7,
+	        borderColor: "#CB3B89",
+	        backgroundColor: '#CB3B89',
+	      }]   
+	    })
+	    .draw();
+	    
+	    const pymntCircleLabel1 = /*[[#{main.dashboard.payment.stats.circle.label1}]]*/;
+		const pymntCircleLabel2 = /*[[#{main.dashboard.payment.stats.circle.label2}]]*/;
+		
+	  /**납부자 현황 차트***/
+	   new MozChart(ChartType.LINE).init("dashPayer1")
+	    .setData({
+	        labels: JSON.parse(dashboardChartInfo.paymentChartGraph.payDtList),
+	        datasets: [{
+	            data: JSON.parse(dashboardChartInfo.paymentChartGraph.nonePayTotalCntList),
+		        label: pymntCircleLabel1,
+		        borderColor: "#003FB9",
+		        backgroundColor: '#003FB9',
+	        },{ 
+		        data: JSON.parse(dashboardChartInfo.paymentChartGraph.payTotalCntList),
+		        label: pymntCircleLabel2,
+		        borderColor: "#B547AA",
+		        backgroundColor: '#B547AA',
+		      }, 
+	        ]
+	    })
+	    .draw();
+	    
+	    
+	    const pymntBarLabel1 = /*[[#{main.dashboard.payment.stats.bar.label1}]]*/;
+		const pymntBarLabel2 = /*[[#{main.dashboard.payment.stats.bar.label2}]]*/;
+	    /**전체 납부액 차트***/
+	    new MozChart(ChartType.DOUGHNUT).init("dashPayer2")
+	    .setData({
+	        labels: [pymntBarLabel1,pymntBarLabel2],
+	        datasets: [{
+	            data: [dashboardChartInfo.paymentCircularGraph.payTotalCnt,dashboardChartInfo.paymentCircularGraph.nonePayTotalCnt],
+		        backgroundColor: ["#003FB9","#B547AA"],
+		        fill: false,
+	        }]
+	    })
+	    .draw();
+		
+	
+	
+</script>

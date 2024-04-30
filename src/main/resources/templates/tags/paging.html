@@ -1,12 +1,12 @@
 <html xmlns:th="http://www.thymeleaf.org"  
 	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 	
-<th:block th:fragment="pagingFragment">
+<th:block th:fragment="pagingFragment" th:if="${pagination.totalListCnt > 0}">
 			<ul class="pagination">
-				<li><a class="first" th:onclick="fnPageMove([[${pagination.startPage}]])">맨앞으로</a></li>	
+				<li><a class="firstEnd" th:onclick="fnPageMove(1)">First</a></li>	
 				
 				<li class="page-item">
-					<a class="first" th:onclick="fnPageMove([[${pagination.prevBlock}]])" aria-label="Previous"> 
+					<a class="" th:onclick="fnPageMove([[${pagination.page} == 1 ? 1 : ${pagination.page} - 1]])" aria-label="Previous"> 
 						<i class="page-arrow-left"></i>
 					</a>
 				</li>
@@ -26,12 +26,11 @@
 				</th:block>
 				
 				<li class="page-item">
-					<a class="last" th:onclick="fnPageMove([[${pagination.nextBlock}]])" aria-label="Next">
-																	<!-- nextBlock이 아닌 nextPage로 처리 필요 -->
+					<a class="" th:onclick="fnPageMove([[${pagination.page} == ${pagination.totalPageCnt} ? ${pagination.page} : ${pagination.page} + 1]])" aria-label="Next">
 						<i class="page-arrow-right"></i>
 					</a>
 				</li>
 				
-				<li><a class="last" th:onclick="fnPageMove([[${pagination.endPage}]])">맨뒤로</a></li>
+				<li><a class="firstEnd" th:onclick="fnPageMove([[${pagination.totalPageCnt}]])">Last</a></li>
 		</ul>
 </th:block>

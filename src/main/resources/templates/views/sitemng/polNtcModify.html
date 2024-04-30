@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 th:text="#{sitemng.notice.title.modify}" id="detail-content-title">공지사항 수정</h1>
+		
+		<form id="frmNoticeModify">
+			<input type="hidden" name="boardIdx" th:value="${brd.boardIdx}">
+			<input type="hidden" name="viewCnt" th:value="${brd.viewCnt}">
+			<table class="sub-table detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th><span class="requiredMark" th:text="#{sitemng.noticeModify.ttl}">제목</span></th>
+						<td><input type="text" class="form-control main-input" name="boardTitle" id="txtBoardTitle"
+								th:value="${brd.boardTitle}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.noticeModify.posting}">게시 여부</th>
+						<td>
+							<input type="radio" class="un-check" name="datecheck" id="away-check" onclick="dateCheck('true')"
+								th:checked="${brd.postStrDt == null && brd.postEndDt == null}"><label for="away-check"th:text="#{sitemng.common.alwaysPosted}"> 항상 게시</label>
+							<input type="radio" class="time-check" name="datecheck" id="timeline-check" onclick="dateCheck('false')"
+								th:checked="${brd.postStrDt != null && brd.postEndDt != null}"><label for="timeline-check" th:text="#{sitemng.common.postingPeriodSetting}"> 게시기간 설정</label>
+						</td>
+					</tr>
+					<tr class="time-check-change">
+						<th th:text="#{sitemng.noticeModify.postingPeriod}">게시기간</th>
+						<td>
+							<input type="date" class="input-date" name="postStrDt"th:value="${#dates.format(brd.postStrDt, 'yyyy-MM-dd')}"> 
+							~ 
+							<input type="date" class="input-date" name="postEndDt"th:value="${#dates.format(brd.postEndDt, 'yyyy-MM-dd')}">
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.noticeModify.type}">유형</th>
+						<td>
+							<input type="hidden" name="imprtYn" id="imprtYn">
+							<input type="checkbox" id="imprtYn-chkbox" th:checked="${brd.imprtYn == 'Y'}"> <label th:text="#{sitemng.noticeModify.important}">중요</label>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.noticeModify.attachment}">첨부파일</th>
+						<td colspan="3">
+							<input type="file" id="uploadFiles" name="uploadFiles" multiple/>
+							<div id="dragArea">
+								<div class="drag-area">
+									<div class="dragText">
+									   	File name cannot be more than 50 characters<br>
+										The file size can only be uploaded under 5MB<br>
+										Only WORD, XLSX, PDF, and ZIP file can be uploaded
+									</div>
+									<div>
+										<input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
+										<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+									</div>
+								</div>
+							</div>
+							<div class="upload_wrap">
+								<div id="upload_list_box">
+									<th:block th:each="fileItem : ${brd.atchFileList}">
+										<div class="upload_list">
+											<div class="list_item input_same group_box flex-center">
+					                			<div class="file_list" th:text="${fileItem.fileOrgNm}"></div>
+						                		<button type="button" th:data-name="${fileItem.fileOrgNm}" th:data-value="${fileItem.fileIdx}" class="fileDelBtn">
+														<img src="/images/upload_close.png" alt="업로드파일 삭제">
+						                		</button>
+                							</div>
+										</div>
+									</th:block>
+								</div>	
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.noticeModify.exposure}">노출여부</th>
+						<td>
+							<input type="hidden" name="useYn" id="useYn">
+							<input type="checkbox" id="useYn-chkbox" th:checked="${brd.useYn == 'Y'}"> <label th:text="#{sitemng.noticeModify.exposureChkbox}">노출</label>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.noticeModify.popupYn}">팝업여부</th>
+						<td>
+							<input type="hidden" name="popupYn" id="popupYn">
+							<input type="checkbox" id="popupYn-chkbox" th:checked="${brd.popupYn == 'Y'}"> <label th:text="#{sitemng.noticeModify.popupYnChkbox}">사용</label>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.notice.common.content}">내용</th>
+						<td><textarea class="form-control detail-table-textarea" id="txtBoardContents" name="boardContents"
+								rows="15" th:text="${brd.boardContents}"></textarea></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<div class="btn-wrap-center">
+			<button th:text="#{sitemng.common.cancel}" type="button" id="btnGoList" class="sub-btn" onclick="javascript:window.history.back()">취소</button>
+			<button th:text="#{sitemng.common.modifyBtn}" type="button" id="btnModify" class="main-btn">수정</button>
+		</div>
+	</div>
+
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	$(document).ready(function(){
+		var postStrDt = [[${brd.postStrDt}]];
+		var postEndDt = [[${brd.postEndDt}]];
+		if(!isNull(postStrDt) && !isNull(postEndDt)){
+			$('.time-check-change').show();
+		}else{
+			$('.time-check-change').hide();
+		}
+	})
+	
+	var deleteFilesArr = new Array();
+	let $fileInput = $("#uploadFiles");
+	$(".fileDelBtn").on('click',function(){
+        var $this = $(this);
+        var fileNm = $this.data('name');
+        var fileId = $this.data('value');
+        const dataTransfer = new DataTransfer();
+        let trans = $('#uploadFiles')[0].files;
+        let fileArray = Array.from(trans);
+
+        $this.closest('.upload_list').remove();
+        fileArray.filter(file => file.name != fileNm).forEach(file => {
+            dataTransfer.items.add(file);
+        });
+        $fileInput.prop('files',dataTransfer.files);
+        
+        let uploadLength = $('#upload_list_box').children('.upload_list').length;
+		if(uploadLength <= 0){
+			$('.upload_wrap').addClass('none');
+		}
+		deleteFilesArr.push(fileId);
+    });
+	
+	$("#btnModify").click(function () {
+		if($("#frmNoticeModify").soValid()) {
+			if($("#away-check").is(":checked")){
+				$(".input-date").attr("disabled", true);
+			}
+			
+			var imprtYn = $("#imprtYn-chkbox").prop("checked")? "Y" :"N";
+			var popupYn = $("#popupYn-chkbox").prop("checked")? "Y" :"N";
+			var useYn = $("#useYn-chkbox").prop("checked")? "Y" :"N";
+			$("#imprtYn").val(imprtYn);
+			$("#useYn").val(useYn);
+			$("#popupYn").val(popupYn);
+			
+			var form = $("#frmNoticeModify")[0];
+			var data = new FormData(form);
+			
+			deleteFilesArr.forEach((value, index) => {
+				data.append("atchFileList[" + index + "].fileIdx", value);
+			})
+			
+			
+			$.ajax({
+				url: /*[[@{/siteMng/polNtc/update.ajax}]]*/ "/siteMng/polNtc/update.ajax",
+				type: "post",
+				data: data,
+				enctype: 'multipart/form-data',
+			    processData: false,
+			    contentType: false,
+			    cache: false,
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+	
+					if (resultCode == '200') {
+						new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){
+							modal.close();
+							var baseUrl = /*[[@{/siteMng/polNtc/detail.do}]]*/ '';
+							window.location.href = baseUrl + "?boardIdx=" + [[${brd.boardIdx}]];
+						}).open();
+					} else {
+						new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
+							modal.close();}).open();
+					}
+				}
+			});
+		}
+	})
+</script>

@@ -1,71 +1,229 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
 	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
 
-	<div class="container-fluid">
+	<div id="container-fluid">
 
-		<!-- Page Heading -->
-		<h1 class="h3 mb-4 text-gray-800"
-			th:text="#{accident.mngDetail.title}">교통사고 상세정보</h1>
 
-		<div class="row">
-
-			<div class="col-lg-12">
-				<div class="card shadow mb-4">
-					<div class="card-header py-3">
-						<h6 class="m-0 font-weight-bold text-primary"
-							th:text="#{accident.mngDetail.subtitle}">상세</h6>
-					</div>
-					<div class="card-body">
-						<div class="table-responsive">
-							<table class="table table-bordered">
+		<div class="detail-title">
+			<div>
+				<span th:text="#{accident.mngRegist.accidentNumber}">접수번호</span> : <span th:text="${tfcAcdntMaster.tfcAcdntId}"></span>
+			</div>
+		</div>
+			
+			<form id="frmAcdntRegist">
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{accident.mngRegist.accidentDate}">사고일시</th>
+							<td th:text="${#dates.format(tfcAcdntMaster.acdntDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+							<th th:text="#{accident.mngRegist.typeOfAccident}">사고 종류</th>
+							<td th:text="${tfcAcdntMaster.cmCd.cdNm}"></td>
+						</tr>
+						<tr>
+						</tr>
+						<tr>
+							<th th:text="#{accident.mngRegist.accidentPlace}">사고장소</th>
+							<td colspan="3">
+								<p th:text="${tfcAcdntMaster.roadAddr}"></p><br>
+								<div id="map" class="detailMap"></div>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.mngRegist.policeOfficerInCharge}">담당경찰관</th>
+							<td th:text="${tfcAcdntMaster.polInfo.polNm}"></td>
+							<th th:text="#{accident.mngDetail.department}">담당자 행정기관</th>
+							<td th:text="${tfcAcdntMaster.polInfo.polDeptNm}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.mngRegist.childAcdnt}">어린이 사고 유무</th>
+							<td th:text="${tfcAcdntMaster.acdntChildYn}"></td>
+							<th th:text="#{accident.mngDetail.accidentTypeDetails}">사고유형상세</th>
+							<td th:text="${tfcAcdntMaster.acdntTyDtls}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.mngDetail.attachment}">첨부파일</th>
+							<td colspan="3" id="file-download">
+								<div id="image_container" class="atContainer" th:each="fileInfo : ${tfcAcdntMaster.tfcAcdntFileInfo}">
+									<span th:text="${fileInfo.fileOriginNm}"></span>
+								</div>
+<!-- 								<a href="">사고 관련 영상 <img src="/images/download.png" alt="다운로드" id="download-icon"></a> -->
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.mngDetail.report}">사고 조서</th>
+							<td colspan="3" th:text="${tfcAcdntMaster.acdntReport}"></td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<th:block th:each="trgtInfo, status : ${tfcAcdntMaster.tfcAcdntTrgtInfo}">
+					<!-- 차량 -->
+					<th:block th:if="${trgtInfo.acdntTrgtCd == 'ATT000'}">
+						<!-- 운전자 -->
+						<div class="rgTableTitle">
+							<h1><span th:text="#{accident.mngRegist.accidentParty}"></span> <span  class="rgTableTitleNumber" th:text="${status.index+1}"></span></h1>
+						</div>
+						<table class="detail-table">
+							<colgroup>
+								<col width="15%">
+								<col width="35%">
+								<col width="15%">
+								<col width="35%">
+							</colgroup>
+							<tbody>
+								<tr>
+									<th th:text="#{accident.mngRegist.accidentTarget}"></th>
+									<td th:text="${trgtInfo.acdntTrgtCd == 'ATT000' ? 'Vehicle' : 'Person'}"></td>
+								</tr>
+								<tr>
+									<th th:text="#{accident.mngRegist.driverLicenseId}"></th>
+									<td th:text="${trgtInfo.dvrLcenId}"></td>
+									<th th:text="#{accident.mngRegist.vehicleNo}"></th>
+									<td th:text="${trgtInfo.vhRegNo}"></td>
+								</tr>
+								<tr>
+									<th th:text="#{accident.mngRegist.vehicleType}"></th>
+									<td th:text="${trgtInfo.vhTy}"></td>
+									<th th:text="#{accident.mngRegist.DrivingStatus}"></th>
+									<td th:text="${trgtInfo.dvYn}"></td>
+								</tr>
+								<tr>
+									<th th:text="#{accident.mngRegist.accidentDamage}"></th>
+									<td th:text="${trgtInfo.acdntDmgCdNm}"></td>
+									<th th:text="#{accident.mngRegist.phoneNumber}"></th>
+									<td th:text="${trgtInfo.acdntTrgtPno}"></td>
+								</tr>
+								<tr>
+									<th th:text="#{accident.mngRegist.accidentTargetBirthday}"></th>
+									<td th:text="${trgtInfo.acdntTrgtBrth}"></td>
+									<th th:text="#{accident.mngRegist.name}"></th>
+									<td th:text="${trgtInfo.acdntTrgtNm}"></td>
+								</tr>
+								<tr>
+									<th th:text="#{accident.mngRegist.deathStatus}"></th>
+									<td colspan="3" th:text="${trgtInfo.deadYn == 'N' ? 'Not Death' : 'Death'}"></td>
+									
+								</tr>
+							</tbody>
+						</table>
+						<th:block th:each="pnrInfo, status : ${trgtInfo.tfcAcdntTrgtPnrInfo}">
+							<!-- 동승자 -->
+							<div class="rgTableTitle">
+								<h1><span th:text="#{accident.mngRegist.passenger}"></span> <span th:text="${status.index + 1}"></span></h1>
+							</div>
+							<table class="detail-table">
 								<colgroup>
-									<col width="20%">
-									<col width="30%">
-									<col width="20%">
-									<col width="30%">
-
+									<col width="15%">
+									<col width="35%">
+									<col width="15%">
+									<col width="35%">
 								</colgroup>
 								<tbody>
 									<tr>
-										<th th:text="#{accident.mngDetail.accidentNumber}">사고번호</th>
-										<td th:text="${tfcAcdntMaster.tfcAcdntId}"></td>
-										<th th:text="#{accident.mngDetail.accidentDate}">사고일시</th>
-										<td th:text="${tfcAcdntMaster.acdntDt}"></td>
+										<th th:text="#{accident.mngRegist.isDriver}"></th>
+										<td th:text="${pnrInfo.drvYn}"></td>
+										<th th:text="#{accident.mngRegist.passengerDriverLicenseId}"></th>
+										<td th:text="${pnrInfo.pnrDvrLcenId}"></td>
 									</tr>
 									<tr>
-										<th th:text="#{accident.mngDetail.accidentPlace}">사고장소</th>
-										<td th:text="${tfcAcdntMaster.roadAddr}"></td>
-										<th th:text="#{accident.mngDetail.accidentCarNumber}">사고차번호</th>
-										<td th:text="${tfcAcdntMaster.vhRegNo}"></td>
+										<th th:text="#{accident.mngRegist.passengerDriverLicenseType}"></th>
+										<td th:text="${pnrInfo.dvrLcenTy}"></td>
+										<th th:text="#{accident.mngRegist.passengerName}"></th>
+										<td th:text="${pnrInfo.pnrNm}"></td>
 									</tr>
 									<tr>
-										<th th:text="#{accident.mngDetail.policeOfficerInCharge}">담당경찰관</th>
-										<td th:text="${tfcAcdntMaster.polId}"></td>
-										<th th:text="#{accident.mngDetail.attacker}">가해자</th>
-										<td th:text="${tfcAcdntMaster.vioInfo?.vioNm}"></td>
+										<th th:text="#{accident.mngRegist.passengerAddress}"></th>
+										<td th:text="${pnrInfo.pnrAddr}"></td>
+										<th th:text="#{accident.mngRegist.passengerBirthday}"></th>
+										<td th:text="${pnrInfo.pnrBrth}"></td>
 									</tr>
 									<tr>
-										<th th:text="#{accident.mngDetail.typeOfAccident}">사고 종류</th>
-										<td colspan="3" th:text="${tfcAcdntMaster.cmCd.cdNm}"></td>
+										<th th:text="#{accident.mngRegist.passengerEmail}"></th>
+										<td th:text="${pnrInfo.pnrEmail}"></td>
+										<th th:text="#{accident.mngRegist.passengerPhoneNumber}"></th>
+										<td th:text="${pnrInfo.pnrPno}"></td>
+									</tr>
+									<tr>
+										<th th:text="#{accident.mngRegist.passengerDamage}"></th>
+										<td th:text="${pnrInfo.pnrDmgCdNm}"></td>
+										<th th:text="#{accident.mngRegist.damageDiscription}"></th>
+										<td th:text="${pnrInfo.pnrDmgDesc}"></td>
+									</tr>
+									<tr>
+										<th th:text="#{accident.mngRegist.relationshipWithDriver}"></th>
+										<td th:text="${pnrInfo.pnrDrvrRltnCdNm}"></td>
+										<th th:text="#{accident.mngRegist.deathStatus}"></th>
+										<td th:text="${pnrInfo.pnrDeadYn == 'N' ? 'Not Death' : 'Death'}"></td>
 									</tr>
 								</tbody>
 							</table>
-							<button type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/acdnt/mng/list.do}'|" th:text="#{accident.mngRegist.list}" >목록</button>
-                            <button type="button" id="btnModify" class="btn btn-outline-warning" th:onclick="|location.href='@{/acdnt/mng/update.do(tfcAcdntId=${tfcAcdntMaster.tfcAcdntId})}'|" th:text="#{accident.mngDetail.modifyButton}">수정</button>
-						<div  id="mapContainer" style="width:100%; height:700px;">
-							<h6> latitude : <label id="acdntlat" th:text="${aDomain.lat}" th:value="${aDomain.lat}"/></h6>
-							<h6> longitude : <label id="acdntlng" th:text="${aDomain.lng}" th:value="${aDomain.lng}"/></h6>
-									<div id="map" style="width:100%; height:600px;" ></div>
-							</div>           
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+						</th:block>
+					</th:block>
+					<!-- 보행자 -->
+					<th:block th:if="${trgtInfo.acdntTrgtCd == 'ATT001'}">
+						<div class="rgTableTitle">
+							<h1><span th:text="#{accident.mngRegist.accidentParty}"></span> <span class="rgTableTitleNumber" th:text="${status.index+1}"></span></h1>
+						</div>
+						<table class="detail-table">
+						<colgroup>
+							<col width="15%">
+							<col width="35%">
+							<col width="15%">
+							<col width="35%">
+						</colgroup>
+						<tbody>
+							<tr>
+								<th th:text="#{accident.mngRegist.accidentTarget}"></th>
+								<td th:text="${trgtInfo.acdntTrgtCd == 'ATT000' ? 'Vehicle' : 'Person'}"></td>
+							</tr>
+							<tr>
+								<th th:text="#{accident.mngRegist.accidentDamage}"></th>
+								<td th:text="${trgtInfo.acdntDmgCdNm}"></td>
+								<th th:text="#{accident.mngRegist.accidentTargetPhoneNumber}"></th>
+								<td th:text="${trgtInfo.acdntTrgtPno}"></td>
+							</tr>
+							<tr>
+								<th th:text="#{accident.mngRegist.accidentTargetBirthday}"></th>
+								<td th:text="${trgtInfo.acdntTrgtBrth}"></td>
+								<th th:text="#{accident.mngRegist.accidentTargetName}"></th>
+								<td th:text="${trgtInfo.acdntTrgtNm}"></td>
+							</tr>
+							<tr>
+								<th th:text="#{accident.mngRegist.deathStatus}">사망여부</th>
+								<td colspan="3" th:text="${trgtInfo.deadYn == 'N' ? 'Not Death' : 'Death'}"></td>
+							</tr>
+						</tbody>
+					</table>
+					</th:block>
+				</th:block>
+			</form>
+			<div class="registor-btn-right">
+				<button type="button" id="btnGoList" class="sub-btn form-button" th:onclick="|location.href='@{/acdnt/mng/list.do}'|"
+					th:text="#{accident.mngRegist.list}">목록</button>
+				<button type="button" id="btnModify" class="main-btn form-button"
+					th:onclick="|location.href='@{/acdnt/mng/update.do(tfcAcdntId=${tfcAcdntMaster.tfcAcdntId})}'|"
+					th:text="#{accident.mngDetail.modifyButton}">수정</button>
+			</div>	
+	</div>
 </th:block>
+
 </html>
+<script th:inline="javascript">
+	const lng = /*[[${tfcAcdntMaster.lng}]]*/;
+	const lat = /*[[${tfcAcdntMaster.lat}]]*/;
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : lng,
+		center_lat : lat,
+		isInitDrawCenterMarker : true
+	});
+</script>

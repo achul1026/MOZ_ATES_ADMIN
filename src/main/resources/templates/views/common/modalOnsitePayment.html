@@ -1,0 +1,48 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<div class="modal-contents modal-company-group">
+	<div class="modal-title">
+		<div class="modal-title-text" th:text="#{penalty.penaltyDetail.modal.title}">On-Site Payment</div>
+		<img src="/images/close.png" id="modalOff" alt="close" class="close">
+	</div>
+	<div class="modal-body">
+		<div class="modalPayMentList">
+			<div class="ex-group-title" th:text="#{penalty.penaltyDetail.modal.amount}"></div>
+			<div class="modal-form-wrap flex">
+				<span class="totalPrice" th:text="${@mozatesCommonUtils.priceFmt(totalPrice,'MOZAMBIQUE_METICAL')}"></span>
+			</div>
+		</div>
+		<div class="modalPayMentList">
+			<div class="ex-group-title" th:text="#{penalty.penaltyDetail.modal.subTitle}">Payment Price</div>
+			<div class="modal-form-wrap">
+				<input type="text" id="pymntPrice" class="modal-search" onkeyup="keyupMeticalEvent(this)" th:placeholder="#{penalty.penaltyDetail.modal.placeholder.paymentAmount}">
+			</div>
+		</div>
+		<div class="modalPayMentList">
+			<div class="ex-group-title" th:text="#{penalty.penaltyDetail.modal.payerName}">PayerName</div>
+			<div class="modal-form-wrap">
+				<input type="text" id="payerNm" class="modal-search" th:placeholder="#{penalty.penaltyDetail.modal.placeholder.payerName}">
+			</div>
+		</div>
+		<div class="modalPayMentList">
+			<div class="ex-group-title" th:text="#{penalty.penaltyDetail.modal.paymentDetails}">Payment Details</div>
+			<div class="modal-form-wrap">
+				<input type="text" id="penaltydetail" class="modal-search" th:placeholder="#{penalty.penaltyDetail.modal.placeholder.paymentDetails}">
+			</div>
+		</div>
+		<div class="modalPayMentList">
+			<div class="ex-group-title" th:text="#{penalty.penaltyDetail.modal.paymentPlace}">Payment Place</div>
+			<div class="">
+	            <select id="placePymntId" required name="placePymntId" class="filter-select">
+	                <option th:each="placePaymentList : ${placePaymentList}" th:value="${placePaymentList.placePymntId}" th:text="${placePaymentList.placePymntNm}"></option>
+	            </select>
+	        </div>
+		</div>
+		<div class="modalPayMentList">
+			<div class="modalBtnWrap">
+			 	<button type="button" id="paymentBtn" class="modalBtn" th:text="#{penalty.penaltyDetail.modal.btn.payment}">수정</button>
+			 </div>
+		</div>
+	</div>
+</div>
+</html>

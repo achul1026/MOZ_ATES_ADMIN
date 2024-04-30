@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div id="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{portal.pp.title.modify}" id="detail-content-title">범칙금 납부처 수정</h1>
+
+        <form id="frmPenaltyPlaceModify">
+            <input type="hidden" name="placePymntId" th:value="${plPymntInfo.placePymntId}">
+        <table class="detail-table">
+            <colgroup>
+                <col width="15%">
+                <col width="85%">
+            </colgroup>
+            <tbody>
+            <tr>
+                <th>
+					<span class="requiredMark" th:text="#{portal.pp.name}">이름</span>
+				</th>
+                <td><input type="text" class="main-input" id="placePymntNm" name="placePymntNm" th:value="${plPymntInfo.placePymntNm}"></td>
+            </tr>
+<!--            <tr>-->
+<!--            	<th th:text="#{portal.pp.pymntPlaceType}">납부처 유형</th>-->
+<!--            	<td>-->
+<!--            		<select class="filter-select" id="placePymntType" name="placePymntType" th:field="${plPymntInfo.placePymntType}">-->
+<!--						<th:block th:each="cdItem : ${cdList}">-->
+<!--							<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}"></option>-->
+<!--						</th:block>-->
+<!--					</select>   -->
+<!--            	</td>-->
+<!--            </tr>-->
+            <tr>
+                <th>
+					<span class="requiredMark" th:text="#{portal.pp.dw}">주소</span>
+				</th>
+                <td>
+					<input type="text" class="main-input" id="placePymntAddr" name="placePymntAddr" th:value="${plPymntInfo.placePymntAddr}"><br><br>
+					<div id="map" class="detail-map"></div>
+				</td>            
+            </tr>
+            <tr>
+                <th>
+					<span class="requiredMark" th:text="#{portal.pp.contact}"></span>
+				</th>
+                <td><input type="text" class="main-input" name="placePymntCntc" id="placePymntCntc" th:value="${plPymntInfo.placePymntCntc}"></td>
+            </tr>
+            <tr>
+            	<th>
+					<span class="requiredMark" th:text="#{portal.pp.operatingTime}">운영시간</span>
+				</th>
+                <td>
+					<input type="time" class="input-time" name="operStrTm" id="operStrTm" th:value="${plPymntInfo.operStrTm}"> ~
+					<input type="time" class="input-time" name="operEndTm" id="operEndTm" th:value="${plPymntInfo.operEndTm}">
+				</td>
+            </tr>
+            <tr>
+            	<th>
+					<span class="requiredMark" th:text="#{portal.pp.closedDays}">휴무일</span>
+				</th>
+                <td>
+                	<input type="hidden" name="clsdDt" id="clsdDt" th:value="${plPymntInfo.clsdDt}">
+					<input type="checkbox" name="clsdChkBox" value="Mon">
+					<label>Mon</label>
+		
+					<input type="checkbox" name="clsdChkBox" value="Tue">
+					<label>Tue</label>
+		
+					<input type="checkbox" name="clsdChkBox" value="Wed">
+					<label>Wed</label>
+		
+					<input type="checkbox" name="clsdChkBox" value="Thu">
+					<label>Thu</label>
+		
+					<input type="checkbox" name="clsdChkBox" value="Fri">
+					<label>Fri</label>
+		
+					<input type="checkbox" name="clsdChkBox" value="Sat">
+					<label>Sat</label>
+		
+					<input type="checkbox" name="clsdChkBox" value="Sun">
+					<label>Sun</label>
+		
+					<input type="checkbox" name="clsdChkBox" value="Hol">
+					<label>Hol</label>
+				</td>
+            </tr>
+            <tr>
+                <th>
+					<span class="requiredMark" th:text="#{portal.pp.preName}">대표자 이름</span>
+				</th>
+                <td><input type="text" class="form-control main-input" id="txtPlacePymntRprsvNm" name="placePymntRprsvNm" th:value="${plPymntInfo.placePymntRprsvNm}"></td>
+            </tr>
+
+            </tbody>
+        </table>
+        </form>
+        <div class="btn-wrap-center">
+			<button th:text="#{portal.common.cancel}" type="button" id="btnGoList" class="sub-btn" onclick="javascript:window.history.back()">취소</button>
+      	    <button th:text="#{portal.common.modiCom}" type="button" id="btnModify" class="main-btn">수정완료</button>
+		</div>       
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+function saveInfo() {
+	new ModalBuilder().init().successBody('수정되었습니다.').footer(4,'확인',function(button, modal){modal.close();}).open();
+}
+	$(document).ready(function(){
+		var clsdDt = $("#clsdDt").val();
+		if(!isNull(clsdDt)){
+			var clsdDtArr = clsdDt.split(',');
+			for (const item of clsdDtArr){
+				$("input[name='clsdChkBox']").each(function(){
+					if($(this).val() == item){
+						$(this).prop('checked', true);
+					}
+				})				
+			}
+		}
+	})
+	
+    $("#btnModify").click(function () {
+		var clsdDt = '';
+		$("input[name='clsdChkBox']:checked").each(function(index, item){
+			if(index == 0){
+				clsdDt += $(item).val();			
+			}else{
+				clsdDt +=  ',' + $(item).val();					
+			}
+		})
+		$("#clsdDt").val(clsdDt);
+        $.ajax({
+            url: /*[[@{/portal/penaltyplace/update.ajax}]]*/ "/portal/penaltyplace/update.ajax",
+            type: "post",
+            data: $("#frmPenaltyPlaceModify").serialize(),
+            success: function(data){
+				var resultCode = data.code;
+				var resultMessage = data.message;
+                if(resultCode == '200'){
+					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){
+						modal.close();
+                    var baseUrl = /*[[@{/portal/penaltyplace/detail.do}]]*/ '';
+                    window.location.href=baseUrl+"?placePymntId="+[[${plPymntInfo.placePymntId}]];
+						}).open();
+                } else {
+                	new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+				}
+            }
+        });
+    })
+    
+   
+</script>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="#{accident.logDetail.title}">로그 상세 정보</h1>
+
+			<form id="frmLawRegist">
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+
+						<tr>
+							<th th:text="#{enforcement.log.common.reqId}">요청 ID</th>
+							<td th:text="${tfcAcdntChgHst.hstId}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.creationDate}">발생일자</th>
+							<td th:text="${#dates.format(tfcAcdntChgHst.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.successOrNot}">성공여부</th>
+							<td>
+								<th:block th:switch="${tfcAcdntChgHst.acdntPrcCd}">
+								  	<span th:case="TAS001">Regist</span>
+							    	<span th:case="TAS002">Update</span>
+								</th:block>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.logList.registerType}">작성자유형</th>
+							<td>
+								<th:block th:switch="${tfcAcdntChgHst.acdntRegTy}">
+								    <span th:case="RTC000">Super Admin</span>
+								    <span th:case="RTC001">Admin User</span>
+								    <span th:case="RTC002">Office Operator</span>
+								    <span th:case="RTC003">Police Operator</span>
+								    <span th:case="RTC004">Police Officer</span>
+								</th:block>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.requestor}">요청자</th>
+							<td>
+								<th:block th:if="${tfcAcdntChgHst.acdntRegTy == 'RTC000' || tfcAcdntChgHst.acdntRegTy == 'RTC001' || tfcAcdntChgHst.acdntRegTy == 'RTC002'}">
+									<span th:text="${tfcAcdntChgHst.webOprtr.OprtrNm}"></span>
+								</th:block>
+								<th:block th:if="${tfcAcdntChgHst.acdntRegTy == 'RTC003' || tfcAcdntChgHst.acdntRegTy == 'RTC004'}">
+									<span th:text="${tfcAcdntChgHst.polInfo.polNm}"></span>
+								</th:block>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.reqIp}">요청자 IP</th>
+							<td th:text="${tfcAcdntChgHst.crtrIpAddr}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.reqDetail}">요청 상세 내용</th>
+							<td th:text="${tfcAcdntChgHst.cmnt}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+	
+		<div class="btn-wrap-center">
+            <button type="button" class="sub-btn form-button" th:text="#{common.button.list}"
+            	th:onclick="|location.href='@{/siteMng/log/list.do(logType=${logType})}'|">List</button>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+
+
+</script>

@@ -1,14 +1,10 @@
 package com.moz.ates.traffic.admin.trafficequipmentmng;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,299 +12,569 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import com.moz.ates.traffic.admin.common.DataTableVO;
-import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpLog;
+import com.moz.ates.traffic.admin.common.CommonCdService;
+import com.moz.ates.traffic.admin.common.FeaturesLayerDTO;
+import com.moz.ates.traffic.admin.common.enums.MethodType;
+import com.moz.ates.traffic.admin.config.Authority;
+import com.moz.ates.traffic.common.component.Pagination;
+import com.moz.ates.traffic.common.component.validate.ValidateBuilder;
+import com.moz.ates.traffic.common.component.validate.ValidateChecker;
+import com.moz.ates.traffic.common.component.validate.ValidateResult;
+import com.moz.ates.traffic.common.entity.common.CommonResponse;
+import com.moz.ates.traffic.common.entity.common.MozCmCd;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpMaster;
-import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfEqpLogRepository;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityMaster;
+import com.moz.ates.traffic.common.util.MozatesCommonUtils;
 
 @Controller
 @RequestMapping(value = "/eqp")
 public class TrafficEqpController {
+
+	@Autowired
+	private TrafficEqpService trafficEqpService;
 	
-	@Value("${file.upload.path}")
-	private String applPath;
+	@Autowired
+	private CommonCdService commonCdService;
 	
-    @Autowired
-    private TrafficEqpService trafficEqpService;
 
-    /**
-     * @brief : 단속장비 리스트 화면
-     * @details : 단속장비 리스트 화면
-     * @author : KC.KIM
-     * @date : 2023.08.04
-     * @param : finePymntInfo
-     * @return : 
-     */
-    @GetMapping("/mng/list.do")
-    public String mngList(Model model, @ModelAttribute MozTfcEnfEqpMaster tfcEnfEqpMaster){
-        model.addAttribute("tfcEnfEqpMaster",tfcEnfEqpMaster);
-        model.addAttribute("eqpList", trafficEqpService.getEqpList(tfcEnfEqpMaster));
-        model.addAttribute("totalCnt", trafficEqpService.getEqpListCnt(tfcEnfEqpMaster));
-        return "views/equipmentmng/eqpMngList";
-    }
+	/**
+	 * @brief : 단속장비 리스트 화면
+	 * @details : 단속장비 리스트 화면
+	 * @author : KC.KIM
+	 * @date : 2023.08.04
+	 * @param : finePymntInfo
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping("/mng/list.do")
+	public String mngList(Model model, String pageType) {
+		
+		model.addAttribute("pageType", pageType);
+		return "views/equipmentmng/eqpMngList";
+	}
 
-//    /**
-//     * @brief : 단속장비 리스트 조회
-//     * @details : 단속장비 리스트 조회
-//     * @author : KC.KIM
-//     * @date : 2023.08.04
-//     * @param : finePymntInfo
-//     * @return : DataTableVO
-//     */
-//    @PostMapping(value = "mngListAjax")
-//    @ResponseBody
-//    public DataTableVO mngListAjax(@ModelAttribute MozTfcEnfEqpMaster tfcEnfEqpMaster){
-//
-//        return trafficEqpService.getMngListDatatable(tfcEnfEqpMaster);
-//    }
+	/**
+	  * @Method Name : mngListMapAjax
+	  * @작성일 : 2024. 1. 10.
+	  * @작성자 : IK.MOON
+	  * @Method 설명 :
+	  * @param model
+	  * @param tfcEnfEqpMaster
+	  * @return
+	  */
+	@Authority(type = MethodType.READ)
+	@RequestMapping(value = "/mng/eqpMngMapAjax")
+	public String mngListMapAjax(Model model, @ModelAttribute MozTfcEnfEqpMaster tfcEnfEqpMaster) {
+		tfcEnfEqpMaster.setUseYn("Y");
 
-    /**
-     * @brief : 단속장비 등록 화면
-     * @details : 단속장비 등록 화면
-     * @author : KC.KIM
-     * @date : 2023.08.04
-     * @param : 
-     * @return : 
-     */
-    @GetMapping("/mng/save.do")
-    public String mngRegist(Model model){
+		int page = tfcEnfEqpMaster.getPage();
+		int totalCnt = trafficEqpService.getEqpListCnt(tfcEnfEqpMaster);
+		Pagination pagination = new Pagination(totalCnt, page, 5, 5);
+		
+		tfcEnfEqpMaster.setLength(5);
+		tfcEnfEqpMaster.setStart((page - 1) * pagination.getPageSize());
+		
+		model.addAttribute("tfcEnfEqpMaster", tfcEnfEqpMaster);
+		model.addAttribute("eqpList", trafficEqpService.getEqpList(tfcEnfEqpMaster));
+		model.addAttribute("pagination", pagination);
+		return "views/equipmentmng/eqpMngMapAjax";
+	}
 
-        return "views/equipmentmng/eqpMngRegist";
-    }
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/mng/facMngGeojson.ajax")
+	public @ResponseBody
+	FeaturesLayerDTO getFacilityGeoJson(Map<String,String> param) {
+		return trafficEqpService.getFacilityGeoJson(param);
+	}
+	
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/mng/enfMngGeojson.ajax")
+	public @ResponseBody
+	FeaturesLayerDTO getEnforcementGeoJson(Map<String,String> param) {
+		return trafficEqpService.getEnforcementGeoJson(param);
+	}
+	
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/mng/actMngGeojson.ajax")
+	public @ResponseBody
+	FeaturesLayerDTO getAccidentGeoJson(Map<String,String> param) {
+		return trafficEqpService.getAccidentGeoJson(param);
+	}
+	
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/mng/eqpMngGeojson.ajax")
+	public @ResponseBody
+	FeaturesLayerDTO getEquipmentGeoJson(Map<String,String> param) {
+		param.put("eqpTy", "EQT001");
+		param.put("useYn", "Y");
+		return trafficEqpService.getEquipmentGeoJson(param);
+	}
+	
+	/**
+	 * @brief : 단속장비 리스트 화면
+	 * @details : 단속장비 리스트 화면
+	 * @author : IK.MOON
+	 * @date : 2024.01.10
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@RequestMapping(value = "/mng/eqpMngListAjax")
+	public String mngListAjax(Model model, @ModelAttribute MozTfcEnfEqpMaster tfcEnfEqpMaster) {
+		tfcEnfEqpMaster.setUseYn(null);
+		
+		int page = tfcEnfEqpMaster.getPage();
+		int totalCnt = trafficEqpService.getEqpListCnt(tfcEnfEqpMaster);
+		Pagination pagination = new Pagination(totalCnt, page);
+		
+		tfcEnfEqpMaster.setStart((page - 1) * pagination.getPageSize());
+		
+		model.addAttribute("tfcEnfEqpMaster", tfcEnfEqpMaster);
+		model.addAttribute("eqpList", trafficEqpService.getEqpList(tfcEnfEqpMaster));
+		model.addAttribute("pagination", pagination);
+		return "views/equipmentmng/eqpMngListAjax";
+	}
+	
+	/**
+	 * @brief : 단속장비 등록 화면
+	 * @details : 단속장비 등록 화면
+	 * @author : KC.KIM
+	 * @date : 2023.08.04
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping("/mng/save.do")
+	public String mngRegist(Model model) {
+		List<MozCmCd> cdList = commonCdService.getCdList("EQUIPMENT_TYPE");
+		model.addAttribute("cdList", cdList);
+		return "views/equipmentmng/eqpMngRegist";
+	}
 
-    /**
-     * @brief : 단속장비 등록 
-     * @details : 단속장비 등록 
-     * @author : KC.KIM
-     * @date : 2023.08.04
-     * @param : 
-     * @return : 
-     */
-    @PostMapping("/mng/save.ajax")
-    @ResponseBody
-    public Map<String,Object> mngRegistAjax(@ModelAttribute MozTfcEnfEqpMaster tfcEnfEqpMaster,
-    		@RequestParam("uploadFile") MultipartFile[] imageFile) throws IOException{
-        Map<String, Object> result = new HashMap<>();
+	/**
+	 * @brief : 단속장비 등록
+	 * @details : 단속장비 등록
+	 * @author : KC.KIM
+	 * @date : 2023.08.04
+	 * @param : uploadFiles
+	 * @param : tfcEnfMaster
+	 * @return :
+	 */
+	@Authority(type = MethodType.CREATE)
+	@PostMapping("/mng/save.ajax")
+	public @ResponseBody CommonResponse<?> mngRegistAjax(MozTfcEnfEqpMaster tfcEnfEqpMaster
+			, @RequestPart(required = false) MultipartFile[] uploadFiles){
+		
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfEqpMaster);
 
-        int dupliCnt = trafficEqpService.getEqpDupliCnt(tfcEnfEqpMaster);
-        String uuid = "";
-        String DBfileName = "";
-        String fileName = "";
-        String projectPath = System.getProperty("user.dir")+applPath;
-        File makeFolder = new File(projectPath);
-        String default_Path = projectPath;
-        String default_Name = "notimage.png";
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("eqpTy", new ValidateChecker().setRequired())
+				.addRule("eqpNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment Name cannot be more than 200 characters"))
+				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "Model Name cannot be more than 200 characters"))
+				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "Manufacturer cannot be more than 200 characters"))
+				.addRule("instlYn", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Installation location cannot be more than 200 characters"))
+				.addRule("instlDate", new ValidateChecker().setRequired())
+				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "Installer cannot be more than 200 characters"))
+				.addRule("crOprtrId", new ValidateChecker().setRequired())
+				.isValid();
+		
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
+		}
+		
+		try {
+			trafficEqpService.registEqp(tfcEnfEqpMaster, uploadFiles);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Equipment has been registered.");
+	}
 
-        
-        if(!makeFolder.exists()) {
-        	makeFolder.mkdir();
-        	System.out.println("폴더 생성 성공");
-        }else {
-        	System.out.println("해당 폴더가 존재 합니다");
-        }
-        for(int i=0;i<imageFile.length;i++) {
-        	uuid = UUID.randomUUID().toString();
-        	fileName = uuid+"_"+imageFile[i].getOriginalFilename();
-        	if(i==imageFile.length-1) {
-        		DBfileName += fileName;
-        	} else {
-        		DBfileName += fileName+",";
-        	}
-            String file_path = projectPath+fileName;        
-            File file = new File(file_path);        
-            if(!imageFile[i].isEmpty()) {
-                FileOutputStream fo = new FileOutputStream(file);
-                byte[] fileBytes = imageFile[i].getBytes();
-                fo.write(fileBytes);
-                fo.close();
-                tfcEnfEqpMaster.setTfcEnfEqpImagepath(file_path);
-                tfcEnfEqpMaster.setTfcEnfEqpImageorgn(DBfileName);
-            } else {
-            	tfcEnfEqpMaster.setTfcEnfEqpImagepath(default_Path);
-                tfcEnfEqpMaster.setTfcEnfEqpImageorgn(default_Name);
-            }
-        }
+	/**
+	 * @brief : 단속장비 상세 조회
+	 * @details : 단속장비 상세 조회
+	 * @author : KC.KIM
+	 * @date : 2023.08.04
+	 * @param : tfcEnfEqpId
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping("/mng/detail.do")
+	public String mngDetail(Model model, @RequestParam("tfcEnfEqpId") String tfcEnfEqpId) {
+		MozTfcEnfEqpMaster tfcEnfEqpMaster = trafficEqpService.getEqpDetail(tfcEnfEqpId);
+		model.addAttribute("tfcEnfEqpMaster", tfcEnfEqpMaster);
+		model.addAttribute("eqpMntnHstList", trafficEqpService.getEqpMntnHstList(tfcEnfEqpId));
+		return "views/equipmentmng/eqpMngDetail";
+	}
+	
+	/**
+	 * @brief : 단속장비 수정 화면
+	 * @details : 단속장비 수정 화면
+	 * @author : KC.KIM
+	 * @date : 2023.08.04
+	 * @param : tfcEnfEqpId
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping("/mng/update.do")
+	public String mngModify(Model model, @RequestParam("tfcEnfEqpId") String tfcEnfEqpId) {
 
-        if(dupliCnt > 0){
-            result.put("code", "-1");
-            result.put("msg", "중복된 장비번호 입니다.");
-        }else{
-            try {
-                trafficEqpService.registEqp(tfcEnfEqpMaster);
-                result.put("code", "1");
-            }catch (Exception e){
-                result.put("code", "0");
-                result.put("msg", "error");
-            }
-        }
-        
+		MozTfcEnfEqpMaster tfcEnfEqpMaster = trafficEqpService.getEqpDetail(tfcEnfEqpId);
+		List<MozCmCd> cdList = commonCdService.getCdList("EQUIPMENT_TYPE");
+		
+		model.addAttribute("cdList", cdList);
+		model.addAttribute("tfcEnfEqpMaster", tfcEnfEqpMaster);
+		model.addAttribute("eqpMntnHstList", trafficEqpService.getEqpMntnHstList(tfcEnfEqpId));
+		model.addAttribute("mntnSttsCdList", commonCdService.getCdList("MNTN_STTS_CD"));
+		model.addAttribute("mntnTypeCdList", commonCdService.getCdList("MNTN_TYPE_CD"));
+				
+		return "views/equipmentmng/eqpMngModify";
+	}
 
+	/**
+	 * @brief : 단속장비 정보 수정
+	 * @details : 단속장비 정보 수정
+	 * @author : KC.KIM
+	 * @date : 2023.08.04
+	 * @param : tfcEnfEqpMaster
+	 * @param : uploadFiles
+	 * @return :
+	 */
+	@Authority(type = MethodType.UPDATE)
+	@PostMapping("/mng/update.ajax")
+	public @ResponseBody CommonResponse<?> mngModifyAjax(@ModelAttribute MozTfcEnfEqpMaster tfcEnfEqpMaster,
+			@RequestPart(required = false) MultipartFile[] uploadFiles){
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfEqpMaster);
 
-        return result;
-    }
-    
-    /**
-     * @brief : 단속장비 상세 조회
-     * @details : 단속장비 상세 조회
-     * @author : KC.KIM
-     * @date : 2023.08.04
-     * @param : tfcEnfEqpId
-     * @return : 
-     */
-    @GetMapping("/mng/detail.do")
-    public String mngDetail(Model model, @RequestParam("tfcEnfEqpId")String tfcEnfEqpId){
-    	MozTfcEnfEqpMaster tfcEnfEqpMaster = trafficEqpService.getEqpDetail(tfcEnfEqpId);
-        model.addAttribute("tfcEnfEqpMaster",tfcEnfEqpMaster);
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("eqpTy", new ValidateChecker().setRequired())
+				.addRule("eqpNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment Name cannot be more than 200 characters"))
+				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "Model Name cannot be more than 200 characters"))
+				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "Manufacturer cannot be more than 200 characters"))
+				.addRule("instlYn", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Installation location cannot be more than 200 characters"))
+				.addRule("instlDate", new ValidateChecker().setRequired())
+				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "Installer cannot be more than 200 characters"))
+				.addRule("crOprtrId", new ValidateChecker().setRequired())
+				.isValid();
+		
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
+		}
+		
+		try {
+			trafficEqpService.updateEqp(tfcEnfEqpMaster, uploadFiles);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Equipment has been modified.");
+	}
+	
+	/**
+	 * @brief : 단속장비 삭제
+	 * @details : 단속장비 삭제
+	 * @author : KC.KIM
+	 * @date : 2024.03.04
+	 * @param : tfcEnfEqpId
+	 * @return :
+	 */
+	@Authority(type = MethodType.DELETE)
+	@PostMapping("/mng/delete.ajax")
+	@ResponseBody
+	public CommonResponse<?> noticeDeleteAjax(@RequestParam("tfcEnfEqpId") String tfcEnfEqpId) {
 
-        return "views/equipmentmng/eqpMngDetail";
-    }
-    
-    /**
-     * @brief : 단속장비 수정 화면
-     * @details : 단속장비 수정 화면
-     * @author : KC.KIM
-     * @date : 2023.08.04
-     * @param : tfcEnfEqpId
-     * @return : 
-     */
-    @GetMapping("/mng/update.do")
-    public String mngModify(Model model, @RequestParam("tfcEnfEqpId")String tfcEnfEqpId){
+		MozTfcEnfEqpMaster tfcEnfEqpMaster = new MozTfcEnfEqpMaster();
+		tfcEnfEqpMaster.setTfcEnfEqpId(tfcEnfEqpId);
 
-    	MozTfcEnfEqpMaster tfcEnfEqpMaster = trafficEqpService.getEqpDetail(tfcEnfEqpId);
-        model.addAttribute("tfcEnfEqpMaster",tfcEnfEqpMaster);
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfEqpMaster);
 
-        return "views/equipmentmng/eqpMngModify";
-    }
-    
-    /**
-     * @brief : 단속장비 정보 수정
-     * @details : 단속장비 정보 수정
-     * @author : KC.KIM
-     * @date : 2023.08.04
-     * @param : tfcEnfEqpMaster
-     * @return : 
-     */
-    @PostMapping("/mng/update.ajax")
-    @ResponseBody
-    public Map<String, Object> mngModifyAjax(@ModelAttribute MozTfcEnfEqpMaster tfcEnfEqpMaster, 
-    		@RequestParam("uploadFile") MultipartFile[] imageFile) throws IOException{
-        Map<String, Object> result = new HashMap<>();
+		ValidateResult dtoValidatorResult =
+				dtoValidator.addRule("tfcEnfEqpId", new ValidateChecker().setRequired()).isValid();
 
-        if(!imageFile[0].isEmpty()) {
-            String uuid = UUID.randomUUID().toString();
-            String DBfileName = "";
-            String fileName = "";
-            String projectPath = System.getProperty("user.dir")+applPath;
-            File makeFolder = new File(projectPath);
-            String default_Path = projectPath;
-            String default_Name = "notimage.png";
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,
+					dtoValidatorResult.getMessage());
+		}
 
-            
-            if(!makeFolder.exists()) {
-            	makeFolder.mkdir();
-            	System.out.println("폴더 생성 성공");
-            }else {
-            	System.out.println("해당 폴더가 존재 합니다");
-            }
-            for(int i=0;i<imageFile.length;i++) {
-            	fileName = uuid+"_"+imageFile[i].getOriginalFilename();
-            	if(i==imageFile.length-1) {
-            		DBfileName += fileName;
-            	} else {
-            		DBfileName += fileName+",";
-            	}
-                String file_path = projectPath+fileName;        
-                File file = new File(file_path);        
-                if(!imageFile[i].isEmpty()) {
-                    FileOutputStream fo = new FileOutputStream(file);
-                    byte[] fileBytes = imageFile[i].getBytes();
-                    fo.write(fileBytes);
-                    fo.close();
-                    tfcEnfEqpMaster.setTfcEnfEqpImagepath(file_path);
-                    tfcEnfEqpMaster.setTfcEnfEqpImageorgn(DBfileName);
-                } else {
-                	tfcEnfEqpMaster.setTfcEnfEqpImagepath(default_Path);
-                    tfcEnfEqpMaster.setTfcEnfEqpImageorgn(default_Name);
-                }
-            }
-        } else {
-        	System.out.println("사진파일 수정x");
-        }
-        
-        try {
-            trafficEqpService.updateEqp(tfcEnfEqpMaster);
-            result.put("code", "1");
-        }catch (Exception e){
-            result.put("code", "0");
-        }
-        
-        return result;
-    }
-    
-    /**
-     * @brief : 단속장비 이미지 삭제
-     * @details : 단속장비 이미지 삭제
-     * @author : KC.KIM
-     * @date : 2023.08.04
-     * @param : tfcEnfEqpMaster
-     * @return : 
-     */
-    @PostMapping(value = "/mng/image/delete.ajax")
-    public String imageDelete(Model model, @ModelAttribute MozTfcEnfEqpMaster tfcEnfEqpMaster) {
-        String default_Name = "notimage.png";
-        String default_Path = System.getProperty("user.dir")+applPath;
-        tfcEnfEqpMaster.setTfcEnfEqpImageorgn(default_Name);
-        tfcEnfEqpMaster.setTfcEnfEqpImagepath(default_Path);
-    	trafficEqpService.updateEqpImage(tfcEnfEqpMaster);    	
+		try {
+			trafficEqpService.deleteTfcEnfEqpMatser(tfcEnfEqpId);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
 
-    	model.addAttribute("tfcEnfEqpMaster", tfcEnfEqpMaster);
-    	return "views/equipmentmng/eqpMngModify";
-    }
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This equipment information has been deleted.");
+	}
+	
+	/**
+	 * @brief : 교통시설물 유지보수 이력 삭제
+	 * @details : 교통시설물 유지보수 이력 삭제
+	 * @author : KY.LEE
+	 * @date : 2024.04.24
+	 * @param : mntnHstId
+	 */
+	@Authority(type = MethodType.DELETE)
+	@PostMapping("/mng/hstDelete.ajax")
+	@ResponseBody
+	public CommonResponse<?> hstDelete(@RequestParam("mntnHstId") String mntnHstId) {
 
-    /**
-     * @brief : 단속장비 로그 리스트 화면
-     * @details : 단속장비 로그 리스트 화면
-     * @author : KC.KIM
-     * @date : 2023.08.04
-     * @param : tfcEnfEqpMaster
-     * @return : 
-     */
-    @GetMapping("/log/list.do")
-    public String logList(Model model,@ModelAttribute MozTfcEnfEqpLog tfcEnfEqpLog){
+		if (MozatesCommonUtils.isNull(mntnHstId)) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Delete Failed");
+		}
 
-        model.addAttribute("tfcEnfEqpLog", tfcEnfEqpLog);
-        model.addAttribute("eqpLogList", trafficEqpService.getEqpLogList(tfcEnfEqpLog));
-        model.addAttribute("totalCnt", trafficEqpService.getEqpLogListCnt(tfcEnfEqpLog));
-        return "views/equipmentmng/eqpLogList";
-    }
+		try {
+			trafficEqpService.deleteEqpHist(mntnHstId);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
 
-    /**
-     * @brief : 교통시설물 관리 리스트 화면
-     * @details : 교통시설물 관리 리스트 화면
-     * @author : KC.KIM
-     * @date : 2023.08.17
-     * @param : 
-     * @return : 
-     */
-    @RequestMapping(value = "/facility/mng/list.do")
-    public String facilityMngList(Model model){
-        return "views/equipmentmng/facilityMngList";
-        
-    }
-    
-    /**
-     * @brief : 교통시설물 관리 로그 리스트 화면
-     * @details : 교통시설물 관리 로그 리스트 화면
-     * @author : KC.KIM
-     * @date : 2023.08.17
-     * @param : 
-     * @return : 
-     */
-    @RequestMapping(value = "/facility/log/list.do")
-    public String facilityLogList(Model model){
-        return "views/equipmentmng/facilityLogList";
-    }
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Deleted Success");
+	}
+
+	/**
+	 * @brief : 교통시설물 관리 리스트 화면
+	 * @details : 교통시설물 관리 리스트 화면
+	 * @author : KC.KIM
+	 * @date : 2023.08.17
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping("/facility/list.do")
+	public String facilityMngList(Model model, String pageType) {
+		model.addAttribute("pageType", pageType);
+		return "views/equipmentmng/facilityMngList";
+	}
+	
+	/**
+	 * @brief : 교통시설물 관리 등록 화면
+	 * @details : 교통시설물 관리 등록 화면
+	 * @author : IK.MOON
+	 * @date : 2024.01.10
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/facility/save.do")
+	public String facilityMngRegist(Model model) {
+		List<MozCmCd> cdList = commonCdService.getCdList("TRAFFIC_FACILITY_TYPE");
+		model.addAttribute("cdList", cdList);
+		return "views/equipmentmng/facilityMngRegist";
+	}
+	
+	/**
+	 * @brief : 교통시설물 등록
+	 * @details : 교통시설물 등록
+	 * @author : KC.KIM
+	 * @date : 2023.08.04
+	 * @param : tfcFacilityMaster
+	 * @param : uploadFiles
+	 * @return :
+	 */
+	@Authority(type = MethodType.CREATE)
+	@PostMapping("/facility/save.ajax")
+	public @ResponseBody CommonResponse<?> facilityRegistAjax(MozTfcFacilityMaster tfcFacilityMaster
+			, @RequestPart(required = false) MultipartFile[] uploadFiles){
+		
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcFacilityMaster);
+
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("facilityTy", new ValidateChecker().setRequired())
+				.addRule("facilityNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("instlYn", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("instlDate", new ValidateChecker().setRequired())
+				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("crOprtrId", new ValidateChecker().setRequired())
+				.isValid();
+		
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
+		}
+		
+		try {
+			trafficEqpService.registTfcFacility(tfcFacilityMaster, uploadFiles);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Facility has been registered.");
+	}
+	
+	/**
+	 * @brief : 교통시설물 관리 상세 화면
+	 * @details : 교통시설물 관리 상세 화면
+	 * @author : IK.MOON
+	 * @date : 2024.01.10
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/facility/detail.do")
+	public String facilityMngDetail(Model model, @RequestParam("tfcFacilityId") String tfcFacilityId) {
+		MozTfcFacilityMaster tfcFacilityMaster = trafficEqpService.getFacilityDetail(tfcFacilityId);
+		model.addAttribute("tfcFacilityMaster", tfcFacilityMaster);
+		return "views/equipmentmng/facilityMngDetail";
+	}
+	
+	/**
+	 * @brief : 교통시설물 관리 지도 화면
+	 * @details : 교통시설물 관리 지도 화면
+	 * @author : IK.MOON
+	 * @date : 2024.01.10
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@RequestMapping(value = "/facility/facilityMngMapAjax")
+	public String facilityMngMapAjax(Model model, @ModelAttribute MozTfcFacilityMaster tfcFacilityMaster) {
+		int page = tfcFacilityMaster.getPage();
+		int totalCnt = trafficEqpService.getFacilityListCnt(tfcFacilityMaster);
+		Pagination pagination = new Pagination(totalCnt, page, 5, 5);
+		
+		tfcFacilityMaster.setLength(5);
+		tfcFacilityMaster.setStart((page - 1) * pagination.getPageSize());
+		
+		model.addAttribute("pagination", pagination);
+		model.addAttribute("facilityList", trafficEqpService.getFacilityList(tfcFacilityMaster));
+		model.addAttribute("tfcFacilityMaster", tfcFacilityMaster);
+		return "views/equipmentmng/facilityMngMapAjax";
+	}
+	
+	/**
+	 * @brief : 교통시설물 관리 리스트 화면
+	 * @details : 교통시설물 관리 리스트 화면
+	 * @author : IK.MOON
+	 * @date : 2024.01.10
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@PostMapping("/facility/facilityMngListAjax")
+	public String facilityMngListAjax(Model model, @ModelAttribute MozTfcFacilityMaster tfcFacilityMaster) {
+		int page = tfcFacilityMaster.getPage();
+		int totalCnt = trafficEqpService.getFacilityListCnt(tfcFacilityMaster);
+		Pagination pagination = new Pagination(totalCnt, page);
+		
+		tfcFacilityMaster.setStart((page - 1) * pagination.getPageSize());
+		
+		model.addAttribute("facilityInfo", tfcFacilityMaster);
+		model.addAttribute("facilityList", trafficEqpService.getFacilityList(tfcFacilityMaster));
+		model.addAttribute("pagination", pagination);
+		return "views/equipmentmng/facilityMngListAjax";
+	}
+	
+	/**
+	 * @brief : 교통시설물 삭제
+	 * @details : 교통시설물 삭제
+	 * @author : KC.KIM
+	 * @date : 2024.03.04
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.DELETE)
+	@PostMapping("/facility/delete.ajax")
+	@ResponseBody
+	public CommonResponse<?> facilityDeleteAjax(@RequestParam("tfcFacilityId") String tfcFacilityId) {
+
+		MozTfcFacilityMaster tfcFacilityMaster = new MozTfcFacilityMaster();
+		tfcFacilityMaster.setTfcFacilityId(tfcFacilityId);
+
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcFacilityMaster);
+
+		ValidateResult dtoValidatorResult =
+				dtoValidator.addRule("tfcFacilityId", new ValidateChecker().setRequired()).isValid();
+
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,
+					dtoValidatorResult.getMessage());
+		}
+
+		try {
+			trafficEqpService.deleteTfcFacilityMaster(tfcFacilityId);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Facility information has been deleted.");
+	}
+	
+	/**
+	 * @brief : 단속장비 수정 화면
+	 * @details : 단속장비 수정 화면
+	 * @author : KC.KIM
+	 * @date : 2023.08.04
+	 * @param : tfcEnfEqpId
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping("/facility/update.do")
+	public String facilityModify(Model model, @RequestParam("tfcFacilityId") String tfcFacilityId) {
+
+		MozTfcFacilityMaster tfcFacilityMaster = trafficEqpService.getFacilityDetail(tfcFacilityId);
+		List<MozCmCd> cdList = commonCdService.getCdList("TRAFFIC_FACILITY_TYPE");
+		
+		model.addAttribute("cdList", cdList);
+		model.addAttribute("tfcFacilityMaster", tfcFacilityMaster);
+		
+		return "views/equipmentmng/facilityMngModify";
+	}
+	
+	/**
+	 * @brief : 단속장비 수정
+	 * @details : 단속장비 수정
+	 * @author : KC.KIM
+	 * @date : 2024.03.04
+	 * @param : tfcEnfEqpMaster
+	 * @param : uploadFiles
+	 * @return :
+	 */
+	@Authority(type = MethodType.UPDATE)
+	@PostMapping("/facility/update.ajax")
+	public @ResponseBody CommonResponse<?> facilityModifyAjax(@ModelAttribute MozTfcFacilityMaster tfcFacilityMaster,
+			@RequestPart(required = false) MultipartFile[] uploadFiles){
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcFacilityMaster);
+
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("facilityTy", new ValidateChecker().setRequired())
+				.addRule("facilityNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("instlYn", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("instlDate", new ValidateChecker().setRequired())
+				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("crOprtrId", new ValidateChecker().setRequired())
+				.isValid();
+		
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
+		}
+		
+		try {
+			trafficEqpService.updateMoztfcFacility(tfcFacilityMaster, uploadFiles);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic facility has been modified.");
+	}
+
+	/**
+	 * @brief : 교통시설물 관리 로그 리스트 화면
+	 * @details : 교통시설물 관리 로그 리스트 화면
+	 * @author : KC.KIM
+	 * @date : 2023.08.17
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.READ)
+	@RequestMapping(value = "/facilitylog/list.do")
+	public String facilityLogList(Model model) {
+		return "views/equipmentmng/facilityLogList";
+	}
 }

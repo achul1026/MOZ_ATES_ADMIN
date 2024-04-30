@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+
+		<div class="detail-title" th:text="|#{administ.common.caseNumber} : ${administDipInfo.administDipId}|">
+			접수번호 (현재 임의로 pk 노출 기획 의도 질문 후 수정 필요)
+		</div>
+
+		<div class="detail-table-wrap">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{administ.common.driverName}">이름</th>
+						<td th:text="${administDipInfo.vioInfo.vioNm}"></td>
+						<th th:text="#{administ.common.driverPhone}">연락처</th>
+						<td th:text="${administDipInfo.vioInfo.vioPno}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{administ.common.driverAddress}">주소</th>
+						<td th:text="${administDipInfo.vioInfo.vioAddr}"></td>
+						<th>E-mail</th>
+						<td th:text="${administDipInfo.vioInfo.vioEmail}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{administ.common.caseType}">사건유형</th>
+						<td th:text="${administDipInfo.cmCd.cdNm}"></td>
+						<th th:text="#{administ.common.courtInCharge}">담당법원</th>
+						<td th:text="${administDipInfo.court}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{administ.common.penalty}">과징금</th>
+						<td th:text="${administDipInfo.penaltyPrice}"></td>
+						<th th:text="#{administ.common.transferDate}">이송일자</th>
+						<td th:text="${administDipInfo.proHoldDt}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{administ.common.retentionSttts}">영치여부</th>
+						<td th:text="${administDipInfo.proHoldYn}">영치</td>
+						<th th:text="#{administ.common.retentionAddress}">영치주소</th>
+						<td th:text="${administDipInfo.proHoldAddr}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{administ.mngDetail.caseDetail}">상세 내용</th>
+						<td rowspan="3" th:text="${administDipInfo.dipDesc}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<form id="courtDcsnModifyForm">
+			<input type="hidden" name="administDipId" th:value="${administDipInfo.administDipId}">
+			<input type="hidden" name="courtDcsnId" th:value="${courtDcsnInfo.courtDcsnId}">
+			<div class="detail-table-wrap">
+				<div class="detail-title" th:text="#{administ.mngDetail.judgeResults}">
+					법원판결결과
+				</div>
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{administ.mngDetail.judgeInCharge}">판결담당자</span>
+							</th>
+							<td><input type="text" class="main-input" name="courtMngr" placeholder="Please Enter Judge" th:value="${courtDcsnInfo?.courtMngr}"/></td>
+							<th>
+								<span class="requiredMark" th:text="#{administ.common.courtInCharge}">법원명</span>
+							</th>
+							<td><input type="text" class="main-input" name="courtNm" placeholder="Please Enter Department" th:value="${courtDcsnInfo?.courtNm}"/></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{administ.common.handlingStts}">판결완료여부</span>
+							</th>
+							<td>
+								<select name="dcsnStts" class="filter-select">
+									<option value="DSC001" th:selected="${courtDcsnInfo?.dcsnStts eq 'DSC001'}">완료</option>									
+									<option value="DSC002" th:selected="${courtDcsnInfo?.dcsnStts eq 'DSC002'}">처리중</option>									
+								</select>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{administ.mngDetail.judgeFineInfo}">벌금정보</span>
+							</th>
+							<td><input type="text" class="main-input" name="finePrice" placeholder="Please Enter Fine Amount" th:value="${courtDcsnInfo?.finePrice}"/></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{administ.common.caseType}">소송유형</span>
+							</th>
+							<td><input type="text" class="main-input" name="lawsuitType" placeholder="Please Enter Case Type" th:value="${courtDcsnInfo?.lawsuitType}"/></td>
+							<th>
+								<span class="requiredMark" th:text="#{administ.mngDetail.judgeViolation}">위반 법률명</span>
+							</th>
+							<td><input type="text" class="main-input" name="lawViolatedNm" placeholder="Please Enter Violation" th:value="${courtDcsnInfo?.lawViolatedNm}"/></td>
+						</tr>
+						<tr>
+							<th th:text="#{administ.mngDetail.judgeDetail}">상세 내용</th>
+							<td colspan="3"><textarea class="detail-table-textarea" name="dscnContent" placeholder="Please Enter Details" th:value="${courtDcsnInfo?.dscnContent}"></textarea></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</form>
+		<div class="registor-btn-right">
+			<button type="button" id="btnGoList" class="sub-btn form-button" th:text="#{administ.mngDetail.listButton}"  th:onclick="|location.href='@{/administCourt/mng/list.do}'|">목록</button>
+			<button type="button" class="main-btn form-button" id="courtDcsnModifyBtn" th:text="#{administ.mngDetail.modifyButton}" onclick="saveInfo()"></button>
+		</div>
+	</div>
+</th:block>
+</html>
+<script>
+	function saveInfo() {
+	new ModalBuilder().init().successBody('수정되었습니다.').footer(4,'확인',function(button, modal){modal.close();}).open();
+}
+	
+	
+	$("#courtDcsnModifyBtn").on('click', function(){
+		let administDipId = $("input[name='administDipId']").val();
+		$.ajax({
+            url: "/administCourt/mng/update.ajax",
+            type: "post",
+            data: $("#courtDcsnModifyForm").serialize(),
+            success: function(data){
+                if(data.code == "200"){
+                    alert(data.message);
+                    window.location.href="/administCourt/mng/detail.do?administDipId="+administDipId;
+                }else{
+                    alert(data.message);
+                }
+            }
+        });
+	})
+</script>

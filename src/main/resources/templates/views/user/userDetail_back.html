@@ -8,78 +8,78 @@
     <div class="container-fluid">
 
         <!-- Page Heading -->
-        <h1 th:text="#{admin.admin.title.detail}" class="h3 mb-4 text-gray-800">관리자 상세정보</h1>
+        <h1 th:text="#{admin.admin.title.detail}" class="">관리자 상세정보</h1>
 
-        <div class="row">
+        <div class="">
 
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 th:text="#{admin.admin.detail}" class="m-0 font-weight-bold text-primary" >상세</h6>
+            <div class="">
+                <div class="">
+                    <div class="">
+                        <h6 th:text="#{admin.admin.detail}" class="" >상세</h6>
                     </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
+                    <div class="">
+                        <div class="">
+                            <table class="">
                                 <colgroup>
                                     <col width="20%">
                                     <col width="30%">
                                     <col width="20%">
                                     <col width="30%">
-
                                 </colgroup>
                                 <tbody>
-                                <tr>
-                                    <th th:text="#{admin.admin.id}">아이디</th>
-                                    <td th:text="${webOprtr.oprtrAccountId}"></td>
-                                    <th th:text="#{admin.admin.email}">E-mail</th>
-                                    <td th:text="${webOprtr.oprtrEmail}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{admin.admin.ranking}">등급</th>
-                                    <td>
-                                        <th:block th:if="${webOprtr.oprtrPermission}=='sup'" th:text="#{admin.admin.superAdmin}">
-                                            슈퍼어드민
-                                        </th:block>
-                                        <th:block th:if="${webOprtr.oprtrPermission}=='pol'" th:text="#{admin.admin.police}">
-                                            경찰
-                                        </th:block>
-                                        <th:block th:if="${webOprtr.oprtrPermission}=='opr'" th:text="#{enforceoment.admin.regionalManager}">
-                                            지역담당자
-                                        </th:block>
-                                    </td>
-                                    <th th:text="#{admin.admin.deprt}">담당 부서</th>
-                                    <td th:text="${webOprtr.oprtrDeptNm}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{admin.admin.dtoprtrAccountPw}">비밀번호</th>
-                                    <td> <!-- th:text="${webOprtr.oprtrAccountPw}"> -->********</td>
-                                    <th th:text="#{admin.admin.dtoprtrRegDt}">가입날짜</th>
-                                    <td th:text="${webOprtr.oprtrRegDt}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{admin.admin.dtoprtrNm}">담당자 명</th>
-                                    <td th:text="${webOprtr.oprtrNm}"></td>
-                                    <th th:text="#{admin.admin.dtoprtrPno}">담당자 휴대전화</th>
-                                    <td th:text="${webOprtr.oprtrPno}"></td>
-                                </tr>
-                                
-                                <tr>
-                                    <th th:text="#{admin.admin.dtloginFailCnt}">로그인 실패 횟수</th>
-                                    <td th:text="${webOprtr.loginFailCnt}"></td>
-                                    <th th:text="#{admin.admin.crtr}">생성자</th>
-                                    <td th:text="${webOprtr.crtr}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{admin.admin.dtlastLoginDt}">최근 로그인 날짜</th>
-                                    <td th:text="${webOprtr.lastLoginDt}"></td>
-                                    <th th:text="#{admin.admin.dtconnectIp}">접속가능 아이피</th>
-                                    <td th:text="${webOprtr.connectIp}"></td>
-                                </tr>
+	                                <tr>
+	                                    <th th:text="#{admin.admin.id}">아이디</th>
+	                                    <td th:text="${webOprtr.oprtrAccountId}"></td>
+	                                    <th th:text="#{admin.admin.email}">E-mail</th>
+	                                    <td th:text="${webOprtr.oprtrEmail}"></td>
+	                                </tr>
+	                                <tr>
+	                                    <th th:text="#{admin.admin.ranking}">등급</th>
+	                                    <td>
+	                                        <th:block th:if="${webOprtr.oprtrPermission}=='sup'" th:text="#{admin.admin.superAdmin}">
+	                                            슈퍼어드민
+	                                        </th:block>
+	                                        <th:block th:if="${webOprtr.oprtrPermission}=='pol'" th:text="#{admin.admin.police}">
+	                                            경찰
+	                                        </th:block>
+	                                        <th:block th:if="${webOprtr.oprtrPermission}=='opr'" th:text="#{enforceoment.admin.regionalManager}">
+	                                            지역담당자
+	                                        </th:block>
+	                                    </td>
+	                                    <th th:text="#{admin.admin.deprt}">담당 부서</th>
+	                                    <td th:text="${webOprtr.oprtrDeptNm}"></td>
+	                                </tr>
+	                                <tr>
+	                                    <th th:text="#{admin.admin.dtoprtrAccountPw}">비밀번호</th>
+	                                    <td> <!-- th:text="${webOprtr.oprtrAccountPw}"> -->********</td>
+	                                    <th th:text="#{admin.admin.dtoprtrRegDt}">가입날짜</th>
+	                                    <td th:text="${webOprtr.oprtrRegDt}"></td>
+	                                </tr>
+	                                <tr>
+	                                    <th th:text="#{admin.admin.dtoprtrNm}">담당자 명</th>
+	                                    <td th:text="${webOprtr.oprtrNm}"></td>
+	                                    <th th:text="#{admin.admin.dtoprtrPno}">담당자 휴대전화</th>
+	                                    <td th:text="${webOprtr.oprtrPno}"></td>
+	                                </tr>
+	                                
+	                                <tr>
+	                                    <th th:text="#{admin.admin.dtloginFailCnt}">로그인 실패 횟수</th>
+	                                    <td th:text="${webOprtr.loginFailCnt}"></td>
+	                                    <th th:text="#{admin.admin.crtr}">생성자</th>
+	                                    <td th:text="${webOprtr.crtr}"></td>
+	                                </tr>
+	                                <tr>
+	                                    <th th:text="#{admin.admin.dtlastLoginDt}">최근 로그인 날짜</th>
+	                                    <td th:text="${webOprtr.lastLoginDt}"></td>
+	                                    <th th:text="#{admin.admin.dtconnectIp}">접속가능 아이피</th>
+	                                    <td th:text="${webOprtr.connectIp}"></td>
+	                                </tr>
 
                                 </tbody>
                             </table>
-                            <button th:text="#{admin.admin.listBack}" type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/user/user/list.do}'|">목록</button>
-                            <button th:text="#{admin.admin.modify}" type="button" id="btnRegist" class="btn btn-outline-warning" th:onclick="'location.href=\''+@{/user/user/update.do(oprtrId=${webOprtr.oprtrId})}+'\''">수정</button>
+                            
+                            <button th:text="#{admin.admin.listBack}" type="button" id="btnGoList" class="btn" th:onclick="|location.href='@{/user/admin/list.do}'|">목록</button>
+                            <button th:text="#{admin.admin.modify}" type="button" id="btnRegist" class="btn" th:onclick="'location.href=\''+@{/user/admin/update.do(oprtrId=${webOprtr.oprtrId})}+'\''">수정</button>
                         </div>
                     </div>
                 </div>

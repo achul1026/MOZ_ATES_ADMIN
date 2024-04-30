@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+		<div class="container-fluid">
+        <!-- Page Heading -->
+        <h1 th:text="#{admin.admin.title.modify}" class="">관리자 수정</h1>
+	        <div class="">
+	            <h6 th:text="#{admin.admin.modify}" class="">수정</h6>
+	        </div>
+	        <div class="">
+	            <div class="">
+	                <form id="frmUserModify">
+	                    <input type="hidden" name="oprtrId" th:value="${webOprtr.oprtrId}">
+	                    <table class="">
+	                        <colgroup>
+	                            <col width="20%">
+	                            <col width="30%">
+	                            <col width="20%">
+	                            <col width="30%">
+	                        </colgroup>
+	                        <tbody>
+	                          <tr>
+	                              <th th:text="#{admin.admin.id}">아이디</th>
+	                              <td th:text="${webOprtr.oprtrAccountId}"></td>
+	                              <th th:text="#{admin.admin.email}">E-mail</th>
+	                              <td><input type="text" class="form-control" id="txtOprtrEmail" name="oprtrEmail" placeholder="Please Enter Email" th:value="${webOprtr.oprtrEmail}"></td>
+	                          </tr>
+	                          <tr>
+	                              <th th:text="#{admin.admin.modiPw}">비밀번호 변경</th>
+	                              <td colspan="3">
+									<button type="button" class="btn btn-outline-warning" id="btnChgPw" data-flag="N" >변경</button>
+								  </td>
+	                          </tr>
+	                          <tr id="trPw" style="display: none;">
+	                              <th th:text="#{admin.admin.newPw}">새 비밀번호</th>
+	                              <td><input type="password" class="form-control" id="pwOprtrAccountPw" name="oprtrAccountPw"></td>
+	                              <th th:text="#{admin.admin.newPwRe}">새 비밀번호 확인</th>
+	                              <td><input type="password" class="form-control" id="pwOprtrAccountPwChk" name="oprtrAccountPwChk"></td>
+	                          </tr>
+	                          <th th:text="#{admin.admin.modoprtrNm}">담당자 이름</th>
+	                          <td><input type="text" class="form-control" id="oprtrNm" name="oprtrNm" th:value="${webOprtr.oprtrNm}"></td>
+	                          <th th:text="#{admin.admin.modoprtrPno}">담당자 연락처</th>
+	                          <td><input type="text" class="form-control" id="oprtrPno" name="oprtrPno" th:value="${webOprtr.oprtrPno}"></td>
+	                          <tr>
+	                              <th th:text="#{admin.admin.ranking}">등급</th>
+	                              <td>
+	                                  <select class="form-control" name="oprtrPermission">
+	                                      <option th:text="#{admin.admin.superAdmin}" value="sup" th:selected="${webOprtr.oprtrPermission}=='sup'">슈퍼 어드민</option>
+	                                      <option th:text="#{admin.admin.police}" value="pol" th:selected="${webOprtr.oprtrPermission}=='pol'">경찰</option>
+	                                      <option th:text="#{enforceoment.admin.regionalManager}" value="opr" th:selected="${webOprtr.oprtrPermission}=='opr'">지역 담당자</option>
+	                                  </select>
+	                              </td>
+	                              <th th:text="#{admin.admin.deprt}">담당 부서</th>
+	                              <td><input type="text" class="form-control" id="txtOprtrDeptNm" name="oprtrDeptNm" th:value="${webOprtr.oprtrDeptNm}"></td>
+	                          </tr>
+	                        </tbody>
+	                    </table>
+	                </form>
+	                <button th:text="#{penalty.common.cancel}" type="button" id="btnGoList" class="btn btn-outline-secondary" onclick="javascript:window.history.back()">취소</button>
+	                <button th:text="#{penalty.common.modiCom}" type="button" id="btnModify" class="btn btn-outline-success">수정완료</button>
+	            </div>
+	        </div>
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+
+    $("#btnChgPw").click(function(){
+        if($(this).attr('data-flag')=='N'){
+            $("#trPw").show();
+            $(this).text("변경 취소");
+            $(this).attr('data-flag','Y');
+        }else if($(this).attr('data-flag')=='Y'){
+            $("#trPw").hide();
+            $(this).text("변경");
+            $(this).attr('data-flag','N');
+        }
+    })
+
+
+    $("#btnModify").click(function () {
+
+        if($.trim($("#txtOprtrEmail").val())==''){
+            alert("이메일를 입력해주세요.");
+            $("#txtOprtrEmail").focus();
+            return false;
+        }
+        if($.trim($("#oprtrNm").val())==''){
+            alert("담당자명을 입력해주세요.");
+            $("#oprtrNm").focus();
+            return false;
+        }
+        if($.trim($("#oprtrPno").val())==''){
+            alert("담당자 휴대폰번호를 입력해주세요.");
+            $("#oprtrPno").focus();
+            return false;
+        }
+        if($("#btnChgPw").attr('data-flag')== 'Y'){
+
+            if($.trim($("#pwOprtrAccountPw").val())==''){
+                alert("비밀번호를 입력해주세요.");
+                $("#pwOprtrAccountPw").focus();
+                return false;
+            }
+            if($.trim($("#pwOprtrAccountPwChk").val())==''){
+                alert("비밀번호를 입력해주세요.");
+                $("#pwOprtrAccountPwChk").focus();
+                return false;
+            }
+            if($.trim($("#pwOprtrAccountPwChk").val())!=$.trim($("#pwOprtrAccountPw").val())){
+                alert("비밀번호가 맞지 않습니다.");
+                $("#pwOprtrAccountPwChk").focus();
+                return false;
+            }
+        }
+
+        if($.trim($("#txtOprtrDeptNm").val())==''){
+            alert("담당부서를 입력해주세요.");
+            $("#txtOprtrDeptNm").focus();
+            return false;
+        }
+
+
+        $.ajax({
+            url: /*[[@{/user/user/update.ajax}]]*/ "/user/admin/update.ajax",
+            type: "post",
+            data: $("#frmUserModify").serialize(),
+            success: function(data){
+                if(data.code == "1"){
+                    alert("수정했습니다.");
+                    var baseUrl = /*[[@{/user/user/detail.do}]]*/ '';
+                    window.location.href=baseUrl+"?oprtrId="+[[${webOprtr.oprtrId}]];
+                }else{
+                    alert(data.msg);
+                }
+            }
+        });
+
+    })
+
+
+
+</script>

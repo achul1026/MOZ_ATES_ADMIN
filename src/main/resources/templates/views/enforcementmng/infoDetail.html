@@ -1,95 +1,146 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
+	<div id="container-fluid">
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{enforcement.infoDetail.title}">교통단속 상세정보</h1>
+		<div>
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{enforcement.infoDetail.enfInfo}">단속정보</th>
+						<td th:text="${tfcEnfMaster.tfcEnfTtl}"></td>
+						<th th:text="#{enforcement.infoDetail.violationDate}">날짜</th>
+						<td th:text="${#dates.format(tfcEnfMaster.tfcEnfDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.infoDetail.licenseNumber}">라이선스 번호</th>
+						<td th:text="${tfcEnfMaster.vioInfo.dvrLcenId}"></td>
+						<th th:text="#{enforcement.infoDetail.licenseTy}">라이선스 타입</th>
+						<td th:text="${tfcEnfMaster.vioInfo.dvrLcenTy}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.infoDetail.violatorsName}">운전자명</th>
+						<td th:text="${tfcEnfMaster.vioInfo.vioNm}"></td>
+						<th th:text="#{enforcement.infoDetail.birthday}">생년월일</th>
+						<td th:text="${tfcEnfMaster.vioInfo.vioBrth}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.infoDetail.phone}">전화번호</th>
+						<td th:text="${tfcEnfMaster.vioInfo.vioPno}"></td>
+						<th th:text="#{enforcement.infoDetail.email}">이메일</th>
+						<td th:text="${tfcEnfMaster.vioInfo.vioEmail}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.infoDetail.vehiclType}">차량 종류</th>
+						<td th:text="${tfcEnfMaster.vhTy}"></td>
+						<th th:text="#{enforcement.infoDetail.vehiclNo}">차량 번호</th>
+						<td th:text="${tfcEnfMaster.vhRegNo}"></td>
+					</tr>
+					<tr>
+						<th>Illegal Law</th>
+						<td>
+							<th:block th:each="lwInfo : ${tfcEnfMaster.tfcLwFineInfoList}">
+								<p th:text="${lwInfo.fineDesc}"></p>
+							</th:block>
+						</td>
+						<th th:text="#{enforcement.detectionRegist.addr}">주소</th>
+						<td th:text="${tfcEnfMaster.vioInfo.vioAddr}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.infoDetail.fine}">범칙금</th>
+						<td th:text="${tfcEnfMaster.totalPrice}"></td>
+						<th th:text="#{enforcement.inforDetail.plcaePayment}">납부처</th>
+						<td th:text="${tfcEnfMaster.plPymntInfo?.placePymntNm}"></td>
+					</tr>
+				
+					<tr>
+						<th th:text="#{enforcement.infoDetail.polInCharge}">담당 경찰명</th>
+						<td th:text="${tfcEnfMaster.polInfo.polNm}"></td>
+						<th th:text="#{enforcement.infoDetail.polStationInCaharge}">관할 경찰서</th>
+						<td th:text="${tfcEnfMaster.polInfo.polDeptNm}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.infoDetail.placeOfViolate}">적발 지역</th>
+						<td colspan="3">
+							<span th:text="${tfcEnfMaster.roadAddr}"></span><br><br>
+							<div id="map" class="detailMap"></div>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.detectionRegist.lat}">위도</th>
+						<td th:text="${tfcEnfMaster.lat}"></td>
+						<th th:text="#{enforcement.detectionRegist.lng}">경도</th>
+						<td th:text="${tfcEnfMaster.lng}"></td>
+					</tr>
+					<tr>
+						<th class="detail-th" th:text="#{enforcement.infoDetail.tfcEnfDetail}">상세 내용</th>
+						<td colspan="3" th:text="${tfcEnfMaster.tfcEnfDetail}"></td>
+					</tr>
+					<tr>
+						<th class="detail-th" th:text="#{enforcement.infoDetail.tfcEnfInfoImage}">첨부파일</th>
+						<td colspan="3">
+							<th:block th:each="fileInfo : ${tfcEnfMaster.tfcEnfFileInfoList}">
+								<p th:text="${fileInfo.fileOrgNm}"></p>
+							</th:block>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 
-    <div class="container-fluid">
+			<div class="registor-btn-right">
+				<button type="button" id="btnGoList" class="sub-btn left-btn" th:onclick="|location.href='@{/enf/info/list.do}'|"
+					th:text="#{enforcement.infoDetail.list}">목록</button>
+				<button type="button" id="btnModify" class="delete-btn" onclick="deleteCheck()" th:text="#{enforcement.common.button.delete}">삭제</button>	
+				<button type="button" id="btnModify" class="main-btn form-button"
+					th:onclick="|location.href='@{/enf/info/update.do(tfcEnfId=${tfcEnfMaster.tfcEnfId})}'|"
+					th:text="#{enforcement.infoDetail.modifyButton}">수정</button>
+			</div>
+		</div>
+	</div>
 
-        <!-- Page Heading -->
-        <h1 class="h3 mb-4 text-gray-800" th:text="#{enforcement.infoDetail.title}">교통단속 상세정보</h1>
+	<script th:inline="javascript">
+		const lng = /*[[${tfcEnfMaster.lng}]]*/;
+		const lat = /*[[${tfcEnfMaster.lat}]]*/;
+		let map = new MozAtesMap({
+			elementId : 'map',
+			center_lng : lng,
+			center_lat : lat,
+			isInitDrawCenterMarker : true
+		});
 
-        <div class="row">
-
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" th:text="|${tfcEnfMaster.tfcEnfId} #{enforcement.infoDetail.subTitle}|">상세정보</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <colgroup>
-                                    <col width="20%">
-                                    <col width="30%">
-                                    <col width="20%">
-                                    <col width="30%">
-
-                                </colgroup>
-                                <tbody>
-                                <tr>
-                                 <tr>
-                                    <th th:text="#{enforcement.infoDetail.tfcEnfInfoImage}">위반 차량 사진</th>
-                                    <td colspan="3">
-                                    <!-- 여기서부터 /block까지 이미지 생성. -->
-                                    <block th:each = "images : ${#strings.arraySplit(tfcEnfMaster.tfcEnfInfoimage,',')}" th:remove="tag">
-                                    <img th:src="@{/images/}+${images}" style="width:250px;height:250px; margin-left:10px;" alt=" " />
-<!--                                    <td colspan="3"> 
-                                    	<img th:src="@{/images/}+${tfcEnfMaster.tfcEnfInfoimage}" style="width:900px;height:300px;" alt=" " />-->
-                                    </block>
-                                    </td>
-                                </tr>
-                                	
-                                </tr>
-                                <tr>
-                                    <th th:text="#{enforcement.infoDetail.violationNumber}">위반번호</th>
-                                    <td th:text="${tfcEnfMaster.tfcEnfId}"></td>
-                                    <th th:text="#{enforcement.infoDetail.violationDate}">위반일시</th>
-                                    <td th:text="${tfcEnfMaster.tfcEnfDt}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{enforcement.infoDetail.placeOfViolate}">위반장소</th>
-                                    <td th:text="${tfcEnfMaster.roadAddr}"></td>
-                                    <th th:text="#{enforcement.infoDetail.violatorsName}">위반자 명</th>
-                                    <td th:text="${tfcEnfMaster.vioId}"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{enforcement.infoDetail.intermittentName}">단속명</th>
-                                    <td th:text="${tfcEnfMaster.lastTfcEnfProcCd}"></td>
-                                    <th th:text="#{enforcement.infoDetail.title}">연관 사고 정보</th>
-                                    <td><u><a th:text="${tfcEnfMaster.tfcAcdntId}" th:href="@{/acdnt/mngDetail(idx=449903)}"></a></u></td>
-                                </tr>
-                                <tr th:if="${tfcEnfMaster.FinePymntInfo != null}">
-                                    <th th:text="#{enforcement.infoDetail.fine}">벌금</th>
-                                    <td th:text="${tfcEnfMaster.FinePymntInfo.totalPrice}"></td>
-                                    <th th:text="#{enforcement.infoDetail.paymentStatus}">납부상태</th>
-                                    <td th:text="${tfcEnfMaster.FinePymntInfo.pymntStts} == 'Y'?'Paid':'Not Paid'"></td>
-                                </tr>
-                                <tr>
-                                    <th th:text="#{enforcement.infoDetail.tfcEnfDetail}">상세내용</th>
-                                    <td colspan="3"  th:text="${tfcEnfMaster.tfcEnfDetail}"></td>
-                                </tr>
-                                <tr> 
-                                <th th:text="#{enforcement.infoDetail.lat}">latitude :</th>
-                                <td> <label id="enflat" th:text="${eDomain.lat}" th:value="${eDomain.lat}"/></td>
-                                <th th:text="#{enforcement.infoDetail.lng}">longitude :</th>
-                                <td><label id="enflng" th:text="${eDomain.lng}" th:value="${eDomain.lng}"/></td>
-                                </tr>                                
-                                </tbody>
-                            </table>
-                            <button type="button" id="btnGoList" class="btn btn-outline-secondary" th:onclick="|location.href='@{/enf/info/list.do}'|" th:text="#{enforcement.infoDetail.list}" >목록</button>
-                            <button type="button" id="btnModify" class="btn btn-outline-warning" th:onclick="|location.href='@{/enf/info/update.do(tfcEnfId=${tfcEnfMaster.tfcEnfId})}'|" th:text="#{enforcement.infoDetail.modifyButton}">수정</button>
-							<div  id="mapContainer" style="width:100%; height:700px;">
-									<div id="map" style="width:100%; height:600px;" ></div>
-							</div>           
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
+		function deleteCheck() {
+			new ModalBuilder().init().alertBody([[#{enforcement.infoDetail.deleteMessage}]]).footer(2,'확인',function(button, modal){
+				modal.close();
+				var idx = [[${tfcEnfMaster.tfcEnfId}]];
+				$.ajax({
+					url: /*[[@{/enf/info/deleteByTfcEnfId.ajax}]]*/ "/enf/info/deleteByTfcEnfId.ajax",
+					type: "post",
+					data: {"tfcEnfId": idx},
+					success: function (result) {
+						var resultCode = result.code;
+						var resultMessage = result.message;
+						if (resultCode == '200') {
+							new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
+								location.href = /*[[@{/enf/info/list.do}]]*/ '/enf/info/list.do';
+							}).open();
+						} else {
+							new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
+								modal.close();}).open();
+						}
+					}
+				});
+				}, '취소', function(button, modal){}).open();
+		};
+	</script>
 </th:block>
+
 </html>

@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div id="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 th:text="#{portal.pp.title.detail}" id="detail-content-title">범칙금 납부 상세</h1>
+ 
+        <div class="">
+            <table class="detail-table">
+                <colgroup>
+                    <col width="15%">
+                    <col width="85%">
+                </colgroup>
+                <tbody>
+                    <tr>
+                        <th th:text="#{portal.pp.name}">이름</th>
+                        <td th:text="${plPymntInfo.placePymntNm}"></td>
+                    </tr>
+<!--                    <tr>-->
+<!--                    	<th th:text="#{portal.pp.pymntPlaceType}">납부처 유형</th>-->
+<!--                    	<td th:text="${plPymntInfo.cmCd.cdNm}"></td>-->
+<!--                    </tr>-->
+                    <tr>
+                        <th th:text="#{portal.pp.dw}">주소</th>
+                        <td>
+													<div th:text="${plPymntInfo.placePymntAddr}"></div>
+													<br>
+													<div id="map" class="detail-map"></div>
+												</td>
+                    </tr>
+                    <tr>
+                    	<th th:text="#{portal.pp.contact}">연락처</th>
+                    	<td th:text="${plPymntInfo.placePymntCntc}"></td>
+                    </tr>
+                    <tr>
+                    	<th th:text="#{portal.pp.operatingTime}"></th>
+                    	<td th:text="|${plPymntInfo.operStrTm} ~ ${plPymntInfo.operEndTm}|"></td>
+                    </tr>
+                    <tr>
+                    	<th th:text="#{portal.pp.closedDays}"></th>
+                    	<td th:text="${plPymntInfo.clsdDt}"></td>
+                    </tr>
+                    <tr>
+                        <th th:text="#{portal.pp.preName}">대표자 이름</th>
+                        <td colspan="3" th:text="${plPymntInfo.placePymntRprsvNm}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+         <div class="btn-wrap-center">
+				<button th:text="#{penalty.common.list}" type="button" id="btnGoList" class="sub-btn left-btn" th:onclick="|location.href='@{/portal/penaltyplace/list.do}'|">목록</button>
+	            <button th:text="#{portal.common.delete}" type="button" id="btnDelete" class="delete-btn" onclick="deleteCheck()">삭제</button>
+	            <button th:text="#{portal.common.modifyBtn}" type="button" id="btnRegist" class="main-btn" th:onclick="'location.href=\''+@{/portal/penaltyplace/update.do(placePymntId=${plPymntInfo.placePymntId})}+'\''">수정</button>
+		</div>
+    </div>
+
+
+
+</th:block>
+</html>
+<script th:inline="javascript">
+	function deleteCheck() {
+		new ModalBuilder().init().alertBody([[#{portal.pp.deleteMessage}]]).footer(2,'확인',function(button, modal){
+			modal.close();
+			var idx = [[${plPymntInfo.placePymntId}]];
+			$.ajax({
+				 url: /*[[@{/portal/penaltyplace/delete.ajax}]]*/ "/portal/penaltyplace/delete.ajax",
+				type: "post",
+				data: {"placePymntId":idx},
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+					if (resultCode == '200') {
+						new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
+						location.href = /*[[@{/portal/penaltyplace/list.do}]]*/ '/portal/penaltyplace/list.do';
+						}).open();
+					} else {
+						new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
+							modal.close();}).open();
+					}
+				}
+			});
+			}, '취소', function(button, modal){}).open();
+	}
+    //TODO 좌표값 확인하기
+	const lng = 22;
+	const lat = 60;
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : lng,
+		center_lat : lat,
+		isInitDrawCenterMarker : true
+	});
+</script>

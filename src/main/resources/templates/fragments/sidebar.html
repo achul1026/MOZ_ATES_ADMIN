@@ -1,48 +1,49 @@
 <!DOCTYPE html>
 <html lang="ko" xmlns:th="http://www.thymeleaf.org">
-
 <th:block th:fragment="sidebarFragment">
-    <!-- Sidebar -->
-    <ul class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar" th:if="${!#lists.isEmpty(sideMenuList)}">
-
-        <!-- Sidebar - Brand -->
-        <a class="sidebar-brand d-flex align-items-center justify-content-center" th:href="@{/dashboard}">
-            <div class="logo">
-               <img src="/images/inatro-logo.png" alt="로고">
-            </div>
-          
-        </a>
-        <!-- Sidebar - Brand - End -->
-
-      
-        <!-- Menu -->
-        <li class="list nav-item" th:each="sideMenu : ${sideMenuList}" th:classappend="${#request.getServletPath().startsWith('/'+sideMenu.mainMenu.menuAbv) ? 'active':''}">
-            <a class="list-title nav-link" th:href="${sideMenu.mainMenu.menuUrl}" th:if="${sideMenu.mainMenu.menuAbv == 'dashboard'}">
-            	<span th:text="${lang == 'por' ? sideMenu.mainMenu.menuNmPor : sideMenu.mainMenu.menuNmEng}"></span>
-            	<i class="arrow"></i>
-            </a>
-		
-            <a class="list-title nav-link" th:if="${sideMenu.mainMenu.menuAbv != 'dashboard'}" data-toggle="collapse" th:aria-controls="${sideMenu.mainMenu.menuAbv}" th:attr="data-target='#'+${sideMenu.mainMenu.menuAbv}" aria-expanded="false">
-            	<span th:text="${lang == 'por' ? sideMenu.mainMenu.menuNmPor : sideMenu.mainMenu.menuNmEng}"></span>
-<!--            	 <i th:class="${sideMenu.menuIcon}"></i>-->
-            	   <i class="arrow"></i>
-            </a>
-            <div th:if="${!#lists.isEmpty(sideMenu.subMenuList)}"th:id="${sideMenu.mainMenu.menuAbv}" class="sub-list collapse" aria-labelledby="headingTwo" data-parent="#accordionSidebar" th:classappend="${#request.getServletPath().startsWith('/'+sideMenu.mainMenu.menuAbv) ? 'show':''}">
-                <div class="bg-white py-2 collapse-inner rounded">
-                    <a class="collapse-item"  th:each="subMenuList:${sideMenu.subMenuList}" th:classappend="${#request.getServletPath().startsWith(subMenuList.menuUrl) ? 'active':''}" th:href="${subMenuList.menuUrl}" th:text="${lang == 'por' ? subMenuList.menuNmPor : subMenuList.menuNmEng}"></a>
-                </div>
-            </div>
+	<!-- Sidebar -->
+	<ul id="sidebar" th:if="${!#lists.isEmpty(sideMenuList)}">
+		<!-- Sidebar - Brand -->
+		<a class="" th:href="@{/dashboard}">
+			<div id="logo">
+				<img src="/images/inatro-logo.png" alt="로고">
+			</div>
+		</a>
+		<!-- Sidebar - Brand - End -->
+		<!-- Menu -->
+		<li class="sidebar-list nav-item" th:each="sideMenuItem : ${sideMenuList}">
+			<a class="sidebar-list-title nav-link" onclick="sideBarToggle(this)" th:href="${sideMenuItem.menuUrl}" th:if="${sideMenuItem.menuAbv == 'dashboard'}">
+				
+				<span th:text="${lang == 'por' ? sideMenuItem.menuNmPor : sideMenuItem.menuNmEng}"></span>
+			</a>
+			
+			<a class="sidebar-list-title nav-link" onclick="sideBarToggle(this)" th:if="${sideMenuItem.menuAbv != 'dashboard'}"
+				th:classappend="${#request.getServletPath().startsWith('/'+sideMenuItem.menuAbv) ? 'on':''}"
+				th:attr="data-target='#'+${sideMenuItem.menuAbv}">
+				<span th:text="${lang == 'por' ? sideMenuItem.menuNmPor : sideMenuItem.menuNmEng}"></span>
+				<th:block th:if="${!#lists.isEmpty(sideMenuItem.subMenuInfoList)}">
+					<i class="arrow"></i>
+				</th:block>
+			</a>
+			<div th:if="${!#lists.isEmpty(sideMenuItem.subMenuInfoList)}"
+			th:classappend="${#request.getServletPath().startsWith('/'+sideMenuItem.menuAbv) ? 'opened':''}"
+			 th:id="${sideMenuItem.menuAbv}" class="sub-list collapse">
+				<div class="bg-white" th:classappend="${#request.getServletPath()}">
+					<a class="collapse-item" th:each="subMenuList:${sideMenuItem.subMenuInfoList}"
+						th:classappend="${@mozatesCommonUtils.getUrlPattrn(#request.getServletPath(),'/') eq subMenuList.menuUrlPattrn ? 'sub-list-on':''}"
+						th:href="${subMenuList.menuUrl}"
+						th:text="${lang == 'por' ? subMenuList.menuNmPor : subMenuList.menuNmEng}"></a>
+				</div>
+			</div>
 		</li>
-        <!-- Menu End-->
-        
-    	<!-- End of Sidebar -->
-    	
-    	<div class="copyright">
-		@copyright MOZ-ATES
-	</div>
-    </ul>
-    
-    
+		<!-- Menu End-->
+
+		<!-- End of Sidebar 
+		<div class="copyright">
+			@copyright MOZ-ATES
+		</div>-->
+	</ul>
+	
 </th:block>
 
 </html>

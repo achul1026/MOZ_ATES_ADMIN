@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	 <div id="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 id="detail-content-title" th:text="#{sitemng.codeDetail.title}">코드 상세</h1>
+   
+        <div class="detail-table">
+            <form id="frmCodeDetail">
+	            <table>
+	                <colgroup>
+	                    <col width="15%">
+	                    <col width="85%">
+	                </colgroup>
+	                <tbody>
+						<tr>
+							<th th:text="#{sitemng.common.code.codeId}">코드 ID</th>
+							<td th:text="${mozCmCd.cdId}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{sitemng.common.code.codeNm}">코드 이름</th>
+							<td th:text="${mozCmCd.cdNm}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{sitemng.common.code.codeDesc}">코드 설명</th>
+							<td th:text="${mozCmCd.cdDesc}"></td>
+						</tr>
+	                </tbody>
+	            </table>
+            </form>
+        </div>
+        <table class="main-table code-table">
+        	<thead>
+        		<tr>
+					<th th:text="#{sitemng.common.code.codeId}">코드 ID</th>
+					<th th:text="#{sitemng.common.code.codeNm}">코드 이름</th>
+					<th th:text="#{sitemng.common.code.codeDesc}">코드 설명</th>
+				</tr>
+        	</thead>
+        	<tbody>
+        		<tr th:if="${#lists.size(subMozCmCdList) > 0}" th:each="item : ${subMozCmCdList}">
+        			<td th:text="${item.cdId}"></td>
+        			<td th:text="${item.cdNm}"></td>
+        			<td th:text="${item.cdDesc}"></td>
+        		</tr>
+        		<tr th:if="${#lists.size(subMozCmCdList) == 0}">
+					<td colspan="3" th:text="#{common.search.notFound}">검색 결과를 찾을 수 없습니다.</td>
+				</tr>
+        	</tbody>
+        </table>
+        <div class="btn-wrap-center">
+			<button type="button" th:text="#{common.button.list}" class="sub-btn" th:onclick="|location.href='@{/siteMng/code/list.do}'|">목록</button>
+<!--            <button type="button" th:text="#{common.button.delete}" id="btnDelete" class="delete-btn">삭제</button>-->
+            <button type="button" th:text="#{common.button.modify}" class="main-btn" th:onclick="|location.href='@{/siteMng/code/update.do(cdId=${mozCmCd.cdId})}'|">수정</button>
+		</div>
+    </div>
+</th:block>
+</html>
+<script th:inline="javascript">
+    $("#btnDelete").on('click', function(){
+    	if (confirm(/*[[#{sitemng.common.code.message.confirmDelete}]]*/)) {
+			var cdId = [[${mozCmCd.cdId}]];
+			$.ajax({
+				url: /*[[@{/siteMng/code/delete.ajax}]]*/ "/siteMng/code/delete.ajax",
+				type: "post",
+				data: {"cdId": cdId},
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+					if (resultCode == '200') {
+						alert(resultMessage);
+						location.href = /*[[@{/siteMng/code/list.do}]]*/ '/siteMng/code/list.do';
+					} else {
+						alert(resultMessage);
+					}
+				}
+			});
+		} else {
+			return;
+		}
+    })
+</script>

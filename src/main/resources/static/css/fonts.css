@@ -1,47 +1,44 @@
 @charset 'utf-8';
 
 @font-face {
-	font-family: 'Nunito-ExtraBold';
-	font-weight: bold;
+	font-family: 'Nunito';
+	font-weight: 900;
 	font-display: swap;
-	src: url('/fonts/Nunito-ExtraBold.woff2') format('woff2'), url('/fonts/Nunito-ExtraBold.woff') format('woff');
+	src: url('/fonts/Nunito-Black.woff') format('woff');
 }
 @font-face {
-	font-family: 'Nunito-SemiBold';
+	font-family: 'Nunito';
 	font-weight: 800;
 	font-display: swap;
-	src: url('/fonts/Nunito-SemiBold.woff2') format('woff2'), url('/fonts/Nunito-SemiBold.woff') format('woff');
+	src: url('/fonts/Nunito-ExtraBold.woff') format('woff');
 }
 @font-face {
-	font-family: 'Nunito-Bold';
+	font-family: 'Nunito';
 	font-weight: 700;
 	font-display: swap;
-	src: url('/fonts/Nunito-Bold.woff2') format('woff2'), url('/fonts/Nunito-Bold.woff') format('woff');
+	src: url('/fonts/Nunito-Bold.woff') format('woff');
 }
 @font-face {
-	font-family: 'Nunito-Medium';
+	font-family: 'Nunito';
+	font-weight: 600;
+	font-display: swap;
+	src: url('/fonts/Nunito-SemiBold.woff') format('woff');
+}
+@font-face {
+	font-family: 'Nunito';
 	font-weight: 500;
 	font-display: swap;
-	src: url('/fonts/Nunito-Medium.woff2') format('woff2'), url('/fonts/Nunito-Medium.woff') format('woff');
+	src: url('/fonts/Nunito-Medium.woff') format('woff');
 }
 @font-face {
-	font-family: 'Nunito-Regular';
+	font-family: 'Nunito';
 	font-weight: 400;
 	font-display: swap;
-	src: url('/fonts/Nunito-Regular.woff2') format('woff2'), url('/fonts/Nunito-Regular.woff') format('woff');
+	src: url('/fonts/Nunito-Regular.woff') format('woff');
 }
 @font-face {
-	font-family: 'Nunito-Black';
+	font-family: 'Nunito';
 	font-weight: 300;
 	font-display: swap;
-	src: url('/fonts/Nunito-Black.woff2') format('woff2'), url('/fonts/Nunito-Black.woff') format('woff');
+	src: url('/fonts/Nunito-Light.woff') format('woff');
 }
-@font-face {
-	font-family: 'Nunito-Light';
-	font-weight: 100;
-	font-display: swap;
-	src: url('/fonts/Nunito-Light.woff2') format('woff2'), url('/fonts/Nunito-Light.woff') format('woff');
-}
-
-
-

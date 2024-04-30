@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{equipment.facilityRegist.title}">교통시설물 등록</h1>
+		
+		<div class="">
+			<form id="frmFacilityRegist" enctype="multipart/form-data">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.trafficFacilityType}">시설물 유형</span>
+						</th>
+						<!-- 여기서부터 /block까지 이미지 생성. -->
+						<td>
+							<select id="eqpTy" class="filter-select filter95 data-validate" name="facilityTy" th:data-valid-name="#{equipment.facilityRegist.trafficFacilityType}" data-valid-required>
+								<option value="">Select</option>
+								<th:block th:each="cdItem : ${cdList}">
+									<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}"></option>
+								</th:block>
+							</select>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.trafficFacilityName}">시설물 이름</span>
+						</th>
+						<!-- 여기서부터 /block까지 이미지 생성. -->
+						<td><input type="text" class="main-input data-validate" name="facilityNm" placeholder="Please Enter Traffic Facility Name" th:data-valid-name="#{equipment.facilityRegist.trafficFacilityName}" data-valid-required></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.modelNm}"></span>
+						</th>
+						<td><input type="text" class="main-input data-validate" name="modelNm" placeholder="Please Enter Model Name" th:data-valid-name="#{equipment.facilityRegist.modelNm}" data-valid-required></td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.manufacturer}">제조사</span>
+						</th>
+						<td><input type="text" class="main-input data-validate" name="mnfctr" placeholder="Please Enter Manufacturer" th:data-valid-name="#{equipment.facilityRegist.manufacturer}" data-valid-required></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.installationStatus}">설치 여부</span>
+						</th>
+						<td>
+							<label for="useY" class="radioBox">
+								<input type="radio" id="useY" name="instlYn" value="Y" checked>
+								<span class="radioOn"></span>
+								Installed
+							</label>
+							<label for="useN" class="radioBox">
+								<input type="radio" id="useN" name="instlYn" value="N">
+								<span class="radioOn"></span>
+								Not installed
+							</label>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.installationLocation}">설치 위치</span>
+						</th>
+						<td colspan="3" class="modal-find-line">
+							<input type="text" class="main-input data-validate" name="roadAddr" placeholder="Please Enter Installation Location" th:data-valid-name="#{equipment.facilityRegist.installationLocation}" data-valid-required>
+							<i class="search-icon mapSearch"></i>
+							<br><br>
+							<div id="map" class="detailMap">
+								<img src="/images/mapLocation_icon.png" alt="My Location" class="mapLocationIcon">
+							</div>
+						</td>					
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.installationDate}"></span>
+						</th>
+						<td><input type="date" class="input-date data-validate" name="instlDate" th:data-valid-name="#{equipment.facilityRegist.installationDate}" data-valid-required></td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.installer}">설치자</span>
+						</th>
+						<td><input type="text" class="main-input data-validate" name="instler" placeholder="Please Enter Installer" th:data-valid-name="#{equipment.facilityRegist.installer}" data-valid-required></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.personInCharge}">담당자</span>
+						</th>
+						<td class="modal-find-line">
+							<input type="text" class="main-input data-validate" id="crOprtrNm" placeholder="Please Enter Person in Charge" readonly th:data-valid-name="#{equipment.facilityRegist.personInCharge}" data-valid-required>
+							<input type="hidden" name="crOprtrId" id="crOprtrId">
+							<i class="search-icon" onclick="changeDeptListModal('show')"></i>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.department}">담당자 행정기관</span>
+						</th>
+						<td><input type="text" class="main-input" name="crOprtrDept" id="crOprtrDept" placeholder="Please Enter Department" readonly></td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.facilityRegist.image}">시설물 사진첨부</th>
+						<td colspan="3">
+							<input type="file" id="uploadFiles" name="uploadFiles" multiple />
+							<div id="dragArea">
+								<div class="drag-area">
+								    <div class="dragText">
+								        File name cannot be more than 50 characters<br>
+										The file size can only be uploaded under 5MB<br>
+										Only JPG, JPEG, PNG, and MP4 files can be uploaded
+								    </div>
+								    <div>
+								        <input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
+								        <button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+								    </div>
+								</div>
+							</div>
+							<div class="upload_wrap none">
+								<div id="upload_list_box"></div>	
+							</div>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.facilityRegist.details}">상세내용</th>
+						<td colspan="3"><textarea class="detail-table-textarea" name="facilityDesc" placeholder="Please Enter Details"></textarea></td>
+					</tr>
+
+				</tbody>
+			</table>
+			</form>
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn form-button" th:text="#{equipment.common.button.list}"
+					th:onclick="|location.href='/eqp/facility/list.do'|">취소</button>
+				<button type="button" id="btnRegist" class="main-btn form-button" th:text="#{equipment.common.button.register}"
+					onclick="saveInfo()">등록</button>
+			</div>
+		</div>
+	</div>
+	<div class="modal-wrap" id="modal">
+
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	function saveInfo() {
+		if($("#frmFacilityRegist").soValid()) {
+			var form = $("#frmFacilityRegist")[0];
+			var data = new FormData(form);
+			$.ajax({
+				url: /*[[@{/eqp/facility/save.ajax}]]*/ "/eqp/facility/save.ajax",
+				type: "post",
+				enctype: 'multipart/form-data',
+				data: data,
+				processData: false,
+				contentType: false,
+				success: function (result) {
+					if(result.code == 200){
+						new ModalBuilder().init().successBody(result.message).footer(4,'확인',function(button, modal){
+							modal.close();
+							location.href =/*[[@{/eqp/facility/list.do}]]*/ "";
+						}).open();
+						modalAlertWrap();
+					} else {
+						new ModalBuilder().init().alertBoby(result.message).footer(4,'확인',function(button, modal){modal.close();}).open();
+						modalAlertWrap();
+					}
+				}
+			});
+		}
+	  }
+		
+			// 모달 수정 여부 확인필요?
+		const modalContent = document.getElementById("modal");
+		
+			// modal control
+		function changeDeptListModal(type) {
+	
+			if (type == "show") {
+				$.ajax({
+					url: '/common/modal/oprtr/list.ajax',
+					type: "get",
+					dataType: 'html',
+					success: function (data) {
+						modalContent.innerHTML += data;
+						modalContent.style.display = 'block';
+					}
+				});
+			} else if (type == "hide") {
+				modalContent.innerHTML = '';
+				modalContent.style.display = 'none';
+			}
+	
+		}
+	
+	//TODO 좌표값 확인하기
+	const lng = 22;
+	const lat = 60;
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : lng,
+		center_lat : lat,
+		isInitDrawCenterMarker : true
+	});
+	
+	function findOprtrBtn(){
+		$("#modalTbody > tr").remove();
+		$("#modalPaging > div").remove();
+		
+		var page = $("#modalPage").val();
+		var searchTxt = $("#searchContent").val();
+		var start = $("#modalStart").val();
+		$.ajax({
+			type : "get",
+			data : {"searchType" : "oprtrNm", "searchTxt" : searchTxt, "page" : page, "start" : start},
+			url: '/common/modal/oprtr/search/list.ajax',
+			success : function(result) {
+				var html = '';
+				$(result.data.list).each(function(index, item){
+					var oprtrDeptNm = item.oprtrDeptNm;
+					var oprtrNm = item.oprtrNm;
+					if(isNull(oprtrDeptNm)){
+						oprtrDeptNm = '-';
+					}
+					if(isNull(oprtrNm)){
+						oprtrNm = '-';
+					}					
+					html += '<tr onclick="selectDept(\''+item.oprtrId+'\', \''+oprtrNm+'\', \''+ oprtrDeptNm +'\')">'+
+								'<td>'+item.rnum+'</td>'+
+								'<td>'+oprtrDeptNm+'</td>'+								
+								'<td>'+oprtrNm+'</td>'+
+							'</tr>';
+		    	})
+				$("#modalTbody").append(html);			
+		    	var paging = result.data.pagination;
+				if(paging != null && paging != ''){
+					$("#modalPaging").append(getPagingHtml(paging,page));
+				}
+				$("#totalCnt").text(paging.totalListCnt);
+				var start = result.data.webOprtr.start;
+				$("#modalStart").val();
+			}
+		});
+	}
+	
+	function fnPageMove(page) {
+		$("#modalPage").val(page);
+		findOprtrBtn();
+	}
+	
+	function selectDept(oprtrId, oprtrNm, oprtrDeptNm){
+		$("#crOprtrNm").val(oprtrNm);
+		$("#crOprtrId").val(oprtrId);
+		$("#crOprtrDept").val(oprtrDeptNm);
+		changeDeptListModal('hide');
+	}
+	
+	var fileNo = 0;
+	var filesArr = new Array();
+	
+	function addFiles(obj){
+		var fileMaxCnt = 5;
+		var fileCnt = $("#image_container div").length;
+		var remainFileCnt = fileMaxCnt - fileCnt;
+		var curFileCnt = obj.files.length;
+		
+		if (curFileCnt > remainFileCnt) {
+	       return alert("첨부파일은 최대 " + fileMaxCnt + "개 까지 첨부 가능합니다.");
+	    }
+		
+		for (var i = 0; i < Math.min(curFileCnt, remainFileCnt); i++) {
+
+	        const file = obj.files[i];
+
+	        // 첨부파일 검증
+	        if (validation(file)) {
+	            // 파일 배열에 담기
+	            var reader = new FileReader();
+	            reader.onload = function () {
+	                filesArr.push(file);
+	            };
+	            reader.readAsDataURL(file)
+
+	            // 목록 추가
+	            let htmlData = '';
+	            htmlData += '<div id="file' + fileNo + '" class="filebox">';
+	            htmlData += '   <p class="name">' + file.name + '</p>';
+	            htmlData += '   <button type="button" onclick="deleteFile(' + fileNo + ');"></button>';
+	            htmlData += '</div>';
+	            $('#image_container').append(htmlData);
+	            fileNo++;
+	        } else {
+	            continue;
+	        }
+	    }
+	    // 초기화
+	    $("input[type=file]").value = "";
+	}
+	
+	function validation(obj){
+	    const fileTypes = ['image/gif', 'image/jpeg', 'image/png'];
+	    if (obj.name.length > 100) {
+	        alert("파일명이 100자 이상인 파일은 제외되었습니다.");
+	        return false;
+	    } else if (obj.size > (100 * 1024 * 1024)) {
+	        alert("최대 파일 용량인 100MB를 초과한 파일은 제외되었습니다.");
+	        return false;
+	    } else if (obj.name.lastIndexOf('.') == -1) {
+	        alert("확장자가 없는 파일은 제외되었습니다.");
+	        return false;
+	    } else if (!fileTypes.includes(obj.type)) {
+	        alert("첨부가 불가능한 파일은 제외되었습니다.");
+	        return false;
+	    } else {
+	        return true;
+	    }
+	}
+	
+	function deleteFile(num) {
+	    document.querySelector("#file" + num).remove();
+	    filesArr[num].is_delete = true;
+	}
+</script>

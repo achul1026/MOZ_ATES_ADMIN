@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+<div id="container-fluid">
+	<div id="printDiv">
+		<h1 id="detail-content-title" th:text="#{finentc.mngDetail.title}">고지 상세 정보</h1>
+
+		<div class="sub-table detail-table">
+			<table class="">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{finentc.mngDetail.driverNm}">운전자명</th>
+						<td th:text="${fineNtcInfo.vioInfo.vioNm}"></td>
+						<th th:text="#{finentc.mngDetail.enfVhNumber}">차량등록번호</th>
+						<td th:text="${fineNtcInfo.tfcEnfMaster.vhRegNo}">123-42132</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{finentc.mngDetail.contact}">연락처</span>
+						</th>
+						<td>
+							<input type="text" id="vioPno" class="main-input" placeholder="Please Enter Contact" th:value="${fineNtcInfo.vioInfo.vioPno}"/> 
+						</td>
+						<th th:text="#{finentc.mngDetail.email}">이메일</th>
+						<td>
+							<input type="text" id="vioEmail" class="main-input" placeholder="Please Enter Email" th:value="${fineNtcInfo.vioInfo.vioEmail}"/> 
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.area}">적발지역</th>
+						<td th:text="${fineNtcInfo.tfcEnfMaster.roadAddr}">123-42132</td>
+						<th th:text="#{finentc.mngDetail.fine}">범칙금</th>
+						<td>5.000</td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.violationOfLaw}">위반 법령</th>
+						<td th:text="${fineNtcInfo.tfcLwInfo.lawArticleNo}">제1조 1항</td>
+						<th th:text="#{finentc.mngDetail.lawDetails}">상세 유형</th>
+						<td th:text="${fineNtcInfo.tfcLwInfo.lawNm}">교통사고</td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.policeNm}">담당 경찰명</th>
+						<td th:text="${fineNtcInfo.polInfo.polNm}">Chris</td>
+						<th th:text="#{finentc.mngDetail.jrsdcPlcst}">관할 경찰서</th>
+						<td th:text="${fineNtcInfo.polInfo.jur}">MaputoPolice</td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.detail}">상세 내용</th>
+						<td colspan="3" th:text="${fineNtcInfo.tfcEnfMaster.tfcEnfDetail}">과도한 음주 후, 신호위반</td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.firstPrice}">1차 납부금액</th>
+						<td th:text="${fineNtcInfo.firstFineNtcPrice}">50.000</td>
+						<th th:text="#{finentc.mngDetail.firstDt}">1차 납부 기한</th>
+						<td th:text="${#dates.format(fineNtcInfo.firstFineNtcDt, 'yyyy-MM-dd')}">2024-02-20</td>
+					</tr>
+					<tr th:if="${fineNtcInfo.ntcTy ne 'NTT001'}">
+						<th th:text="#{finentc.mngDetail.secondPrice}">2차 납부금액</th>
+						<td th:text="${fineNtcInfo.secondFineNtcPrice}">50.000</td>
+						<th th:text="#{finentc.mngDetail.secondDt}">2차 납부 기한</th>
+						<td th:text="${#dates.format(fineNtcInfo.secondFineNtcDt, 'yyyy-MM-dd')}">2024-02-20</td>
+					</tr>
+					<tr id="fileTr" th:if="${fineNtcInfo.fileList ne null}">
+						<th th:text="#{finentc.mngDetail.atchFile}"></th>
+						<td colspan="3">
+							<div class="issuFileList" th:each="fileInfo : ${fineNtcInfo.fileList}">
+								<span th:text="${fileInfo.fileNm}"></span>
+								<a th:href="@{/finentc/second/filedown.do(vioFileId = ${fileInfo.vioFileNo})}">파일 다운로드</a>
+							</div>
+							
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="bill-text">
+			<div th:text="#{finentc.mngDetail.firstCautionMessage}"></div>
+			<div th:text="#{finentc.mngDetail.secondCautionMessage}"></div>
+			<div th:text="#{finentc.mngDetail.adminContect}"></div>
+		</div>
+	</div>
+		<div class="btn-wrap-center">
+			<button type="button" class="sub-btn" th:text="#{finentc.common.btn.cancel}" th:onclick="|location.href='@{/finentc/second/detail.do(fineNtcId = ${fineNtcInfo.fineNtcId})}'|">저장</button>
+			<button type="button" class="main-btn" th:text="#{finentc.common.btn.save}" th:onclick="updateVioInfoBtn([[${fineNtcInfo.vioInfo.vioId}]])">저장</button>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	function updateVioInfoBtn(vioId){
+		const vioPno = document.getElementById("vioPno").value;
+		const vioEmail = document.getElementById("vioEmail").value;
+		
+		if(vioId == null || vioId == ''){
+			return false;
+		}
+		if(vioPno == null || vioPno == ''){
+			return false;
+		}
+		if(vioEmail == null || vioEmail == ''){
+			return false;
+		}
+		
+		
+		$.ajax({
+			url: /*[[@{/finentc/second/vioUpdate.ajax}]]*/ '/finentc/second/vioUpdate.ajax',
+			type: "post",
+			data: {
+				"vioId" : vioId,
+				"vioPno" : vioPno,
+				"vioEmail" : vioEmail
+				},
+			dataType : "json",
+			success: function (data) {
+				if (data.code == "200") {
+					alert(data.message);
+					location.reload();
+				} else {
+					alert(data.message);
+				}
+			}
+		});
+	}
+</script>

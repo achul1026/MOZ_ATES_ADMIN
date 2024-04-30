@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+	<form id="frmPolInfoModify">
+		<div id="container-fluid">
+			<h1 id="detail-content-title">Myinfo Chanege</h1>
+			
+			<div class="detail-table-wrap">
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{myinfo.changeMyInfo.id}">아이디</th>
+							<td th:text="${myInfoDetail.oprtrAccountId}">
+	<!--							<input type="text" class="main-input" id="oprtrAccountId" name="oprtrAccountId" th:placeholder="#{myinfo.changeMyInfo.placeholder.accountId}" th:value="${myInfoDetail.oprtrAccountId}">-->
+							</td>
+							<th th:text="#{myinfo.changeMyInfo.password}">비밀번호</th>
+							<td class="tdFlex">
+								<a href="/myinfo/changeMyInfo.do" class="border-btn" th:text="#{myinfo.common.btn.modify.password}">Password Modify</a>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{myinfo.changeMyInfo.name}">이름</span>
+							</th>
+							<td>
+								<input type="hidden" id="oprtrId" name="oprtrId" th:value="${myInfoDetail.oprtrId}">
+								<input type="text" class="main-input" id="oprtrNm" name="oprtrNm" th:placeholder="#{myinfo.changeMyInfo.placeholder.oprtrNm}" th:value="${myInfoDetail.oprtrNm}">
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{myinfo.changeMyInfo.contact}">연락처</span>
+							</th>
+							<td>
+								<input type="text" class="main-input" id="oprtrPno" name="oprtrPno" th:placeholder="#{myinfo.changeMyInfo.placeholder.oprtrPno}" th:value="${myInfoDetail.oprtrPno}">
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{myinfo.changeMyInfo.email}">이메일</th>
+							<td>
+								<input type="text" class="main-input" id="oprtrEmail" name="oprtrEmail" th:placeholder="#{myinfo.changeMyInfo.placeholder.oprtrEmail}" th:value="${myInfoDetail.oprtrEmail}">
+							</td>
+							<th th:text="#{myinfo.changeMyInfo.authNm}">권한명</th>
+							<td th:text="${myInfoDetail.oprtrPermissionName}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{myinfo.changeMyInfo.company}">소속</th>
+							<td th:text="${myInfoDetail.oprtrDeptNm}"></td>
+							<th th:text="#{myinfo.changeMyInfo.joindate}">가입날짜</th>
+							<td th:text="${#dates.format(myInfoDetail.oprtrRegDt, 'yyyy-MM-dd')}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			<div class="registor-btn-right">
+				<button type="button" class="main-btn" onclick="myInfoModify()" th:text="#{myinfo.common.btn.modify.myInfo}">Myinfo Modify</button>
+				<a href="/myinfo/myPage.do" class="border-btn" th:text="#{myinfo.common.btn.cancel}">Cancel</a>
+			</div>
+		</div>
+	</form>
+</th:block>
+</html>
+<script th:inline="javascript">
+	function myInfoModify(){
+		const failedMsg = /*[[#{myinfo.changeMyInfo.failed}]]*/
+		const successMsg = /*[[#{myinfo.changeMyInfo.success}]]*/
+		
+		const formData = new FormData(document.getElementById('frmPolInfoModify'));
+		
+		//const loading = loading("Saving...").start();
+		
+		fetch('/myinfo/modify',{
+			method : "post",
+			body : formData
+		})
+		.then(response => response.json())
+		.then((result) => {
+			 if (result.code === 200) {
+				 	alert(successMsg);
+					location.href="/myinfo/myPage.do";
+	            } else {
+	                alert(failedMsg);
+	            }
+		}).finally(() => {
+			//loading.end();
+		});
+	}
+</script>

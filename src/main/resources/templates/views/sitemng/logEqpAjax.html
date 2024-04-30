@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div id="container-fluid">
+	<div id="logTabWrap">
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.enforcement}" onclick="getlogListAjax('enf')">단속</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.accident}" onclick="getlogListAjax('acdnt')">사고</a>
+		<a href="javascript:void(0);" class="on" th:text="#{sitemng.logList.equipment}">단속장비</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.user}" onclick="getlogListAjax('user')">사용자</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.sysfailure}" onclick="getlogListAjax('sysFail')">시스템 장애</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.colfailure}" onclick="getlogListAjax('colFail')">수집실패</a>
+	</div>
+	<!-- Page Heading -->
+	<h1 id="content-title" th:text="#{sitemng.logList.title}">Log Management</h1>
+	<div id="content-sub-title" th:text="#{sitemng.logList.subTitle}">Manage the Log.</div>
+	<div class="">
+		<form id="frmSearch">
+			<input type="hidden" id="page" name="page" th:value="1">
+			<input type="hidden" id="logType" name="logType" value="eqp">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{equipment.common.search.searchOp}">유형 선택</th>
+						<td>
+							<select name="searchType" class="filter-select" id="searchType" th:field="${tfcEnfEqpLog.searchType}">
+								<option value="all" th:text="#{equipment.common.search.selectAll}">전체</option>
+								<option value="logId" th:text="#{equipment.common.log.logId}">요청 ID</option>
+								<option value="eqp" th:text="#{equipment.common.log.eqpId}">단속장비 ID</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.common.search.dateOp}">날짜 선택</th>
+						<td>
+							<input class="input-date" id="sDate" name="sDate" type="date" th:value="${tfcEnfEqpLog.getSDate()}"> ~
+							<input class="input-date" id="eDate" name="eDate" type="date" th:value="${tfcEnfEqpLog.getEDate()}">
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.common.search.serchTerm}">검색</th>
+						<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" 
+								th:placeholder="#{equipment.common.search.placeholder}" th:value="${tfcEnfEqpLog.searchTxt}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<div class="btn-wrap-center">
+			<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{common.button.search}">조회</button>
+			<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')"
+				th:text="#{common.button.resetSearch}">검색 초기화</button>
+		</div>
+	</div>
+
+	<form id="frmSearch">
+		<!--			<input type="hidden" id="page" name="page" th:value="${pagination.page}">-->
+		<!--			<input type="hidden" id="hdnStart" name="start" th:value="${tfcAcdntChgHst.start}">-->
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+			</div>
+		</div>
+	</form>
+
+	<div class="">
+		<table class="main-table" id="tblList">
+			<thead>
+				<tr>
+					<th th:text="#{equipment.logList.tableNumber}">No.</th>
+					<th th:text="#{equipment.logList.requestId}">요청 ID</th>
+					<th th:text="#{equipment.logList.carNumber}">내용</th>
+					<th th:text="#{equipment.common.log.creationDate}">등록일</th>
+					<th th:text="#{equipment.logList.controlResult}">성공여부</th>
+					<th th:text="#{equipment.logList.equipmentNumber}">요청단속장비</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="eqpLogItem : ${eqpLogList}" th:onclick="|location.href='@{/siteMng/log/detail.do?logType=eqp&(logId=${eqpLogItem.logId})}'|">
+					<td th:text="${eqpLogItem.rnum}"></td>
+					<td th:text="${eqpLogItem.logId}"></td>
+					<td th:text="${eqpLogItem.enfEqpMaster.roadAddr}"></td>
+					<td th:text="${#dates.format(eqpLogItem.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+					<td th:text="${eqpLogItem.cntrlResult}"></td>
+					<td th:text="${eqpLogItem.tfcEnfEqpId}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="page_wrap">
+		<div th:insert="tags/paging :: pagingFragment"></div>
+	</div>
+</div>
+</html>
+<script th:inline="javascript">
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();		
+	})
+</script>

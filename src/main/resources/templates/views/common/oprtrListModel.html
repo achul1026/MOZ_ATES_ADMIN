@@ -1,0 +1,49 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<div class="modal-contents modal-company-group">
+	
+	<div class="modal-title">
+		<div class="modal-title-text" th:text="#{common.oprtr.title}">담당자 정보 조회</div>
+		<img src="/images/close.png" alt="닫기" class="close" onclick="changeDeptListModal('hide')">
+	</div>
+	
+	<div class="modal-body">
+		<div class="modal-form-wrap">
+			<input type="hidden" id="modalPage" name="page" value="1">
+			<input type="hidden" id="modalStart" name="start" th:value="${webOprtr.start}">			
+			<input type="text" class="modal-search" id="searchContent" th:placeholder="#{common.oprtr.placeholerTxt}">
+			<i class="modal-search-icon"onclick="findOprtrBtn()"></i>
+		</div>
+		
+		<div class="ex-group-name" th:text="#{common.oprtr.exmpTxt}">예시) 담당자 이름을 두글자 이상 입력해주세요.</div>
+
+		<div class="modal-search-list">
+			<div class="modal-search-result">
+				Found <span th:text='|"${pagination.totalListCnt}"|' id="totalCnt"></span> results
+			</div>
+			<table class="main-table">
+				<thead>
+					<th th:text="#{common.oprtr.tableNo}">번호</th>
+					<th th:text="#{common.oprtr.tableDept}">소속</th>
+					<th th:text="#{common.oprtr.tableNm}">담당자</th>
+				</thead>
+				<tbody id="modalTbody">
+					<tr th:each="oprtr : ${oprtrList}" th:onclick="selectDept([[${oprtr.oprtrId}]],  [[${oprtr.oprtrNm}]], [[${oprtr.oprtrDeptNm}]])">
+						<td th:text="${oprtr.rnum}"></td>
+						<td th:text="${oprtr.oprtrDeptNm != null ? oprtr.oprtrDeptNm : '-'}"></td>
+						<td th:text="${oprtr.oprtrNm != null ? oprtr.oprtrNm : '-'}"></td>
+					<tr>
+<!-- 					<tr onclick="selectDept('123', '교통안전부')"> -->
+<!-- 						<td>1</td> -->
+<!-- 						<td>교통안전부</td> -->
+				</tbody>
+			</table>
+			<div class="page_wrap" id="modalPaging">
+				<div th:insert="tags/paging :: pagingFragment"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script th:inline="javascript">
+</script>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+	<form id="frmVerfyPassword">
+		<div id="container-fluid">
+			<h1 id="detail-content-title">Password Check</h1>
+			<div class="detail-table-wrap">
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{myinfo.password.confirmPw.password}">비밀번호</th>
+							<td>
+								<input type="hidden" id="type" th:value="${type}">
+								<input type="password" class="main-input data-validate" id="passwordCheck" name="oprtrAccountPw"
+								th:data-valid-name="#{myinfo.password.confirmPw.password}" th:placeholder="#{myinfo.password.confirmPw.placeholder.password}" data-valid-required>
+								<i class="eye eyePassCheck" id="eyePasswordCheck" onclick="passWordEye('passwordCheck', 'eyePasswordCheck')"></i>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="registor-btn-right">
+				<button type="button" class="main-btn" th:if="${type == 'user'}" th:text="#{myinfo.password.confirmPw.passwordConfirm}" onclick="verfyPassword()">Password Confirm</button>
+				<button type="button" class="main-btn" th:if="${type == 'password'}" th:text="#{myinfo.password.confirmPw.passwordConfirm}" onclick="verfyPassword()">Password Confirm</button>
+				<a href="/myinfo/myPage.do" class="border-btn" th:text="#{myinfo.common.btn.cancel}">Cancel</a>
+			</div>
+		</div>
+	</form>
+</th:block>
+</html>
+<script th:inline="javascript">
+	function verfyPassword() {
+		if($("#frmVerfyPassword").soValid()) {
+			const failedMsg = /*[[#{myinfo.password.confirmPw.failed}]]*/;
+			const validationMsg = /*[[#{myinfo.password.confirmPw.validation}]]*/;
+			
+			const formData = new FormData(document.getElementById('frmVerfyPassword'));
+			
+			const type = document.getElementById('type').value;
+			const password = document.getElementById('passwordCheck').value;
+			
+			let url = "";
+			
+			
+			if(password == null || password == ''){
+				new ModalBuilder().init().alertBody(validationMsg).footer(4,'Confirm',function(button, modal){
+						modal.close();
+						
+					}).open();
+				return false;
+			}
+			
+			switch(type){
+				case 'password':
+					url = "/myinfo/changePw.do";
+				break;
+				case 'user':
+					url = "/myinfo/changeMyInfo.do";
+				break;
+			}
+	
+			//const loading = loading("Saving...").start();
+			
+			fetch('/myinfo/verfy',{
+				method : "post",
+				body : formData
+			})
+			.then(response => response.json())
+			.then((result) => {
+				 if (result.code === 200) {
+						location.href = url;
+		            } else {
+		                new ModalBuilder().init().alertBody(failedMsg).footer(4,'Confirm',function(button, modal){
+						modal.close();
+					}).open();
+		            }
+			}).finally(() => {
+				//loading.end();
+			});
+		}
+	}
+</script>

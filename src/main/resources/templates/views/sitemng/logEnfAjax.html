@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div id="container-fluid">
+	<div id="logTabWrap">
+		<a href="javascript:void(0);" class="on" th:text="#{sitemng.logList.enforcement}">단속</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.accident}" onclick="getlogListAjax('acdnt')">사고</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.equipment}" onclick="getlogListAjax('eqp')">단속장비</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.user}" onclick="getlogListAjax('user')">사용자</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.sysfailure}" onclick="getlogListAjax('sysFail')">시스템 장애</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.colfailure}" onclick="getlogListAjax('colFail')">수집실패</a>
+	</div>
+	<!-- Page Heading -->
+	<h1 id="content-title" th:text="#{sitemng.logList.title}">Log Management</h1>
+	<div id="content-sub-title" th:text="#{sitemng.logList.subTitle}">Manage the Log.</div>
+	<div class="">
+		<form id="frmSearch">
+			<input type="hidden" id="page" name="page" th:value="1">
+			<input type="hidden" id="logType" name="logType" value="enf">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{enforcement.common.search.searchOp}">유형 선택</th>
+						<td>
+							<select name="searchType" id="searchType" class="filter-select" th:field="${tfcEnfHst.searchType}">
+								<option value="all" th:text="#{enforcement.common.search.selectAll}">전체</option>
+								<option value="hstId" th:text="#{enforcement.common.search.searchType.requestedId}">요청 ID</option>
+								<option value="crtr" th:text="#{enforcement.common.search.searchType.requestedBy}">요청자</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.common.search.dateOp}">날짜 선택</th>
+						<td>
+							<input class="input-date" id="sDate" name="sDate" type="date" th:value="${tfcEnfHst.sDate}"> ~
+							<input class="input-date" id="eDate" name="eDate" type="date" th:value="${tfcEnfHst.eDate}">
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.common.search.serchTerm}">내용 검색</th>
+						<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text"
+								th:placeholder="#{enforcement.common.search.placeholder}" th:value="${tfcEnfHst.searchTxt}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<div class="btn-wrap-center">
+			<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{common.button.search}">조회</button>
+			<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')"
+				th:text="#{common.button.resetSearch}">검색 초기화</button>
+		</div>
+	</div>
+
+	<form id="frmSearch">
+		<!--			<input type="hidden" id="page" name="page" th:value="${pagination.page}">-->
+		<!--			<input type="hidden" id="hdnStart" name="start" th:value="${tfcAcdntChgHst.start}">-->
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+			</div>
+		</div>
+	</form>
+
+	<div class="">
+		<table class="main-table" id="tblList">
+			<thead>
+				<tr>
+					<th th:text="#{enforcement.log.list.tableNumber}">No.</th>
+					<th th:text="#{enforcement.log.common.reqId}">요청 ID</th>
+					<th th:text="#{enforcement.log.list.comment}">설명</th>
+					<th th:text="#{enforcement.log.common.creationDate}">발생일자</th>
+					<th th:text="#{enforcement.log.common.successOrNot}">상태코드</th>
+					<th th:text="#{enforcement.log.list.registerType}">등록자 유형</th>
+					<th th:text="#{enforcement.log.common.requestor}">요청자</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr th:each="logItm : ${logLists}" th:onclick="|location.href='@{/siteMng/log/detail.do?logType=enf&(logId=${logItm.hstId})}'|">
+					<td th:text="${logItm.rnum}"></td>
+					<td th:text="${logItm.hstId}"></td>
+					<td th:text="${logItm.cmnt}"></td>
+					<td th:text="${#dates.format(logItm.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+					<td>
+						<th:block th:switch="${logItm.tfcEnfPrcCd}">
+						    <span th:case="TEP001">Regist</span>
+						    <span th:case="TEP002">Update</span>
+						    <span th:case="TEP003">delete</span>
+						</th:block>
+					</td>
+					<td>
+						<th:block th:switch="${logItm.tfcEnfRegTy}">
+						    <span th:case="RTC000">Super Admin</span>
+						    <span th:case="RTC001">Admin User</span>
+						    <span th:case="RTC002">Office Operator</span>
+						    <span th:case="RTC003">Police Operator</span>
+						    <span th:case="RTC004">Police Officer</span>
+						</th:block>
+					</td>
+					<td>
+						<th:block th:if="${logItm.tfcEnfRegTy == 'RTC000' || logItm.tfcEnfRegTy == 'RTC001' || logItm.tfcEnfRegTy == 'RTC002'}">
+							<span th:text="${logItm.webOprtr.OprtrNm}"></span>
+						</th:block>
+						<th:block th:if="${logItm.tfcEnfRegTy == 'RTC003' || logItm.tfcEnfRegTy == 'RTC004'}">
+							<span th:text="${logItm.polInfo.polNm}"></span>
+						</th:block>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="page_wrap">
+		<div th:insert="tags/paging :: pagingFragment"></div>
+	</div>
+</div>
+</html>
+<script th:inline="javascript">
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();		
+	})
+</script>

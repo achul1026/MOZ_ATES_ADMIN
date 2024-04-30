@@ -1,10 +1,67 @@
 <!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
-</head>
-<body>
+<html xmlns:th="http://www.thymeleaf.org">
 
-</body>
-</html>
+<th:block th:if="${not #strings.isEmpty(enfSearchVO.carNum) && not #strings.isEmpty(driverDetail.address)}">
+    <div class="container-fluid">
+        <div class="">
+            <h6 class="" th:text="#{enforcement.car.search.Ajax.title}">차량 상세정보</h6>
+        </div>
+        <div class="">
+            <div class="">
+                <table class="">
+                    <colgroup>
+                        <col width="20%">
+                        <col width="30%">
+                        <col width="20%">
+                        <col width="30%">
+                    </colgroup>
+                    <thead>
+						<th>번호</th>
+						<th>이름</th>
+						<th>
+							<select>
+								<option>전체</option>
+								<option>정상</option>
+								<option>정지</option>
+								<option>취소</option>
+								<option>만료</option>
+							</select>
+						</th>
+						<th>연락처</th>
+						<th>운전면허번호</th>
+						<th>
+							<select>
+								<option>지역</option>
+								<option>전체</option>
+								<option>나킬라</option>
+								<option>나킬라</option>
+								<option>나킬라</option>
+							</select>
+						</th>
+						<th>
+							<select>
+								<option>납부상태</option>
+								<option>전체</option>
+								<option>납부</option>
+								<option>미납</option>
+								<option>체납</option>
+							</select>
+						</th>
+					</thead>
+                    <tbody>
+	                    <tr>
+												
+	                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</th:block>
+
+<th:block th:if="${not #strings.isEmpty(enfSearchVO.carNum) && #strings.isEmpty(driverDetail.address)}">
+    <div class="searchNoDater">
+        <p th:text="#{enforcement.car.search.Ajax.content}">검색 결과가 없습니다.</p>
+    </div>
+</th:block>
+

@@ -5,88 +5,199 @@
 
 <th:block layout:fragment="content">
 
-    <div class="container-fluid">
+    <div id="container-fluid">
 
         <!-- Page Heading -->
-        <h1 th:text="#{stat.stat.title.facilityChart}" class="h3 mb-2 text-gray-800">교통시설물 통계</h1>
+        <h1 th:text="#{stat.stat.title.facilityChart}" id="content-title">교통안전시설물 통계</h1>
+        <div id="content-sub-title">You can check traffic safety facility statistics.</div>
         <!-- Content Row -->
-        <div class="row">
+		
+		 <form id="frmSearch">
+			<input type="hidden" id="page" name="page">
+			<input type="hidden" id="hdnStart" name="start">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<th>Time</th>
+						<td class="">
+							<div class="filterRadioWrap">
+<!-- 								<div class="timeLine"> -->
+<!-- 									<input type="radio" id="timeLine" name="date" class="filterRadio" value="hourly" checked> -->
+<!-- 									<label for="timeLine" class="filterRadioBtn timeLineBtn" onclick="filterdateCheck('true')" th:text="#{stat.common.hourly}">시간대별</label> -->
+<!-- 								</div> -->
+								<div>
+									<input type="radio" id="monthBtn" name="date" class="filterRadio" value="daily" checked>
+									<label for="monthBtn" class="filterRadioBtn" onclick="filterdateCheck('false')" th:text="#{stat.common.daily}">일별</label>
+								</div>
+								<div>
+									<input type="radio" id="monthly" name="date" class="filterRadio" value="monthly">
+									<label for="monthly" class="filterRadioBtn monthBtn" onclick="filterdateCheck('monthly')" th:text="#{stat.common.monthly}">월간</label>
+								</div>
+								<div class="time-today-on">
+									<input class="input-date monthInput" id="sDate" name="sDate" type="date"> ~
+									<input class="input-date monthInput" id="eDate" name="eDate" type="date">
+								</div>
+<!-- 								<div class="time-today-on"> -->
+<!-- 									<input class="input-date" id="timeLineInput" name="sDate" type="date"> -->
+<!-- 								</div> -->
+							</div>
+						</td>
+					<tr>
+						<th>Category</th>
+						<td>
+							<div class="filterRadioWrap">
+								<div>
+									<input type="radio" id="findAll" name="category" class="filterRadio" value="findAll" checked>
+									<label for="findAll" class="filterRadioBtn">findAll</label>
+								</div>
+								<th:block th:each="item, status : ${eqpCdList}">
+									<div>
+										<input type="radio" th:id="${item.cdId}" name="category" class="filterRadio" th:value="${item.cdId}" th:data-value="${item.cdNm}">
+										<label th:for="${item.cdId}" class="filterRadioBtn" th:text="${item.cdNm}"></label>
+									</div>
+								</th:block>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
 
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 th:text= "#{penalty.common.searchCon}" class="m-0 font-weight-bold text-primary">검색조건</h6>
-                    </div>
-                    <div class="card-body">
-                        <form id="frmLawSearch">
-                            <label th:text= "#{penalty.common.startDate}">시작일</label>
-                            <input class="form-control col-lg-2" id="sDate" name="sDate" type="date" >
-                            &nbsp;&nbsp;&nbsp;
-                            <label th:text= "#{penalty.common.endDate}">종료일</label>
-                            <input class="form-control col-lg-2" id="eDate" name="eDate" type="date" >
-                            &nbsp;&nbsp;&nbsp;
-                            <button th:text= "#{penalty.common.search}" type="button" id="btnSearch" class="btn btn-outline-primary">조회</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-            <div class="col-xl-8 col-lg-7">
-
-                <!-- Area Chart -->
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 th:text="#{stat.stat.facilityLineChart}" class="m-0 font-weight-bold text-primary">교통시설물 선 차트</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-area">
-                            <canvas id="myAreaChart"></canvas>
-                        </div>
-
-                    </div>
-                </div>
-
-                <!-- Bar Chart -->
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 th:text="#{stat.stat.facilityBarChart}" class="m-0 font-weight-bold text-primary">교통시설물 바 차트</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="chart-bar">
-                            <canvas id="myBarChart"></canvas>
-                        </div>
-
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Donut Chart -->
-            <div class="col-xl-4 col-lg-5">
-                <div class="card shadow mb-4">
-                    <!-- Card Header - Dropdown -->
-                    <div class="card-header py-3">
-                        <h6 th:text="#{stat.stat.facilityDonutCahrt}" class="m-0 font-weight-bold text-primary">교통시설물 도넛 차트</h6>
-                    </div>
-                    <!-- Card Body -->
-                    <div class="card-body">
-                        <div class="chart-pie pt-4">
-                            <canvas id="myPieChart"></canvas>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
+			<div class="btn-wrap-center">
+				 <button th:text= "#{penalty.common.search}" type="button" id="btnSearch" class="main-btn form-button">조회</button>
+			</div>
+		</form>
+		
+      
+       
+      <div class="chart none">
+			<div class="btn-wrap-right">
+<!-- 				<a href="" class="excel-down">Excel Download<img src="/images/download.png" class="down-img"></a> -->
+			</div>
+			<div class="chartBox">
+				<canvas id="stat-acdt-bar" width="400" height="200"></canvas>
+			</div>
         </div>
-
     </div>
 
 </th:block>
 </html>
+
+<script th:inline="javascript">
+	$(document).ready(function(){
+		const today = new Date();
+		const yesterday = new Date(today);
+		yesterday.setDate(yesterday.getDate() - 1);
+		$('#sDate').val(yesterday.toISOString().slice(0, 10));
+		$('#eDate').val(today.toISOString().slice(0, 10));
+	})
+
+	/**단속/사고 차트***/
+	$("#btnSearch").on("click", function(){
+		var timeType = $("input[name=date]:checked").val();
+		var cate = $("input[name=category]:checked").val();
+		var cateNm = $("input[name=category]:checked").data("value");
+		
+		var sDate;
+		var eDate;
+		switch(timeType){
+			case 'hourly':
+				sDate = $("#timeLineInput").val();
+			break;
+			case 'daily':
+				sDate = $("#sDate").val();
+				eDate = $("#eDate").val();
+			break;
+			case 'monthly':
+				sDate = $("#sDate").val();
+				eDate = $("#eDate").val();
+			break;
+		}
+		
+		$(".chart").removeClass("none");
+		$("#stat-acdt-bar").remove();
+		$(".chartBox").append(
+			'<canvas id="stat-acdt-bar" width="400" height="200"></canvas>'
+		)
+		
+		var dataArr = new Array();
+		
+		$.ajax({
+			type : "get",
+			url: /*[[@{/stat/facility/chart.ajax}]]*/ "/stat/facility/chart.ajax",
+			data : {
+				"timeType" : timeType,
+				"cate" : cate,
+				"sDate" : sDate,
+				"eDate" : eDate
+			},
+			success: function(result) {
+				var chartLabelString = result.data.chartLabel;
+				var chartDataString = result.data.chartDataList;
+				if(cate == 'findAll'){
+					var labelDataList = chartLabelString.toString().split(',');
+					var labelArr = result.data.labelList.split(',');
+					for(var i = 0; i < labelArr.length; i ++){
+						var dataObj = new Object();
+						var chartData = chartDataString[i];
+			    		var labelNm = labelArr[i];
+			    		console.log(chartData);
+			    		var RGB_1 = Math.floor(Math.random() * (255 + 1))
+			    		var RGB_2 = Math.floor(Math.random() * (255 + 1))
+			    		var RGB_3 = Math.floor(Math.random() * (255 + 1))
+			    		var color = 'rgb(' + RGB_1 + ',' + RGB_2 + ',' + RGB_3 + ')'
+			    		
+			    		dataObj.label = labelNm;
+			    		dataObj.data = chartData.split(",");
+			    		dataObj.backgroundColor = color;
+			    		dataObj.borderWidth = 3;
+			    		dataObj.borderColor = color;
+			    		
+			     		dataArr.push(dataObj);
+					}
+				 	new MozChart(ChartType.BAR).init("stat-acdt-bar")
+				 	.setDataSetArrayLabel(chartLabelString.split(","))
+			 	    .setDataArraySet(dataArr)
+			 	    .draw();
+				}else {
+				 	new MozChart(ChartType.BAR).init("stat-acdt-bar")
+				 	    .setData({
+				 	        labels: chartLabelString.split(","),
+				 	        datasets: [{
+				 	            label : cateNm,
+				 	        	data: chartDataString.split(","),
+				 		        borderColor: "#FF5656",
+				 		        backgroundColor: '#FF5656',
+				 	        }]   
+				 	    })
+				 	    .draw();
+				}
+			}
+		})
+	});
+	    
+	const filterButtons = document.querySelectorAll('.filter-table-button');
+
+	filterButtons.forEach(button => {
+	    button.addEventListener('click', function() {
+	        
+	        this.classList.add('on');
+	        
+	        const siblings = this.parentNode.children;
+	        for (let sibling of siblings) {
+	            if (sibling !== this) {
+	                sibling.classList.remove('on');
+	            }
+	        }
+	    });
+	});
+</script>
 <!-- Page level plugins -->
-<script th:src="@{/bootstrap/vendor/chart.js/Chart.min.js}"></script>
+<!--<script th:src="@{/bootstrap/vendor/chart.js/Chart.min.js}"></script>-->
 
 <!-- Page level custom scripts -->
-<script th:src="@{/bootstrap/js/demo/chart-area-demo.js}"></script>
-<script th:src="@{/bootstrap/js/demo/chart-pie-demo.js}"></script>
-<script th:src="@{/bootstrap/js/demo/chart-bar-demo.js}"></script>
+<!--<script th:src="@{/bootstrap/js/demo/chart-area-demo.js}"></script>-->
+<!--<script th:src="@{/bootstrap/js/demo/chart-pie-demo.js}"></script>-->
+<!--<script th:src="@{/bootstrap/js/demo/chart-bar-demo.js}"></script>-->

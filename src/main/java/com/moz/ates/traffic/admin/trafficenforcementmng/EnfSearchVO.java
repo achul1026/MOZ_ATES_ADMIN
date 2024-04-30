@@ -1,8 +1,6 @@
 package com.moz.ates.traffic.admin.trafficenforcementmng;
 
 import lombok.Data;
-import lombok.Getter;
-import lombok.Setter;
 
 @Data
 public class EnfSearchVO {

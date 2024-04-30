@@ -1,122 +1,125 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
 
-    <div class="container-fluid">
+	<div id="container-fluid">
 
-        <!-- Page Heading -->
-        <h1 class="h3 mb-4 text-gray-800" th:text="#{enforcement.info.list.title}">교통단속 정보관리</h1>
+		<!-- Page Heading -->
+		<h1 id="content-title" th:text="#{enforcement.info.list.title}">전체 교통 단속 수</h1>
+		<div id="content-sub-title" th:text="#{enforcement.info.list.descr}">위반사항, 단속번호, 차량번호 및 기간 정보를 통해 교통 단속 정보를 조회할 수 있습니다.</div>
 
-        <div class="row">
+		<form id="frmSearch">
+			<input type="hidden" id="page" name="page" th:value="${pagination.page}">
+			<input type="hidden" id="hdnStart" name="start" th:value="${tfcEnfMaster.start}">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{enforcement.common.search.searchOp}">유형 선택</th>
+						<td>
+							<select name="searchType" id="searchType" class="filter-select">
+								<option value="all" th:text="#{enforcement.common.search.selectAll}">전체</option>
+								<option value="enfNo" th:text="#{enforcement.info.list.enforcementNumber}">단속번호</option>
+								<option value="vhNo" th:text="#{enforcement.info.list.vhRegNo}">차량번호</option>
+								<option value="name" th:text="#{enforcement.info.list.violatorName}">운전자명</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.common.search.dateOp}">날짜 선택</th>
+						<td>
+							<input class="input-date" id="sDate" name="sDate" type="date" th:value="${tfcEnfMaster.sDate}"> ~
+							<input class="input-date" id="eDate" name="eDate" type="date" th:value="${tfcEnfMaster.eDate}">
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.common.search.serchTerm}">내용 검색</th>
+						<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" 
+								th:value="${tfcEnfMaster.searchTxt}" th:placeholder="#{enforcement.driver.search.placeholder}"></td>
+					</tr>
+				</tbody>
+			</table>
 
+			<div class="btn-wrap-center">
+				<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{enforcement.info.list.check}">조회</button>
+				<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')" th:text="#{enforcement.common.search.reset}">검색 초기화</button>
+			</div>
+		</form>
 
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-body search-form">
-                        <form id="frmSearch" class="flex-center gap12">
-                            <input type="hidden" id="hdnStart" name="start" th:value="${tfcEnfMaster.start}">
-                            <label th:text="#{enforcement.info.list.startDate}" class="">시작일</label>
-                            <input class="form-control col-lg-2 input-data" id="sDate" name="sDate" type="date" th:value="${tfcEnfMaster.getSDate()}">
-                          
-                            <label th:text="#{enforcement.info.list.endDate}">종료일</label>
-                            <input class="form-control col-lg-2 input-data" id="eDate" name="eDate" type="date" th:value="${tfcEnfMaster.getEDate()}">
-                          
-                            <label>
-                                <select class="form-control select" name="searchType">
-                                    <option value="all" th:text="#{enforcement.info.list.selectAll}">전체</option>
-                                </select>
-                            </label>
-                            <input class="form-control col-lg-3  search-box" name="searchTxt" type="text" th:value="${tfcEnfMaster.searchTxt}">
-                          
-                            <button type="button" id="btnSearch" class="btn btn-outline-primary" th:text="#{enforcement.info.list.check}">조회</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+			</div>
+			<div>
+				<button type="button" class="main-btn form-button" th:onclick="|location.href='/enf/info/save.do'|" th:text="#{enforcement.info.list.infoRegistration}">등록하기</button>
+			</div>
+		</div>
+		
+			<div class="">
+				<table class="main-table" id="tblList" cellspacing="0" aria-describedby="dataTable_info">
+					<colgroup>
 
-
-
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                                <div class="row"><div class="col-sm-12">
-                                    <table class="table table-bordered dataTable" id="tblList" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
-                                        <thead>
-                                        <tr role="row">
-                                            <th class="sorting sorting_asc" style="width: 56px;" th:text="#{enforcement.info.list.tableNumber}">No.</th>
-                                            <th class="sorting" style="width: 61px;" th:text="#{enforcement.info.list.enforcementNumber}">단속번호</th>
-                                            <th class="sorting" style="width: 31px;" th:text="#{enforcement.info.list.violationName}">위반명</th>
-                                            <th class="sorting" style="width: 49px;" th:text="#{enforcement.info.list.enforcementDate}">단속일시</th>
-                                            <th class="sorting" style="width: 67px;" th:text="#{enforcement.info.list.enforcementPlace}">단속장소</th>
-                                            <th class="sorting" style="width: 68px;" th:text="#{enforcement.info.list.violatorName}">위반자명</th>
-                                        </tr>
-                                        </thead>
-
-                                        <tbody>
-																				<tr th:each="infoList, varstaus : ${infoList}">
-																						<td th:text="${infoList.rnum}"></td>
-																						<td th:text="${infoList.tfcEnfId}" th:onclick="|location.href='@{/enf/info/detail.do(tfcEnfId=${infoList.tfcEnfId})}'|"></td>
-																						<td th:text="${infoList.lastTfcEnfProcCd}"></td>
-																						<td th:text="${infoList.tfcEnfDt}"></td>
-																						<td th:text="${infoList.roadAddr}"></td>
-																						<td th:text="${infoList.vioId}"></td>
-																				</tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                                <div class="page_wrap">
-				                    <div th:insert="tags/paging :: pagingFragment"></div>
-			                  </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-        </div>
-
-    </div>
-
-
-
+					</colgroup>
+					<thead>
+						<tr>
+							<th th:text="#{enforcement.info.list.tableNumber}">No.</th>
+							<th th:text="#{enforcement.info.list.enforcementNumber}">단속번호</th>
+							<th th:text="#{enforcement.info.list.enforcementType}">단속유형</th>
+							<th th:text="#{enforcement.info.list.enforcementDate}">단속일시</th>
+							<th th:text="#{enforcement.info.list.enforcementPlace}">단속장소</th>
+							<th th:text="#{enforcement.info.list.violatorName}">위반자명</th>
+							<th th:text="#{enforcement.info.list.vhRegNo}">차량번호</th>
+							<th th:text="#{enforcement.info.list.payStatus}">납부상태</th>
+						</tr>
+					</thead>
+					
+					<tbody>
+						<tr th:each="infoItem : ${infoList}" 
+								th:onclick="|location.href='@{/enf/info/detail.do(tfcEnfId=${infoItem.tfcEnfId})}'|">
+							<td th:text="${infoItem.rnum}"></td>
+							<td th:text="${infoItem.tfcEnfId}"></td>
+							<td th:text="${infoItem.tfcEnfEqpId != null ? 'Equipment Enforcement' : 'On-site Enforcement'}">-</td>
+							<td th:text="${#dates.format(infoItem.tfcEnfDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+							<td th:text="${infoItem.roadAddr}"></td>
+							<td th:text="${infoItem.vioInfo.vioNm}"></td>
+							<td th:text="${infoItem.vhRegNo}"></td>
+							<td>
+								<span class="tableStausOn" th:if="${infoItem.finePymntInfo?.pymntStts == 'Y'}" th:text="'Paid'"></span>
+								<span class="tableStausOff" th:unless="${infoItem.finePymntInfo?.pymntStts == 'Y'}" th:text="'Non Paid'"></span>
+							</td>
+						</tr>
+					</tbody>
+					
+				</table>
+			</div>
+			
+			<div class="page_wrap">
+				<div th:insert="tags/paging :: pagingFragment"></div>
+			</div>
+			
+	</div>
 </th:block>
+
 </html>
 <script th:inline="javascript">
-    function goDetail(idx){
-        var baseUrl = /*[[@{/enf/info/detail.do}]]*/ '';
+	function goDetail(idx) {
+		var baseUrl = /*[[@{/enf/info/detail.do}]]*/ '';
 
-        window.location.href=baseUrl+"?tfcEnfId="+idx;
-    }
-	function fnPageMove(page){
-		alert("page to move: " + page);
-	//	$("#page").val(page);
-	//	
-	//	var data = $("#finesInfoForm").serialize();
-  //
-	//	$.ajax({
-	//		url: "/finesmng/searchFinesInquiryList",
-	//		data: data,
-	//		success: function(data){
-	//			$("#divListArea").empty();
-	//			$("#divListArea").append(data);
-	//		},
-	//		error: function(args){
-	//			swal({
-	//				  title: "Failed",
-	//				  text: "Please check the fine information.",
-	//				  icon: "warning",
-	//				  button: "Confirm",
-	//			});
-	//		}
-	//	});		
+		window.location.href = baseUrl + "?tfcEnfId=" + idx;
 	}
-
+	
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click',function(){
+		$("#frmSearch").submit();
+	})
 
 </script>

@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+<div id="container-fluid">
+	<div id="printDiv">
+		<h1 id="detail-content-title" th:text="#{finentc.mngDetail.title}">고지 상세 정보</h1>
+		<div class="detail-table">
+			<table class="">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{finentc.mngDetail.vioInfo}">Violation information</th>
+						<td th:text="${fineNtcInfo.cmCd.cdNm}"></td>
+						<th th:text="#{finentc.mngDetail.date}">Date</th>
+						<td th:text="${#dates.format(fineNtcInfo.crDt, 'yyyy-MM-dd')}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.enfId}">단속 번호</th>
+						<td th:text="${fineNtcInfo.tfcEnfId}"></td>
+						<th th:text="#{finentc.mngDetail.placePayment}">납부처</th>
+						<td th:text="${fineNtcInfo.plPymntInfo.placePymntNm}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.driverNm}">운전자명</th>
+						<td th:text="${fineNtcInfo.vioInfo.vioNm}"></td>
+						<th th:text="#{finentc.mngDetail.enfVhNumber}">차량등록번호</th>
+						<td th:text="${fineNtcInfo.tfcEnfMaster.vhRegNo}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.vehiclType}">차량</th>
+						<td th:text="${fineNtcInfo.tfcEnfMaster.vhTy}"></td>
+						<th th:text="#{finentc.mngDetail.vehiclNo}">차량번호</th>
+						<td th:text="${fineNtcInfo.tfcEnfMaster.vhRegNo}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.contact}">연락처</th>
+						<td th:text="${fineNtcInfo.vioInfo.vioPno}"></td>
+						<th th:text="#{finentc.mngDetail.email}">이메일</th>
+						<td th:text="${fineNtcInfo.vioInfo.vioEmail}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.area}">적발지역</th>
+						<td th:text="${fineNtcInfo.tfcEnfMaster.roadAddr}"></td>
+						<th th:text="#{finentc.mngDetail.fine}">범칙금</th>
+						<td th:text="${@mozatesCommonUtils.priceFmt(fineNtcInfo.tfcLwFineInfo.finePrice,'MOZAMBIQUE_METICAL')}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.violationOfLaw}">위반 법령</th>
+						<td th:text="${fineNtcInfo.tfcLwInfo.lawArticleNo}"></td>
+						<th th:text="#{finentc.mngDetail.lawDetails}">상세 유형</th>
+						<td th:text="${fineNtcInfo.tfcLwInfo.lawNm}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.policeNm}">담당 경찰명</th>
+						<td th:text="${fineNtcInfo.polInfo.polNm}"></td>
+						<th th:text="#{finentc.mngDetail.jrsdcPlcst}">관할 경찰서</th>
+						<td th:text="${fineNtcInfo.polInfo.jur}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.detail}">상세 내용</th>
+						<td colspan="3" th:text="${fineNtcInfo.tfcEnfMaster.tfcEnfDetail}">과도한 음주 후, 신호위반</td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.firstPrice}">1차 납부금액</th>
+						<td th:text="${@mozatesCommonUtils.priceFmt(fineNtcInfo.firstFineNtcPrice,'MOZAMBIQUE_METICAL')}"></td>
+						<th th:text="#{finentc.mngDetail.firstDt}">1차 납부 기한</th>
+						<td th:text="${#dates.format(fineNtcInfo.firstFineNtcDt, 'yyyy-MM-dd')}"></td>
+					</tr>
+					<tr th:if="${fineNtcInfo.ntcTy ne 'NTT001'}">
+						<th th:text="#{finentc.mngDetail.secondPrice}">2차 납부금액</th>
+						<td th:text="${@mozatesCommonUtils.priceFmt(fineNtcInfo.secondFineNtcPrice,'MOZAMBIQUE_METICAL')}"></td>
+						<th th:text="#{finentc.mngDetail.secondDt}">2차 납부 기한</th>
+						<td th:text="${#dates.format(fineNtcInfo.secondFineNtcDt, 'yyyy-MM-dd')}"></td>
+					</tr>
+					<tr id="fileTr" th:if="${fineNtcInfo.fileList ne null}">
+						<th th:text="#{finentc.mngDetail.atchFile}"></th>
+						<td colspan="3">
+							
+							<div class="issuFileList" th:each="fileInfo : ${fineNtcInfo.fileList}">
+								<span th:text="${fileInfo.fileNm}"></span>
+								<a th:href="@{/finentc/first/filedown.do(vioFileId = ${fileInfo.vioFileNo})}">파일 다운로드</a>
+							</div>
+							
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="bill-text">
+			<div th:text="#{finentc.mngDetail.firstCautionMessage}"></div>
+			<div th:text="#{finentc.mngDetail.secondCautionMessage}"></div>
+			<div th:text="#{finentc.mngDetail.adminContect}"></div>
+		</div>
+	</div>
+		<div class="btn-wrap-center">
+			<button type="button" id="btnGoList" class="sub-btn left-btn" onclick="javascript:window.history.back()"
+					th:text="#{finentc.common.btn.list}">목록</button>
+			<button type="button" class="sub-btn" th:text="#{finentc.common.btn.modify}"
+					th:onclick="|location.href='@{/finentc/first/modify.do(fineNtcId = ${fineNtcInfo.fineNtcId})}'|">수정</button>
+			
+			<button type="button" th:onclick="emailRe()" class="main-btn" th:text="#{finentc.common.btn.reNotice}">재고지</button>
+			<button type="button" onclick="printPage()" class="main-btn" th:text="#{finentc.common.btn.print}">인쇄</button>
+			
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	var initBodyHtml;
+	
+	const fileTr = document.getElementById("fileTr");
+	
+	function printPage(){
+		window.print();
+	}
+	
+	function beforePrint(){
+		if(fileTr){
+			fileTr.classList.add('d-none');
+			initBodyHtml = document.body.innerHTML;
+	     	document.body.innerHTML = document.getElementById("printDiv").innerHTML;
+		}
+		
+	}
+	function afterPrint(){
+		if(fileTr){
+			fileTr.classList.remove('d-none');
+			document.body.innerHTML = initBodyHtml;		
+		}
+	}
+	
+	function emailRe() {
+		new ModalBuilder().init().successBody('재발송 되었습니다.').footer(4,'확인',function(button, modal){modal.close();}).open();
+	}
+	
+	window.onbeforeprint = beforePrint;
+	window.onafterprint = afterPrint;
+	
+	function reNotice(fineNtcId){
+		if(fineNtcId == null || fineNtcId == ''){
+			return false;
+		}
+		
+		$.ajax({
+			url: /*[[@{/finentc/first/renotice.ajax}]]*/ '/finentc/first/renotice.ajax',
+			type: "post",
+			data: {
+				"fineNtcId" : fineNtcId
+				},
+			dataType : "json",
+			success: function (data) {
+				if (data.code == "200") {
+					alert(data.message);
+				} else {
+					alert(data.message);
+				}
+			}
+		});
+	}
+</script>

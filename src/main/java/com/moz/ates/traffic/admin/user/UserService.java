@@ -2,7 +2,6 @@ package com.moz.ates.traffic.admin.user;
 
 import java.util.List;
 
-import com.moz.ates.traffic.admin.common.DataTableVO;
 import com.moz.ates.traffic.common.entity.operator.MozWebOprtr;
 import com.moz.ates.traffic.common.entity.police.MozPolInfo;
 
@@ -110,5 +109,32 @@ public interface UserService {
      * @return : 
      */
 	int getWebOprtrListCnt(MozWebOprtr webOprtr);
-	
+
+	/**
+	  * @Method Name : deleteUser
+	  * @작성일 : 2024. 2. 21.
+	  * @작성자 : SM.KIM
+	  * @Method 설명 : 사용자 삭제
+	  * @param webOprtr
+	  */
+	void deleteUser(MozWebOprtr webOprtr);
+
+	/**
+	  * @Method Name : updatePolice
+	  * @작성일 : 2024. 2. 22.
+	  * @작성자 : SM.KIM
+	  * @Method 설명 : 경찰 수정
+	  * @param polInfo
+	  */
+	void updatePolice(MozPolInfo polInfo);
+
+	/**
+	  * @Method Name : deletePolice
+	  * @작성일 : 2024. 2. 22.
+	  * @작성자 : SM.KIM
+	  * @Method 설명 : 경찰 삭제
+	  * @param polInfo
+	  */
+	void deletePolice(MozPolInfo polInfo);
+
 }

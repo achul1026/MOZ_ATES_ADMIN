@@ -1,14 +1,17 @@
 package com.moz.ates.traffic.admin.govportal;
 
 import java.util.List;
-import java.util.Map;
 
-import org.springframework.beans.factory.config.PlaceholderConfigurerSupport;
+import org.springframework.web.multipart.MultipartFile;
 
+import com.moz.ates.traffic.common.entity.board.MozAtchFile;
 import com.moz.ates.traffic.common.entity.board.MozBrd;
 import com.moz.ates.traffic.common.entity.board.MozComplaintsReg;
 import com.moz.ates.traffic.common.entity.board.MozFaq;
+import com.moz.ates.traffic.common.entity.board.MozInqry;
 import com.moz.ates.traffic.common.entity.board.MozObjReg;
+import com.moz.ates.traffic.common.entity.board.MozTfcSftyEdctn;
+import com.moz.ates.traffic.common.entity.board.MozTfcSftyInfrm;
 import com.moz.ates.traffic.common.entity.payment.MozPlPymntInfo;
 
 /**
@@ -19,18 +22,19 @@ import com.moz.ates.traffic.common.entity.payment.MozPlPymntInfo;
 public interface PortalService {
 	
     /**
-     * @brief : 공지사항 등록
-     * @details : 공지사항 등록
+     * @brief : 포탈 공지사항 등록
+     * @details : 포탈 공지사항 등록
      * @author : KC.KIM
      * @date : 2023.08.04
      * @param : brd
+     * @param : uploadFiles
      * @return : 
      */
-    void registNotice(MozBrd brd);
+    void registNotice(MozBrd brd, MultipartFile[] uploadFiles);
 
     /**
-     * @brief : 공지사항 리스트 조회
-     * @details : 공지사항 리스트 조회
+     * @brief : 포탈 공지사항 리스트 조회
+     * @details : 포탈 공지사항 리스트 조회
      * @author : KC.KIM
      * @date : 2023.08.04
      * @param : brd
@@ -39,8 +43,8 @@ public interface PortalService {
     List<MozBrd> getNoticeList(MozBrd brd);
 
     /**
-     * @brief : 공지사항 리스트 개수 조회
-     * @details : 공지사항 리스트 개수 조회
+     * @brief : 포탈 공지사항 리스트 개수 조회
+     * @details : 포탈 공지사항 리스트 개수 조회
      * @author : KC.KIM
      * @date : 2023.08.04
      * @param : brd
@@ -49,7 +53,7 @@ public interface PortalService {
     int getNoticeListCnt(MozBrd brd);
     
     /**
-     * @brief : 공지사항 상세 화면
+     * @brief : 포탈 공지사항 상세 화면
      * @details : 공지사항 상세 화면
      * @author : KC.KIM
      * @date : 2023.08.04
@@ -59,14 +63,15 @@ public interface PortalService {
     MozBrd getNoticeDetail(String boardIdx);
     
     /**
-     * @brief : 공지사항 수정 
-     * @details : 공지사항 수정 
+     * @brief : 포탈 공지사항 수정 
+     * @details : 포탈 공지사항 수정 
      * @author : KC.KIM
      * @date : 2023.08.04
      * @param : brd
+     * @param : uploadFiles
      * @return : 
      */
-    void updateNotice(MozBrd brd);
+    void updateNotice(MozBrd brd, MultipartFile[] uploadFiles);
     
     /**
      * @brief : FAQ 리스트 조회
@@ -260,11 +265,184 @@ public interface PortalService {
 
 //    void mailSend(ObjectionVO objectionVo);
     
-    void updateObjAns(MozObjReg objReg);
+    void updateObjAns(MozObjReg objReg, MultipartFile[] uploadFiles);
     
-    void updateCmpAns(MozComplaintsReg complaintsReg);
+    void updateCmpAns(MozComplaintsReg complaintsReg, MultipartFile[] uploadFiles);
     
-    Map<String, Object> objSendEmail(String objIdx,String userId,String content);
-    
-    Map<String, Object> cmpSendEmail(String complaintsIdx,String userId,String content);
+    /**
+     * @brief : 교통안전정보 리스트 개수 조회
+     * @details : 교통안전정보 리스트 개수 조회
+     * @author : KC.KIM
+     * @date : 2024.02.18
+     * @param : mozTfcSftyInfrm
+     * @return : 
+     */
+	public int getSftyInfrmListCnt(MozTfcSftyInfrm mozTfcSftyInfrm);
+
+	/**
+     * @brief : 교통안전정보 리스트 조회
+     * @details : 교통안전정보 리스트 조회
+     * @author : KC.KIM
+     * @date : 2024.02.18
+     * @param : mozTfcSftyInfrm
+     * @return : 
+     */
+	public List<MozTfcSftyInfrm> getSftyInfrmList(MozTfcSftyInfrm mozTfcSftyInfrm);
+	
+	/**
+     * @brief : 교통안전정보 상세 조회
+     * @details : 교통안전정보 상세 조회
+     * @author : KC.KIM
+     * @date : 2024.02.18
+     * @param : mozTfcSftyInfrm
+     * @return : 
+     */
+	public MozTfcSftyInfrm getSftyInfrmDetail(String tfcSftyInfrmId);
+	
+	/**
+     * @brief : 교통안전정보 삭제
+     * @details : 교통안전정보 삭제
+     * @author : KC.KIM
+     * @date : 2024.02.19
+     * @param : tfcSftyInfrmId
+     * @return : 
+     */
+	public void deleteSftyInfrmByTfcSftyInfrmId(String tfcSftyInfrmId);
+
+	/**
+     * @brief : 교통안전정보 등록
+     * @details : 교통안전정보 등록
+     * @author : KC.KIM
+     * @date : 2024.02.19
+     * @param : mozTfcSftyInfrm
+     * @param : uploadFile
+     * @return : 
+     */
+	public void registSftyInfrm(MozTfcSftyInfrm mozTfcSftyInfrm, MultipartFile uploadFile);
+
+	/**
+     * @brief : 교통안전정보 수정
+     * @details : 교통안전정보 수정
+     * @author : KC.KIM
+     * @date : 2024.02.19
+     * @param : mozTfcSftyInfrm
+     * @param : uploadFile
+     * @return : 
+     */
+	public void updateSftyInfrm(MozTfcSftyInfrm mozTfcSftyInfrm, MultipartFile uploadFile);
+
+	/**
+     * @brief : 교통안전교육 리스트 개수 조회
+     * @details : 교통안전교육 리스트 개수 조회
+     * @author : KC.KIM
+     * @date : 2024.02.20
+     * @param : mozTfcSftyEdctn
+     * @return : 
+     */
+	public int getSftyEdctnListCnt(MozTfcSftyEdctn mozTfcSftyEdctn);
+
+	/**
+     * @brief : 교통안전교육 리스트 조회
+     * @details : 교통안전교육 리스트 조회
+     * @author : KC.KIM
+     * @date : 2024.02.19
+     * @param : mozTfcSftyEdctn
+     * @return : 
+     */
+	public List<MozTfcSftyEdctn> getSftyEdctnList(MozTfcSftyEdctn mozTfcSftyEdctn);
+	
+	/**
+     * @brief : 교통안전교육 등록
+     * @details : 교통안전교육 등록
+     * @author : KC.KIM
+     * @date : 2024.02.20
+     * @param : mozTfcSftyEdctn
+     * @param : uploadFile
+     * @return : 
+     */
+	public void registSftyEdctn(MozTfcSftyEdctn mozTfcSftyEdctn, MultipartFile uploadFile);
+
+	/**
+     * @brief : 교통안전교육 상세 정보 조회
+     * @details : 교통안전교육 상세 정보 조회
+     * @author : KC.KIM
+     * @date : 2024.02.20
+     * @param : tfcSftyEdctnId
+     * @return : 
+     */
+	public MozTfcSftyEdctn getSftyEdctnDetail(String tfcSftyEdctnId);
+
+	/**
+     * @brief : 교통안전교육 삭제
+     * @details : 교통안전교육 삭제
+     * @author : KC.KIM
+     * @date : 2024.02.20
+     * @param : tfcSftyEdctnId
+     * @return : 
+     */
+	public void deleteMozTfcSftyEdctn(String tfcSftyEdctnId);
+
+	/**
+     * @brief : 교통안전교육 수정
+     * @details : 교통안전교육 수정
+     * @author : KC.KIM
+     * @date : 2024.02.20
+     * @param : mozTfcSftyEdctn
+     * @param : uploadFile
+     * @return : 
+     */
+	public void updateMozTfcSftyEdctn(MozTfcSftyEdctn mozTfcSftyEdctn, MultipartFile uploadFile);
+
+	/**
+     * @brief : 문의하기 리스트 개수 조회
+     * @details : 교통안전교육 리스트 개수 조회
+     * @author : KC.KIM
+     * @date : 2024.02.20
+     * @param : mozInqry
+     * @return : 
+     */
+	public int getMozInqryCnt(MozInqry mozInqry);
+
+	/**
+     * @brief : 문의하기 리스트 조회
+     * @details : 문의하기 리스트 조회
+     * @author : KC.KIM
+     * @date : 2024.02.20
+     * @param : mozInqry
+     * @return : 
+     */
+	public List<MozInqry> getMozInqryList(MozInqry mozInqry);
+
+	/**
+     * @brief : 문의하기 상세 조회
+     * @details : 문의하기 상세 조회
+     * @author : KC.KIM
+     * @date : 2024.02.20
+     * @param : inqryId
+     * @return : 
+     */
+	public MozInqry getMozInqryDetail(String inqryId);
+
+	/**
+     * @brief : 문의하기 답변 등록
+     * @details : 문의하기 답변 등록
+     * @author : KC.KIM
+     * @date : 2024.02.20
+     * @param : mozInqry
+     * @param : uploadFiles
+     * @return : 
+     */
+	public void updateMozInqry(MozInqry mozInqry, MultipartFile[] uploadFiles);
+
+	/**
+     * @brief : 문의하기 답변 파일 조회
+     * @details : 문의하기 답변 파일 조회
+     * @author : KC.KIM
+     * @date : 2024.04.16
+     * @param : inqryId
+     * @return : 
+     */
+	List<MozAtchFile> findAllMozAtchFileByAtchIdx(String inqryId);
+	
+	
 }

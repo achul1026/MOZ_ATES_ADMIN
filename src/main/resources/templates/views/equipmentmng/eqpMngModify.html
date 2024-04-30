@@ -1,220 +1,475 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
 
-    <div class="container-fluid">
+	<div id="container-fluid">
 
-        <!-- Page Heading -->
-        <h1 class="h3 mb-4 text-gray-800" th:text="#{equipment.mngModify.title}">단속장비 수정</h1>
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{equipment.mngModify.title}">단속장비 수정</h1>
 
-        <div class="row">
 
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{equipment.mngModify.subTitle}">수정</h6>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <form id="frmEqpModify" enctype="multipart/form-data">
-                                <input type="hidden" name="tfcEnfEqpId" th:value="${tfcEnfEqpMaster.tfcEnfEqpId}">
-                                <table class="table table-bordered">
-                                    <colgroup>
-                                        <col width="20%">
-                                        <col width="30%">
-                                        <col width="20%">
-                                        <col width="30%">
-
-                                    </colgroup>
-                                    <tbody>
-                                    <tr id="imageTr">
-                                        <th th:text="#{equipment.mngModify.inserImg}">현재 등록 사진</th>
-                                    	 <!-- 여기서부터 /block까지 이미지 생성. -->
-                                     		<td colspan="3">
-                                    		<block th:each = "images : ${#strings.arraySplit(tfcEnfEqpMaster.tfcEnfEqpImageorgn,',')}" th:remove="tag">
-                                    			<img th:src="@{/images/}+${images}" style="width:250px;height:250px; margin-left:10px;" alt=" " multiple/>
-                                   		 	</block>
-                                   		 	<br>
-                                    	<button type="button" class="btn btn-outline-warning" id="btnimageModify" data-flag="N" th:text ="#{equipment.mngModify.updateImg}" >변경</button>
-										<button type="button" class="btn btn-outline-danger" id="btnimageDelete" style="display:none" th:text="#{equipment.mngModify.deleteImg}">삭제</button>
-                                    </td>
-                                   	</tr>
-                                   	<tr id="trImage" style="display: none;">
-                                   		<th th:text="#{equipment.mngModify.newImg}">새 단속장비 사진 등록</th>
-                                   		<td colspan="3">
-											<input type="file" id="txttfcEnfEqpImage" name="uploadFile" onchange="setThumbnail(event);" multiple/>
-											<div id="image_container">
+			<form id="frmEqpModify" enctype="multipart/form-data">
+				<input type="hidden" name="tfcEnfEqpId" th:value="${tfcEnfEqpMaster.tfcEnfEqpId}">
+				
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.mngModify.typesOfEnforcementEquipment}"></span>
+							</th>
+							<td>
+								<select id="eqpTy" class="filter-select filter95 data-validate" name="eqpTy" th:data-valid-name="#{equipment.mngRegist.typesOfEnforcementEquipment}" data-valid-required>
+									<option value="">Select</option>
+									<th:block th:each="cdItem : ${cdList}">
+										<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}" th:selected="${tfcEnfEqpMaster.eqpTy} == ${cdItem.cdId}"></option>
+									</th:block>
+								</select>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.mngModify.equipmentName}"></span>
+							</th>
+							<td><input type="text" class="main-input data-validate" name="eqpNm" placeholder="Please Enter Equipment Name" th:value="${tfcEnfEqpMaster.eqpNm}" th:data-valid-name="#{equipment.mngModify.equipmentName}" data-valid-required></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.mngModify.modelNm}">모델명</span>
+							</th>
+							<td><input type="text" id="txtEqpTy" class="main-input data-validate" name="modelNm" placeholder="Please Enter Model Name" th:value="${tfcEnfEqpMaster.modelNm}" th:data-valid-name="#{equipment.mngModify.modelNm}" data-valid-required></td>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.mngModify.manufacturer}"></span>
+							</th>
+							<td><input type="text" id="txtMnfctr" class="main-input data-validate" name="mnfctr" placeholder="Please Enter Manufacturer" th:value="${tfcEnfEqpMaster.mnfctr}" th:data-valid-name="#{equipment.mngModify.manufacturer}" data-valid-required></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.mngModify.installationStatus}">설치 위치</span>
+							</th>
+							<td colspan="3">
+								<label for="useY" class="radioBox">
+									<input type="radio" id="useY" name="instlYn" value="Y"
+									th:checked="${tfcEnfEqpMaster.instlYn} == 'Y'">
+									<span class="radioOn"></span>
+									Installed
+								</label>
+								<label for="useN" class="radioBox">
+									<input type="radio" id="useN" name="instlYn" value="N"
+									th:checked="${tfcEnfEqpMaster.instlYn} == 'N'">
+									<span class="radioOn"></span>
+									Not installed
+								</label>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.mngModify.installationLocation}"></span>
+							</th>
+							<td colspan="3" class="modal-find-line">
+								<input type="text" class="main-input" name="roadAddr" placeholder="Please Enter Installation location" th:value="${tfcEnfEqpMaster.roadAddr}">
+								<i class="search-icon mapSearch"></i>
+								<br><br>
+								<div id="map" class="detailMap">
+									<img src="/images/mapLocation_icon.png" alt="My Location" class="mapLocationIcon">
+								</div>
+							</td>							
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.mngModify.installationDate}">설치일자</span>
+							</th>
+							<td>
+								<input type="date" class="input-date data-validate" name="instlDate"  th:value="${#dates.format(tfcEnfEqpMaster.instlDate, 'yyyy-MM-dd')}" th:data-valid-name="#{equipment.mngModify.installationDate}" data-valid-required>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.mngDetail.installer}">설치자</span>
+							</th>
+							<td><input type="text" class="main-input data-validate" name="instler" placeholder="Please Enter Installer" th:value="${tfcEnfEqpMaster.instler}" th:data-valid-name="#{equipment.mngDetail.installer}" data-valid-required></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.mngModify.manager}">담당자</span>
+							</th>
+							<td class="modal-find-line">
+								<input type="text" class="main-input data-validate" placeholder="Please Enter Manager" id="crOprtrNm" th:value="${tfcEnfEqpMaster.webOprtr.oprtrNm}" th:data-valid-name="#{equipment.mngModify.manager}" data-valid-required readonly>
+								<input type="hidden" name="crOprtrId" id="crOprtrId" th:value="${tfcEnfEqpMaster.crOprtrId}">
+								<i class="search-icon" onclick="changeDeptListModal('show')"></i>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.mngModify.crOprtrDept}"></span>
+							</th>
+							<td><input type="text" class="main-input" id="crOprtrDept" placeholder="Please Enter Department" name="crOprtrDept"
+									th:value="${tfcEnfEqpMaster.crOprtrDept}"></td>
+						</tr>
+						<tr id="imageTr">
+							<th th:text="#{equipment.mngModify.inserImg}">현재 등록 사진</th>
+							<!-- 여기서부터 /block까지 이미지 생성. -->
+							<td colspan="3">
+								<input type="file" id="uploadFiles" name="uploadFiles" multiple/>
+								<div id="dragArea">
+									<div class="drag-area">
+										<div class="dragText">
+										   O nome do arquivo não pode ter mais de 50 caracteres.<br>
+										   O tamanho do arquivo só pode ser carregado abaixo de 5MB.<br>
+										   Apenas arquivos JPG, JPEG, PNG e MP4 podem ser carregados.
+										</div>
+										<div>
+											<input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
+											<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">
+Carregamento de Arquiv</button>
+										</div>
+									</div>
+								</div>
+								<div class="upload_wrap">
+									<div id="upload_list_box">
+										<th:block th:each="fileItem : ${tfcEnfEqpMaster.tfcEnfEqpFileInfoList}">
+											<div class="upload_list">
+												<div class="list_item input_same group_box flex-center">
+						                			<div class="file_list" th:text="${fileItem.fileOrgNm}"></div>
+							                		<button type="button" th:data-name="${fileItem.fileOrgNm}" th:data-value="${fileItem.eqpFileNo}" class="fileDelBtn">
+															<img src="/images/upload_close.png" alt="업로드파일 삭제">
+							                		</button>
+	                							</div>
 											</div>
-                                   		</td>
-                                    </tr>
-                                    <tr>
-                                        <th th:text="#{equipment.mngModify.enforcementEquipmentNumber}">단속장비 번호</th>
-                                        <td th:text="${tfcEnfEqpMaster.tfcEnfEqpId}"></td>
-                                        <th th:text="#{equipment.mngModify.registrationDate}">등록일</th>
-                                        <td th:text="${tfcEnfEqpMaster.crDt}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th th:text="#{equipment.mngModify.typesOfEquipment}">장비종류</th>
-                                        <td><input type="text" id="txtEqpTy" name="eqpTy" th:value="${tfcEnfEqpMaster.eqpTy}"></td>
-                                        <th th:text="#{equipment.mngModify.manufacturer}">제조업체</th>
-                                        <td><input type="text" id="txtMnfctr" name="mnfctr" th:value="${tfcEnfEqpMaster.mnfctr}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th th:text="#{equipment.mngModify.whetherOrNotToUse}">사용여부</th>
-                                        <td>
-                                            <input type="radio" id="useY" name="useYn" value="Y" th:checked="${tfcEnfEqpMaster.useYn} == 'Y'">
-                                            <label for="useY">Y</label>
-                                            <input type="radio" id="useN" name="useYn" value="N" th:checked="${tfcEnfEqpMaster.useYn} == 'N'">
-                                            <label for="useN">N</label>
+										</th:block>
+									</div>	
+								</div>
+							</td>
+						</tr>
+							<tr id="trImage" style="display: none;">
+							<th th:text="#{equipment.mngModify.newImg}">새 단속장비 사진 등록</th>
+							<td colspan="3">
+								<input type="file" id="txttfcEnfEqpImage" name="imageFiles" onchange="setThumbnail(event);"
+									multiple />
+								<div id="image_container">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{equipment.mngModify.eqpInfo}">상세정보</th>
+							<td colspan="3"><textarea class="detail-table-textarea" name="tfcEnfEqpInfo" placeholder="Please Enter Details" th:text="${tfcEnfEqpMaster.tfcEnfEqpInfo}"></textarea></td>
+						</tr>
 
-                                        </td>
-                                        <th th:text="#{equipment.mngModify.manager}">담당자</th>
-                                        <td><input type="text" id="txtCrOprtrId" name="crOprtrId" th:value="${tfcEnfEqpMaster.crOprtrId}"></td>
-                                    </tr>
-                                    <tr>
-                                    	<th th:text="#{equipment.mngModify.crOprtrDept}">담당자부서</th>
-                                        <td><input type="text" id="txtCrOprtrDept" name="crOprtrDept" th:value="${tfcEnfEqpMaster.crOprtrDept}"></td>
-                                        <th th:text="#{equipment.mngModify.location}">위치</th>
-                                        <td><input type="text" id="txtRoadAddr" name="roadAddr" th:value="${tfcEnfEqpMaster.roadAddr}"></td>
-                                    </tr>
-                                    <tr>
-                                        <th th:text="#{equipment.mngModify.eqpInfo}">상세정보</th>
-                                        <td colspan="3"><input type="text" id="txteqpInfo" name="tfcEnfEqpInfo" th:value="${tfcEnfEqpMaster.tfcEnfEqpInfo}"></td>
-                                    </tr>
+					</tbody>
+				</table>
+			</form>
+			
+			<div class="equipmentTableHisWrap">
+				<h2 class="equipmentTableTitle">Inspection history</h2>
+				
+				<table class="main-table equipmentTable">
+					<colgroup>
+					</colgroup>
+					<thead>
+						<tr>
+							<th th:text="#{equipment.mngDetail.maintenance.oprtrNm}">담당자 명</th>
+							<th th:text="#{equipment.mngDetail.maintenance.mntnType}">관리 타입</th>
+							<th th:text="#{equipment.mngDetail.maintenance.mntnStts}">시설물 상태</th>
+							<th th:text="#{equipment.mngDetail.maintenance.date}">관리 날짜</th>
+							<th th:text="#{equipment.mngDetail.maintenance.option}">관리자명</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${#lists.isEmpty(eqpMntnHstList)}">
+							<td colspan="5" th:text="#{equipment.mngDetail.maintenance.none}">None Result</td>
+						</tr>
+						<tr th:if="${!#lists.isEmpty(eqpMntnHstList)}" th:each="hstItem : ${eqpMntnHstList}">
+							<td th:text="${hstItem.oprtrNm}"></td>
+							<td th:text="${hstItem.mntnType}"></td>
+							<td th:text="${hstItem.mntnStts}"></td>
+							<td th:text="${#dates.format(hstItem.crDt, 'yyyy-MM-dd')}"></td>
+							<td>
+								<button type="button" class="innerDeleteBtn delete-btn" th:onclick="deleteHst([[${hstItem.mntnHstId}]])">Delete</button>
+							</td>
+						</tr>
+						<tr class="hstTrgt">
+							<td class="modal-find-line">
+								<input type="hidden" class="oprtrId hstCrOprtrId1">
+								<input type="text" class="main-input hstCrOprtrNm1" readonly>
+								<i class="search-icon" onclick="mntnHstListModal('show','1')"></i>
+							</td>
+							<td>
+								<select class="filter-select filter95 mntnType">
+									<option value="">Select</option>
+									<th:block th:each="cdItem : ${mntnTypeCdList}">
+										<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}"></option>
+									</th:block>
+								</select>
+							</td>
+							<td>
+								<select class="filter-select filter95 mntnStts">
+									<option value="">Select</option>
+									<th:block th:each="cdItem : ${mntnSttsCdList}">
+										<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}"></option>
+									</th:block>
+								</select>
+							</td>
+							<td>
+								<input type="date" class="input-date mntnCrDt">
+							</td>
+							<td>
+								<button type="button" class="detailPriceBtn tableAdd"><img src="/images/table-plus.png" alt="교통사고 테이블 추가"></button>
+<!--								삭제버튼
+								<button type="button" class="detailPriceBtn"><img src="/images/table-delete.png" alt="교통사고 테이블 추가"></button>-->
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			
+			
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn form-button"
+				onclick="javascript:window.history.back()" th:text="#{equipment.mngModify.cancelButton}">취소</button>
+				<button type="button" id="btnModify" class="main-btn form-button"
+				th:text="#{equipment.mngModify.modifyFinish}">수정완료</button>
+			</div>
+	</div>
+	
+	<div class="modal-wrap" id="modal">
 
-                                    </tbody>
-                                </table>
-                            </form>
-                            <button type="button" id="btnGoList" class="btn btn-outline-secondary" onclick="javascript:window.history.back()" th:text="#{equipment.mngModify.cancelButton}">취소</button>
-                            <button type="button" id="btnModify" class="btn btn-outline-success" th:text="#{equipment.mngModify.modifyFinish}">수정완료</button>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+	</div>
 </th:block>
+
 </html>
 
 <script th:inline="javascript">
-
-
-    $("#btnimageModify").click(function(){
-        if($(this).attr('data-flag')=='N'){
-            $("#btnimageDelete").show();
-            $("#trImage").show();
-            $(this).text("변경 취소");
-            $(this).attr('data-flag','Y');
-        }else if($(this).attr('data-flag')=='Y'){
-            $("#btnimageDelete").hide();
-            $("#trImage").hide();
-            $(this).text("변경");
-            $(this).attr('data-flag','N');
-        }
-    })
-    
-
-
-    
-    $("#btnimageDelete").click(function(){
-		if(confirm("Do you want to delete?") == true){
-			$("#imageTr").hide();
-			
-			var form = $("#frmEqpModify")[0];
-        	var data = new FormData(form);
-
-		    $.ajax({
-            url: /*[[@{/eqp/mng/image/delete.ajax}]]*/ "/eqp/mng/image/delete.ajax",
-            type: "post",
-            enctype: 'multipart/form-data',  
-            data: data,
-            processData: false,    
-            contentType: false,
-            success: function(data){
-               alert("이미지가 삭제되었습니다.");
-            },
-            error: function(data){
-				alert("이미지 삭제에 실패하였습니다.");
-			}
-        });	
-    } else{ 
-		 return;
-	}
-})
-
-    $("#btnModify").click(function () {
-		if(!$('input:radio[name=useYn]').is(':checked')){
-			alert("사용 여부를 체크해주세요");
-			return;
+	var oprtrType = "oprtr";
+	var histIdx="1";
+	var hstTrgtIdx="1";
+	
+	// 모달 수정 여부 확인필요?
+	const modalContent = document.getElementById("modal");
+	
+	// modal control
+	function changeDeptListModal(type) {
+		if (type == "show") {
+			oprtrType = "oprtr";
+			$.ajax({
+				url: '/common/modal/oprtr/list.ajax',
+				type: "get",
+				dataType: 'html',
+				success: function (data) {
+					modalContent.innerHTML += data;
+					modalContent.style.display = 'block';
+				}
+			});
+		} else if (type == "hide") {
+			modalContent.innerHTML = '';
+			modalContent.style.display = 'none';
 		}
+	}
+	
+	function mntnHstListModal(type, trgtIdx) {
+		hstTrgtIdx = trgtIdx;
+		if (type == "show") {
+			oprtrType = "hist";
+			$.ajax({
+				url: '/common/modal/oprtr/list.ajax',
+				type: "get",
+				dataType: 'html',
+				success: function (data) {
+					modalContent.innerHTML += data;
+					modalContent.style.display = 'block';
+				}
+			});
+		} else if (type == "hide") {
+			modalContent.innerHTML = '';
+			modalContent.style.display = 'none';
+		}
+	}
+	
+	$("#btnModify").click(function () {
+		if($("#frmEqpModify").soValid()) {
+			var form = $("#frmEqpModify")[0];
+			var data = new FormData(form);
+		
+			deleteFilesArr.forEach((value, index) => {
+				data.append("tfcEnfEqpFileInfoList[" + index + "].eqpFileNo", value);
+			})
+			
+			var hstTrgtTr = $(".hstTrgt");
+			$(hstTrgtTr).each(function(index, item){
+				var hstTrgt = hstTrgtTr.eq(index);
+				data.append("tfcEqpMntnHstList[" + index + "].oprtrId", hstTrgt.find(".oprtrId").val());
+				data.append("tfcEqpMntnHstList[" + index + "].mntnType", hstTrgt.find(".mntnType").val());
+				data.append("tfcEqpMntnHstList[" + index + "].mntnStts", hstTrgt.find(".mntnStts").val());
+				data.append("tfcEqpMntnHstList[" + index + "].crDt", hstTrgt.find(".mntnCrDt").val());
+			});
+			
+			$.ajax({
+				url: /*[[@{/eqp/mng/update.ajax}]]*/ "/eqp/mng/update.ajax",
+				type: "post",
+				enctype: 'multipart/form-data',
+				data : data,
+				processData: false,
+				contentType: false,
+				success: function (result) {
+					if(result.code == 200){
+						new ModalBuilder().init().successBody(result.message).footer(4,'확인',function(button, modal){
+							modal.close();
+							var baseUrl = /*[[@{/eqp/mng/detail.do}]]*/ '';
+							window.location.href = baseUrl + "?tfcEnfEqpId=" + [[${tfcEnfEqpMaster.tfcEnfEqpId}]];
+						}).open();
+					} else {
+						new ModalBuilder().init().alertBoby(result.message).footer(4,'확인',function(button, modal){modal.close();}).open();
+					}
+				}
+			});
+		}
+	})
 
-        if($.trim($("#txtEqpTy").val())==''){
-            alert("장비종류를 입력해주세요.");
-            $("#txtEqpTy").focus();
-            return false;
-        }
-        if($.trim($("#txtMnfctr").val())==''){
-            alert("제조업체를 입력해주세요.");
-            $("#txtMnfctr").focus();
-            return false;
-        }
-        if($.trim($("#txtCrOprtrId").val())==''){
-            alert("담당자를 입력해주세요.");
-            $("#txtCrOprtrId").focus();
-            return false;
-        }
-
-        if($.trim($("#txtRoadAddr").val())==''){
-            alert("위치를 입력해주세요.");
-            $("#txtRoadAddr").focus();
-            return false;
-        }
-        if($.trim($("#txtCrOprtrDept").val())==''){
-            alert("담당자부서를 입력해주세요.");
-            $("#txtCrOprtrDept").focus();
-            return false;
-        }
-        if($.trim($("#txteqpInfo").val())==''){
-            alert("상세정보를 입력해주세요.");
-            $("#txteqpInfo").focus();
-            return false;
-        }
-        var form = $("#frmEqpModify")[0];
-        var data = new FormData(form);
-
-        $.ajax({
-            url: /*[[@{/eqp/mng/update.ajax}]]*/ "/eqp/mng/update.ajax",
-            type: "post",
-            enctype: 'multipart/form-data',  
-            data: data,
-            processData: false,    
-            contentType: false,
-            success: function(data){
-                if(data.code == "1"){
-                    alert("수정했습니다.");
-                    var baseUrl = /*[[@{/eqp/mng/detail.do}]]*/ '';
-                    window.location.href=baseUrl+"?tfcEnfEqpId="+[[${tfcEnfEqpMaster.tfcEnfEqpId}]];
-
-                }
-            }
-        });
-
-    })
-    
-        function setThumbnail(event) {
+	function setThumbnail(event) {
 		var reader = new FileReader();
-		reader.onload = function(event) {
-			 var img = document.createElement("img");
-			 img.setAttribute('width','900px');
-			 img.setAttribute('height','300px');
-			  img.setAttribute("src", event.target.result);
-			   document.querySelector("div#image_container").appendChild(img);
-			    };
-		 reader.readAsDataURL(event.target.files[0]);
-		 }
+		reader.onload = function (event) {
+			var img = document.createElement("img");
+			img.setAttribute('width', '900px');
+			img.setAttribute('height', '300px');
+			img.setAttribute("src", event.target.result);
+			document.querySelector("div#image_container").appendChild(img);
+		};
+		reader.readAsDataURL(event.target.files[0]);
+	}
 
+	const lng = /*[[${tfcEnfEqpMaster.lng}]]*/;
+	const lat = /*[[${tfcEnfEqpMaster.lat}]]*/;
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : lng,
+		center_lat : lat,
+		isInitDrawCenterMarker : true
+	});
+	
+	function findOprtrBtn(){
+		$("#modalTbody > tr").remove();
+		$("#modalPaging > div").remove();
+		
+		var page = $("#modalPage").val();
+		var searchTxt = $("#searchContent").val();
+		var start = $("#modalStart").val();
+		$.ajax({
+			type : "get",
+			data : {"searchType" : "oprtrNm", "searchTxt" : searchTxt, "page" : page, "start" : start},
+			url: '/common/modal/oprtr/search/list.ajax',
+			success : function(result) {
+				var html = '';
+				$(result.data.list).each(function(index, item){
+					var oprtrDeptNm = item.oprtrDeptNm;
+					var oprtrNm = item.oprtrNm;
+					if(isNull(oprtrDeptNm)){
+						oprtrDeptNm = '-';
+					}
+					if(isNull(oprtrNm)){
+						oprtrNm = '-';
+					}					
+					html += '<tr onclick="selectDept(\''+item.oprtrId+'\', \''+oprtrNm+'\', \''+ oprtrDeptNm +'\')">'+
+								'<td>'+item.rnum+'</td>'+
+								'<td>'+oprtrDeptNm+'</td>'+								
+								'<td>'+oprtrNm+'</td>'+
+							'</tr>';
+		    	})
+				$("#modalTbody").append(html);			
+		    	var paging = result.data.pagination;
+				if(paging != null && paging != ''){
+					$("#modalPaging").append(getPagingHtml(paging,page));
+				}
+				$("#totalCnt").text(paging.totalListCnt);
+				var start = result.data.webOprtr.start;
+				$("#modalStart").val();
+			}
+		});
+	}
+	
+	function fnPageMove(page) {
+		$("#modalPage").val(page);
+		findOprtrBtn();
+	}
+	
+	function selectDept(oprtrId, oprtrNm, oprtrDeptNm){
+		if(oprtrType == "oprtr"){
+			$("#crOprtrNm").val(oprtrNm);
+			$("#crOprtrId").val(oprtrId);
+			$("#crOprtrDept").val(oprtrDeptNm);
+			changeDeptListModal('hide');			
+		}else{
+			$(".hstCrOprtrNm"+hstTrgtIdx).val(oprtrNm);
+			$(".hstCrOprtrId"+hstTrgtIdx).val(oprtrId);
+			mntnHstListModal('hide');		
+		}
+	}
+	
+	var deleteFilesArr = new Array();
+	let $fileInput = $("#uploadFiles");
+	$(".fileDelBtn").on('click',function(){
+        var $this = $(this);
+        var fileNm = $this.data('name');
+        var fileId = $this.data('value');
+        const dataTransfer = new DataTransfer();
+        let trans = $('#uploadFiles')[0].files;
+        let fileArray = Array.from(trans);
 
+        $this.closest('.upload_list').remove();
+        fileArray.filter(file => file.name != fileNm).forEach(file => {
+            dataTransfer.items.add(file);
+        });
+        $fileInput.prop('files',dataTransfer.files);
+        
+        let uploadLength = $('#upload_list_box').children('.upload_list').length;
+		if(uploadLength <= 0){
+			$('.upload_wrap').addClass('none');
+		}
+		deleteFilesArr.push(fileId);
+    });
+    
+    
+    const tablePlusBtn = document.querySelector('.tableAdd');
+    const tableTr = document.querySelector('.equipmentTable tbody');
+
+    tablePlusBtn.addEventListener('click', function(){
+    	histIdx++;
+		let newElement = document.createElement("tr");
+		newElement.classList.add("hstTrgt");
+		let html = '';
+		html = `		
+			<td class="modal-find-line">
+				<input type="hidden" class="hstCrOprtrId hstCrOprtrId`+histIdx+`"">
+				<input type="text" class="main-input hstCrOprtrId hstCrOprtrNm`+histIdx+`"" readonly>
+				<i class="search-icon" onclick="mntnHstListModal('show',`+histIdx+`)"></i>
+			</td>
+			<td>
+				<select class="filter-select filter95 mntnType">
+					<option value="">Select</option>
+					<option value="MTC000">Surprise inspection</option>
+					<option value="MTC001"> Periodic inspection</option>
+				</select>
+			</td>
+			<td>
+				<select class="filter-select filter95 mntnStts">
+					<option value="">Select</option>
+					<option value="MTS000">Normal operation</option>
+					<option value="MTS001">Needs repair</option>
+					<option value="MTS002">Send to repair company</option>
+				</select>
+			</td>
+			<td>
+				<input type="date" class="input-date mntnCrDt">
+			</td>
+			<td>
+				<button type="button" class="detailPriceBtn hstTrgtDelBtn"><img src="/images/table-delete.png" alt="교통사고 테이블 추가"></button>
+			</td>
+		`;
+		// 새로운 div 요소에 HTML 문자열 할당
+		newElement.innerHTML = html;
+		tableTr.append(newElement);
+	});
+    
+    $(document).on("click", ".hstTrgtDelBtn",  function(){
+    	$(this).parents(".hstTrgt").remove();
+    });
 </script>

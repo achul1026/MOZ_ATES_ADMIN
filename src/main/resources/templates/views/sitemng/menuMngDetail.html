@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+		<div id="detail-content-title" th:text="#{sitemng.common.menu.mainMenu.title}">메인 메뉴 정보</div>
+			<form id="subMenuSaveForm">
+				<div id="search-form-result-wrap">
+					<div id="table-search-result-text">
+		
+					</div>
+					<div id="table-regist-btn">
+						<button type="button" class="main-btn big-menu-plus form-button" th:text="#{sitemng.menuMngDetail.subMenu.add}" onclick="addSubMenuBtn()"
+							id="addBtn">서브메뉴 추가</button>
+					</div>
+				</div>
+				<table class="menu-add-table main-table">
+					<thead>
+						<tr>
+							<th th:text="#{sitemng.common.menu.nameEng}">메뉴 이름 ENG</th>
+							<th th:text="#{sitemng.common.menu.namePor}">메뉴 이름 POR</th>
+							<th th:text="#{sitemng.common.menu.mainMenuOrder}">메인 메뉴 순서</th>
+							<th th:text="#{sitemng.common.menu.urlPttrn}">URL 패턴</th>
+							<th th:text="#{sitemng.common.menu.url}">URL</th>
+							<th th:text="#{sitemng.common.menu.abbreviation}">Menu Abbreviation</th>
+							<th th:text="#{common.common.status}">노출여부</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>
+								<input type="hidden" th:id="subSortNo + ${parentMenu.menuId}" th:value="${parentMenu.subSortNo}">
+								<input type="text" class="main-input" th:id="menuNmEng + ${parentMenu.menuId}" th:value="${parentMenu.menuNmEng}">
+							</td>
+							<td>
+								<input type="text" class="main-input" th:id="menuNmPor + ${parentMenu.menuId}" th:value="${parentMenu.menuNmPor}">
+							</td>
+							<td>
+								<input type="number" class="main-input" th:id="mainSortNo + ${parentMenu.menuId}" th:value="${parentMenu.mainSortNo}">
+							</td>
+							<td>
+								<input type="text" class="main-input" th:id="menuUrlPattrn + ${parentMenu.menuId}" th:value="${parentMenu.menuUrlPattrn}">
+							</td>
+							<td>
+								<input type="text" class="main-input" th:id="menuUrl + ${parentMenu.menuId}" th:value="${parentMenu.menuUrl}">
+							</td>
+							<td>
+								<input type="text" class="main-input" th:id="menuAbv + ${parentMenu.menuId}" th:value="${parentMenu.menuAbv}">
+							</td>
+							<td>
+								<select th:id="useYn + ${parentMenu.menuId}" class="filter-select">
+									<option value="Y" th:selected="${parentMenu.useYn == 'Y'}" th:text="#{sitemng.common.menu.exposed}">노출
+									</option>
+									<option value="N" th:selected="${parentMenu.useYn == 'N'}"
+										th:text="#{sitemng.common.menu.nonExposed}">비노출
+									</option>
+								</select>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<div class="main-menu-sub-add main-table">
+					<div id="detail-content-title" th:text="#{sitemng.common.menu.subMenu.title}">서브 메뉴 리스트</div>
+					<table class="manage-table menu-add-table" id="tblList">
+						<thead>
+							<tr>
+								<th th:text="#{sitemng.common.menu.nameEng}">ENG</th>
+								<th th:text="#{sitemng.common.menu.namePor}">POR</th>
+								<th th:text="#{sitemng.common.menu.subMenuOrder}">서브 메뉴 순서</th>
+								<th th:text="#{sitemng.common.menu.urlPttrn}">URL 패턴</th>
+								<th th:text="#{sitemng.common.menu.url}">URL</th>
+								<th th:text="#{common.common.status}">노출여부</th>
+								<th th:text="#{common.button.modify}">수정</th>
+							</tr>
+						</thead>
+						<tbody th:if="${not #lists.isEmpty(subMenuList)}">
+	
+							<tr th:each="subMenuItem, subMenuStatus : ${subMenuList}" class="isNotActive"
+								th:id="'subMenu' + ${subMenuItem.menuId}">
+								<td>
+									<input type="hidden" th:id="'mainSortNo' + ${subMenuItem.menuId}" th:value="${subMenuItem.mainSortNo}">
+									<input type="text" th:id="'menuNmEng' + ${subMenuItem.menuId}" class="is_disabled main-input"
+										th:value="${subMenuItem.menuNmEng}">
+								</td>
+								<td>
+									<input type="text" th:id="'menuNmPor' + ${subMenuItem.menuId}" class="is_disabled main-input"
+										th:value="${subMenuItem.menuNmPor}">
+								</td>
+								<td>
+									<input type="number" th:id="'subSortNo' + ${subMenuItem.menuId}" class="is_disabled main-input"
+										th:value="${subMenuItem.subSortNo}">
+								</td>
+								<td>
+									<input type="text" th:id="'menuUrlPattrn' + ${subMenuItem.menuId}" class="is_disabled main-input"
+										th:value="${subMenuItem.menuUrlPattrn}">
+								</td>
+								<td>
+									<input type="text" th:id="'menuUrl' + ${subMenuItem.menuId}" class="is_disabled main-input"
+										th:value="${subMenuItem.menuUrl}">
+								</td>
+								<td>
+									<select th:id="'useYn' + ${subMenuItem.menuId}" class="is_disabled filter-select">
+										<option value="Y" th:selected="${subMenuItem.useYn == 'Y'}" th:text="#{sitemng.common.menu.exposed}">
+											노출
+										</option>
+										<option value="N" th:selected="${subMenuItem.useYn == 'N'}"
+											th:text="#{sitemng.common.menu.nonExposed}">
+											비노출</option>
+									</select>
+								</td>
+								<td>
+									<div class="menu_update_box">
+										<button type="button" class="menu_update_btn sub-btn"
+											th:onclick="changeSubMenu([[${subMenuItem.menuId}]])"
+											th:text="#{common.button.modify}">수정하기</button>
+									</div>
+									<div id="" class="menu_update_sub_btn_box d-none">
+										<button type="button" class="main-btn" th:onclick="updateMainMenu([[${subMenuItem.menuId}]])"
+											th:text="#{common.button.save}">저장</button>
+									
+										<button type="button" class="delete-btn" th:onclick="deleteMenu([[${subMenuItem.menuId}]])"
+											th:text="#{common.button.delete}">삭제</button>
+										
+										<button type="button" class="sub-btn menu_update_btn_item"
+											th:onclick="changeSubMenu([[${subMenuItem.menuId}]])"
+											th:text="#{common.button.cancel}">취소</button>
+									</div>
+								</td>
+							</tr>
+						</tbody>
+	
+						<tbody id="addSubMenuWrap"></tbody>
+	
+						<tbody th:if="${#lists.isEmpty(subMenuList)}">
+							<!-- when sub menu empty -->
+							<tr id="subMenuEmpty">
+								<td colspan="8" th:text="#{sitemng.common.menu.subMenuEmpty}">등록된 서브 메뉴가 없습니다.</td>
+							</tr>
+						</tbody>
+	
+					</table>
+				</div>
+			</form>
+
+
+		<div class="btn-wrap-center">
+			<button type="button" class="sub-btn form-button left-btn" onclick="location.href='/siteMng/menu/list.do'" th:text="'List'">List</button>
+			<button type="button" class="delete-btn" th:onclick="deleteMenu([[${parentMenu.menuId}]])" th:text="'Delete'">Delete</button>
+			<!--밑에 콘핌 커스텀 온클릭 걸어놓음-->
+<!--		<button type="button" class="delete-btn detail-table-button" th:onclick="deleteMenu([[${parentMenu.menuId}]])" th:text="'Delete'" onclick="deleteInfo()">삭제</button>-->
+			<button type="button" class="main-btn form-button" th:onclick="updateMainMenu([[${parentMenu.menuId}]])"
+				th:text="#{common.button.save}"></button>
+		</div>
+	</div>
+
+
+
+</th:block>
+
+</html>
+<script th:inline="javascript">
+function deleteInfo() {
+	new ModalBuilder().init().alertBody('삭제하시겠습니까?').footer(2,'확인',function(button, modal){modal.close();}).open();
+}
+	const parentMenuId = /*[[${parentMenu.menuId}]]*/;
+	
+	function addSubMenuBtn() {
+		let optExposedTxt = /*[[#{sitemng.common.menu.exposed}]]*/;
+		let optNonExposedTxt = /*[[#{sitemng.common.menu.nonExposed}]]*/;
+		let saveBtnTxt = /*[[#{common.button.save}]]*/;
+		let cancelBtnTxt = /*[[#{common.button.cancel}]]*/;
+		let parentMenuId = /*[[${parentMenu.menuId}]]*/;
+		let mainSortNo = /*[[${parentMenu.mainSortNo}]]*/;
+		
+		let html = '';
+		
+		html += '				<tr>';
+		html += '					<td>';
+		html += '						<input type="hidden" name="parentMenuId" value="'+parentMenuId+'">';
+		html += '						<input type="hidden" name="mainSortNo" value="'+mainSortNo+'">';
+		html += '						<input type="text" class="main-input" name="menuNmEng" placeholder="TRAFFIC ACCIDENT">';
+		html += '					</td>';
+		html += '					<td>';
+		html += '						<input type="text" name="menuNmPor" class="main-input" placeholder="ACIDENTE DE TRÂNSITO">';
+		html += '					</td>';
+		html += '					<td>';
+		html += '						<input type="number" class="main-input" name="subSortNo" placeholder="15">';
+		html += '					</td>';
+		html += '					<td>';
+		html += '						<input type="text" class="main-input" name="menuUrlPattrn" placeholder="/acdnt/**">';
+		html += '					</td>';
+		html += '					<td>';
+		html += '						<input type="text" class="main-input" name="menuUrl" placeholder="/acdnt/mng/list.do">';
+		html += '					</td>';
+		html += '					<td>';
+		html += '						<select name="useYn" class="filter-select">';
+		html += '							<option value="Y">' + optExposedTxt + '</option>';
+		html += '							<option value="N">' + optNonExposedTxt + '</option>';
+		html += '						</select>';
+		html += '					</td>';
+		html += '					<td>';
+		html += '						<div id="" class="menu_update_sub_btn_box">';
+		html += '							<button type="button" class="main-btn" onclick="fnSaveSubMenu()">'+saveBtnTxt+'</button>';
+		html += '							';
+		html += '							<button type="button" class="sub-btn" onclick="fnAddSubMenuCancel()">'+cancelBtnTxt+'</button>';
+		html += '						</div>';
+		html += '					</td>';
+		html += '				</tr>';
+		
+		$("#subMenuEmpty").html('');
+		$("#addSubMenuWrap").html(html);
+		$("#addBtn").removeClass("main-btn");
+		$("#addBtn").addClass("sub-btn");
+		$("#addBtn").addClass("is_disabled");
+	}
+	
+	function fnAddSubMenuCancel() {
+		$("#addSubMenuWrap").html('');
+		$("#addBtn").removeClass("sub-btn");
+		$("#addBtn").addClass("main-btn");
+		$("#addBtn").removeClass("is_disabled");
+	}
+	
+	function fnSaveSubMenu() {
+		let confirmMsg = /*[[#{sitemng.common.menu.message.confirmRegist}]]*/;
+		let successMsg = /*[[#{common.message.success}]]*/;
+		let failMsg = /*[[#{common.message.fail}]]*/;
+		if(confirm(confirmMsg)) {
+			$.ajax({
+				type: "post",
+				data: $("#subMenuSaveForm").serialize(),
+				url: "/siteMng/menu/save.ajax",
+				success: function (data) {
+					let code = data.code;
+					if (code == 200) {
+						alert(successMsg);
+						location.reload();
+					} else {
+						alert(failMsg);
+					}
+				}
+			});
+		}
+	}
+	
+	function changeSubMenu(menuId) {
+		let subMenu = $("#subMenu" + menuId);
+		let menuNmEng = $("#menuNmEng" + menuId);
+		let menuNmPor = $("#menuNmPor" + menuId);
+		let subSortNo = $("#subSortNo" + menuId);
+		let menuUrlPattrn = $("#menuUrlPattrn" + menuId);
+		let menuUrl = $("#menuUrl" + menuId);
+		let useYn = $("#useYn" + menuId);
+
+		if (subMenu.hasClass("isNotActive")) {
+			subMenu.removeClass("isNotActive");
+
+			menuNmEng.removeClass("is_disabled");
+			menuNmPor.removeClass("is_disabled");
+			subSortNo.removeClass("is_disabled");
+			menuUrlPattrn.removeClass("is_disabled");
+			menuUrl.removeClass("is_disabled");
+			useYn.removeClass("is_disabled");
+
+			// menuNmEng.attr("readonly",false);
+
+			// TODO :: validation 클래스 추가 필요
+			// menuNmEng.addClass("data-validate");
+
+			subMenu.addClass("isActive");
+		} else {
+			// TODO :: validation removeClass 추가 필요
+			// menuNmEng.removeClass("data-validate");
+
+			menuNmEng.addClass("is_disabled");
+			menuNmPor.addClass("is_disabled");
+			subSortNo.addClass("is_disabled");
+			menuUrlPattrn.addClass("is_disabled");
+			menuUrl.addClass("is_disabled");
+			useYn.addClass("is_disabled");
+
+			subMenu.addClass("isNotActive");
+		}
+	}
+
+	function updateMainMenu(menuId) {
+		let confirmMsg = /*[[#{sitemng.menuMngDetail.message.confirmModify}]]*/;
+		let successMsg = /*[[#{common.message.success}]]*/;
+		let failMsg = /*[[#{common.message.fail}]]*/;
+		
+		
+		 // let menuId = $("#menuId" + idid).val();
+		let menuNmEng = $("#menuNmEng" + menuId).val();
+		let menuNmPor = $("#menuNmPor" + menuId).val();
+		let subSortNo = $("#subSortNo" + menuId).val();
+		let mainSortNo = $("#mainSortNo" + menuId).val();
+		let menuUrlPattrn = $("#menuUrlPattrn" + menuId).val();
+		let menuUrl = $("#menuUrl" + menuId).val();
+		let menuAbv = $("#menuAbv" + menuId).val();
+		let useYn = $("#useYn" + menuId).val();
+
+		// TODO :: validation 필요
+
+		let obj = new Object();
+		obj.menuId = menuId;
+		obj.menuNmEng = menuNmEng;
+		obj.menuNmPor = menuNmPor;
+		obj.subSortNo = subSortNo;
+		obj.mainSortNo = mainSortNo;
+		obj.menuUrlPattrn = menuUrlPattrn;
+		obj.menuUrl = menuUrl;
+		obj.menuAbv = menuAbv;
+		obj.useYn = useYn;
+		
+		if (confirm(confirmMsg)) {
+			$.ajax({
+				type: "post",
+				dataType: "json",
+				contentType: "application/json; charset=UTF-8",
+				data: JSON.stringify(obj),
+				url: "/siteMng/menu/update.ajax",
+				success: function (data) {
+					if (data.code == 200) {
+						alert(successMsg);
+						location.reload();
+					} else {
+						alert(failMsg);
+					}
+				}
+			});
+		}
+
+	}
+
+	function deleteMenu(menuId) {
+		let confirmMsg = /*[[#{common.message.confirmDelete}]]*/;
+		let confirmMsg2 = /*[[#{sitemng.menuMngDetail.message.confirmDelete}]]*/;
+		let successMsg = /*[[#{common.message.success}]]*/;
+		let failMsg = /*[[#{common.message.fail}]]*/;
+
+			if (confirm(confirmMsg)) {
+				if (confirm(confirmMsg2)) {
+ 					$.ajax({
+ 						type: "post",
+ 						url: "/siteMng/menu/"+menuId+"/delete.ajax",
+ 						success: function (data) {
+ 							let code = data.code;
+ 							if (code == 200) {
+ 								alert(successMsg);
+ 								location.href = "/siteMng/menu/list.do";
+ 							} else {
+ 								alert(failMsg);
+ 							}
+ 						}
+ 					});
+				} 
+			} 
+	}
+
+	/* 수정하기, 저장하기 버튼 */
+	$(document).on('click', '.menu_update_btn', function () {
+		$(this).parent('.menu_update_box').addClass('d-none');
+		$(this).parent('.menu_update_box').siblings('.menu_update_sub_btn_box').removeClass('d-none');
+	})
+
+	$(document).on('click', '.menu_update_btn_item', function () {
+		$(this).parent('.menu_update_sub_btn_box').addClass('d-none');
+		$(this).parent('.menu_update_sub_btn_box').siblings('.menu_update_box').removeClass('d-none');
+	})
+
+</script>

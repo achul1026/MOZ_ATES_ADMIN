@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div id="container-fluid">
+	<div id="logTabWrap">
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.enforcement}" onclick="getlogListAjax('enf')">단속</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.accident}" onclick="getlogListAjax('acdnt')">사고</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.equipment}" onclick="getlogListAjax('eqp')">단속장비</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.user}" onclick="getlogListAjax('user')">사용자</a>
+		<a href="javascript:void(0);" class="on" th:text="#{sitemng.logList.sysfailure}">시스템 장애</a>
+		<a href="javascript:void(0);" th:text="#{sitemng.logList.colfailure}" onclick="getlogListAjax('colFail')">수집실패</a>
+	</div>
+	<!-- Page Heading -->
+	<h1 id="content-title" th:text="#{sitemng.logList.title}">Log Management</h1>
+	<div id="content-sub-title" th:text="#{sitemng.logList.subTitle}">Manage the Log.</div>
+	<div class="">
+		<form id="frmSearch">
+			<input type="hidden" id="page" name="page" th:value="1">
+			<input type="hidden" id="logType" name="logType" value="sysFail">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{common.search.searchOption}">유형 선택</th>
+						<td>
+							<select name="searchType" id="searchType" class="filter-select" th:field="${mozTfcSystmErrLog.searchType}">
+								<option value="all" th:text="#{common.search.searchOption.all}">전체</option>
+								<option value="logId" th:text="#{sitemng.logList.logId}">로그 ID</option>
+								<option value="content" th:text="#{common.search.searchOption.content}">내용</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{common.search.searchOption.date}">날짜 선택</th>
+						<td>
+							<input class="input-date" id="sDate" name="sDate" type="date" th:value="${mozTfcSystmErrLog.sDate}"> ~
+							<input class="input-date" id="eDate" name="eDate" type="date" th:value="${mozTfcSystmErrLog.eDate}">
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{common.search.search}">내용 검색</th>
+						<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text"
+								th:placeholder="#{common.placeholder.enterKeyword}" th:value="${mozTfcSystmErrLog.searchTxt}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<div class="btn-wrap-center">
+			<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{common.button.search}">조회</button>
+			<!-- TODO 검색초기화 -->
+			<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')"
+				th:text="#{common.button.resetSearch}">검색 초기화</button>
+		</div>
+	</div>
+
+	<form id="frmSearch">
+		<!--			<input type="hidden" id="page" name="page" th:value="${pagination.page}">-->
+		<!--			<input type="hidden" id="hdnStart" name="start" th:value="${tfcAcdntChgHst.start}">-->
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+			</div>
+<!--			<div id="table-regist-btn">-->
+<!--				<div id="type-btn-wrap">-->
+<!--					<button type="button" class="sub-btn form-button" th:text="#{sitemng.logList.user}" onclick="getlogListAjax('user')">사용자</button>-->
+<!--					<button type="button" class="main-btn form-button" th:text="#{sitemng.logList.sysfailure}">시스템 장애</button>-->
+<!--					<button type="button" class="sub-btn form-button" th:text="#{sitemng.logList.colfailure}" onclick="getlogListAjax('colFail')">수집실패</button>-->
+<!--				</div>-->
+<!--			</div>-->
+		</div>
+	</form>
+
+	<div class="">
+		<table class="main-table" id="tblList">
+			<thead>
+				<tr>
+					<th th:text="#{common.table.order}">No.</th>
+					<th th:text="#{common.table.type}">분류</th>
+					<th th:text="#{common.table.id}">요청 ID</th>
+					<th th:text="#{common.table.content}">내용</th>
+					<th th:text="#{common.table.date}">발생일자</th>
+					<th th:text="#{common.table.status}">성공여부</th>
+				</tr>
+			</thead>
+
+			<tbody>
+				<tr th:each="logItem : ${systmErrLogList}" 
+					th:onclick="|location.href='@{/siteMng/log/detail.do?logType=sysFail&(logId=${logItem.systmErrLogId})}'|">
+					<td th:text="${logItem.rnum}"></td>
+ 					<td th:text="${logItem.logCateCd}"></td> 
+					<td th:text="${logItem.systmErrLogId}"></td>
+					<td th:text="${logItem.logCntn}"></td>
+					<td th:text="${#dates.format(logItem.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+					<td th:switch="${logItem.logRslt}">
+						<span th:case="Y" th:text="#{sitemng.logList.system.statusY}"></span>
+						<span th:case="N" th:text="#{sitemng.logList.system.statusN}"></span>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="page_wrap">
+		<div th:insert="tags/paging :: pagingFragment"></div>
+	</div>
+</div>
+
+</html>
+<script th:inline="javascript">
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();		
+	})
+</script>

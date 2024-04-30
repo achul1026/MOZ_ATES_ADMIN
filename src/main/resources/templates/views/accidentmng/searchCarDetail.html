@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+<th:block layout:fragment="content">
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="#{accident.car.search.Detail.title}">운전자 정보</h1>
+		<div id="content-sub-title" th:text="#{accident.car.search.Detail.subtitle}">Manage the code.</div>
+			<form id="frmDriverInfo" method="get" th:action="@{/acdnt/mng/save.do}">
+				<input type="hidden" name="driverLicenseId" th:value="${driverInfo.driverLicenseId}"/>
+				<input type="hidden" name="driverLicenseType" th:value="${driverInfo.driverLicenseType}"/>
+				<input type="hidden" name="driverNm" th:value="${driverInfo.driverNm}"/>
+				<input type="hidden" name="driverBrth" th:value="${#dates.format(driverInfo.driverBrth, 'yyyy-MM-dd')}"/>
+				<input type="hidden" name="driverAddr" th:value="${driverInfo.driverAddr}"/>
+				<input type="hidden" name="driverPno" th:value="${driverInfo.driverPno}"/>
+				<input type="hidden" name="driverEmail" th:value="${driverInfo.driverEmail}"/>
+				<input type="hidden" name="expirationDate" th:value="${#dates.format(driverInfo.expirationDate, 'yyyy-MM-dd')}"/>
+				<input type="hidden" name="vehicleNo" th:value="${driverInfo.vehicleNo}"/>
+				<input type="hidden" name="vehicleType" th:value="${driverInfo.vehicleType}"/>
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
+					<tbody id="driverInfoTable">
+						<tr>
+							<th th:text="#{accident.car.search.Detail.driverLicense}">Name</th>
+							<td th:text="${driverInfo.driverLicenseId}">DriverLicenseId</td>
+							<th th:text="#{accident.car.search.Detail.driverType}">ID</th>
+							<td th:text="${driverInfo.driverLicenseType}">oprtrAccountId</td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.car.search.Detail.birth}">birth</th>
+							<td th:text="${#dates.format(driverInfo.driverBrth, 'yyyy-MM-dd')}">driverBrth</td>
+							<th th:text="#{accident.car.search.Detail.name}">driverNm</th>
+							<td th:text="${driverInfo.driverNm}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.car.search.Detail.address}">address</th>
+							<td th:text="${driverInfo.driverAddr}"></td>
+							<th th:text="#{accident.car.search.Detail.phoneNum}">phoneNum</th>
+							<td th:text="${driverInfo.driverPno}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.car.search.Detail.email}">driverEmail</th>
+							<td th:text="${driverInfo.driverEmail}"></td>
+							<th th:text="#{accident.car.search.Detail.expiration}">phoneNum</th>
+							<td th:text="${#dates.format(driverInfo.expirationDate, 'yyyy-MM-dd')}">driverBrth</td>
+						</tr>
+						<tr>
+							<th th:text="#{accident.car.search.Detail.vehicleNo}">vehicleNo</th>
+							<td th:text="${driverInfo.vehicleNo}"></td>
+							<th th:text="#{accident.car.search.Detail.vehicleType}">vehicleType</th>
+							<td th:text="${driverInfo.vehicleType}"></td>
+						</tr>
+						</tbody>
+				</table>
+			<h1 id="detail-content-title" th:text="#{accident.car.search.Detail.accidentHist}">단속 이력</h1>
+			<div id="content-sub-title" th:text="#{accident.car.search.Detail.accidentHist.desc}">이전에 단속된 이력 목록입니다.</div>
+			
+			<div th:if="${not #lists.isEmpty(acdntTrgtList)}">
+				<div id="search-form-result-wrap">
+					<div id="table-search-result-text">
+						<span th:text="#{accident.car.search.Detail.found}">Found</span> 
+						<span th:text="${#lists.size(acdntTrgtList)}"></span> 
+						<span th:text="#{accident.car.search.Detail.result}">results</span> 
+					</div>
+				</div>
+				<div class="table-wrap">
+					<table class="main-table">
+						<colgroup>
+							<col width="20%">
+							<col width="20%">
+							<col width="20%">
+							<col width="20%">
+							<col width="20%">
+						</colgroup>
+						<thead>
+							<tr>
+								<th th:text="#{accident.car.search.Detail.tfcAcdntId}">Accident Id</th>
+								<th th:text="#{accident.car.search.Detail.vioNm}">Name</th>
+								<th th:text="#{accident.car.search.Detail.roadAddr}">accident Road Address</th>
+								<th th:text="#{accident.car.search.Detail.dvrLcenId}">DriverLicenseId</th>
+								<th th:text="#{accident.car.search.Detail.tfcAcdntDt}">Accident Date</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="item : ${acdntTrgtList}">
+								<td th:text="${item.tfcAcdntId}"></td>
+								<td th:text="${item.acdntTrgtNm}"></td>
+								<td th:text="${item.roadAddr}"></td>
+								<td th:text="${item.dvrLcenId}"></td>
+								<td th:text="${#dates.format(item.acdntDt, 'yyyy-MM-dd')}"></td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div th:unless="${not #lists.isEmpty(acdntTrgtList)}">
+				 <div class="searchNoDater" th:text="#{accident.car.search.Detail.resultNone}">
+			   	    단속 조회 결과가 없습니다.
+			    </div>
+			</div>
+			<div class="btn-wrap-center">
+				<button type="button" class="sub-btn" onclick="javascript:window.history.back()"
+					th:text="#{common.button.back}"> 이전 페이지</button>
+				<button type="submit" class="main-btn" th:text="#{accident.common.button.tfcAcdntRegist}">사고 등록 페이지</button>
+			</div>
+		</form>
+	</div>
+</th:block>

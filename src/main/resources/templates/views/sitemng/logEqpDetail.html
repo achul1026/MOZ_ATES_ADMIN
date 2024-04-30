@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="#{equipment.logDetail.title}">로그 상세 정보</h1>
+			<form id="frmLawRegist">
+				<table class="sub-table detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{enforcement.log.common.reqId}">요청 ID</th>
+							<td th:text="${logInfo.logId}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.creationDate}">발생일자</th>
+							<td th:text="${#dates.format(logInfo.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.successOrNot}">성공여부</th>
+							<td th:text="${logInfo.cntrlResult}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.log.common.requestor}">단속장비</th>
+							<td th:text="${logInfo.tfcEnfEqpId}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{equipment.logDetail.location}">단속장비 위치</th>
+							<td th:text="${logInfo.enfEqpMaster.roadAddr}"></td>
+						</tr>
+						<tr>
+							<th>Detail</th>
+							<td>-</td>
+						</tr>
+<!-- 						<tr> -->
+<!-- 							<th>단속차량번호</th> -->
+<!-- 							<td>123-231-3431</td> -->
+<!-- 						</tr> -->
+						<tr>
+							<th>Attachment</th>
+							<td class="attachmentLine"><a href="" class="attachmenList">Accdient.mp4 <img src="/images/download.png" alt="다운로드" id="download-icon"></a></td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+		
+		<div class="btn-wrap-center">
+            <button type="button" class="sub-btn form-button" th:text="#{common.button.list}"
+            	th:onclick="|location.href='@{/siteMng/log/list.do(logType=${logType})}'|">List</button>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+</script>

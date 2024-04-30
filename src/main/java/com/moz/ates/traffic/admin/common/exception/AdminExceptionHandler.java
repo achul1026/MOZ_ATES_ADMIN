@@ -26,8 +26,10 @@ public class AdminExceptionHandler extends ResponseEntityExceptionHandler{
 	
 	// LoginCheckException
 	@ExceptionHandler(value = NoLoginException.class)
-	public String loginChkExceptionHandler(NoLoginException ne) {
-		return "Login";
+	public ModelAndView loginChkExceptionHandler(NoLoginException ne) {
+		ModelAndView mav = new ModelAndView();
+		mav.setViewName("views/main/login");
+		return mav;
 	}
 	
 	// customRuntimeException 

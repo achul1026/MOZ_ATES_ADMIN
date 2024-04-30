@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	<div id="container-fluid">
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{enforcement.infoRegist.title}">교통단속 정보 등록</h1>
+		<div>
+			<form id="frmEnfRegist" enctype="multipart/form-data">
+				<table class="detail-table">
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.enfInfo}">제목</span>
+							</th>
+							<td><input type="text" id="tfcEnfTtl" class="main-input tfcEnfTtl data-validate" th:data-valid-name="#{enforcement.infoDetail.enfInfo}" placeholder="Please Enter Enforcement Title"
+							data-valid-required></td>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.violationDate}">날짜</span>
+							</th>
+							<td>
+								<input type="hidden" class="tfcEnfDt">
+								<input type="datetime-local" id="tfcEnfDt" name="tfcEnfDt" class="input-time data-validate" th:data-valid-name="#{enforcement.infoDetail.violationDate}" data-valid-required>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.licenseNumber}">라이선스 번호</span>
+							</th>
+							<td class="modal-find-line">
+								<input type="text" id="dvrLcenId" placeholder="Please Enter License Number" class="main-input dvrLcenId data-validate" th:data-valid-name="#{enforcement.infoDetail.licenseNumber}" data-valid-required th:value="${apiDriverInfo?.driverLicenseId}">
+								<i class="search-icon" data-type="dvrLcenId" onclick="searchForApiData('show',this)"></i>
+							</td>
+							<th>
+								<span th:text="#{enforcement.infoDetail.licenseTy}" class="requiredMark">라이선스 타입</span>
+							</th>
+							<td><input type="text" class="main-input dvrLcenTy data-validate" id="dvrLcenTy" placeholder="Please Enter License Number" th:data-valid-name="#{enforcement.infoDetail.licenseTy}" data-valid-required th:value="${apiDriverInfo?.driverLicenseType}"></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.violatorsName}">운전자명</span>
+							</th>
+							<td class="modal-find-line">
+								<input type="text" class="main-input vioNm data-validate" id="vioNm" placeholder="Please Enter Name" th:data-valid-name="#{enforcement.infoDetail.violatorsName}" data-valid-required th:value="${apiDriverInfo?.driverNm}">
+								<i class="search-icon" data-type="driverNm" onclick="searchForApiData('show',this)"></i>	
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.birthday}">생년월일</span>
+							</th>
+							<td><input type="text" class="main-input vioBrth data-validate" id="vioBrth" placeholder="Please Enter Birthday" th:data-valid-name="#{enforcement.infoDetail.birthday}" data-valid-required th:value="${#dates.format(apiDriverInfo?.driverBrth, 'yyyy-MM-dd')}"></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.phone}">전화번호</span>
+							</th>
+							<td><input type="text" class="main-input vioPno data-validate" id="vioPno"  placeholder="Please Enter Phone" th:data-valid-name="#{enforcement.infoDetail.phone}" data-valid-required th:value="${apiDriverInfo?.driverPno}"></td>
+							<th>
+								<span th:text="#{enforcement.infoDetail.email}">이메일</span>
+							</th>
+							<td><input type="text" class="main-input vioEmail" id="vioEmail"  placeholder="Please Enter Email" th:value="${apiDriverInfo?.driverEmail}"></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.vehiclType}">차량</span>
+							</th>
+							<td><input type="text" class="main-input vhTy data-validate" id="vhTy"  placeholder="Please Enter Classification" th:data-valid-name="#{enforcement.infoDetail.vehiclType}" data-valid-required th:value="${apiDriverInfo?.vehicleType}"></td>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.vehiclNo}">차량 번호</span>
+							</th>
+							<td class="modal-find-line">
+								<input type="text" class="main-input vhRegNo data-validate" id="vhRegNo"  placeholder="Please Enter Vehicle Plate No." th:data-valid-name="#{enforcement.infoDetail.vehiclNo}" data-valid-required th:value="${apiDriverInfo?.vehicleNo}">
+								<i class="search-icon" onclick="searchForApiData('show',this)"></i>	
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.lawChoose}">위반 법령 선택</span>
+							</th>
+							<td class="modal-find-line">
+								<select id="tfcLawId" class="filter-select filter98 data-validate" th:data-valid-name="#{enforcement.infoDetail.lawChoose}" onchange="viewLwFineInfo(this)" data-valid-required>
+									<option value="">select</option>
+									<th:block th:each="item : ${trafficLawList}">
+			                            <option th:value="${item.tfcLawId}" th:text="${item.lawNm}"></option>
+									</th:block>
+		                        </select>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.detectionRegist.addr}">위반자 주소</span>
+							</th>
+							<td><input type="text" class="main-input vioAddr data-validate" id="vioAddr"  th:placeholder="#{enforcement.detectionRegist.placeholder.addr}" th:data-valid-name="#{enforcement.detectionRegist.addr}" data-valid-required th:value="${apiDriverInfo?.driverEmail}"></td>
+						</tr>
+						<tr id="lawDetailChk" style="display:none;">
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.lawDetail}">법령 선택</span>
+							</th>
+							<td colspan="3">
+								<input type="radio"><span id="lwDesc"></span><span id="lwPrice"></span>
+								<button type="button">저장</button>
+							</td>
+						</tr>
+						<tr id="lawDetail">
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.law}">위반법령</span>
+							</th>
+							<td colspan="3"></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.fine}">범칙금</span>
+							</th>
+							<td colspan="3"><input type="text" class="main-input data-validate totalPrice" id="totalPrice" placeholder="Please Enter Penalty" th:data-valid-name="#{enforcement.infoDetail.fine}" data-valid-required></td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.placePayment}">납부처</span>
+							</th>
+							<td colspan="3">
+								<select id="placePymntId" class="filter-select filter95 placePymntId">
+									<th:block th:each="item : ${placePaymentList}">
+										<option th:value="${item.placePymntId}" th:text="${item.placePymntNm}"></option>
+									</th:block>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.polInCharge}">담당 경찰명</span>
+							</th>
+							<td class="modal-find-line">
+								<input type="hidden" class="polId" id="polId">
+								<input type="text" class="main-input data-validate" readonly id="polNm"  placeholder="Please Enter Officer" th:data-valid-name="#{enforcement.infoDetail.polInCharge}" data-valid-required>
+								<i class="search-icon" onclick="changePolListModal('show')"></i>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.polStationInCaharge}">관할 경찰서</span>
+							</th>
+							<td id="polDeptNm">Police station is automatically entered</td>
+						</tr>
+						<tr>
+							<th>
+								<span class="requiredMark" th:text="#{enforcement.infoDetail.placeOfViolate}">적발 지역</span>
+							</th>
+							<td colspan="3">
+								<input type="text" class="main-input data-validate roadAddr" id="roadAddr"  placeholder="Please Enter Location" th:data-valid-name="#{enforcement.infoDetail.placeOfViolate}" data-valid-required>
+<!-- 								<i class="search-icon mapSearch"></i> -->
+								<br><br>
+								<div id="map" class="detailMap">
+									<img src="/images/mapLocation_icon.png" alt="My Location" class="mapLocationIcon">
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span th:text="#{enforcement.detectionRegist.lat}">위도</span>
+							</th>
+							<td><input type="text" class="main-input lat data-validate" id="lat" name="lat" th:placeholder="#{enforcement.detectionRegist.placeholder.lat}" th:data-valid-name="#{enforcement.detectionRegist.lat}" data-valid-required></td>
+							<th>
+								<span th:text="#{enforcement.detectionRegist.lng}">경도</span>
+							</th>
+							<td><input type="text" class="main-input lng data-validate" id="lng" name="lng" th:placeholder="#{enforcement.detectionRegist.placeholder.lng}" th:data-valid-name="#{enforcement.detectionRegist.lng}" data-valid-required></td>
+						</tr>
+						<tr>
+							<th class="detail-th" th:text="#{enforcement.infoDetail.tfcEnfDetail}">상세 내용</th>
+							<td colspan="3">
+								<textarea class="detail-table-textarea tfcEnfDetail" id="tfcEnfDetail" placeholder="Please Enter Detail"></textarea>
+							</td>
+						</tr>
+						<tr>
+							<th class="detail-th" th:text="#{enforcement.infoDetail.tfcEnfInfoImage}">첨부파일</th>
+							<td colspan="3">				
+								<div id="dragArea">
+									<div class="drag-area">
+									    <div class="dragText">
+									       File name cannot be more than 50 characters<br>
+											The file size can only be uploaded under 5MB<br>
+											Only JPG, JPEG, PNG, and MP4 files can be uploaded
+									    </div>
+									    <div>
+									        <input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
+									        <button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+									    </div>
+									</div>
+								</div>
+								<div class="upload_wrap none">
+									<div id="upload_list_box"></div>	
+								</div>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</form>
+			
+			<div class="registor-btn-right">
+				<button type="button" id="btnGoList" class="sub-btn form-button" th:onclick="|location.href='@{/enf/info/list.do}'|"
+					th:text="#{enforcement.infoDetail.list}">목록</button>
+				<button type="button" id="btnGoList" class="main-btn form-button" 
+					th:text="#{enforcement.common.search.registBtn}" onclick="saveInfo()">등록</button>
+			</div>
+		</div>
+	</div>
+	<div class="modal-wrap" id="modal">
+
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	function saveInfo() {
+		if($("#frmEnfRegist").soValid()){
+		var form = $("#frmEnfRegist")[0];
+		var data = new FormData(form);
+		
+		data.append("tfcEnfTtl", $(".tfcEnfTtl").val());
+		//data.append("tfcEnfDt", $(".tfcEnfDt").val());
+		data.append("vhTy", $(".vhTy").val());
+		data.append("vhRegNo", $(".vhRegNo").val());
+		data.append("polId", $(".polId").val());
+		data.append("roadAddr", $(".roadAddr").val());
+		data.append("tfcEnfDetail", $(".tfcEnfDetail").val());
+		data.append("totalPrice", $(".totalPrice").val());
+		data.append("vioInfo.dvrLcenId", $(".dvrLcenId").val());
+		data.append("vioInfo.dvrLcenTy", $(".dvrLcenTy").val());
+		data.append("vioInfo.vioNm", $(".vioNm").val());
+		data.append("vioInfo.vioBrth", $(".vioBrth").val());
+		data.append("vioInfo.vioPno", $(".vioPno").val());
+		data.append("vioInfo.vioEmail", $(".vioEmail").val());
+		data.append("vioInfo.vioAddr", $(".vioAddr").val());
+		data.append("finePymntInfo.placePymntId", $(".placePymntId").val());
+		
+		var lwChkInfo = $(".lwChkInfo");
+		$(lwChkInfo).each(function(index, value){
+			data.append("tfcFineNtcInfoList[" + index + "].tfcLawFineId", $(this).data("fine-value"));
+			data.append("tfcFineNtcInfoList[" + index + "].tfcLawId", $(this).data("value"));
+			data.append("tfcFineNtcInfoList[" + index + "].tfcEnfPrice", $(this).data("price"));
+		});
+		
+		$.ajax({
+			url: /*[[@{/enf/info/save.ajax}]]*/ "/enf/info/save.ajax",
+			type: "post",
+			enctype: 'multipart/form-data',
+			data: data,
+			processData: false,
+			contentType: false,
+			success: function (result) {
+				if(result.code == 200){
+					new ModalBuilder().init().successBody(result.message).footer(4,'Confirm',function(button, modal){
+						modal.close();
+						location.href =/*[[@{/enf/info/list.do}]]*/ "";
+					}).open();
+				} else {
+					new ModalBuilder().init().alertBody(result.message).footer(4,'Confirm',function(button, modal){modal.close();}).open();
+				}
+			}
+		});
+	   }
+	
+	}
+
+	function viewLwFineInfo(_this){
+		let tfcLawId = _this.value;
+		
+		$("#lawDetailChk td").empty();
+		if(!isNull(tfcLawId)){
+			$.ajax({
+	            url: /*[[@{/enf/info/lwFineInfo.ajax}]]*/ "/enf/info/lwFineInfo.ajax",
+	            type: "post",
+				dataType : "json",
+				data :{
+					"tfcLawId" : tfcLawId
+				},
+	            success: function (result) {
+					const lawFineInfoList = result.data;
+					if(lawFineInfoList != null){
+					$("#lawDetailChk td")
+					$(".detail-law-div").removeClass("none");
+						for(var i = 0; i < lawFineInfoList.length; i++){
+							const tfcLawFineId = lawFineInfoList[i].tfcLawFineId;
+							const tfcLawId = lawFineInfoList[i].tfcLawId;
+							const fineDesc = lawFineInfoList[i].fineDesc;
+							const finePrice = lawFineInfoList[i].finePrice;
+							const finePriceStr = numberComma(lawFineInfoList[i].finePrice);
+							
+							html = '';
+							html +=  '<div class="lawInfoList">';
+							html += '<input type="radio" class="lwInfo" id="lwInfo'+i+'" name="lwInfo" data-fine-value="'+tfcLawFineId+'" data-value="'+tfcLawId+'" data-desc="'+fineDesc+'" data-price="'+finePrice+'">';
+							html += '<label for="lwInfo" class="lawInfoText">'+fineDesc+' <span id="finePrice" class="lawInfoPrice">'+finePrice+'MT</span></label>';
+							html += '<button type="button" class="main-btn lwInfoPlusBtn" onclick="saveLwFindInfo()">Add</button>';
+							html +=  '</div>';
+						}
+							 
+							
+							$("#lawDetailChk td").append(html);
+					}
+				}
+	    	})
+			
+			$("#lawDetailChk").show();
+		}else{
+			$("#lawDetailChk").hide();
+		}
+	}
+	
+	function saveLwFindInfo(){
+		$(".lwInfo").each(function(){
+			if($(this).is(":checked")){
+				html = '';
+				html += '<div class="lwChkInfoDiv">';
+				html += '<p class="lwChkInfo" data-fine-value="'+$(this).data("fine-value")+'" data-value="'+$(this).data("value")+'" data-price="'+$(this).data("price")+'">'+$(this).data("desc")+'</p>';
+				html += '<button type="button" class="delete-btn" onclick="deleteLwInfo(this)">Delete</button>';
+				html += '</div>';
+				$("#lawDetail td").append(html);
+				
+				fnSetTotalPrice();
+			}
+		});
+	};
+	
+	function fnSetTotalPrice(){
+		const tfcEnfPriceList = $(".lwChkInfo");
+		
+		if(tfcEnfPriceList.length == 0){
+			$("#totalPrice").val(0);
+			return false;
+		}
+        
+        var totalPrice = 0;
+		$(".lwChkInfo").each(function(){
+			totalPrice += Number($(this).data("price"));
+		})        
+        
+		$("#totalPrice").val(totalPrice);
+	}
+	
+	function deleteLwInfo(_this){
+		$(_this).parent(".lwChkInfoDiv").remove();
+		fnSetTotalPrice();
+	}
+	
+	// 모달 수정 여부 확인필요
+	const modalContent = document.getElementById("modal");
+	
+	// police modal
+	function changePolListModal(type){
+		if (type == "show") {
+			$.ajax({
+				url: '/common/modal/pol/list.ajax',
+				type: "get",
+				dataType: 'html',
+				success: function (data) {
+					modalContent.innerHTML += data;
+					modalContent.style.display = 'block';
+				}
+			});
+		} else if (type == "hide") {
+			modalContent.innerHTML = '';
+			modalContent.style.display = 'none';
+		}
+	}
+	
+	function findPolBtn(){
+		$("#modalTbody > tr").remove();
+		$("#modalPaging > div").remove();
+		
+		var page = $("#modalPage").val();
+		var searchTxt = $("#searchContent").val();
+		var start = $("#modalStart").val();
+		$.ajax({
+			type : "get",
+			data : {"searchType" : "oprtrNm", "searchTxt" : searchTxt, "page" : page, "start" : start},
+			url: '/common/modal/pol/search/list.ajax',
+			success : function(result) {
+				var html = '';
+				$(result.data.list).each(function(index, item){
+					var polDeptNm = item.polDeptNm;
+					var polNm = item.polNm;
+					if(isNull(polDeptNm)){
+						polDeptNm = '-';
+					}
+					if(isNull(polNm)){
+						polNm = '-';
+					}					
+					html += '<tr onclick="selectPol(\''+item.polId+'\', \''+polNm+'\', \''+ polDeptNm +'\')">'+
+								'<td>'+item.rnum+'</td>'+
+								'<td>'+polDeptNm+'</td>'+								
+								'<td>'+polNm+'</td>'+
+							'</tr>';
+		    	})
+				$("#modalTbody").append(html);			
+		    	var paging = result.data.pagination;
+				if(paging != null && paging != '' && paging.totalCntList > 0){
+					$("#modalPaging").append(getPagingHtml(paging,page));
+				}
+				$("#totalCnt").text(paging.totalListCnt);
+				var start = result.data.polInfo.start;
+				$("#modalStart").val();
+			}
+		});
+	}
+	
+	function fnPageMove(page) {
+		$("#modalPage").val(page);
+		findPolBtn();
+	}
+	
+	function selectPol(polId, polNm, polDeptNm){
+		$("#polId").val(polId);
+		$("#polNm").val(polNm);
+		$("#polDeptNm").text(polDeptNm);
+		changePolListModal('hide');
+	}
+		
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : null,
+		center_lat : null,
+		isInitDrawCenterMarker : false
+	});
+	
+	$("#tfcEnfDt").on('change', function(){
+	 	var value = this.value;
+        var date = new Date(value);
+        var formattedDateTime = formatDate(date);
+        $(".tfcEnfDt").val(formattedDateTime);
+	})
+	
+	//loading().start();
+	
+	//API Modal
+	function searchForApiData(type , _this){
+		let vhRegNo = document.getElementById('vhRegNo').value;
+		let dvrLcenId = document.getElementById('dvrLcenId').value;
+		let vioNm = document.getElementById('vioNm').value;
+		
+		let searchType = _this.getAttribute('data-type');
+		let searchContent = '';
+		
+		switch(searchType){
+			case 'dvrLcenId':
+				searchContent = dvrLcenId;
+			break;
+			case 'vehicleNo':
+				searchContent = vhRegNo;
+			break;
+			case 'driverNm':
+				searchContent = vioNm;
+			break;
+		}
+		
+		if (type == "show") {
+			$.ajax({
+				url: `/common/modal/${searchType}/apiSearch.ajax`,
+				data : {
+					"searchContent" : searchContent
+				},
+				type: "get",
+				dataType: 'html',
+				success: function (data) {
+					modalContent.innerHTML += data;
+					modalContent.style.display = 'block';
+					
+					document.getElementById('searchBtn').addEventListener('click', function() {
+				        const resultTable = document.getElementById('table_api_search');
+				        
+				        const searchType = document.getElementById('searchType').value;
+				        const searchValue = document.getElementById('searchContent').value;
+				        
+				        if(searchType == null || searchType == '' || searchValue == null || searchValue == ''){
+							alert("Please Input SearchType and SearchContent");
+							return;
+						}
+				        
+						const fetcher = new DriverSelectAPI();
+				            fetcher.fetchData(searchType, searchValue, function(data) {
+				                const tbody = document.getElementById('modalTbody');
+				                tbody.empty();
+				
+				                data.forEach(item => {
+				                    const tr = document.createElement('tr');
+				                    tr.dataset.prop = JSON.stringify(item);
+				                    tr.setAttribute('onclick','searchForApiData("hide",this)');
+				                    tr.innerHTML = `
+				                    	<td>${item.driverLicenseId}</td>
+				                    	<td>${item.driverLicenseType}</td>
+				                    	<td>${item.expirationDate}</td>
+				                    	<td>${item.driverNm}</td>
+				                    	<td>${item.driverBrth}</td>
+				                    	<td>${item.driverPno}</td>
+				                    	<td>${item.driverAddr}</td>
+				                    	<td>${item.vehicleNo}</td>
+				                    	<td>${item.vehicleType}</td>
+				                    	`;
+				                    tbody.appendChild(tr);
+				                    
+				                    resultTable.style.display = 'block';
+				                });
+				            });
+				    });
+				}
+			});
+		} else if (type == "hide") {
+			const resultTable = document.getElementById('table_api_search');
+			
+			let objJsonStr = _this.dataset != null ? _this.dataset.prop : null;
+			
+			if(objJsonStr != null){
+				const obj = JSON.parse(objJsonStr);
+				console.log(obj);
+				document.getElementById('dvrLcenId').value = obj.driverLicenseId;
+				document.getElementById('dvrLcenTy').value = obj.driverLicenseType;
+				document.getElementById('vioNm').value = obj.driverNm;
+				document.getElementById('vioBrth').value = obj.driverBrth;
+				document.getElementById('vioPno').value = obj.driverPno;
+				document.getElementById('vioEmail').value = obj.driverEmail;
+				document.getElementById('vioAddr').value = obj.driverAddr;
+				document.getElementById('vhRegNo').value = obj.vehicleNo;
+				document.getElementById('vhTy').value = obj.vehicleType;
+			}
+            resultTable.style.display = 'none';
+            
+			modalContent.innerHTML = '';
+			modalContent.style.display = 'none';
+		}
+	}
+</script>

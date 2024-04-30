@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div class="container-fluid">
+
+		<!-- Page Heading
+		<h1 class=""></h1>-->
+		<h1 class="search-result">1차 납부 고지서</h1>
+		<div class="search-text">신호 위반 <span>22.02.40</span></div>
+
+		<div class="detail-table-wrap">
+			<table class="sub-table detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>운전자명</th>
+						<td></td>
+						<th>차량등록번호</th>
+						<td>123151355</td>
+					</tr>
+					<tr>
+						<th>차량</th>
+						<td></td>
+						<th>차량번호</th>
+						<td>2156</td>
+					</tr>
+					<tr>
+						<th>연락처</th>
+						<td>010-0151-4565</td>
+						<th>이메일</th>
+						<td>bbzxcva@nate.com</td>
+					</tr>
+					<tr>
+						<th>적발지역</th>
+						<td>판교</td>
+						<th>범칙금</th>
+						<td>136.056</td>
+					</tr>
+					<tr>
+						<th>위반법령</th>
+						<td>법령 1231호</td>
+						<th>상세유형</th>
+						<td>음주로 신호 박살</td>
+					</tr>
+					<tr>
+						<th>담당 경찰명</th>
+						<td>바비킴</td>
+						<th>관할 경찰서</th>
+						<td>파주 경찰서</td>
+					</tr>
+					<tr>
+						<th>납부금액</th>
+						<td>132,056</td>
+						<th>납부기한</th>
+						<td>2023.05.45</td>
+					</tr>
+					<tr>
+						<th>납부처</th>
+						<td>파주 경찰서</td>
+						<th>납부계좌</th>
+						<td>기업은행 / 01041005929</td>
+					</tr>
+					<tr>
+						<th>상세 내용</th>
+						<td colspan="3">음조 줄라함</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="bill-text">
+			1차 고지 후 15일 이상 체납되면 2차 고지가 진행됩니다.<br>
+			2차 고지에 대해 15일 이상 체납 시 행정처분을 받게됩니다.<br>
+
+			문의 : INATRO 002-023-12347
+		</div>
+		<div class="btn-wrap-center">
+			<button type="button" id="btnGoList" class="sub-btn">인쇄</button>
+			<button type="button" id="btnModify" class="main-btn find">납부</button>
+			<button type="button" id="btnModify" class="main-btn">확인</button>
+		</div>
+	</div>
+
+
+	<div class="modal-wrap">
+		<div class="modal-contents modal-company-group">
+			<div class="modal-title">
+				<div class="modal-title-text">납부정보 확인</div>
+				<img src="/images/close.png" alt="닫기" class="close">
+			</div>
+			<div class="modal-body">
+				<table>
+					<tbody>
+						<tr>
+							<th>납부금액</th>
+							<td>50.000.000</td>
+						</tr>
+						<tr>
+							<th>납부처</th>
+							<td>파주 경찰서</td>
+						</tr>
+						<tr>
+							<th>담당자</th>
+							<td>박지훈</td>
+						</tr>
+					</tbody>
+				</table>
+				
+				<div class="btn-wrap-center">
+					<button type="button" id="btnGoList" class="sub-btn">취소</button>
+					<button type="button" id="btnModify" class="main-btn">확인</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</th:block>
+</html>
+<script>
+
+
+
+</script>

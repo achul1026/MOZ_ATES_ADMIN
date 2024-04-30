@@ -1,0 +1,42 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<div class="modal-contents modal-company-group">
+	<div class="modal-title ">
+		<div class="modal-title-text" th:text="#{common.modal.apiSearch.title}">운전자/차량 검색</div>
+		<img src="/images/close.png" alt="닫기" class="close" onclick="searchForApiData('hide',this)">
+	</div>
+	<div class="modal-body">
+		<div class="modal-form-wrap">
+            <select id="searchType" name="searchType" class="filter-select modalSelect filter98">
+				<option value="dvrLcenId" th:selected="${type == 'dvrLcenId'}">Driver License Id</option>
+				<option value="vehicleNo" th:selected="${type == 'vehicleNo'}">Vehicle Plate Number</option>
+				<option value="driverNm" th:selected="${type == 'driverNm'}">Driver Name</option>
+            </select>
+		</div>
+		<div class="modal-form-wrap">
+			<input type="text" class="modal-search" id="searchContent" th:placeholder="#{common.modal.apiSearch.placeholder.searchTxt}" th:value="${searchContent}">
+			<i id="searchBtn" class="modal-search-icon"></i>
+		</div>
+		<div class="modal-search-list">
+			<table id="table_api_search" class="main-table" style="display:none">
+				<thead>
+					<tr>
+						<th th:text="#{common.modal.apiSearch.driverLicense}">Driver License Id</th>
+						<th th:text="#{common.modal.apiSearch.driverType}">Driver License Type</th>
+						<th th:text="#{common.modal.apiSearch.expiration}">Driver License Expiration Date</th>
+						<th th:text="#{common.modal.apiSearch.name}">Driver Name</th>
+						<th th:text="#{common.modal.apiSearch.birth}">Driver Brth</th>
+						<th th:text="#{common.modal.apiSearch.searchAddress}">Driver Addr</th>
+						<th th:text="#{common.modal.apiSearch.phNum}">Driver Phone Number</th>
+						<th th:text="#{common.modal.apiSearch.vehicleNo}">Vehicle No</th>
+						<th th:text="#{common.modal.apiSearch.vehicleType}">Vehicle Type</th>
+					</tr>
+				</thead>
+				<tbody id="modalTbody">
+				</tbody>
+			</table>
+		</div>
+	</div>
+</div>
+</html>
+

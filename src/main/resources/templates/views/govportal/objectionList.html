@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 id="content-title" th:text="#{portal.objection.title.objection}">이의제기</h1>
+		<div id="content-sub-title" th:text="#{portal.objection.title.desc}">이의제기 목록을 관리할 수 있습니다.</div>
+
+		<div class="">
+			<form id="frmSearch">
+				<input type="hidden" id="page" name="page" th:value="1">
+				<input type="hidden" id="hdnStart" name="start" th:value="${objReg.start}">
+				<table id="filter-table">
+					<colgroup>
+						<col width="15%">
+						<col width="85%">
+					</colgroup>
+					<tbody>
+						<tr>
+							<th th:text="#{portal.common.type}">유형 선택</th>
+							<td>
+								<select name="searchType" class="filter-select" id="searchType" th:field="${objReg.searchType}">
+									<option value="all" th:text="#{portal.notice.common.searchAll}">전체</option>
+									<option value="title" th:text="#{portal.notice.common.title}">제목</option>
+									<option value="wrtrNm" th:text="#{portal.notice.common.writer}">작성자</option>
+								</select>
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{portal.common.date}">날짜 선택</th>
+							<td>
+								<input class="input-date" id="sDate" name="sDate" type="date" th:value="${objReg.sDate}"> ~
+								<input class="input-date" id="eDate" name="eDate" type="date" th:value="${objReg.eDate}">
+							</td>
+						</tr>
+						<tr>
+							<th th:text="#{portal.notice.common.search}">내용 검색</th>
+							<td><input class="main-input search-box" th:placeholder="#{portal.common.search.placeholder}" id="searchTxt" 
+									name="searchTxt" type="text" th:value="${objReg.searchTxt}"></td>
+						</tr>
+					</tbody>
+				</table>
+	
+				<div class="btn-wrap-center">
+					<button th:text="#{penalty.common.search}" type="button" id="btnSearch" class="main-btn form-button">조회</button>
+					<!-- TODO 검색초기화 -->
+				<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')" th:text="#{portal.common.search.reset}">검색 초기화</button>
+				</div>
+			</form>
+		</div>
+		
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+			</div>
+			
+		</div>
+	
+		<div class="">
+			<table class="main-table" id="tblList">
+				<thead>
+					<tr>
+						<th class="sorting sorting_asc">No.</th>
+						<th th:text="#{portal.objection.category}">카테고리</th>
+						<th th:text="#{portal.objection.title}">제목</th>
+						<th th:text="#{portal.objection.aon}">답변여부</th>
+						<th th:text="#{portal.objection.registDate}">게시일자</th>
+						<th th:text="#{portal.notice.common.writer}">게시자</th>
+						<th th:text="#{portal.objection.manager}">담당자</th>
+						<th th:text="#{portal.objection.answerDate}">답변일자</th>
+					</tr>
+				</thead>
+
+				<tbody>
+					<tr th:each="objItem : ${objectionList}" th:onclick="|location.href='@{/portal/objection/detail.do(objIdx=${objItem.objIdx})}'|">
+						<td th:text="${objItem.rnum}"></td>
+						<td th:text="${objItem.cmCd.cdNm}"></td>
+						<td th:text="${objItem.postTtl}"></td>
+						<td th:switch="${objItem.ansStts}">
+							<span th:case="Y" th:text="#{portal.objection.ansYnY}"></span>
+							<span th:case="N" th:text="#{portal.objection.ansYnN}"></span>
+						</td>
+						<td th:text="${#dates.format(objItem.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						<td th:text="${objItem.wrtrNm}"></td>
+						<th:block th:if="${objItem.ansStts == 'Y'}">
+							<td th:text="${objItem.webOprtr.oprtrAccountId}"></td>
+							<td th:text="${objItem.ansUpdDt != null ? #dates.format(objItem.ansUpdDt, 'yyyy-MM-dd HH:mm:ss') : #dates.format(objItem.ansCrDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+						</th:block>
+						<th:block th:if="${objItem.ansStts == 'N'}">
+							<td>-</td>
+							<td>-</td>
+						</th:block>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div class="page_wrap">
+			<div th:insert="tags/paging :: pagingFragment"></div>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();		
+	})
+</script>

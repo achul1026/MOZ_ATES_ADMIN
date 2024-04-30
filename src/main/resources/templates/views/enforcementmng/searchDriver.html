@@ -1,195 +1,135 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-
-    <div class="container-fluid">
-
-        <!-- Page Heading -->
-        <h1 th:text="#{enforcement.driver.search.title}" class="h3 mb-4 text-gray-800">운전자 조회</h1>
-
-        <div class="row">
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 th:text="#{enforcement.driver.search.searchOp}" class="m-0 font-weight-bold text-primary">검색조건</h6>
-                    </div>
-                    <div class="card-body"> 
-                        <form id="frmDriverSearch" class="search-wrap" th:action="@{/enf/search/driver/list.do}" method="get">
-                            <select class="form-control col-lg-3 select" name="txtlcnchk" th:value="${driverDetail.licenseCheck}">
-                                    <option value="all" th:text="#{enforcement.law.list.selectAll}">전체</option>
-                                    <option value="available" th:text="#{enforcement.driver.search.name}">이름</option>
-                                    <option value="stop" th:text="#{enforcement.driver.search.phNum}">연락처</option>
-                                    <option value="cancellation" th:text="#{enforcement.driver.search.driverLicense}">면허증번호</option>
-                            </select>
-                            <input class="form-control col-lg-3 search-box" id="txtName" name="name" type="text" th:placeholder="#{enforcement.driver.search.placeholder}">
-
-                            <button type="button" id="btnSearch" class="btn btn-outline-primary" th:text="#{enforcement.driver.search.check}">조회</button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-
-
-            <th:block th:if="${not #strings.isEmpty(enfSearchVO.name) && not #strings.isEmpty(driverDetail.name)}">
-            <div class="col-lg-12">
-                <div class="card shadow mb-4">
-                    <div class="card-header py-3">
-                        <h6 class="m-0 font-weight-bold text-primary" th:text="#{enforcement.driver.search.searchTitle}">운전자 상세정보</h6>
-                    </div>
-                    <!--비동기 테이블 AJAX추후 추가작업 
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <div id="dataTable_wrapper" class="dataTables_wrapper dt-bootstrap4">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <table class="table table-bordered dataTable" id="tblList" width="100%" cellspacing="0" role="grid" aria-describedby="dataTable_info" style="width: 100%;">
-                                            <thead>
-                                            <tr role="row">
-                                                <th th:text="#{enforcement.driver.search.tableNo}" class="sorting sorting_asc" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-sort="ascending" aria-label="No : activate to sort column ascending" style="width: 56px;">No.</th>        
-                                                <th th:text="#{enforcement.driver.search.name}" class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Name:activate to sort column ascending" style="width: 67px;">이름</th>
-                                                <th th:text="#{enforcement.driver.search.nid}" class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="NID: activate to sort column ascending" style="width: 61px;">NID</th>
-                                                <th th:text="#{enforcement.driver.search.licenseCheck}" class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="LicenseCheck: activate to sort column ascending" style="width: 49px;">면허상태</th>
-                                                <th th:text="#{enforcement.driver.search.phNum}" class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="PhoneNumer: activate to sort column ascending" style="width: 68px;">연락처</th>
-                                                <th th:text="#{enforcement.driver.search.searchAddress}" class="sorting" tabindex="0" aria-controls="dataTable" rowspan="1" colspan="1" aria-label="Address: activate to sort column ascending" style="width: 68px;">지역</th>
-                                            </tr>
-                                            </thead>
-
-                                            <tbody>
-
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div> -->
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table table-bordered">
-                                <colgroup>
-                                    <col width="10%">
-                                    <col width="25%">
-                                    <col width="10%">
-                                    <col width="15%">
-                                    <col width="15%">
-                                    <col width="15%">
-                                    <col width="10%">
-                                </colgroup>
-                                <tbody>
-                                <tr>
-                                    <th th:text="#{enforcement.driver.search.name}">이름</th>
-                                    <th th:text="#{enforcement.driver.search.phNum}">전화번호</th>
-                                    <th th:text="#{enforcement.driver.search.birth}">생년월일(나이)</th>
-                                    <th th:text="#{enforcement.driver.search.sex}">성별</th>
-                                    <th th:text="#{enforcement.driver.search.driverLicense}">면허증번호</th>
-                                    <th th:text="#{enforcement.driver.search.searchAddress}">지역</th>
-                                </tr>
-                                <tr>
-                                    <td th:text="${driverDetail.name}"></td>
-                                    <td th:text="${driverDetail.phoneNum}"></td>
-                                    <td th:text="${driverDetail.birth}"></td>
-                                    <td th:text="${driverDetail.sex}"></td>
-                                    <td th:text="${driverDetail.driverLicense}"></td>
-                                    <td th:text="${driverDetail.address}"></td>
-								</tr>
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            </th:block>
-
-            <th:block th:if="${not #strings.isEmpty(enfSearchVO.name) && #strings.isEmpty(driverDetail.name)}">
-                <div class="col-lg-12">
-                    <div class="card shadow mb-4">
-                        <div class="card-header py-3">
-                            <h6 class="m-0 font-weight-bold text-primary" th:text="#{enforcement.driver.search.searchTitle}">운전자 상세정보</h6>
-                        </div>
-                        <div class="card-body">
-                            <p style="text-align: center;" th:text="#{enforcement.driver.search.content}">검색 결과가 없습니다.</p>
-                        </div>
-                    </div>
-                </div>
-            </th:block>
-
-
-
-        </div>
-
-    </div>
-
-
-    <!-- Alert Modal -->
-    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <!--                <div class="modal-header">-->
-                <!--                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>-->
-                <!--                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">-->
-                <!--                        <span aria-hidden="true">&times;</span>-->
-                <!--                    </button>-->
-                <!--                </div>-->
-                <div class="modal-body" id="divModalBody">
-
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-primary" id="btnModalClose" th:text="#{enforcement.driver.search.closeButton}">닫기</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+	<div id="container-fluid">
+		<!-- Page Heading -->
+		<!--<h1 th:text="#{enforcement.driver.search.title}" class="search-result">운전자 조회</h1>-->
+		<h1 id="content-title" th:text="|#{enforcement.driver.search.title}|">운전자 조회</h1>
+		<div id="content-sub-title" th:text="#{enforcement.driver.search.descr}">이름 또는 연락처를 통해 운전자를 검색할 수 있습니다.</div>
+		<div id="frmDriverSearch">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{enforcement.common.search.searchOp}">유형 선택</th>
+						<td>
+							<select name="searchType" id="searchType" class="filter-select">
+<!--								<option th:text="#{enforcement.common.search.selectAll}">전체</option>-->
+								<option value="driverNm" th:text="#{enforcement.driver.search.name}">이름</option>
+								<option value="dvrLcenId" th:text="#{enforcement.driver.search.driverLicense}">운전면허증 번호</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.common.search.serchTerm}">내용 검색</th>
+						<td><input type="text" id="searchContent" name="searchContent" class="search-box main-input" th:placeholder="#{enforcement.common.search.placeholder}"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+			<div class="btn-wrap-center">
+				<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{enforcement.driver.search.check}">조회</button>
+				<button type="button" id="resetSearch" onclick="resetForm()" class="sub-btn form-button" th:text="#{enforcement.common.search.reset}">검색 초기화</button>
+			</div>
+			
+			<div class="">
+				<table id="api_table" class="main-table" style="display:none">
+					<thead>
+						<tr>
+							<th th:text="#{enforcement.driver.search.driverLicense}">Driver License Id</th>
+							<th th:text="#{enforcement.driver.search.driverType}">Driver License Type</th>
+							<th th:text="#{enforcement.driver.search.expiration}">Driver License Expiration Date</th>
+							<th th:text="#{enforcement.driver.search.name}">Driver Name</th>
+							<th th:text="#{enforcement.driver.search.birth}">Driver Brth</th>
+							<th th:text="#{enforcement.driver.search.searchAddress}">Driver Addr</th>
+							<th th:text="#{enforcement.driver.search.phNum}">Driver Phone Number</th>
+							<th th:text="#{enforcement.driver.search.vehicleNo}">Vehicle No</th>
+							<th th:text="#{enforcement.driver.search.vehicleType}">Vehicle Type</th>
+						</tr>
+					</thead>
+					<tbody id="resultTbody">
+					</tbody>
+				</table>
+		</div>
+	</div>
 </th:block>
+
 </html>
 <script>
+	const resultTable = document.getElementById('api_table');
+	
+	function apiResultDetail(_this){
+		let resultData = _this.dataset != null ? _this.dataset.prop : null;
+		let obj = JSON.parse(resultData);
+	    const form = document.createElement('form');
+	    form.method = 'post';
+	    form.action = '/enf/driver/detail.do';
+//		console.log(_this.dataset.prop);
+	    Object.keys(obj).forEach(key => {
+	        const result = document.createElement('input');
+	        result.type = 'hidden';
+	        result.name = key;
+	        result.value = obj[key];
+	        form.appendChild(result);
+	    });
+	
+	    document.body.appendChild(form);
+	    form.submit();
+	}
+	
+	$("#btnSearch").click(function () {
+        const searchType = document.getElementById('searchType').value;
+        const searchValue = document.getElementById('searchContent').value;
+        
+        if(searchType == null || searchType == '' || searchValue == null || searchValue == ''){
+			alert("Please Input SearchType and SearchContent");
+			return;
+		}
+        
+		const fetcher = new DriverSelectAPI();
+		
+        fetcher.fetchData(searchType, searchValue, function(data) {
+            const tbody = document.getElementById('resultTbody');
+            tbody.empty();
 
-    $(function (){
-        $("#btnModalClose").click(function () {
-            $("#exampleModal").modal('hide');
-            setTimeout(function () {
-                $("#txtName").val('').focus();
-                // $("#txtName").focus();
-            },0)
-        })
-    })
-
-    $("#btnSearch").click(function () {
-
-
-//        if($.trim($("#txtName").val())==''){
-//
-//            $("#divModalBody").text("이름을 입력해주세요.");
-//            $("#exampleModal").modal('show');
-//
-//
-//            return false;
-//        }
-//        if($.trim($("#txtPhone").val())==''){
-//            alert("전화번호를 입력해주세요.");
-//            $("#txtPhone").focus();
-//            return false;
-//        }
-//        if($.trim($("#txtNid ").val())==''){
-//            alert("NID를 입력해주세요.");
-//            $("#txtNid ").focus();
-//            return false;
-//        }
-/*         if($.trim($("#txtlcnchk").val())==''){
-            alert("면허 상태를 선택해주세요.");
-            $("#txtlcnchk").focus();
-            return false;
-        } */
-//        if($.trim($("#txtaddress").val())==''){
-//            alert("주소를 입력해주세요.");
-//            $("#txtaddress").focus();
-//            return false;
-//        }
-        $("#frmDriverSearch").submit();
-    })
+            data.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.dataset.prop = JSON.stringify(item);
+                //console.log(JSON.stringify(item));
+                tr.setAttribute('onclick','apiResultDetail(this)');
+                tr.innerHTML = `
+	               	<td>${item.driverLicenseId}</td>
+	               	<td>${item.driverLicenseType}</td>
+	               	<td>${item.expirationDate}</td>
+	               	<td>${item.driverNm}</td>
+	               	<td>${item.driverBrth}</td>
+	               	<td>${item.driverPno}</td>
+	               	<td>${item.driverAddr}</td>
+	               	<td>${item.vehicleNo}</td>
+	               	<td>${item.vehicleType}</td>
+               	`;
+               	
+                tbody.appendChild(tr);
+                
+                resultTable.style.display = 'table';
+            });
+        });
+	});
+	
+	function resetForm(){
+        const searchType = document.getElementById('searchType');
+        
+	    if (searchType && searchType.options.length > 0) {
+	        searchType.value = searchType.options[0].value;
+	    }
+	    
+        document.getElementById('searchContent').value = '';
+        resultTable.style.display = 'none';
+	}
 
 </script>

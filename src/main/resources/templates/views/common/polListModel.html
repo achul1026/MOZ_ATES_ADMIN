@@ -1,0 +1,48 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<div class="modal-contents modal-company-group">
+	
+	<div class="modal-title">
+		<div class="modal-title-text">Police Info Search</div>
+		<img src="/images/close.png" alt="닫기" class="close" onclick="changePolListModal('hide')">
+	</div>
+	
+	<div class="modal-body">
+		<div class="modal-form-wrap">
+			<input type="hidden" id="modalPage" name="page" value="1">
+			<input type="hidden" id="modalStart" name="start" th:value="${polInfo.start}">			
+			<input type="text" class="modal-search" id="searchContent" placeholder="담당자 정보 검색">
+			<i class="modal-search-icon"onclick="findPolBtn()"></i>
+		</div>
+		
+		<div class="ex-group-name">
+			Example) Please enter at least two characters for the police officer’s name.
+		</div>
+
+		<div class="modal-search-list">
+			<div class="modal-search-result">
+				Found <span th:text='|"${pagination.totalListCnt}"|' id="totalCnt"></span> results
+			</div>
+			<table class="main-table">
+				<thead>
+					<th>Number</th>
+					<th>Department</th>
+					<th>Manager</th>
+				</thead>
+				<tbody id="modalTbody">
+					<tr th:each="polItem : ${polList}" th:onclick="selectPol([[${polItem.polId}]],  [[${polItem.polNm}]], [[${polItem.polDeptNm}]])">
+						<td th:text="${polItem.rnum}"></td>
+						<td th:text="${polItem.polDeptNm != null ? polItem.polDeptNm : '-'}"></td>
+						<td th:text="${polItem.polNm != null ? polItem.polNm : '-'}"></td>
+					<tr>
+				</tbody>
+			</table>
+			<div class="page_wrap" id="modalPaging">
+				<div th:insert="tags/paging :: pagingFragment"></div>
+			</div>
+		</div>
+	</div>
+</div>
+<script th:inline="javascript">
+</script>
+</html>

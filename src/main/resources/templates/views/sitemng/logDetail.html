@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	 <div id="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 id="detail-content-title" th:text="#{sitemng.logDetail.title}">로그 상세 정보</h1>
+        
+        <div class="detail-table">
+            <form id="frmLawRegist">
+				
+            <table class="">
+                <colgroup>
+                    <col width="15%">
+                    <col width="85%">
+                </colgroup>
+                <tbody>
+	                <tr>
+						<th th:text="#{sitemng.logDetail.requestId}">요청 ID</th>
+						<td th:text="${logDetail.logId}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.logDetail.createDate}">발생일자</th>
+						<td th:text="${#temporals.format(logDetail.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.logDetail.logResult}">성공여부</th>
+						<td th:text="${logDetail.logRslt == 'Y' ? 'success' : 'failure'}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.logDetail.requester}">요청자</th>
+						<td th:text="${logDetail.crtr}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.logDetail.requesterIpAddr}">요청자 IP</th>
+						<td th:text="${logDetail.crtrIpAddr}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.logDetail.requestDetails}">요청 상세 내용</th>
+						<td th:text="${logDetail.logCntn}"></td>
+					</tr>
+                </tbody>
+            </table>
+            </form>
+        </div>
+        <div class="btn-wrap-center">
+            <button type="button" class="sub-btn form-button" th:text="#{common.button.list}"
+            	th:onclick="|location.href='@{/siteMng/log/list.do(logType=${logType})}'|">List</button>
+		</div>
+    </div>
+</th:block>
+</html>
+<script th:inline="javascript">
+</script>

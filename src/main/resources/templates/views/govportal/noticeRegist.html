@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{portal.notice.title.regist}">공지사항 등록</h1>
+
+        <form id="frmNoticeRegist">
+        	<table class="detail-table">
+            	<colgroup>
+                	<col width="15%">
+                	<col width="85%">
+             	</colgroup>
+             	<tbody>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{portal.noticeRegist.ttl}">제목</span>
+						</th>
+						<td><input type="text" class="main-input data-validate" name="boardTitle" th:placeholder="#{portal.noticeRegist.ttl.placeholder}"
+						th:data-valid-name="#{portal.noticeRegist.ttl}" data-valid-required></td>
+					</tr>
+					<tr>
+						<th>
+							<span th:text="#{portal.noticeRegist.posting}">게시 여부</span>
+						</th>
+						<td>
+							<label for="away-check" class="radioBox">
+								<input type="radio" name="check" id="away-check" class="" onclick="dateCheck('true')"
+								th:data-valid-name="#{portal.noticeRegist.posting}" checked>
+								<span class="radioOn"></span>
+								Always Posted
+							</label>
+							<label for="timeline-check" class="radioBox">
+								<input type="radio" name="check" id="timeline-check" class="time-check" onclick="dateCheck('false')">
+								<span class="radioOn"></span>
+								Posting Period Settings
+							</label>
+						</td>
+					</tr>
+					<tr class="time-check-change none">
+						<th>
+							<span th:text="#{portal.noticeRegist.postingPeriod}">게시기간</span>
+						</th>
+						<td>
+							<input type="date" class="input-date" name="postStrDt">
+							 ~ 
+							<input type="date" class="input-date" name="postEndDt">
+						</td>
+					</tr>
+	             	<tr>
+	                	<th>
+							<span th:text="#{portal.noticeRegist.type}">유형</span>
+						</th>
+	                 	<td>
+	                 		<input type="hidden" name="imprtYn" id="imprtYn">
+	                 		<input type="checkbox" id="imprtYn-chkbox" class="" name="imprtYn-chkbox"> <label th:text="#{portal.noticeRegist.important}" for="imprtYn-chkbox">중요</label>
+	                 	</td>
+	              	</tr>
+	              	<tr>
+	                  	<th th:text="#{portal.noticeRegist.attachment}">첨부파일</th>
+	                  	<td colspan="3">
+							<input type="file" id="uploadFiles" name="uploadFiles" multiple/>
+							<div id="dragArea">
+							<div class="drag-area">
+								<div class="dragText">
+								   	File name cannot be more than 50 characters<br>
+									The file size can only be uploaded under 5MB<br>
+									Only WORD, XLSX, PDF files can be uploaded
+								</div>
+								<div>
+									<input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
+									<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+								</div>
+							</div>
+							</div>
+							<div class="upload_wrap none">
+							<div id="upload_list_box"></div>	
+							</div>
+						</td>
+	              	</tr>
+              		<tr>
+                 		<th>
+							<span th:text="#{portal.noticeRegist.exposure}">노출여부</span>
+					 	</th>
+                 		<td>
+                 			<input type="hidden" name="useYn" id="useYn">
+                 			<input type="checkbox" id="useYn-chkbox" class="" name="useYn-chkbox"> <label th:text="#{portal.noticeRegist.exposureChkbox}" for="useYn-chkbox">노출</label>
+                 		</td>
+              		</tr>
+              		<tr>
+                  		  <th>
+							  <span th:text="#{portal.noticeRegist.popupYn}">팝업여부</span>
+						  </th>
+                  		<td>
+                  			<input type="hidden" name="popupYn" id="popupYn">
+                  			<input type="checkbox" id="popupYn-chkbox" class="" name="popupYn-chkbox"> <label th:text="#{portal.noticeRegist.popupYnChkbox}"  for="popupYn-chkbox">사용</label>
+                  		</td>
+              		</tr>
+              		<tr>
+                  		<th th:text="#{portal.notice.common.content}">상세</th>
+						<td>
+							<textarea class="form-control detail-table-textarea" id="txtBoardContents" 
+								name="boardContents" th:placeholder="#{portal.noticeRegist.content.placeholder}"></textarea>
+						</td>
+              		</tr>
+             	</tbody>
+         	</table>
+        </form>
+   
+        
+         <div class="btn-wrap-center">
+			<button th:text="#{penalty.common.listBack}" type="button" id="btnGoList"
+				class="sub-btn form-button" onclick="javascript:window.history.back()">목록</button>
+			<button th:text="#{portal.notice.regist}" type="button" id="btnRegist" class="main-btn">등록</button>
+		</div>
+	</div>
+
+
+
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	$("#btnRegist").click(function () {
+		if($("#frmNoticeRegist").soValid()) {
+			
+			if($("#away-check").is(":checked")){
+				$(".input-date").attr("disabled", true);
+			}
+			
+			var imprtYn = $("#imprtYn-chkbox").prop("checked")? "Y" :"N";
+			var popupYn = $("#popupYn-chkbox").prop("checked")? "Y" :"N";
+			var useYn = $("#useYn-chkbox").prop("checked")? "Y" :"N";
+			
+			$("#imprtYn").val(imprtYn);
+			$("#useYn").val(useYn);
+			$("#popupYn").val(popupYn);
+			
+			var form = $("#frmNoticeRegist")[0];
+			var data = new FormData(form);
+			
+			$.ajax({
+				url: /*[[@{/portal/notice/save.ajax}]]*/ "/portal/notice/save.ajax",
+				type: "post",
+				enctype: 'multipart/form-data',
+				data : data,
+				processData: false,
+				contentType: false,
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+					if (resultCode == '200') {
+						new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){
+							modal.close();
+							location.href =/*[[@{/portal/notice/list.do}]]*/ "";
+						}).open();
+					} else {
+						new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
+							modal.close();}).open();
+					}
+				}
+			});
+		}
+	})
+</script>

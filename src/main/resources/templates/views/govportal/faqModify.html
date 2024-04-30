@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+
+		<!-- Page Heading -->
+		<h1 th:text="#{portal.faq.title.modify}" id="detail-content-title">FAQ 수정</h1>
+	
+		<form id="frmFaqModify">
+			<input type="hidden" name="faqIdx" th:value="${faq.faqIdx}">
+			<table class="sub-table detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{portal.faq.title}">제목</span>
+						</th>
+						<td><input type="text" class="main-input" id="txtPostTitle" name="postTitle" th:value="${faq.postTitle}"></td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{portal.faq.classifi}">분류</span>
+						</th>
+						<td>
+							<select class="filter-select" name="cateTy">
+								<th:block th:each="cdItem : ${cdList}">
+									<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}" th:selected="${cdItem.cdId == faq.cateTy}">
+									</option>
+								</th:block>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{portal.faq.answerContent}">답변</span>
+						</th>
+						<td colspan="3"><textarea class="form-control detail-table-textarea" rows="15" id="txtPostContent" name="postContent"
+								th:text="${faq.postContent}"></textarea></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+				
+		<div class="btn-wrap-center">
+			<button th:text="#{portal.common.cancel}" type="button" id="btnGoList" class="sub-btn form-button" onclick="javascript:window.history.back()">취소</button>
+			<button th:text="#{portal.common.modiCom}" type="button" id="btnModify" class="main-btn form-button" >수정완료</button>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	$("#btnModify").click(function () {
+		// TODO Validation
+		$.ajax({
+			url: /*[[@{/portal/faq/update.ajax}]]*/ "/portal/faq/update.ajax",
+			type: "post",
+			data: $("#frmFaqModify").serialize(),
+			success: function (result) {
+				var resultCode = result.code;
+				var resultMessage = result.message;
+				if (resultCode == '200') {
+					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){
+						modal.close();
+						var baseUrl = /*[[@{/portal/faq/detail.do}]]*/ '';
+						window.location.href = baseUrl + "?faqIdx=" + [[${faq.faqIdx}]];
+					}).open();
+				} else {
+					new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
+						modal.close();}).open();
+				}
+			}
+		});
+
+	})
+</script>

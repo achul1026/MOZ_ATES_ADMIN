@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+	<div id="container-fluid">
+		
+		<!-- Page Heading -->
+		<h1 th:text="#{sitemng.notice.title.notice}" id="content-title">공지사항</h1>
+		<div id="content-sub-title" th:text="'Manage Notices'">공지사항을 관리할 수 있습니다.</div>
+		
+		<div class="">
+			<form id="frmSearch">
+			<input type="hidden" id="page" name="page" th:value="1">
+			<input type="hidden" id="hdnStart" name="start" th:value="${brd.start}">
+			<table id="filter-table">
+				<colgroup>
+					<col width="15%">
+					<col width="85%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{sitemng.common.type}">유형 선택</th>
+						<td>
+							<select name="searchType" class="filter-select" id="searchType" th:field="${brd.searchType}">
+								<option value="all" th:text="#{sitemng.notice.common.searchAll}">전체</option>
+								<option value="boardTitle" th:text="#{sitemng.notice.common.title}">제목</option>
+								<option value="oprtrId" th:text="#{sitemng.notice.common.writer}">등록자</option>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.common.date}">날짜 선택</th>
+						<td>
+							<select name="dateSearchType" class="filter-select" id="dateSearchType" th:field="${brd.dateSearchType}">
+								<option value="all" th:text="#{sitemng.notice.common.searchAll}">전체</option>
+								<option value="postStrDt" th:text="#{sitemng.notice.common.postStartDate}">공표일자</option>
+								<option value="postEndDt" th:text="#{sitemng.notice.common.postEndDate}">시행일자</option>
+							</select>
+							<input class="input-date" id="sDate" name="sDate" type="date" th:value="${brd.sDate}"> ~
+							<input class="input-date" id="eDate" name="eDate" type="date" th:value="${brd.eDate}">
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{sitemng.notice.common.search}">내용 검색</th>
+						<td><input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" 
+							th:value="${brd.searchTxt}" th:placeholder="#{sitemng.common.search.placeholder}"></td>
+					</tr>
+				</tbody>
+			</table>
+
+			<div class="btn-wrap-center">
+				<button th:text="#{penalty.common.search}" type="button" id="btnSearch" class="main-btn form-button">조회</button>
+				<!-- TODO 검색초기화 -->
+				<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')" th:text="#{enforcement.common.search.reset}">검색 초기화</button>
+			</div>
+		</form>
+
+		</div>
+		
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+			</div>
+			<div>
+				<button th:text="#{sitemng.notice.regist}" type="button" id="btnRegist" class="main-btn form-button"
+						th:onclick="|location.href='@{/siteMng/polNtc/save.do}'|">공지사항 등록</button>
+			</div>
+		</div>
+			<div class="">
+				<table class="main-table" id="tblList">
+					<thead>
+						<tr>
+							<th th:text="#{sitemng.notice.common.number}">번호</th>
+							<th th:text="#{sitemng.notice.common.category}">유형</th>
+							<th th:text="#{sitemng.notice.common.title}">제목</th>
+							<th th:text="#{sitemng.notice.common.writer}">작성자</th>
+							<th th:text="#{sitemng.notice.common.postStartDate}">게시 시작일</th>
+							<th th:text="#{sitemng.notice.common.postEndDate}">게시 종료일</th>
+							<th th:text="#{sitemng.notice.common.exposure}">노출여부</th>
+							<th th:text="#{sitemng.notice.common.readCnt}">조회수</th>
+						</tr>
+					</thead>
+
+					<tbody>
+						<tr th:each="noticeItem : ${noticeList}" th:onclick="|location.href='@{/siteMng/polNtc/detail.do(boardIdx=${noticeItem.boardIdx})}'|">
+							<td th:text="${noticeItem.rnum}"></td>
+							<td th:switch="${noticeItem.imprtYn}">
+								<span th:case="Y" th:text="#{sitemng.notice.imprtY}"></span>								
+								<span th:case="N" th:text="#{sitemng.notice.imprtN}"></span>								
+							</td>
+							<td th:text="${noticeItem.boardTitle}"></td>
+							<td th:text="${noticeItem.wrtrNm}"></td>
+							<td th:text="${noticeItem.postStrDt != null and noticeItem.postStrDt != '' ? #dates.format(noticeItem.postStrDt, 'yyyy-MM-dd') : '-'}"></td>
+							<td th:text="${noticeItem.postEndDt != null and noticeItem.postEndDt != '' ? #dates.format(noticeItem.postEndDt, 'yyyy-MM-dd') : '-'}"></td>
+							<td th:switch="${noticeItem.useYn}">
+								<span th:case="Y" th:text="#{sitemng.notice.useYnY}"></span>								
+								<span th:case="N" th:text="#{sitemng.notice.useYnN}"></span>								
+							</td>
+							<td th:text="${noticeItem.viewCnt}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+			<div class="page_wrap">
+				<div th:insert="tags/paging :: pagingFragment"></div>
+			</div>
+	</div>
+
+
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	
+	function fnPageMove(page) {
+		$("#page").val(page);
+		$("#frmSearch").submit();
+	}
+	
+	$("#btnSearch").on('click', function(){
+		$("#frmSearch").submit();
+	})
+</script>

@@ -1,93 +1,116 @@
 <!DOCTYPE html>
-<html lang="ko" xmlns:th="http://www.thymeleaf.org"
-                xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<html lang="ko" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <th:block th:fragment="headerFragment">
 
 
-    <!-- Topbar -->
-    <nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
+	<!-- Topbar -->
+	<nav class="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
 
-
-        <!-- Topbar Search -->
-<!--        <form class="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">-->
-<!--            <div class="input-group">-->
-<!--                <input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."-->
-<!--                       aria-label="Search" aria-describedby="basic-addon2">-->
-<!--                <div class="input-group-append">-->
-<!--                    <button class="btn btn-primary" type="button">-->
-<!--                        <i class="fas fa-search fa-sm"></i>-->
-<!--                    </button>-->
-<!--                </div>-->
-<!--            </div>-->
-<!--        </form>-->
-
-        <!-- Topbar Navbar -->
-        <div class="gov-info">
-				<div class="breadclumbs">
+		<!-- Topbar Navbar -->
+		<div id="gov-info">
+			<div id="breadcrumbs">
+				<th:block th:if="${menuRouteInfo != null}">
 					<ul>
-						<li>경로</li>
+						<!-- One Depth-->
+						<li th:if="${not #strings.isEmpty(menuRouteInfo.menuNm)}">
+							<!--  <a th:href="${menuRouteInfo.menuUrl}" th:text="${menuRouteInfo.menuNm}"></a>-->
+							<a th:href="${menuRouteInfo.menuUrl}">
+								<img src="/images/home.png" alt="home">
+							</a>
+						</li>
+						<!-- when DASHBOARD -->
+						<li th:if="${not #strings.isEmpty(menuRouteInfo.subMenuNm) and #strings.equals(menuRouteInfo.subMenuNm, 'DASHBOARD')}">
+							<a th:href="${menuRouteInfo.menuUrl}">
+								<img src="/images/home.png" alt="home">
+							</a>
+						</li>
+						
+						<!-- Two Depth-->
+						<li th:if="${not #strings.isEmpty(menuRouteInfo.subMenuNm) and not #strings.equals(menuRouteInfo.subMenuNm, 'DASHBOARD')}">
+							<img src="/images/page-arrow-right.png" alt="화살표">
+						</li>
+						
+						<li th:if="${not #strings.isEmpty(menuRouteInfo.subMenuNm) and not #strings.equals(menuRouteInfo.subMenuNm, 'DASHBOARD')}">
+							<a th:href="${menuRouteInfo.subMenuUrl}"
+								th:classappend="${menuRouteInfo.menuActiveLocation eq 'TWO' ? 'txt-underline' : ''}"
+								th:text="${menuRouteInfo.subMenuNm}"></a>
+						</li>
+						
+						<!-- Three Depth-->
+						<li th:if="${not #strings.isEmpty(menuRouteInfo.currentMenuNm)}">
+							<img src="/images/page-arrow-right.png" alt="화살표">
+						</li>
+						<li th:if="${not #strings.isEmpty(menuRouteInfo.currentMenuNm)}">
+							<a href="" th:classappend="${menuRouteInfo.menuActiveLocation eq 'THREE' ? 'txt-underline' : ''}"
+								th:text="${menuRouteInfo.currentMenuNm}"></a>
+						</li>
 					</ul>
-				</div>
-				
-				<div class="login">
-					
-		               <img class="img-profile rounded-circle" th:src="@{/bootstrap/img/undraw_profile.svg}">
-		               <span class="mr-2 d-none d-lg-inline text-gray-600 small" sec:authentication="name"></span>
-		           
-		            <div class="arrow-down">
-						<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-							 <i class="arrow"></i>
-						</a>
+				</th:block>
+			</div>
+
+		
+				<div id="login">
+		            <div id="login-info">
+						<span th:text="${webOprtrInfo.oprtrNm}"></span>
+						<img src="/images/login-option.png" alt="옵션" class="loginOptionImg"  onclick="toggle('myinfo-wrap')">
+					</div>
+					<div id="myinfo-wrap">
+						<div>
+							<a href="/myinfo/myPage.do"><img src="/images/myinfo.png" alt="내정보">My Info</a>
+						</div>
+						<div>
+							<a href="/logout"><img src="/images/logout.png" alt="로그아웃">LogOut</a>
+						</div>
 					</div>
 				</div>
 			</div>
-        <ul class="navbar-nav ml-auto" style="display: none;">
+		</div>
+		<ul class="navbar-nav ml-auto" style="display: none;">
 
-            <!-- Nav Item - Search Dropdown (Visible Only XS) -->
-            <li class="nav-item dropdown no-arrow d-sm-none">
-                <a class="nav-link dropdown-toggle" href="#" id="searchDropdown" role="button"
-                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="fas fa-search fa-fw"></i>
-                </a>
-                <!-- Dropdown - Messages -->
-                <div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in"
-                     aria-labelledby="searchDropdown">
-                    <form class="form-inline mr-auto w-100 navbar-search">
-                        <div class="input-group">
-                            <input type="text" class="form-control bg-light border-0 small"
-                                   placeholder="Search for..." aria-label="Search"
-                                   aria-describedby="basic-addon2">
-                        </div>
-                    </form>
-                </div>
-            </li>
-
+			<!-- Nav Item - Search Dropdown (Visible Only XS) -->
+			<li class="nav-item dropdown no-arrow d-sm-none">
+				<a class="" href="#" id="searchDropdown" role="button" data-toggle="dropdown" aria-haspopup="true"
+					aria-expanded="false">
+					<i class=""></i>
+				</a>
+				<!-- Dropdown - Messages -->
+				<div class="dropdown-menu dropdown-menu-right p-3 shadow animated--grow-in" aria-labelledby="searchDropdown">
+					<form class="form-inline mr-auto w-100 navbar-search">
+						<div class="input-group">
+							<input type="text" class="form-control bg-light border-0 small" placeholder="Search for..."
+								aria-label="Search" aria-describedby="basic-addon2">
+						</div>
+					</form>
+				</div>
+			</li>
 
 
-            <div class="topbar-divider d-none d-sm-block"></div>
 
-            <!-- Nav Item - User Information -->
-            <li class="nav-item dropdown no-arrow">
-                <a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button"
-                   data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <span class="mr-2 d-none d-lg-inline text-gray-600 small" sec:authentication="name"></span>
-                    <img class="img-profile rounded-circle"
-                         th:src="@{/bootstrap/img/undraw_profile.svg}">
-                </a>
-                <!-- Dropdown - User Information -->
-                <div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
-                    <a class="dropdown-item" th:href="@{/logout}">
-                        <i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
-                        Logout
-                    </a>
-                </div>
-            </li>
+			<div class="topbar-divider d-none d-sm-block"></div>
 
-        </ul>
+			<!-- Nav Item - User Information -->
+			<li class="nav-item dropdown no-arrow">
+				<a class="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false">
+					<span class="mr-2 d-none d-lg-inline text-gray-600 small" sec:authentication="name"></span>
+					<!--TODO::이미지수정-->
+					<!--                    <img class="img-profile rounded-circle" th:src="@{/bootstrap/img/undraw_profile.svg}" alt="">-->
+				</a>
+				<!-- Dropdown - User Information -->
+				<div class="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
+					<a class="dropdown-item" th:href="@{/logout}">
+						<i class="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400"></i>
+						Logout
+					</a>
+				</div>
+			</li>
 
-    </nav>
+		</ul>
+
+	</nav>
 
 
 </th:block>
+
 </html>
