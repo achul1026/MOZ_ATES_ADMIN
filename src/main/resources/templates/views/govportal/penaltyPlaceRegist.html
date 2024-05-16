@@ -22,16 +22,18 @@
                     <th>
 						<span class="requiredMark" th:text="#{portal.pp.name}">납부처 이름</span>
 					</th>
-                    <td><input type="text" class="main-input data-validate" name="placePymntNm" id="placePymntNm"
-                    th:data-valid-name="#{portal.pp.name}" placeholder="Please Enter Name" data-valid-required></td>
+                    <td>
+						<input type="text" class="main-input data-validate" name="placePymntNm" id="placePymntNm"
+                    th:data-valid-name="#{portal.pp.name}" th:placeholder="#{portal.pp.placeholder.name}" data-valid-required>
+                    </td>
                 </tr>
                 <tr>
                     <th>
-						<span class="requiredMark" th:text="#{portal.pp.dw}"></span>
+						<span class="requiredMark" th:text="#{portal.pp.dw}">주소</span>
 					</th>
                     <td>
 						<input type="text" class="main-input data-validate" name="placePymntAddr" id="placePymntAddr"
-						th:data-valid-name="#{portal.pp.dw}" placeholder="Please Enter Address" data-valid-required>
+					 	th:placeholder="#{portal.pp.placeholder.address}" th:data-valid-name="#{portal.pp.dw}" data-valid-required>
 <!-- 						<br><br> -->
 <!-- 						<div id="map" class="detail-map"></div> -->
 					</td>
@@ -41,7 +43,7 @@
 						<span class="requiredMark" th:text="#{portal.pp.contact}">연락처</span>
 					</th>
                     <td><input type="text" class="main-input data-validate" name="placePymntCntc" id="placePymntCntc"
-                    th:data-valid-name="#{portal.pp.contact}" placeholder="Please Enter Contact" data-valid-required></td>
+                    th:data-valid-name="#{portal.pp.contact}" th:placeholder="#{portal.pp.placeholder.contact}" data-valid-required></td>
                 </tr>
                 <tr>
                     <th>
@@ -98,7 +100,7 @@
 						<span class="requiredMark" th:text="#{portal.pp.preName}">담당자</span>
 					</th>
                     <td><input type="text" class="main-input data-validate" name="placePymntRprsvNm" id="placePymntRprsvNm"
-                    th:data-valid-name="#{portal.pp.preName}" placeholder="Please Enter Representative Name" data-valid-required></td>
+                    th:data-valid-name="#{portal.pp.preName}" th:placeholder="#{portal.pp.placeholder.preName}" data-valid-required></td>
                 </tr>
 
                 </tbody>

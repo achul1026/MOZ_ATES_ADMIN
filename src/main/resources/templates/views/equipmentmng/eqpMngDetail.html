@@ -3,13 +3,9 @@
 	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-
 	<div id="container-fluid">
-
-		<!-- Page Heading -->
 		<h1 id="detail-content-title" th:text="#{equipment.mngDetail.title}">단속장비 상세정보</h1>
-		
-		<div class="">
+		<div>
 			<table class="detail-table">
 				<colgroup>
 					<col width="15%">
@@ -89,6 +85,7 @@
 			</table>
 		<div class="equipmentTableHisWrap">
 				<h2 class="equipmentTableTitle">Inspection history</h2>
+				<button type="button" class="main-btn" onclick="showHistRegistModal('equipment')" th:text="#{common.button.register}">등록 모달 버튼</button>
 				<table class="main-table equipmentTable">
 					<colgroup>
 					</colgroup>
@@ -97,18 +94,20 @@
 							<th th:text="#{equipment.mngDetail.maintenance.oprtrNm}">담당자 명</th>
 							<th th:text="#{equipment.mngDetail.maintenance.mntnType}">관리 타입</th>
 							<th th:text="#{equipment.mngDetail.maintenance.mntnStts}">시설물 상태</th>
+							<th th:text="#{equipment.mngDetail.maintenance.desc}">관리 날짜</th>
 							<th th:text="#{equipment.mngDetail.maintenance.date}">관리 날짜</th>
 							<th th:text="#{equipment.mngDetail.maintenance.option}">관리자명</th>
 						</tr>
 					</thead>
 					<tbody>
 						<tr th:if="${#lists.isEmpty(eqpMntnHstList)}">
-							<td colspan="5" th:text="#{equipment.mngDetail.maintenance.none}">None Result</td>
+							<td colspan="6" th:text="#{equipment.mngDetail.maintenance.none}">None Result</td>
 						</tr>
 						<tr th:if="${!#lists.isEmpty(eqpMntnHstList)}" th:each="hstItem : ${eqpMntnHstList}">
 							<td th:text="${hstItem.oprtrNm}"></td>
 							<td th:text="${hstItem.mntnType}"></td>
 							<td th:text="${hstItem.mntnStts}"></td>
+							<td onclick="showDetail(this)" th:text="${hstItem.mntnDetail}" th:data-value="${hstItem.mntnDetail}"></td>
 							<td th:text="${#dates.format(hstItem.crDt, 'yyyy-MM-dd')}"></td>
 							<td>
 								<button type="button" class="innerDeleteBtn delete-btn" th:onclick="deleteHst([[${hstItem.mntnHstId}]])">Delete</button>
@@ -117,7 +116,6 @@
 					</tbody>
 				</table>
 			</div>
-			
 			<div class="btn-wrap-center">
 				<button type="button" id="btnGoList" class="sub-btn left-btn" th:onclick="|location.href='@{/eqp/mng/list.do(pageType=list)}'|"
 					th:text="#{equipment.mngDetail.listButton}">목록</button>
@@ -125,14 +123,21 @@
 				<button type="button" id="btnRegist" class="main-btn form-button" th:text="#{equipment.mngDetail.modifyButton}"
 					th:onclick="|location.href='@{/eqp/mng/update.do(tfcEnfEqpId=${tfcEnfEqpMaster.tfcEnfEqpId})}'|">수정</button>
 			</div>
+			<div class="modal-wrap" id="modal">
+			</div>
 		</div>
 	</div>
 </th:block>
 
 </html>
 <script th:inline="javascript">
+	const modalContent = document.getElementById("modal");
+	
+	const idx = /*[[${tfcEnfEqpMaster.tfcEnfEqpId}]]*/;
+	
 	const lng = /*[[${tfcEnfEqpMaster.lng}]]*/;
 	const lat = /*[[${tfcEnfEqpMaster.lat}]]*/;
+	
 	let map = new MozAtesMap({
 		elementId : 'map',
 		center_lng : lng,
@@ -164,6 +169,98 @@
 			});
 			}, '취소', function(button, modal){}).open();
 	});
+	
+	function showHistRegistModal(type){
+		//등록 모달 호출
+		$.ajax({
+			url: `/common/modal/${type}/modalMaintenanceRegist.do`,
+			type: "get",
+			dataType: 'html',
+			success: function (data) {
+				modalContent.innerHTML += data;
+				modalContent.style.display = 'block';
+				
+				let registBtn = document.getElementById('mntnRegistBtn');
+				let closeBtn = document.getElementById('modalRegistClose');
+				
+				closeBtn.addEventListener('click', function(e){
+					modalContent.innerHTML="";
+					modalContent.style.display = "none";				
+				});
+
+				registBtn.addEventListener('click', function(e){
+					let mntnType = document.getElementById('mntnType').value;
+					let mntnStts = document.getElementById('mntnStts').value;
+					let mntnDetail = document.getElementById('mntnDetail').value;
+					
+					if(mntnType == null || mntnType == ''){
+						alert('mntnType is null');
+						return;
+					}
+					if(mntnStts == null || mntnStts == ''){
+						alert('mntnStts is null');
+						return;
+					}
+					if(mntnDetail == null || mntnDetail == ''){
+						alert('mntnDetail is null');
+						return;
+					}
+					
+					$.ajax({
+						url: /*[[@{/eqp/mng/mntnSave.ajax}]]*/ "/eqp/mng/mntnSave.ajax",
+						data : {
+							"tfcEnfEqpId" : idx,
+							"mntnType" : mntnType,
+							"mntnStts" : mntnStts,
+							"mntnDetail" : mntnDetail
+						},
+						type: "post",
+						dataType: 'json',
+						success: function (result) {
+							if(result.code == 200){
+								new ModalBuilder().init().successBody(result.message).footer(4,'확인',function(button, modal){
+									modal.close();
+									location.reload();
+								}).open();
+								modalAlertWrap();
+							}
+						}
+					});
+				});
+			}
+		})
+	}
+	
+	function showDetail(_this){
+		let detailValue = _this.dataset.value;
+		let title = /*[[#{equipment.facilityDetail.history.desc}]]*/;
+		
+		let modalDetailHtml = `
+			<div class="modal-contents modal-company-group">
+				<div class="modal-title">
+					<dt class="modal-title-text">${title}</dt>
+					<img id="modalDetailClose"src="/images/close.png" alt="닫기" class="close">
+				</div>
+				<div class="modal-body">
+					<div class="modalMntnList">
+						<dd class="modal-form-wrap">
+							${detailValue}
+						</dd>
+					</div>
+				</div>
+			</div>
+		`;
+		
+		modalContent.innerHTML += modalDetailHtml;
+		modalContent.style.display = 'block';
+		
+		let closeBtn = document.getElementById('modalDetailClose');
+		
+		closeBtn.addEventListener('click', function(e){
+			modalContent.innerHTML="";
+			modalContent.style.display = "none";				
+		});
+	}
 	
 	function deleteHst(mntnHstId){
 		const deleteConfirm = /*[[#{equipment.mngDetail.maintenance.confirm}]]*/;

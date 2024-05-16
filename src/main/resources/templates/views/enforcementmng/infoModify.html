@@ -56,7 +56,7 @@
 						<th>
 							<span class="requiredMark" th:text="#{enforcement.infoDetail.birthday}">생년월일</span>
 						</th>
-						<td><input type="text" class="main-input data-validate vioBrth" placeholder="Please Enter Birthday" th:data-valid-name="#{enforcement.infoDetail.birthday}" th:value="${tfcEnfMaster.vioInfo.vioBrth}" data-valid-required></td>
+						<td><input type="text" class="main-input data-validate vioBrth" placeholder="dd.mm.aaaa" th:data-valid-name="#{enforcement.infoDetail.birthday}" th:value="${tfcEnfMaster.vioInfo.vioBrth}" data-valid-required maxlength="10" onkeyup="keyupDateCheck(event, 'ddMMyyyy', '.')"></td>
 					</tr>
 					<tr>
 						<th>

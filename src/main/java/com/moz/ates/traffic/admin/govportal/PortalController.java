@@ -109,11 +109,11 @@ public class PortalController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(brd);
 
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "Title cannot be more than 200 characters."))
+				.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 				.addRule("imprtYn", new ValidateChecker().setRequired())
 				.addRule("useYn", new ValidateChecker().setRequired())
 				.addRule("popupYn", new ValidateChecker().setRequired())
-				.addRule("boardContents", new ValidateChecker().setMaxLength(200, "Contents cannot be more than 200 characters."))
+				.addRule("boardContents", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 				.isValid();
 		
 		if (!dtoValidatorResult.isSuccess()) {
@@ -127,7 +127,7 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "The Notice has been registered.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O presente aviso foi registado.");
 	}
 
 	/**
@@ -162,7 +162,7 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "The Notice has been deleted.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Este aviso foi suprimido.");
 	}
 
 	/**
@@ -215,11 +215,11 @@ public class PortalController {
 			, @RequestPart(required = false) MultipartFile[] uploadFiles) {
 		ValidateBuilder dtoValidator = new ValidateBuilder(brd);
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "Title cannot be more than 200 characters."))
+				.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 				.addRule("imprtYn", new ValidateChecker().setRequired())
 				.addRule("useYn", new ValidateChecker().setRequired())
 				.addRule("popupYn", new ValidateChecker().setRequired())
-				.addRule("boardContents", new ValidateChecker().setMaxLength(200, "Contents cannot be more than 200 characters."))
+				.addRule("boardContents", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 				.isValid();
 
 		if (!dtoValidatorResult.isSuccess()) {
@@ -232,7 +232,7 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "The Notice has been modified.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O presente aviso foi alterado.");
 	}
 
 
@@ -291,9 +291,9 @@ public class PortalController {
 	public CommonResponse<?> faqRegistAjax(MozFaq faq) {
 		ValidateBuilder dtoValidator = new ValidateBuilder(faq);
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("postTitle", new ValidateChecker().setRequired().setMaxLength(200, "Title cannot be more than 200 characters."))
+				.addRule("postTitle", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 				.addRule("cateTy", new ValidateChecker().setRequired())
-				.addRule("postContent", new ValidateChecker().setRequired().setMaxLength(200, "Content cannot be more than 200 characters."))
+				.addRule("postContent", new ValidateChecker().setRequired().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 				.isValid();
 
 		if (!dtoValidatorResult.isSuccess()) {
@@ -306,7 +306,7 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "The FAQ has been registered.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta FAQ foi registada.");
 	}
 
 	/**
@@ -365,9 +365,9 @@ public class PortalController {
 	public CommonResponse<?> faqModifyAjax(@ModelAttribute MozFaq faq) {
 		ValidateBuilder dtoValidator = new ValidateBuilder(faq);
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("postTitle", new ValidateChecker().setRequired().setMaxLength(200, "Title cannot be more than 200 characters."))
+				.addRule("postTitle", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 				.addRule("cateTy", new ValidateChecker().setRequired())
-				.addRule("postContent", new ValidateChecker().setRequired().setMaxLength(200, "Content cannot be more than 200 characters."))
+				.addRule("postContent", new ValidateChecker().setRequired().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 				.isValid();
 
 		if (!dtoValidatorResult.isSuccess()) {
@@ -379,7 +379,7 @@ public class PortalController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "The FAQ has been modified.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta FAQ foi modificada.");
 	}
 
 	/**
@@ -414,7 +414,7 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "The FAQ has been deleted");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta FAQ foi eliminada");
 	}
 	
 	/**
@@ -475,7 +475,7 @@ public class PortalController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(mozInqry);
 		ValidateResult validationResult = dtoValidator
 				.addRule("inqryId", new ValidateChecker().setRequired())
-				.addRule("ansCn", new ValidateChecker().setRequired().setMaxLength(200,"Answer Contents cannot be more than 200 characters."))
+				.addRule("ansCn", new ValidateChecker().setRequired().setMaxLength(200,"O conteúdo da resposta não pode ter mais de 200 caracteres."))
 				.isValid();
 		
 		if (!validationResult.isSuccess()) {
@@ -486,7 +486,7 @@ public class PortalController {
 		} catch (CommonException e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Response registration has been completed.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O registo de respostas foi concluído.");
 	}
 
 	/**
@@ -549,7 +549,7 @@ public class PortalController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(objReg);
 		ValidateResult validationResult = dtoValidator
 				.addRule("objIdx", new ValidateChecker().setRequired())
-				.addRule("ansContents", new ValidateChecker().setRequired().setMaxLength(200,"Answer Contents cannot be more than 200 characters."))
+				.addRule("ansContents", new ValidateChecker().setRequired().setMaxLength(200,"O conteúdo da resposta não pode ter mais de 200 caracteres."))
 				.isValid();
 		
 		if (!validationResult.isSuccess()) {
@@ -560,7 +560,7 @@ public class PortalController {
 		} catch (CommonException e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Response registration has been completed.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O registo de respostas foi concluído.");
 	}
 
 	/**
@@ -622,7 +622,7 @@ public class PortalController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(complaintsReg);
 		ValidateResult validationResult = dtoValidator
 				.addRule("complaintsIdx", new ValidateChecker().setRequired())
-				.addRule("ansContents", new ValidateChecker().setRequired().setMaxLength(200,"Answer Contents cannot be more than 200 characters."))
+				.addRule("ansContents", new ValidateChecker().setRequired().setMaxLength(200,"O conteúdo da resposta não pode ter mais de 200 caracteres."))
 				.isValid();
 		
 		if (!validationResult.isSuccess()) {
@@ -633,7 +633,7 @@ public class PortalController {
 		} catch (CommonException e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Response registration has been completed.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O registo de respostas foi concluído.");
 	}
 
 	/**
@@ -694,13 +694,13 @@ public class PortalController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(plPymntInfo);
 
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("placePymntNm", new ValidateChecker().setRequired().setMaxLength(200, "Name cannot be more than 200 characters."))
-				.addRule("placePymntAddr", new ValidateChecker().setRequired().setMaxLength(200, "Address cannot be more than 200 characters."))
-				.addRule("placePymntCntc", new ValidateChecker().setRequired().setMaxLength(200, "Address cannot be more than 200 characters."))
+				.addRule("placePymntNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome não pode ter mais de 200 caracteres."))
+				.addRule("placePymntAddr", new ValidateChecker().setRequired().setMaxLength(200, "O endereço não pode ter mais de 200 caracteres."))
+				.addRule("placePymntCntc", new ValidateChecker().setRequired().setMaxLength(200, "O contacto não pode ter mais de 200 caracteres."))
 				.addRule("operStrTm", new ValidateChecker().setRequired())
 				.addRule("operEndTm", new ValidateChecker().setRequired())
 				.addRule("clsdDt", new ValidateChecker().setRequired())
-				.addRule("placePymntRprsvNm", new ValidateChecker().setRequired().setMaxLength(200, "Representative Name cannot be more than 200 characters."))
+				.addRule("placePymntRprsvNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome do representante não pode ter mais de 200 caracteres."))
 				.isValid();
 
 		if (!dtoValidatorResult.isSuccess()) {
@@ -714,8 +714,7 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,
-				"The New Payment Location has been saved");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O Novo local de pagamento foi guardado");
 	}
 
 	/**
@@ -772,13 +771,13 @@ public class PortalController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(plPymntInfo);
 
 		ValidateResult validationResult = dtoValidator
-				.addRule("placePymntNm", new ValidateChecker().setRequired().setMaxLength(200, "Name cannot be more than 200 characters."))
-				.addRule("placePymntAddr", new ValidateChecker().setRequired().setMaxLength(200, "Address cannot be more than 200 characters."))
-				.addRule("placePymntCntc", new ValidateChecker().setRequired().setMaxLength(200, "Address cannot be more than 200 characters."))
+				.addRule("placePymntNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome não pode ter mais de 200 caracteres."))
+				.addRule("placePymntAddr", new ValidateChecker().setRequired().setMaxLength(200, "O endereço não pode ter mais de 200 caracteres."))
+				.addRule("placePymntCntc", new ValidateChecker().setRequired().setMaxLength(200, "O contacto não pode ter mais de 200 caracteres."))
 				.addRule("operStrTm", new ValidateChecker().setRequired())
 				.addRule("operEndTm", new ValidateChecker().setRequired())
 				.addRule("clsdDt", new ValidateChecker().setRequired())
-				.addRule("placePymntRprsvNm", new ValidateChecker().setRequired().setMaxLength(200, "Representative Name cannot be more than 200 characters."))
+				.addRule("placePymntRprsvNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome do representante não pode ter mais de 200 caracteres."))
 				.isValid();
 
 		if (!validationResult.isSuccess()) {
@@ -792,8 +791,7 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,
-				"The Payment Location has been modified.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O Local de pagamento foi modificado.");
 	}
 
 	/**
@@ -828,8 +826,7 @@ public class PortalController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,
-				"The Payment Location has been deleted");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O local de pagamento foi eliminado");
 	}
 	
 	/**
@@ -899,8 +896,8 @@ public class PortalController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(mozTfcSftyInfrm);
 
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("postTtl", new ValidateChecker().setRequired().setMaxLength(200, "Title cannot be more than 200 characters"))
-				.addRule("postCn", new ValidateChecker().setMaxLength(200, "Contents cannot be more than 200 characters"))
+				.addRule("postTtl", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
+				.addRule("postCn", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 				.addRule("expYn", new ValidateChecker().setRequired())
 				.isValid();
 
@@ -915,7 +912,7 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "The Notice has been registered.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O presente aviso foi registado.");
 	}
 	
 	/**
@@ -949,7 +946,7 @@ public class PortalController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Safety Information has been deleted");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta informação sobre segurança rodoviária foi suprimida.");
 	}
 	
 	/**
@@ -984,8 +981,8 @@ public class PortalController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(mozTfcSftyInfrm);
 
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("postTtl", new ValidateChecker().setRequired().setMaxLength(200, "Title cannot be more than 200 characters"))
-				.addRule("postCn", new ValidateChecker().setMaxLength(200, "Contents cannot be more than 200 characters"))
+				.addRule("postTtl", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
+				.addRule("postCn", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 				.addRule("expYn", new ValidateChecker().setRequired())
 				.isValid();
 
@@ -1000,7 +997,7 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Safety Information has been updated.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Estas informações sobre segurança rodoviária foram actualizadas.");
 	}
 	
 	/**
@@ -1069,8 +1066,8 @@ public class PortalController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(mozTfcSftyEdctn);
 
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("postTtl", new ValidateChecker().setRequired().setMaxLength(200, "Title cannot be more than 200 characters"))
-				.addRule("postCn", new ValidateChecker().setMaxLength(200, "Contents cannot be more than 200 characters"))
+				.addRule("postTtl", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
+				.addRule("postCn", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 				.addRule("expYn", new ValidateChecker().setRequired())
 				.isValid();
 
@@ -1085,7 +1082,7 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Safety Education has been registered.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta Educação para a Segurança Rodoviária foi registada.");
 	}
 	
 	/**
@@ -1119,7 +1116,7 @@ public class PortalController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Safety Information has been deleted");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta informação sobre segurança rodoviária foi suprimida.");
 	}
 	
 	/**
@@ -1155,8 +1152,8 @@ public class PortalController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(mozTfcSftyEdctn);
 
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("postTtl", new ValidateChecker().setRequired().setMaxLength(200, "Title cannot be more than 200 characters"))
-				.addRule("postCn", new ValidateChecker().setMaxLength(200, "Contents cannot be more than 200 characters"))
+				.addRule("postTtl", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
+				.addRule("postCn", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 				.addRule("expYn", new ValidateChecker().setRequired())
 				.isValid();
 
@@ -1171,6 +1168,6 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Safety Education has been updated.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta Educação para a Segurança Rodoviária foi actualizada.");
 	}
 }

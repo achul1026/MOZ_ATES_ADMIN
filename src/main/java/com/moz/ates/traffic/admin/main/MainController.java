@@ -54,6 +54,7 @@ public class MainController {
     	model.addAttribute("tfcAcdntCnt", mainService.getTodayAccidentCount());
     	model.addAttribute("tfcAcdntList", mainService.getTodayAccidentInfo());
     	model.addAttribute("tfcEqpInfo", mainService.getEqpInfo());
+    	model.addAttribute("tfcFacilitiesInfo", mainService.getFacilitiesCountInfo());
     	model.addAttribute("dashboardChartInfo",dashboardChartInfo);
         return "views/main/dashboardMain";
     }
@@ -165,23 +166,9 @@ public class MainController {
     	try {
 				mainService.findPw(webOprtr);
 			} catch (Exception e) {
-				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Fail");
+				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Falhar");
 			}
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Success");
-    }
-    
-    /**
-	 * @Method Name : passwordRe
-	 * @작성일 : 2024. 01. 11.
-	 * @작성자 : KC.KIM
-	 * @Method 설명 : 비밀번호 재설정
-	 * @param model
-	 * @return
-	 */
-    @GetMapping("passwordRe")
-    public String passwordRe(Model model) {
-    	
-    	return "views/main/passwordRe";
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Sucesso");
     }
 
     /**
@@ -215,7 +202,7 @@ public class MainController {
   		// 일치하는 계정이 없습니다.
   		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST , "Não há contas correspondentes.");
   	}
-  	return CommonResponse.ResponseSuccess(HttpStatus.OK , "Success", null, webOprtrFound);
+  	return CommonResponse.ResponseSuccess(HttpStatus.OK , "Sucesso", null, webOprtrFound);
   }
   
 }

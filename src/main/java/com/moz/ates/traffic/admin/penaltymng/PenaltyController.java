@@ -11,7 +11,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -152,9 +151,9 @@ public class PenaltyController {
     	try {    		
     		penaltyService.onsitePayment(mozFinePymntInfo);
     	}catch (CommonException e){
-    		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Error, Onsite Payment");
+    		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Erro, Pagamento no local.");
     	}
-        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Onsite Payment Success");
+        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Sucesso do pagamento no local.");
     }
     
     /**
@@ -174,9 +173,9 @@ public class PenaltyController {
     	try {    		
     		penaltyService.onsitePayment(mozFinePymntInfo);
     	}catch (CommonException e){
-    		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Error, Onsite Payment");
+    		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Erro, Pagamento no local.");
     	}
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Onsite Payment Success");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Sucesso do pagamento no local.");
     }
     
     /**
@@ -195,13 +194,13 @@ public class PenaltyController {
     		){
     	try {
     		if(MozatesCommonUtils.isNull(pymntId)) {
-    			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Required Parameter is null");
+    			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Obrigatório O parâmetro é nulo.");
     		}
     		penaltyService.cancelPayment(pymntId , PymntMethod.CASH);
     	}catch (CommonException e){
-    		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Payment Cancel Failed");
+    		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Cancelamento de pagamento falhou.");
     	}
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Payment Cancel Success");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Cancelar pagamento com êxito.");
     }
 
     /**
@@ -220,13 +219,13 @@ public class PenaltyController {
     		){
     	try {
     		if(MozatesCommonUtils.isNull(pymntId)) {
-    			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Required Parameter is null");
+    			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Obrigatório O parâmetro é nulo.");
     		}
     		penaltyService.cancelPayment(pymntId , PymntMethod.CASH);
     	}catch (CommonException e){
-    		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Payment Cancel Failed");
+    		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Cancelamento de pagamento falhou.");
     	}
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Payment Cancel Success");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Cancelar pagamento com êxito.");
     }
  
     /**
@@ -294,7 +293,7 @@ public class PenaltyController {
     @PostMapping("/update.ajax")
     public @ResponseBody CommonResponse<?> mngModifyAjax(MozFinePymntInfo finePymntInfo){
     	penaltyService.updatePayStatus(finePymntInfo);
-        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"납부상태 정보가 수정되었습니다.");
+        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"As informações sobre o estado do pagamento foram corrigidas.");
     }
     
     

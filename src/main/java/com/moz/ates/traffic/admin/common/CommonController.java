@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -167,7 +169,21 @@ public class CommonController {
 		model.addAttribute("type", type);
 		return "views/common/apiSearch";
    }
-	
+
+	/**
+	 * @brief : 교통시설물,감시카메라 유지보수 이력 등록 모달
+	 * @details : 교통시설물,
+	 * @author : KY.LEE
+	 * @date : 2024.01.29
+	 */
+	@GetMapping("/modal/{type}/modalMaintenanceRegist.do")
+	public String getMaintenanceModal(Model model,
+			@PathVariable(value="type") String type){
+		model.addAttribute("type", type);
+		model.addAttribute("mntnTypeCd", commonCdService.getCdList("MNTN_TYPE_CD"));
+		model.addAttribute("mntnSttsCd", commonCdService.getCdList("MNTN_STTS_CD"));
+		return "views/common/modalMaintenanceRegist";
+	}
 	
 	//TEST
 	@PostMapping("/api/searchDriver")

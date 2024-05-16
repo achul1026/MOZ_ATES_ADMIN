@@ -47,7 +47,7 @@
 								<i class="search-icon mapSearch"></i>
 								<br><br>
 								<div id="map" class="detailMap">
-									<img src="/images/mapLocation_icon.png" alt="My Location" class="mapLocationIcon">
+									
 								</div>
 							</td>
 						</tr>
@@ -141,11 +141,11 @@
 								<th>
 									<span class="requiredMark" th:text="#{accident.mngRegist.driverLicenseId}">운전면허 ID</span>
 								</th>
-								<td><input type="text" class="main-input data-validate dvrLcenId vhclValidTrgt" data-class="dvrLcenId" th:placeholder="#{accident.mngRegist.driverLicenseIdPlaceholder}" th:data-valid-name="#{accident.mngRegist.driverLicenseId}" data-valid-required></td>
+								<td><input type="text" class="main-input data-validate dvrLcenId vhclValidTrgt" data-class="dvrLcenId" th:placeholder="#{accident.mngRegist.driverLicenseIdPlaceholder}" th:data-valid-name="#{accident.mngRegist.driverLicenseId}" data-valid-required th:value="${apiDriverInfo?.numerododocumento}"></td>
 								<th>
-									<span class="requiredMark" th:text="#{accident.mngRegist.vehicleNo}">차량번호</span>
+									<span class="requiredMark" th:text="#{accident.mngRegist.vehicleNo}" >차량번호</span>
 								</th>
-								<td><input type="text" class="main-input data-validate vhRegNo vhclValidTrgt" data-class="vhRegNo" th:placeholder="#{accident.mngRegist.vehicleNoPlaceholder}" th:data-valid-name="#{accident.mngRegist.vehicleNo}" data-valid-required></td>
+								<td><input type="text" class="main-input data-validate vhRegNo vhclValidTrgt" data-class="vhRegNo" th:placeholder="#{accident.mngRegist.vehicleNoPlaceholder}" th:data-valid-name="#{accident.mngRegist.vehicleNo}" data-valid-required th:value="${apiDriverInfo?.vhRegNo}"></td>
 							</tr>
 							<tr class="vehicleWrap">
 								<th>
@@ -179,19 +179,19 @@
 								<th>
 									<span class="requiredMark" th:text="#{accident.mngRegist.phoneNumber}">휴대폰 번호</span>
 								</th>
-								<td><input type="text" class="main-input data-validate acdntTrgtPno vhclValidTrgt" data-class="acdntTrgtPno" th:placeholder="#{accident.mngRegist.phoneNumberPlaceholder}" th:data-valid-name="#{accident.mngRegist.phoneNumber}" data-valid-required></td>
+								<td><input type="text" class="main-input data-validate acdntTrgtPno vhclValidTrgt" data-class="acdntTrgtPno" th:placeholder="#{accident.mngRegist.phoneNumberPlaceholder}" th:data-valid-name="#{accident.mngRegist.phoneNumber}" data-valid-required th:value="${apiDriverInfo?.contacto}"></td>
 							</tr>
 							<tr class="vehicleWrap">
 								<th>
 									<span class="requiredMark" th:text="#{accident.mngRegist.accidentTargetBirthday}">Accident Target Birthday</span></th>
 								<td>
-									<input type="text" class="main-input data-validate acdntTrgtBrth vhclValidTrgt" data-class="acdntTrgtBrth" th:placeholder="#{accident.mngRegist.accidentTargetBirthdayPlaceholder}" th:data-valid-name="#{accident.mngRegist.accidentTargetBirthday}" data-valid-required>
+									<input type="text" class="main-input data-validate acdntTrgtBrth vhclValidTrgt" data-class="acdntTrgtBrth" placeholder="dd.mm.aaaa" th:data-valid-name="#{accident.mngRegist.accidentTargetBirthday}" data-valid-required th:value="${apiDriverInfo?.datadenascimento}" maxlength="10" onkeyup="keyupDateCheck(event, 'ddMMyyyy', '.')">
 								</td>
 								<th>
 									<span class="requiredMark" th:text="#{accident.mngRegist.name}">이름</span>
 								</th>
 								<td>
-									<input type="text" class="main-input data-validate acdntTrgtNm vhclValidTrgt" data-class="acdntTrgtNm" th:placeholder="#{accident.mngRegist.namePlaceholder}" th:data-valid-name="#{accident.mngRegist.name}" data-valid-required>
+									<input type="text" class="main-input data-validate acdntTrgtNm vhclValidTrgt" data-class="acdntTrgtNm" th:placeholder="#{accident.mngRegist.namePlaceholder}" th:data-valid-name="#{accident.mngRegist.name}" data-valid-required th:value="${apiDriverInfo?.nome}">
 								</td>
 							</tr>
 							<tr class="vehicleWrap">
@@ -229,7 +229,7 @@
 								<th>
 									<span class="requiredMark" th:text="#{accident.mngRegist.accidentTargetBirthday}">Accident Target Birthday</span></th>
 								<td>
-									<input type="text" class="main-input acdntTrgtBrth pesValidTrgt" data-class="acdntTrgtBrth" th:placeholder="#{accident.mngRegist.accidentTargetBirthday}"  th:data-valid-name="#{accident.mngRegist.accidentTargetBirthday}" data-valid-required disabled>
+									<input type="text" class="main-input acdntTrgtBrth pesValidTrgt" data-class="acdntTrgtBrth" placeholder="dd.mm.aaaa" th:data-valid-name="#{accident.mngRegist.accidentTargetBirthday}" data-valid-required disabled maxlength="10" onkeyup="keyupDateCheck(event, 'ddMMyyyy', '.')">
 								</td>
 								<th>
 									<span class="requiredMark" th:text="#{accident.mngRegist.accidentTargetName}">Accident Target Name</span></th>
@@ -456,7 +456,7 @@
 		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerAddress}]]+'</span></th>';
 		html += '				<td><input type="text" class="main-input data-validate pnrAddr" data-class="pnrAddr" placeholder="'+[[#{accident.mngRegist.passengerAddressPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.passengerAddress}]]+'" data-valid-required></td>';
 		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerBirthday}]]+'</span></th>';
-		html += '				<td><input type="text" class="main-input data-validate pnrBrth" data-class="pnrBrth" placeholder="'+[[#{accident.mngRegist.passengerBirthdayPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.passengerBirthday}]]+'" data-valid-required></td>';
+		html += '				<td><input type="text" class="main-input data-validate pnrBrth" data-class="pnrBrth" placeholder="dd.mm.aaaa" data-valid-name="'+[[#{accident.mngRegist.passengerBirthday}]]+'" data-valid-required maxlength="10" onkeyup="keyupDateCheck(event, \'ddMMyyyy\', \'.\')"></td>';
 		html +=	'			</tr>';
 		html += '			<tr>';
 		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.passengerEmail}]]+'</span></th>';
@@ -561,7 +561,7 @@
 		html +=	'			</tr>';
 		html += '			<tr class="vehicleWrap">';
 		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.accidentTargetBirthday}]]+'</span></th>';
-		html += '				<td><input type="text" class="main-input data-validate acdntTrgtBrth vhclValidTrgt" data-class="acdntTrgtBrth" placeholder="'+[[#{accident.mngRegist.accidentTargetBirthdayPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.accidentTargetBirthday}]]+'" data-valid-required></td>';
+		html += '				<td><input type="text" class="main-input data-validate acdntTrgtBrth vhclValidTrgt" data-class="acdntTrgtBrth" placeholder="dd.mm.aaaa" data-valid-name="'+[[#{accident.mngRegist.accidentTargetBirthday}]]+'" data-valid-required maxlength="10" onkeyup="keyupDateCheck(event, \'ddMMyyyy\', \'.\')"></td>';
 		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.name}]]+'</span></th>';
 		html += '				<td><input type="text" class="main-input data-validate acdntTrgtNm vhclValidTrgt" data-class="acdntTrgtNm" placeholder="'+[[#{accident.mngRegist.namePlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.name}]]+'" data-valid-required></td>';
 		html += '			</tr>';
@@ -590,7 +590,7 @@
 		html += '			</tr>';
 		html += '			<tr class="personWrap" style="display:none">';
 		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.accidentTargetBirthday}]]+'</span></th>';
-		html += '				<td><input type="text" class="main-input acdntTrgtBrth pesValidTrgt data-validate" data-class="acdntTrgtBrth" placeholder="'+[[#{accident.mngRegist.accidentTargetBirthdayPlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.accidentTargetBirthday}]]+'" data-valid-required></td>';
+		html += '				<td><input type="text" class="main-input acdntTrgtBrth pesValidTrgt data-validate" data-class="acdntTrgtBrth" placeholder="dd.mm.aaaa" data-valid-name="'+[[#{accident.mngRegist.accidentTargetBirthday}]]+'" data-valid-required maxlength="10" onkeyup="keyupDateCheck(event, \'ddMMyyyy\', \'.\')"></td>';
 		html += '				<th><span class="requiredMark">'+[[#{accident.mngRegist.accidentTargetName}]]+'</span></th>';
 		html += '				<td><input type="text" class="main-input acdntTrgtNm pesValidTrgt data-validate" data-class="acdntTrgtNm" placeholder="'+[[#{accident.mngRegist.accidentTargetNamePlaceholder}]]+'" data-valid-name="'+[[#{accident.mngRegist.accidentTargetName}]]+'" data-valid-required></td>';
 		html += '			</tr>';

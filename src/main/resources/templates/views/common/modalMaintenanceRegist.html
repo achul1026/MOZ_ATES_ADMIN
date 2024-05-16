@@ -1,0 +1,46 @@
+<html xmlns:th="http://www.thymeleaf.org">
+	
+<div class="modal-contents modal-company-group">
+	<div class="modal-title" th:switch="${type}">
+		<div class="modal-title-text" th:case="facility" th:text="#{common.modal.maintenance.regist.equipment.title}">감시카메라</div>
+		<div class="modal-title-text" th:case="equipment" th:text="#{common.modal.maintenance.regist.facility.title}">교통시설물</div>
+		<img id="modalRegistClose"src="/images/close.png" alt="닫기" class="close">
+	</div>
+	<div class="modal-body">
+		<div class="modalMntnList">
+			<div class="ex-group-title" th:text="#{common.modal.maintenance.reigst.mntnType}">관리 유형</div>
+			<div class="modal-form-wrap">
+				<select id="mntnType" class="modal-search">
+					<option value="" th:text="#{common.search.select}">Select</option>
+					<th:block th:each="item : ${mntnTypeCd}">
+						<option th:value="${item.cdId}" th:text="${item.cdNm}"></option>
+					</th:block>
+				</select>
+			</div>
+		</div>
+		<div class="modalMntnList">
+			<div class="ex-group-title" th:text="#{common.modal.maintenance.reigst.status}">관리 상태</div>
+			<div class="modal-form-wrap">
+				<select id="mntnStts" class="modal-search">
+					<option value="" th:text="#{common.search.select}">Select</option>
+					<th:block th:each="item : ${mntnSttsCd}">
+						<option th:value="${item.cdId}" th:text="${item.cdNm}"></option>
+					</th:block>
+				</select>
+			</div>
+		</div>
+		<div class="modalMntnList">
+			<div class="ex-group-title" th:text="#{common.modal.maintenance.reigst.desc}">상세 정보</div>
+			<div class="modal-form-wrap">
+				<textarea id="mntnDetail" class="modal-search" th:placeholder="#{common.modal.maintenance.regist.placeholder.desc}"></textarea>
+			</div>
+		</div>
+		<div class="modalMntnList">
+			<div class="modalBtnWrap">
+			 	<button type="button" id="mntnRegistBtn" class="modalBtn" th:text="#{common.button.register}">등록</button>
+			 </div>
+		</div>
+	</div>
+</div>
+</html>
+

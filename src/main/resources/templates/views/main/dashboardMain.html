@@ -126,11 +126,11 @@
 									</div>
 									<div class="stateList">
 										<div>Todas</div>
-										<div><span class="cameraAll">8</span></div>
+										<div><span class="cameraAll" th:text="${tfcEqpInfo.cameraTotalCnt}">8</span></div>
 									</div>
 									<div class="stateList">
 										<div>Ligado</div>
-										<div><span class="cameraOn">8</span></div>
+										<div><span class="cameraOn" th:text="${tfcEqpInfo.cameraCnt}">8</span></div>
 									</div>
 								</div>
 							</div>
@@ -144,11 +144,11 @@
 									</div>
 									<div class="stateList">
 										<div>Todas</div>
-										<div><span class="cameraAll">1</span></div>
+										<div><span class="cameraAll" th:text="${tfcFacilitiesInfo.lightTotalCnt}">1</span></div>
 									</div>
 									<div class="stateList">
 										<div>Ligado</div>
-										<div><span class="cameraOn">1</span></div>
+										<div><span class="cameraOn" th:text="${tfcFacilitiesInfo.lightCnt}">1</span></div>
 									</div>
 								</div>
 							</div>
@@ -164,11 +164,11 @@
 									</div>
 									<div class="stateList">
 										<div>Todas</div>
-										<div><span class="cameraAll">1</span></div>
+										<div><span class="cameraAll" th:text="${tfcFacilitiesInfo.corsswalkTotalCnt}">1</span></div>
 									</div>
 									<div class="stateList">
 										<div>Ligado</div>
-										<div><span class="cameraOn">1</span></div>
+										<div><span class="cameraOn" th:text="${tfcFacilitiesInfo.corsswalkCnt}">1</span></div>
 									</div>
 								</div>
 							</div>
@@ -182,11 +182,11 @@
 									</div>
 									<div class="stateList">
 										<div>Todas</div>
-										<div><span class="cameraAll">1</span></div>
+										<div><span class="cameraAll" th:text="${tfcFacilitiesInfo.signTotalCnt}">1</span></div>
 									</div>
 									<div class="stateList">
 										<div>Ligado</div>
-										<div><span class="cameraOn">1</span></div>
+										<div><span class="cameraOn" th:text="${tfcFacilitiesInfo.signCnt}">1</span></div>
 									</div>
 								</div>
 							</div>
@@ -202,11 +202,11 @@
 									</div>
 									<div class="stateList">
 										<div>Todas</div>
-										<div><span class="cameraAll">1</span></div>
+										<div><span class="cameraAll" th:text="${tfcFacilitiesInfo.pedestrianBridgeTotalCnt}">1</span></div>
 									</div>
 									<div class="stateList">
 										<div>Ligado</div>
-										<div><span class="cameraOn">1</span></div>
+										<div><span class="cameraOn" th:text="${tfcFacilitiesInfo.pedestrianBridgeCnt}">1</span></div>
 									</div>
 								</div>
 							</div>
@@ -220,11 +220,11 @@
 									</div>
 									<div class="stateList">
 										<div>Todas</div>
-										<div><span class="cameraAll">1</span></div>
+										<div><span class="cameraAll" th:text="${tfcFacilitiesInfo.dumpTotalCnt}">1</span></div>
 									</div>
 									<div class="stateList">
 										<div>Ligado</div>
-										<div><span class="cameraOn">1</span></div>
+										<div><span class="cameraOn" th:text="${tfcFacilitiesInfo.dumpCnt}">1</span></div>
 									</div>
 								</div>
 							</div>
@@ -269,7 +269,7 @@
 						</thead>
 						<tbody>
 							<tr th:if="${#lists.isEmpty(tfcEnfList)}">
-								<td colspan="4" th:text="#{main.dashboard.enforcement.list.none}">None Result</td>
+								<td colspan="4" class="noTableList" th:text="#{main.dashboard.enforcement.list.none}">None Result</td>
 							</tr>
 							<tr th:if="!${#lists.isEmpty(tfcEnfList)}" th:each="enfItem, status : ${tfcEnfList}"
 							    th:attr="onclick='findLocation(' + ${enfItem.lat} + ',' + ${enfItem.lng} + ')'"
@@ -312,7 +312,7 @@
 						</thead>
 						<tbody>
 							<tr th:if="${#lists.isEmpty(tfcAcdntList)}">
-								<td colspan="4" th:text="#{main.dashboard.accident.list.none}">None Result</td>
+								<td colspan="4" class="noTableList" th:text="#{main.dashboard.accident.list.none}">None Result</td>
 							</tr>
 							<tr th:if="!${#lists.isEmpty(tfcAcdntList)}" th:each="acdntItem, status : ${tfcAcdntList}"
 							    th:attr="onclick='findLocation(' + ${acdntItem.lat} + ',' + ${acdntItem.lng} + ')'"

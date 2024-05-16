@@ -1,15 +1,16 @@
 package com.moz.ates.traffic.admin.trafficequipmentmng;
 
-import com.moz.ates.traffic.admin.common.FeaturesLayerDTO;
-import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpLog;
-import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpMaster;
-import com.moz.ates.traffic.common.entity.equipment.MozTfcEqpMntnHst;
-import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityMaster;
-import org.springframework.web.multipart.MultipartFile;
-
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+
+import org.springframework.web.multipart.MultipartFile;
+
+import com.moz.ates.traffic.admin.common.FeaturesLayerDTO;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpMaster;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEqpMntnHst;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityMaster;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityMntnHst;
 
 public interface TrafficEqpService {
     /**
@@ -160,16 +161,6 @@ public interface TrafficEqpService {
 	void updateMoztfcFacility(MozTfcFacilityMaster tfcFacilityMaster, MultipartFile[] uploadFiles);
 
 	/**
-     * @brief : 교통시설물 이미지 삭제
-     * @details : 교통시설물 이미지 삭제
-     * @author : KC.KIM
-     * @date : 2024.03.04
-     * @param : tfcFacilityMaster
-     * @return : 
-     */
-	void updateFacilityImage(MozTfcFacilityMaster tfcFacilityMaster);
-
-	/**
      * @brief : 교통시설물 GeoJson 조회
      * @details : 교통시설물 GeoJson 조회
      * @author : CM.KIM
@@ -226,4 +217,41 @@ public interface TrafficEqpService {
      * @param : deleteEqpHist
      */
 	void deleteEqpHist(String mntnHstId);
+
+	/**
+     * @brief : 교통시설물 유지보수 이력 조회
+     * @details : 교통시설물 유지보수 이력 조회
+     * @author : KY.LEE
+     * @date : 2024.04.24
+     * @param : getFacilityMntnHstList
+     */
+	List<MozTfcFacilityMntnHst> getFacilityMntnHstList(String tfcFacilityId);
+
+
+	/**
+     * @brief : 교통시설물 유지보수 이력 등록
+     * @details : 교통시설물 유지보수 이력 등록
+     * @author : KY.LEE
+     * @date : 2024.04.24
+     * @param : saveFacilityMaintenance
+     */
+	public void saveFacilityMaintenance(MozTfcFacilityMntnHst mozTfcFacilityMntnHst);
+	
+	/**
+     * @brief : 감시카메라 유지보수 이력 등록
+     * @details : 감시카메라 유지보수 이력 등록
+     * @author : KY.LEE
+     * @date : 2024.04.24
+     * @param : saveEquipmentMaintenance
+     */
+	 public void saveEquipmentMaintenance(MozTfcEqpMntnHst mozTfcEqpMntnHst);
+	 
+	/**
+     * @brief : 교통시설물 유지보수 삭제
+     * @details : 교통시설물 유지보수 삭제
+     * @author : KY.LEE
+     * @date : 2024.04.24
+     * @param : deleteFacilityHist
+     */
+	public void deleteFacilityHist(String tfcFacilityLogId);
 }

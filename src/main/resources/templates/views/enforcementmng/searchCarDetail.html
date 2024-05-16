@@ -7,16 +7,17 @@
 		<h1 id="detail-content-title" th:text="#{enforcement.car.search.Detail.title}">운전자 정보</h1>
 		<div id="content-sub-title" th:text="#{enforcement.car.search.Detail.subtitle}">Manage the code.</div>
 			<form id="frmDriverInfo" method="get" th:action="@{/enf/info/save.do}">
-				<input type="hidden" name="driverLicenseId" th:value="${driverInfo.driverLicenseId}"/>
-				<input type="hidden" name="driverLicenseType" th:value="${driverInfo.driverLicenseType}"/>
-				<input type="hidden" name="driverNm" th:value="${driverInfo.driverNm}"/>
-				<input type="hidden" name="driverBrth" th:value="${#dates.format(driverInfo.driverBrth, 'yyyy-MM-dd')}"/>
-				<input type="hidden" name="driverAddr" th:value="${driverInfo.driverAddr}"/>
-				<input type="hidden" name="driverPno" th:value="${driverInfo.driverPno}"/>
-				<input type="hidden" name="driverEmail" th:value="${driverInfo.driverEmail}"/>
-				<input type="hidden" name="expirationDate" th:value="${#dates.format(driverInfo.expirationDate, 'yyyy-MM-dd')}"/>
-				<input type="hidden" name="vehicleNo" th:value="${driverInfo.vehicleNo}"/>
-				<input type="hidden" name="vehicleType" th:value="${driverInfo.vehicleType}"/>
+<!--				<input type="hidden" name="driverLicenseId" th:value="${driverInfo.driverLicenseId}"/>-->
+<!--				<input type="hidden" name="driverLicenseType" th:value="${driverInfo.driverLicenseType}"/>-->
+				<input type="hidden" name="vhRegNo" th:value="${driverInfo.vhRegNo}"/>
+				<input type="hidden" name="nome" th:value="${driverInfo.nome}"/>
+				<input type="hidden" name="datadenascimento" th:value="${driverInfo.datadenascimento}"/>
+				<input type="hidden" name="tipodedocumento" th:value="${driverInfo.tipodedocumento}"/>
+				<input type="hidden" name="numerododocumento" th:value="${driverInfo.numerododocumento}"/>
+				<input type="hidden" name="domicilio" th:value="${driverInfo.domicilio}"/>
+				<input type="hidden" name="contacto" th:value="${driverInfo.contacto}"/>
+				<input type="hidden" name="provincia" th:value="${driverInfo.provincia}"/>
+				<input type="hidden" name="distrito" th:value="${driverInfo.distrito}"/>
 				<table class="detail-table">
 					<colgroup>
 						<col width="15%">
@@ -26,34 +27,28 @@
 					</colgroup>
 					<tbody id="driverInfoTable">
 						<tr>
-							<th th:text="#{enforcement.car.search.Detail.driverLicense}">Name</th>
-							<td th:text="${driverInfo.driverLicenseId}">DriverLicenseId</td>
-							<th th:text="#{enforcement.car.search.Detail.driverType}">ID</th>
-							<td th:text="${driverInfo.driverLicenseType}">oprtrAccountId</td>
+							<th th:text="#{enforcement.car.search.Detail.name}">driverNm</th>
+							<td th:text="${driverInfo.nome}">DriverLicenseId</td>
+							<th th:text="#{enforcement.car.search.Detail.birth}">birth</th>
+							<td th:text="${driverInfo.datadenascimento}">oprtrAccountId</td>
 						</tr>
 						<tr>
-							<th th:text="#{enforcement.car.search.Detail.birth}">birth</th>
-							<td th:text="${#dates.format(driverInfo.driverBrth, 'yyyy-MM-dd')}">driverBrth</td>
-							<th th:text="#{enforcement.car.search.Detail.name}">driverNm</th>
-							<td th:text="${driverInfo.driverNm}"></td>
+							<th th:text="#{enforcement.car.search.Detail.docType}">DocumentType</th>
+							<td th:text="${driverInfo.tipodedocumento}"></td>
+							<th th:text="#{enforcement.car.search.Detail.docNo}">Document Number</th>
+							<td th:text="${driverInfo.numerododocumento}"></td>
 						</tr>
 						<tr>
 							<th th:text="#{enforcement.car.search.Detail.address}">address</th>
-							<td th:text="${driverInfo.driverAddr}"></td>
+							<td th:text="${driverInfo.domicilio}"></td>
 							<th th:text="#{enforcement.car.search.Detail.phoneNum}">phoneNum</th>
-							<td th:text="${driverInfo.driverPno}"></td>
+							<td th:text="${driverInfo.contacto}"></td>
 						</tr>
 						<tr>
-							<th th:text="#{enforcement.car.search.Detail.email}">driverEmail</th>
-							<td th:text="${driverInfo.driverEmail}"></td>
-							<th th:text="#{enforcement.car.search.Detail.expiration}">phoneNum</th>
-							<td th:text="${#dates.format(driverInfo.expirationDate, 'yyyy-MM-dd')}">driverBrth</td>
-						</tr>
-						<tr>
-							<th th:text="#{enforcement.car.search.Detail.vehicleNo}">vehicleNo</th>
-							<td th:text="${driverInfo.vehicleNo}"></td>
-							<th th:text="#{enforcement.car.search.Detail.vehicleType}">vehicleType</th>
-							<td th:text="${driverInfo.vehicleType}"></td>
+							<th th:text="#{enforcement.car.search.Detail.state}">state</th>
+							<td th:text="${driverInfo.provincia}"></td>
+							<th th:text="#{enforcement.car.search.Detail.area}">area</th>
+							<td th:text="${driverInfo.distrito}"></td>
 						</tr>
 						</tbody>
 				</table>

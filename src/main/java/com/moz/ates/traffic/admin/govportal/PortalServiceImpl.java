@@ -22,7 +22,9 @@ import com.moz.ates.traffic.common.entity.board.MozTfcSftyEdctn;
 import com.moz.ates.traffic.common.entity.board.MozTfcSftyInfrm;
 import com.moz.ates.traffic.common.entity.common.UploadFileInfo;
 import com.moz.ates.traffic.common.entity.payment.MozPlPymntInfo;
+import com.moz.ates.traffic.common.enums.BoradType;
 import com.moz.ates.traffic.common.enums.NoticeCateCd;
+import com.moz.ates.traffic.common.enums.RegistantType;
 import com.moz.ates.traffic.common.repository.board.MozAtchFileRepository;
 import com.moz.ates.traffic.common.repository.board.MozBrdRepository;
 import com.moz.ates.traffic.common.repository.board.MozComplaintsRegRepository;
@@ -110,6 +112,8 @@ public class PortalServiceImpl implements PortalService {
         		atchFile.setFilePath(uploadFileInfo.getFilePath());
         		atchFile.setFileSize(uploadFileInfo.getFileSize());
         		atchFile.setFileExts(uploadFileInfo.getFileExt());
+        		atchFile.setBrdTy(BoradType.NOTICE);
+        		atchFile.setRgsTy(RegistantType.ADMIN_USER);
         		mozAtchFileRepository.insertMozAtchFile(atchFile);
     		}
     	}
@@ -201,6 +205,8 @@ public class PortalServiceImpl implements PortalService {
     			atchFile.setFilePath(uploadFileInfo.getFilePath());
     			atchFile.setFileSize(uploadFileInfo.getFileSize());
     			atchFile.setFileExts(uploadFileInfo.getFileExt());
+        		atchFile.setBrdTy(BoradType.NOTICE);
+        		atchFile.setRgsTy(RegistantType.ADMIN_USER);
     			mozAtchFileRepository.insertMozAtchFile(atchFile);
     		}
     	}
@@ -513,7 +519,8 @@ public class PortalServiceImpl implements PortalService {
 					atchFile.setFileExts(uploadFileInfo.getFileExt());
 					atchFile.setFileSaveNm(uploadFileInfo.getFileNm());
 					atchFile.setFileSize(uploadFileInfo.getFileSize());
-					atchFile.setFileType("2");
+		    		atchFile.setBrdTy(BoradType.OBJECTIONS);
+		    		atchFile.setRgsTy(RegistantType.ADMIN_USER);
 					mozAtchFileRepository.insertMozAtchFile(atchFile);					
 				}
 	    	}
@@ -556,7 +563,8 @@ public class PortalServiceImpl implements PortalService {
 					atchFile.setFileExts(uploadFileInfo.getFileExt());
 					atchFile.setFileSaveNm(uploadFileInfo.getFileNm());
 					atchFile.setFileSize(uploadFileInfo.getFileSize());
-					atchFile.setFileType("2");
+		    		atchFile.setBrdTy(BoradType.COMPLAINTS);
+		    		atchFile.setRgsTy(RegistantType.ADMIN_USER);
 					mozAtchFileRepository.insertMozAtchFile(atchFile);
 				}
 	    	}
@@ -654,6 +662,8 @@ public class PortalServiceImpl implements PortalService {
     		atchFile.setFilePath(uploadFileInfo.getFilePath());
     		atchFile.setFileSize(uploadFileInfo.getFileSize());
     		atchFile.setFileExts(uploadFileInfo.getFileExt());
+    		atchFile.setBrdTy(BoradType.SFTY_INFO);
+    		atchFile.setRgsTy(RegistantType.ADMIN_USER);
     		mozAtchFileRepository.insertMozAtchFile(atchFile);
     	}
     	
@@ -701,6 +711,8 @@ public class PortalServiceImpl implements PortalService {
 			atchFile.setFilePath(uploadFileInfo.getFilePath());
 			atchFile.setFileSize(uploadFileInfo.getFileSize());
 			atchFile.setFileExts(uploadFileInfo.getFileExt());
+    		atchFile.setBrdTy(BoradType.SFTY_INFO);
+    		atchFile.setRgsTy(RegistantType.ADMIN_USER);
 			mozAtchFileRepository.insertMozAtchFile(atchFile);
     	}
 		String updr = LoginOprtrUtils.getOprtrId();
@@ -775,6 +787,8 @@ public class PortalServiceImpl implements PortalService {
     		atchFile.setFilePath(uploadFileInfo.getFilePath());
     		atchFile.setFileSize(uploadFileInfo.getFileSize());
     		atchFile.setFileExts(uploadFileInfo.getFileExt());
+    		atchFile.setBrdTy(BoradType.SFTY_EDU);
+    		atchFile.setRgsTy(RegistantType.ADMIN_USER);
     		mozAtchFileRepository.insertMozAtchFile(atchFile);
     	}
     	
@@ -853,6 +867,8 @@ public class PortalServiceImpl implements PortalService {
     		atchFile.setFilePath(uploadFileInfo.getFilePath());
     		atchFile.setFileSize(uploadFileInfo.getFileSize());
     		atchFile.setFileExts(uploadFileInfo.getFileExt());
+    		atchFile.setBrdTy(BoradType.SFTY_EDU);
+    		atchFile.setRgsTy(RegistantType.ADMIN_USER);
     		mozAtchFileRepository.insertMozAtchFile(atchFile);
     	}
     	String updr = LoginOprtrUtils.getOprtrId();
@@ -964,7 +980,8 @@ public class PortalServiceImpl implements PortalService {
 					atchFile.setFileExts(uploadFileInfo.getFileExt());
 					atchFile.setFileSaveNm(uploadFileInfo.getFileNm());
 					atchFile.setFileSize(uploadFileInfo.getFileSize());
-					atchFile.setFileType("2");
+		    		atchFile.setBrdTy(BoradType.QNA);
+		    		atchFile.setRgsTy(RegistantType.ADMIN_USER);
 					mozAtchFileRepository.insertMozAtchFile(atchFile);
 				}
 	    	}

@@ -31,6 +31,18 @@
 						</tr>
 						<tr>
 							<th>
+								<span th:text="#{enforcement.detectionRegist.docNo}">문서 번호</span>
+							</th>
+							<td class="modal-find-line">
+								<input type="text" id="docNid" th:placeholder="#{enforcement.detectionRegist.placeholder.docNo}" class="main-input docNid ">
+							</td>
+							<th>
+								<span th:text="#{enforcement.detectionRegist.docType}">문서 타입</span>
+							</th>
+							<td><input type="text" class="main-input docType" id="docType" th:placeholder="#{enforcement.detectionRegist.placeholder.docType}"></td>
+						</tr>
+						<tr>
+							<th>
 								<span th:text="#{enforcement.detectionRegist.licenseNumber}">라이선스 번호</span>
 							</th>
 							<td class="modal-find-line">
@@ -53,7 +65,7 @@
 							<th>
 								<span class="requiredMark" th:text="#{enforcement.detectionRegist.birthday}">생년월일</span>
 							</th>
-							<td><input type="text" class="main-input vioBrth data-validate" id="vioBrth" th:placeholder="#{enforcement.detectionRegist.placeholder.vioBrth}" th:data-valid-name="#{enforcement.detectionRegist.birthday}" data-valid-required></td>
+							<td><input type="text" class="main-input vioBrth data-validate" id="vioBrth" placeholder="dd.mm.aaaa" th:data-valid-name="#{enforcement.detectionRegist.birthday}" data-valid-required maxlength="10" onkeyup="keyupDateCheck(event, 'ddMMyyyy', '.')"></td>
 						</tr>
 						<tr>
 							<th>
@@ -175,7 +187,7 @@
 <!--								<i class="search-icon mapSearch"></i>-->
 								<br><br>
 								<div id="map" class="detailMap">
-									<img src="/images/mapLocation_icon.png" alt="My Location" class="mapLocationIcon">
+<!--									<img src="/images/mapLocation_icon.png" alt="My Location" class="mapLocationIcon">-->
 								</div>
 							</td>
 						</tr>
@@ -231,6 +243,8 @@
 		var form = $("#frmEnfRegist")[0];
 		var data = new FormData(form);
 		
+		data.append("vioInfo.docType", $(".docType").val());
+		data.append("vioInfo.docNid", $(".docNid").val());
 		data.append("vioInfo.dvrLcenId", $(".dvrLcenId").val());
 		data.append("vioInfo.dvrLcenTy", $(".dvrLcenTy").val());
 		data.append("vioInfo.vioNm", $(".vioNm").val());
@@ -374,6 +388,8 @@
 		let dvrLcenId = document.getElementById('dvrLcenId').value;
 		let vioNm = document.getElementById('vioNm').value;
 		
+		const resultMsg = /*[[#{common.search.notFound}]]*/;
+		
 		let searchType = _this.getAttribute('data-type');
 		let searchContent = '';
 		
@@ -413,30 +429,53 @@
 						}
 				        
 						const fetcher = new DriverSelectAPI();
-				            fetcher.fetchData(searchType, searchValue, function(data) {
-				                const tbody = document.getElementById('modalTbody');
-				                tbody.empty();
+						
+						const loading = new AdminLoading().start("API Searching...");
+						
+						fetcher.fetchData(searchType, searchValue, function(data) {
+				            const tbody = document.getElementById('modalTbody');
+						    tbody.empty();
+						    
+						    let parsedData = JSON.parse(data);
+						    
+						    if(parsedData != null &&  parsedData.tab1.length > 0){
+					            parsedData.tab1.forEach(item => {
+					                const tr = document.createElement('tr');
+					                tr.dataset.prop = JSON.stringify(item);
+					                //console.log(JSON.stringify(item));
+					                tr.setAttribute('onclick','searchForApiData("hide",this)');
+					                
+									let birthday = new Date(item.datadenascimento);
+									
+									let birthdayFormat = `${birthday.getDate()}.${birthday.getMonth() + 1}.${birthday.getFullYear()}`;
 				
-				                data.forEach(item => {
-				                    const tr = document.createElement('tr');
-				                    tr.dataset.prop = JSON.stringify(item);
-				                    tr.setAttribute('onclick','searchForApiData("hide",this)');
-				                    tr.innerHTML = `
-				                    	<td>${item.driverLicenseId}</td>
-				                    	<td>${item.driverLicenseType}</td>
-				                    	<td>${item.expirationDate}</td>
-				                    	<td>${item.driverNm}</td>
-				                    	<td>${item.driverBrth}</td>
-				                    	<td>${item.driverPno}</td>
-				                    	<td>${item.driverAddr}</td>
-				                    	<td>${item.vehicleNo}</td>
-				                    	<td>${item.vehicleType}</td>
-				                    	`;
-				                    tbody.appendChild(tr);
-				                    
-				                    resultTable.style.display = 'block';
-				                });
-				            });
+					                tr.innerHTML = `
+						               	<td>${item.nome}</td>
+						               	<td>${birthdayFormat}</td>
+						               	<td>${item.tipodedocumento}</td>
+						               	<td>${item.numerododocumento}</td>
+						               	<td>${item.domicilio}</td>
+						               	<td>${item.provincia}</td>
+						               	<td>${item.distrito}</td>
+						               	<td>${item.contacto}</td>
+					               	`;
+					               	
+					                tbody.appendChild(tr);
+					                
+					                resultTable.style.display = 'table';
+					            });
+							} else{
+								const tr = document.createElement('tr');
+								
+								 tr.innerHTML = `
+						               	<td colspan="8">${resultMsg}</td>
+					               	`;
+				               	tbody.appendChild(tr);
+				                
+				                resultTable.style.display = 'table';
+							}
+							loading.end();
+						});
 				    });
 				}
 			});
@@ -447,16 +486,17 @@
 			
 			if(objJsonStr != null){
 				const obj = JSON.parse(objJsonStr);
-				console.log(obj);
-				document.getElementById('dvrLcenId').value = obj.driverLicenseId;
-				document.getElementById('dvrLcenTy').value = obj.driverLicenseType;
-				document.getElementById('vioNm').value = obj.driverNm;
-				document.getElementById('vioBrth').value = obj.driverBrth;
-				document.getElementById('vioPno').value = obj.driverPno;
-				document.getElementById('vioEmail').value = obj.driverEmail;
-				document.getElementById('vioAddr').value = obj.driverAddr;
-				document.getElementById('vhRegNo').value = obj.vehicleNo;
-				document.getElementById('vhTy').value = obj.vehicleType;
+				
+				let birthday = new Date(obj.datadenascimento);
+				
+				let birthdayFormat = `${birthday.getDate()}.${birthday.getMonth() + 1}.${birthday.getFullYear()}`;
+				
+				document.getElementById('dvrLcenId').value = obj.numerododocumento;
+				document.getElementById('dvrLcenTy').value = obj.tipodedocumento;
+				document.getElementById('vioNm').value = obj.nome;
+				document.getElementById('vioBrth').value = birthdayFormat;
+				document.getElementById('vioPno').value = obj.contacto;
+				document.getElementById('vioAddr').value = obj.domicilio;
 			}
             resultTable.style.display = 'none';
             
@@ -535,5 +575,4 @@
 	})
 	
 	//loading().start();
-	
 </script>

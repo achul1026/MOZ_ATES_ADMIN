@@ -186,4 +186,13 @@ public interface TrafficEnfService {
 	 * @param : driverLicenseId
 	 */
 	List<MozVioInfo> getViolationInfoList(String dvrLcenId);
+
+	/**
+	 * @brief : 위반자 정보 조회
+	 * @details : 위반자 정보 조회
+	 * @author : KY.LEE
+	 * @date : 2024.05.02
+	 * @param : docNid
+	 */
+	List<MozVioInfo> getViolationInfoListByDocNid(String docNid);
 }

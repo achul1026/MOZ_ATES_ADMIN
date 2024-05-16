@@ -66,16 +66,16 @@ public class MyInfoController {
 	@PostMapping("/verfy")
 	public @ResponseBody CommonResponse<?> verfyPassword(Model model , MozWebOprtr mozWebOprtr) {
 		if(MozatesCommonUtils.isNull(mozWebOprtr.getOprtrAccountPw())) {
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Parameter Is Null");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"O parâmetro é nulo.");
 		}
 		
 		if(!myInfoService.verfyPassword(mozWebOprtr)) {
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Password Mismatch");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Incompatibilidade da palavra-passe.");
 		}
 		HttpSession session = LoginOprtrUtils.getSession();
 		session.setAttribute("isPwChk", true);
 		
-        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"비밀번호 확인완료");
+        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Palavra-passe verificada.");
 	}
 	
 	/**
@@ -106,11 +106,11 @@ public class MyInfoController {
 	@PostMapping("/password/modify")
 	public @ResponseBody CommonResponse<?> modifyPassword(Model model , MozWebOprtr mozWebOprtr) {
 		if(MozatesCommonUtils.isNull(mozWebOprtr.getOprtrAccountPw()) || MozatesCommonUtils.isNull(mozWebOprtr.getOprtrAccountPwChk())) {
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Parameter Is Null");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"O parâmetro é nulo.");
 		}
 		
 		if(!mozWebOprtr.getOprtrAccountPw().equals(mozWebOprtr.getOprtrAccountPwChk())) {
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Password does not match");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"A palavra-passe não corresponde.");
 		}
 		
 		myInfoService.modifyPassword(mozWebOprtr);
@@ -119,7 +119,7 @@ public class MyInfoController {
 		
 		session.removeAttribute("isPwChk");
 		
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Modify Success");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Modificar o sucesso.");
 	}
     
 	/**
@@ -150,7 +150,7 @@ public class MyInfoController {
 	@PostMapping("/modify")
 	public @ResponseBody CommonResponse<?> myInfoModify(Model model , MozWebOprtr mozWebOprtr) {
 		if(MozatesCommonUtils.isNull(mozWebOprtr.getOprtrNm()) || MozatesCommonUtils.isNull(mozWebOprtr.getOprtrPno())) {
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Parameter Is Null");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"O parâmetro é nulo.");
 		}
 		
 		myInfoService.modifyMyProfile(mozWebOprtr);
@@ -159,6 +159,6 @@ public class MyInfoController {
 		
 		session.removeAttribute("isPwChk");
 		
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Modify Success");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"Modificar o sucesso.");
 	}
 }

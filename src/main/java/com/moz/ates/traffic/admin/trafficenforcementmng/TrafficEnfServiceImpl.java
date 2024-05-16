@@ -62,8 +62,6 @@ import com.moz.ates.traffic.common.support.exception.ErrorCode;
 import com.moz.ates.traffic.common.util.MozatesCommonUtils;
 import com.moz.ates.traffic.common.util.SmsSendContentUtils;
 
-import ch.qos.logback.classic.Logger;
-
 @Service
 public class TrafficEnfServiceImpl implements TrafficEnfService {
 	
@@ -834,5 +832,17 @@ public class TrafficEnfServiceImpl implements TrafficEnfService {
 	@Override
 	public List<MozVioInfo> getViolationInfoList(String dvrLcenId) {
 		return vioInfoRepository.findAllViolationInfoByDvrLcenId(dvrLcenId);
+	}
+
+	/**
+	 * @brief : 위반자 정보 조회
+	 * @details : 위반자 정보 조회
+	 * @author : KY.LEE
+	 * @date : 2024.05.02
+	 * @param : docNid
+	 */
+	@Override
+	public List<MozVioInfo> getViolationInfoListByDocNid(String docNid) {
+		return vioInfoRepository.findAllViolationInfoListByDocNid(docNid);
 	}
 }

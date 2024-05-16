@@ -12,7 +12,9 @@ import com.moz.ates.traffic.common.component.FileUploadComponent;
 import com.moz.ates.traffic.common.entity.board.MozAtchFile;
 import com.moz.ates.traffic.common.entity.board.MozBrd;
 import com.moz.ates.traffic.common.entity.common.UploadFileInfo;
+import com.moz.ates.traffic.common.enums.BoradType;
 import com.moz.ates.traffic.common.enums.NoticeCateCd;
+import com.moz.ates.traffic.common.enums.RegistantType;
 import com.moz.ates.traffic.common.repository.board.MozAtchFileRepository;
 import com.moz.ates.traffic.common.repository.board.MozBrdRepository;
 import com.moz.ates.traffic.common.util.MozatesCommonUtils;
@@ -66,6 +68,8 @@ public class PoliceNoticeServiceImpl implements PoliceNoticeService {
         		atchFile.setFilePath(uploadFileInfo.getFilePath());
         		atchFile.setFileSize(uploadFileInfo.getFileSize());
         		atchFile.setFileExts(uploadFileInfo.getFileExt());
+        		atchFile.setBrdTy(BoradType.NOTICE);
+        		atchFile.setRgsTy(RegistantType.ADMIN_USER);
         		mozAtchFileRepository.insertMozAtchFile(atchFile);
     		}
     	}
@@ -158,6 +162,8 @@ public class PoliceNoticeServiceImpl implements PoliceNoticeService {
     			atchFile.setFilePath(uploadFileInfo.getFilePath());
     			atchFile.setFileSize(uploadFileInfo.getFileSize());
     			atchFile.setFileExts(uploadFileInfo.getFileExt());
+        		atchFile.setBrdTy(BoradType.NOTICE);
+        		atchFile.setRgsTy(RegistantType.ADMIN_USER);
     			mozAtchFileRepository.insertMozAtchFile(atchFile);
     		}
     	}

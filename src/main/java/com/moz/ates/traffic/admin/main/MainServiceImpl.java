@@ -28,6 +28,7 @@ import com.moz.ates.traffic.common.repository.common.MozCmCdRepository;
 import com.moz.ates.traffic.common.repository.common.MozMsgQueueRepository;
 import com.moz.ates.traffic.common.repository.enforcement.MozTfcEnfMasterRepository;
 import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfEqpMasterRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozTfcFacilityMasterRepository;
 import com.moz.ates.traffic.common.repository.operator.MozWebOprtrRepository;
 import com.moz.ates.traffic.common.repository.payment.MozFinePymntInfoRepository;
 import com.moz.ates.traffic.common.support.exception.CommonException;
@@ -59,6 +60,9 @@ public class MainServiceImpl implements MainService {
     
     @Autowired
     MozTfcEnfEqpMasterRepository mozTfcEnfEqpMasterRepository;
+    
+    @Autowired
+    MozTfcFacilityMasterRepository mozTfcFacilityMasterRepository;
     
     
     @Value("${mail.sender.inatro}")
@@ -235,6 +239,7 @@ public class MainServiceImpl implements MainService {
 		
 		PaymentChartGraph chartGraph = mozFinePymntInfoRepository.findOnePaymentStatisticsChartGraph();
 		chartDTO.setPaymentChartGraph(chartGraph);
+		
 		return chartDTO;
 	}
 
@@ -295,6 +300,17 @@ public class MainServiceImpl implements MainService {
 	@Override
 	public int getTodayAccidentCount() {
 		return mozTfcAcdntMasterRepository.countMozTfcAcdntMatserByToday();
+	}
+
+	/**
+	 * @Method Name : getFacilitiesCountInfo
+	 * @Date : 2024. 4. 25.
+	 * @Author : KY.LEE
+	 * @Method Brief : 장비 목록 개수 정보 
+	 */
+	@Override
+	public Map<String, Object> getFacilitiesCountInfo() {
+		return mozTfcFacilityMasterRepository.countMozTfcFacilityMaster();
 	}
 	
 }

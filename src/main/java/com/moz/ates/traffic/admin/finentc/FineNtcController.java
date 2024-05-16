@@ -122,9 +122,9 @@ public class FineNtcController {
 		try {
 			fineNtcService.updateMozVioInfo(mozVioInfo);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "고지서 정보 수정에 실패했습니다.");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Falha ao editar as informações da fatura.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "고지서 정보를 수정했습니다.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Correção das informações da fatura.");
 	}
 	
 	/**
@@ -204,9 +204,9 @@ public class FineNtcController {
 			//TODO:: 비지니스로직 미구현 SMS연동 필요 
 			//fineNtcService.findOneNtcDetailByFineNtcId(fineNtcId);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "고지서 재발송에 실패했습니다.");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "O projeto de lei reenviado não foi aprovado.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "고지서를 재발송 하였습니다.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Reenviámos a sua conta.");
 	}
 	
 	
@@ -280,9 +280,9 @@ public class FineNtcController {
 		try {
 			fineNtcService.updateMozVioInfo(mozVioInfo);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "고지서 정보 수정에 실패했습니다.");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Falha ao editar as informações da fatura.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "고지서 정보를 수정했습니다.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Correção das informações da fatura.");
 	}
 	
 	/**
@@ -362,8 +362,8 @@ public class FineNtcController {
 			//TODO:: 비지니스로직 미구현 SMS연동 필요 
 			//fineNtcService.findOneNtcDetailByFineNtcId(fineNtcId);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "고지서 재발송에 실패했습니다.");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "O projeto de lei reenviado não foi aprovado.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "고지서를 재발송 하였습니다.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Reenviámos a sua conta.");
 	}
 }

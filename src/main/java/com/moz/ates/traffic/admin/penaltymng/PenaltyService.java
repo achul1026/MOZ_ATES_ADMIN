@@ -1,7 +1,6 @@
 package com.moz.ates.traffic.admin.penaltymng;
 
 import java.util.List;
-import java.util.Map;
 
 import com.moz.ates.traffic.common.entity.payment.MozFinePymntInfo;
 import com.moz.ates.traffic.common.enums.PymntMethod;

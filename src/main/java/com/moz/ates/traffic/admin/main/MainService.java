@@ -120,4 +120,13 @@ public interface MainService {
 	 * @return Map<String,Object>
 	 */
 	Map<String,Object> getEqpInfo();
+	
+	/**
+	 * @Method Name : getFacilitiesCountInfo
+	 * @Date : 2024. 4. 25.
+	 * @Author : KY.LEE
+	 * @Method Brief : 장비 정보
+	 * @return Map<String,Object>
+	 */
+	Map<String,Object> getFacilitiesCountInfo();
 }

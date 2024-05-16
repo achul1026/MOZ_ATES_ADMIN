@@ -20,7 +20,8 @@
 						<th>
 							<span class="requiredMark" th:text="#{portal.faq.title}">제목</span>
 						</th>
-						<td><input type="text" class="search-box main-input data-validate" placeholder="Please Enter Title" name="postTitle"
+						<td><input type="text" class="search-box main-input data-validate" th:placeholder="#{portal.faq.placeholder.title}"
+						 name="postTitle"
 						th:data-valid-name="#{portal.faq.title}" data-valid-required></td>
 					</tr>
 					<tr>
@@ -40,7 +41,8 @@
 						<th>
 							<span class="requiredMark" th:text="#{portal.faq.answerContent}">답변</span>
 						</th>
-						<td><textarea class="detail-table-textarea" id="postContent" name="postContent" placeholder="Please Enter Answer Content"></textarea></td>
+						<td><textarea class="detail-table-textarea" id="postContent" name="postContent" 
+						th:placeholder="#{portal.faq.placeholder.answerContent}"></textarea></td>
 					</tr>
 				</tbody>
 			</table>

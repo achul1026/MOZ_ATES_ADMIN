@@ -20,14 +20,32 @@
 							<th>
 								<span class="requiredMark" th:text="#{enforcement.infoDetail.enfInfo}">제목</span>
 							</th>
-							<td><input type="text" id="tfcEnfTtl" class="main-input tfcEnfTtl data-validate" th:data-valid-name="#{enforcement.infoDetail.enfInfo}" placeholder="Please Enter Enforcement Title"
-							data-valid-required></td>
+							<td>
+								<input type="text" id="tfcEnfTtl" class="main-input tfcEnfTtl data-validate" th:data-valid-name="#{enforcement.infoRegist.title}" 
+								th:placeholder="#{enforcement.infoRegist.placeholder.title}" data-valid-required>
+							</td>
 							<th>
 								<span class="requiredMark" th:text="#{enforcement.infoDetail.violationDate}">날짜</span>
 							</th>
 							<td>
 								<input type="hidden" class="tfcEnfDt">
-								<input type="datetime-local" id="tfcEnfDt" name="tfcEnfDt" class="input-time data-validate" th:data-valid-name="#{enforcement.infoDetail.violationDate}" data-valid-required>
+								<input type="datetime-local" id="tfcEnfDt" class="input-time data-validate" th:data-valid-name="#{enforcement.infoDetail.violationDate}" data-valid-required>
+							</td>
+						</tr>
+						<tr>
+							<th>
+								<span th:text="#{enforcement.infoDetail.docNo}">문서 번호</span>
+							</th>
+							<td class="modal-find-line">
+								<input type="text" id="docNid" class="main-input docNid data-validate" th:placeholder="#{enforcement.infoRegist.placeholder.docNo}"
+								th:data-valid-name="#{enforcement.infoDetail.docNo}" data-valid-required th:value="${apiDriverInfo?.numerododocumento}">
+							</td>
+							<th>
+								<span th:text="#{enforcement.infoDetail.docType}">문서 유형</span>
+							</th>
+							<td>
+								<input type="text" class="main-input docType data-validate" id="docType" th:placeholder="#{enforcement.infoRegist.placeholder.type}"
+								 th:data-valid-name="#{enforcement.infoDetail.docType}" data-valid-required th:value="${apiDriverInfo?.tipodedocumento}">
 							</td>
 						</tr>
 						<tr>
@@ -35,48 +53,51 @@
 								<span class="requiredMark" th:text="#{enforcement.infoDetail.licenseNumber}">라이선스 번호</span>
 							</th>
 							<td class="modal-find-line">
-								<input type="text" id="dvrLcenId" placeholder="Please Enter License Number" class="main-input dvrLcenId data-validate" th:data-valid-name="#{enforcement.infoDetail.licenseNumber}" data-valid-required th:value="${apiDriverInfo?.driverLicenseId}">
+								<input type="text" id="dvrLcenId" class="main-input dvrLcenId data-validate" th:placeholder="#{enforcement.infoRegist.placeholder.licenseNumber}" th:data-valid-name="#{enforcement.infoDetail.licenseNumber}" data-valid-required>
 								<i class="search-icon" data-type="dvrLcenId" onclick="searchForApiData('show',this)"></i>
 							</td>
 							<th>
 								<span th:text="#{enforcement.infoDetail.licenseTy}" class="requiredMark">라이선스 타입</span>
 							</th>
-							<td><input type="text" class="main-input dvrLcenTy data-validate" id="dvrLcenTy" placeholder="Please Enter License Number" th:data-valid-name="#{enforcement.infoDetail.licenseTy}" data-valid-required th:value="${apiDriverInfo?.driverLicenseType}"></td>
+							<td>
+								<input type="text" class="main-input dvrLcenTy data-validate" id="dvrLcenTy" th:placeholder="#{enforcement.infoRegist.placeholder.licenseType}"
+								th:data-valid-name="#{enforcement.infoDetail.licenseTy}" data-valid-required>
+							</td>
 						</tr>
 						<tr>
 							<th>
 								<span class="requiredMark" th:text="#{enforcement.infoDetail.violatorsName}">운전자명</span>
 							</th>
 							<td class="modal-find-line">
-								<input type="text" class="main-input vioNm data-validate" id="vioNm" placeholder="Please Enter Name" th:data-valid-name="#{enforcement.infoDetail.violatorsName}" data-valid-required th:value="${apiDriverInfo?.driverNm}">
+								<input type="text" class="main-input vioNm data-validate" id="vioNm" th:placeholder="#{enforcement.infoRegist.placeholder.name}" th:data-valid-name="#{enforcement.infoDetail.violatorsName}" data-valid-required th:value="${apiDriverInfo?.nome}">
 								<i class="search-icon" data-type="driverNm" onclick="searchForApiData('show',this)"></i>	
 							</td>
 							<th>
 								<span class="requiredMark" th:text="#{enforcement.infoDetail.birthday}">생년월일</span>
 							</th>
-							<td><input type="text" class="main-input vioBrth data-validate" id="vioBrth" placeholder="Please Enter Birthday" th:data-valid-name="#{enforcement.infoDetail.birthday}" data-valid-required th:value="${#dates.format(apiDriverInfo?.driverBrth, 'yyyy-MM-dd')}"></td>
+							<td><input type="text" class="main-input vioBrth data-validate" id="vioBrth" placeholder="dd.mm.aaaa" th:data-valid-name="#{enforcement.infoDetail.birthday}" data-valid-required th:value="${apiDriverInfo?.datadenascimento}" maxlength="10" onkeyup="keyupDateCheck(event, 'ddMMyyyy', '.')"></td>
 						</tr>
 						<tr>
 							<th>
 								<span class="requiredMark" th:text="#{enforcement.infoDetail.phone}">전화번호</span>
 							</th>
-							<td><input type="text" class="main-input vioPno data-validate" id="vioPno"  placeholder="Please Enter Phone" th:data-valid-name="#{enforcement.infoDetail.phone}" data-valid-required th:value="${apiDriverInfo?.driverPno}"></td>
+							<td><input type="text" class="main-input vioPno data-validate" id="vioPno" th:placeholder="#{enforcement.infoRegist.placeholder.phone}" th:data-valid-name="#{enforcement.infoDetail.phone}" data-valid-required th:value="${apiDriverInfo?.contacto}"></td>
 							<th>
 								<span th:text="#{enforcement.infoDetail.email}">이메일</span>
 							</th>
-							<td><input type="text" class="main-input vioEmail" id="vioEmail"  placeholder="Please Enter Email" th:value="${apiDriverInfo?.driverEmail}"></td>
+							<td><input type="text" class="main-input vioEmail" id="vioEmail" th:placeholder="#{enforcement.infoRegist.placeholder.email}"></td>
 						</tr>
 						<tr>
 							<th>
 								<span class="requiredMark" th:text="#{enforcement.infoDetail.vehiclType}">차량</span>
 							</th>
-							<td><input type="text" class="main-input vhTy data-validate" id="vhTy"  placeholder="Please Enter Classification" th:data-valid-name="#{enforcement.infoDetail.vehiclType}" data-valid-required th:value="${apiDriverInfo?.vehicleType}"></td>
+							<td><input type="text" class="main-input vhTy data-validate" id="vhTy" th:placeholder="#{enforcement.infoRegist.placeholder.vehiclType}" th:data-valid-name="#{enforcement.infoDetail.vehiclType}" data-valid-required></td>
 							<th>
 								<span class="requiredMark" th:text="#{enforcement.infoDetail.vehiclNo}">차량 번호</span>
 							</th>
 							<td class="modal-find-line">
-								<input type="text" class="main-input vhRegNo data-validate" id="vhRegNo"  placeholder="Please Enter Vehicle Plate No." th:data-valid-name="#{enforcement.infoDetail.vehiclNo}" data-valid-required th:value="${apiDriverInfo?.vehicleNo}">
-								<i class="search-icon" onclick="searchForApiData('show',this)"></i>	
+								<input type="text" class="main-input vhRegNo data-validate" id="vhRegNo" th:placeholder="#{enforcement.infoRegist.placeholder.vehiclePlateNo}" th:data-valid-name="#{enforcement.infoDetail.vehiclNo}" data-valid-required th:value="${apiDriverInfo?.vhRegNo}">
+								<i class="search-icon" data-type="vehicleNo" onclick="searchForApiData('show',this)"></i>	
 							</td>
 						</tr>
 						<tr>
@@ -94,7 +115,8 @@
 							<th>
 								<span class="requiredMark" th:text="#{enforcement.detectionRegist.addr}">위반자 주소</span>
 							</th>
-							<td><input type="text" class="main-input vioAddr data-validate" id="vioAddr"  th:placeholder="#{enforcement.detectionRegist.placeholder.addr}" th:data-valid-name="#{enforcement.detectionRegist.addr}" data-valid-required th:value="${apiDriverInfo?.driverEmail}"></td>
+							<td><input type="text" class="main-input vioAddr data-validate" id="vioAddr" th:placeholder="#{enforcement.infoRegist.placeholder.address}" 
+							th:data-valid-name="#{enforcement.detectionRegist.addr}" data-valid-required th:value="${apiDriverInfo?.domicilio}"></td>
 						</tr>
 						<tr id="lawDetailChk" style="display:none;">
 							<th>
@@ -115,7 +137,10 @@
 							<th>
 								<span class="requiredMark" th:text="#{enforcement.infoDetail.fine}">범칙금</span>
 							</th>
-							<td colspan="3"><input type="text" class="main-input data-validate totalPrice" id="totalPrice" placeholder="Please Enter Penalty" th:data-valid-name="#{enforcement.infoDetail.fine}" data-valid-required></td>
+							<td colspan="3">
+								<input type="text" class="main-input data-validate totalPrice" id="totalPrice"
+								th:placeholder="#{enforcement.infoRegist.placeholder.penalty}" th:data-valid-name="#{enforcement.infoDetail.fine}" data-valid-required>
+							 </td>
 						</tr>
 						<tr>
 							<th>
@@ -135,7 +160,8 @@
 							</th>
 							<td class="modal-find-line">
 								<input type="hidden" class="polId" id="polId">
-								<input type="text" class="main-input data-validate" readonly id="polNm"  placeholder="Please Enter Officer" th:data-valid-name="#{enforcement.infoDetail.polInCharge}" data-valid-required>
+								<input type="text" class="main-input data-validate" id="polNm" th:placeholder="#{enforcement.infoRegist.placeholder.officer}"
+								th:data-valid-name="#{enforcement.infoDetail.polInCharge}" data-valid-required readonly>
 								<i class="search-icon" onclick="changePolListModal('show')"></i>
 							</td>
 							<th>
@@ -148,11 +174,12 @@
 								<span class="requiredMark" th:text="#{enforcement.infoDetail.placeOfViolate}">적발 지역</span>
 							</th>
 							<td colspan="3">
-								<input type="text" class="main-input data-validate roadAddr" id="roadAddr"  placeholder="Please Enter Location" th:data-valid-name="#{enforcement.infoDetail.placeOfViolate}" data-valid-required>
+								<input type="text" class="main-input data-validate roadAddr" id="roadAddr" th:placeholder="#{enforcement.infoRegist.placeholder.location}"
+								 th:data-valid-name="#{enforcement.infoDetail.placeOfViolate}" data-valid-required>
 <!-- 								<i class="search-icon mapSearch"></i> -->
 								<br><br>
 								<div id="map" class="detailMap">
-									<img src="/images/mapLocation_icon.png" alt="My Location" class="mapLocationIcon">
+									
 								</div>
 							</td>
 						</tr>
@@ -169,7 +196,7 @@
 						<tr>
 							<th class="detail-th" th:text="#{enforcement.infoDetail.tfcEnfDetail}">상세 내용</th>
 							<td colspan="3">
-								<textarea class="detail-table-textarea tfcEnfDetail" id="tfcEnfDetail" placeholder="Please Enter Detail"></textarea>
+								<textarea class="detail-table-textarea tfcEnfDetail" id="tfcEnfDetail" th:placeholder="#{enforcement.infoRegist.placeholder.detail}"></textarea>
 							</td>
 						</tr>
 						<tr>
@@ -218,13 +245,15 @@
 		var data = new FormData(form);
 		
 		data.append("tfcEnfTtl", $(".tfcEnfTtl").val());
-		//data.append("tfcEnfDt", $(".tfcEnfDt").val());
+		data.append("tfcEnfDt", $(".tfcEnfDt").val());
 		data.append("vhTy", $(".vhTy").val());
 		data.append("vhRegNo", $(".vhRegNo").val());
 		data.append("polId", $(".polId").val());
 		data.append("roadAddr", $(".roadAddr").val());
 		data.append("tfcEnfDetail", $(".tfcEnfDetail").val());
 		data.append("totalPrice", $(".totalPrice").val());
+		data.append("vioInfo.docType", $(".docType").val());
+		data.append("vioInfo.docNid", $(".docNid").val());
 		data.append("vioInfo.dvrLcenId", $(".dvrLcenId").val());
 		data.append("vioInfo.dvrLcenTy", $(".dvrLcenTy").val());
 		data.append("vioInfo.vioNm", $(".vioNm").val());
@@ -438,6 +467,8 @@
 		let dvrLcenId = document.getElementById('dvrLcenId').value;
 		let vioNm = document.getElementById('vioNm').value;
 		
+		const resultMsg = /*[[#{common.search.notFound}]]*/;
+		
 		let searchType = _this.getAttribute('data-type');
 		let searchContent = '';
 		
@@ -477,30 +508,53 @@
 						}
 				        
 						const fetcher = new DriverSelectAPI();
-				            fetcher.fetchData(searchType, searchValue, function(data) {
-				                const tbody = document.getElementById('modalTbody');
-				                tbody.empty();
+						
+						const loading = new AdminLoading().start("API Searching...");
+						
+						fetcher.fetchData(searchType, searchValue, function(data) {
+				            const tbody = document.getElementById('modalTbody');
+						    tbody.empty();
+						    
+						    let parsedData = JSON.parse(data);
+						    
+						    if(parsedData != null &&  parsedData.tab1.length > 0){
+					            parsedData.tab1.forEach(item => {
+					                const tr = document.createElement('tr');
+					                tr.dataset.prop = JSON.stringify(item);
+					                //console.log(JSON.stringify(item));
+					                tr.setAttribute('onclick','searchForApiData("hide",this)');
+					                
+									let birthday = new Date(item.datadenascimento);
+									
+									let birthdayFormat = `${birthday.getDate()}.${birthday.getMonth() + 1}.${birthday.getFullYear()}`;
 				
-				                data.forEach(item => {
-				                    const tr = document.createElement('tr');
-				                    tr.dataset.prop = JSON.stringify(item);
-				                    tr.setAttribute('onclick','searchForApiData("hide",this)');
-				                    tr.innerHTML = `
-				                    	<td>${item.driverLicenseId}</td>
-				                    	<td>${item.driverLicenseType}</td>
-				                    	<td>${item.expirationDate}</td>
-				                    	<td>${item.driverNm}</td>
-				                    	<td>${item.driverBrth}</td>
-				                    	<td>${item.driverPno}</td>
-				                    	<td>${item.driverAddr}</td>
-				                    	<td>${item.vehicleNo}</td>
-				                    	<td>${item.vehicleType}</td>
-				                    	`;
-				                    tbody.appendChild(tr);
-				                    
-				                    resultTable.style.display = 'block';
-				                });
-				            });
+					                tr.innerHTML = `
+						               	<td>${item.nome}</td>
+						               	<td>${birthdayFormat}</td>
+						               	<td>${item.tipodedocumento}</td>
+						               	<td>${item.numerododocumento}</td>
+						               	<td>${item.domicilio}</td>
+						               	<td>${item.provincia}</td>
+						               	<td>${item.distrito}</td>
+						               	<td>${item.contacto}</td>
+					               	`;
+					               	
+					                tbody.appendChild(tr);
+					                
+					                resultTable.style.display = 'table';
+					            });
+							} else {
+								const tr = document.createElement('tr');
+								
+								 tr.innerHTML = `
+						               	<td colspan="8">${resultMsg}</td>
+					               	`;
+				               	tbody.appendChild(tr);
+				                
+				                resultTable.style.display = 'table';
+							}
+							loading.end();
+						});
 				    });
 				}
 			});
@@ -511,16 +565,17 @@
 			
 			if(objJsonStr != null){
 				const obj = JSON.parse(objJsonStr);
-				console.log(obj);
-				document.getElementById('dvrLcenId').value = obj.driverLicenseId;
-				document.getElementById('dvrLcenTy').value = obj.driverLicenseType;
-				document.getElementById('vioNm').value = obj.driverNm;
-				document.getElementById('vioBrth').value = obj.driverBrth;
-				document.getElementById('vioPno').value = obj.driverPno;
-				document.getElementById('vioEmail').value = obj.driverEmail;
-				document.getElementById('vioAddr').value = obj.driverAddr;
-				document.getElementById('vhRegNo').value = obj.vehicleNo;
-				document.getElementById('vhTy').value = obj.vehicleType;
+				
+				let birthday = new Date(obj.datadenascimento);
+				
+				let birthdayFormat = `${birthday.getDate()}.${birthday.getMonth() + 1}.${birthday.getFullYear()}`;
+				
+				document.getElementById('dvrLcenId').value = obj.numerododocumento;
+				document.getElementById('dvrLcenTy').value = obj.tipodedocumento;
+				document.getElementById('vioNm').value = obj.nome;
+				document.getElementById('vioBrth').value = birthdayFormat;
+				document.getElementById('vioPno').value = obj.contacto;
+				document.getElementById('vioAddr').value = obj.domicilio;
 			}
             resultTable.style.display = 'none';
             

@@ -26,23 +26,32 @@
 		</form>
 
 		<div class="btn-wrap-center">
-			<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{enforcement.car.search.check}">조회</button>
+			<button type="button" id="btnSearch" onclick="apiSearch()" class="main-btn form-button" th:text="#{enforcement.car.search.check}">조회</button>
 			<button type="button" id="resetSearch" onclick="resetForm()" class="sub-btn form-button" th:text="#{enforcement.common.search.reset}">검색 초기화</button>
 		</div>
 		<div class="">
 			<table id="api_table" class="main-table" style="display:none">
 				<thead>
-					<tr>
-						<th th:text="#{enforcement.car.search.driverLicense}">Driver License Id</th>
-						<th th:text="#{enforcement.car.search.driverType}">Driver License Type</th>
-						<th th:text="#{enforcement.car.search.expiration}">Driver License Expiration Date</th>
-						<th th:text="#{enforcement.car.search.name}">Driver Name</th>
-						<th th:text="#{enforcement.car.search.birth}">Driver Brth</th>
-						<th th:text="#{enforcement.car.search.searchAddress}">Driver Addr</th>
-						<th th:text="#{enforcement.car.search.phNum}">Driver Phone Number</th>
-						<th th:text="#{enforcement.car.search.vehicleNo}">Vehicle No</th>
-						<th th:text="#{enforcement.car.search.vehicleType}">Vehicle Type</th>
-					</tr>
+<!--					<tr>-->
+<!--						<th th:text="#{enforcement.car.search.driverLicense}">Driver License Id</th>-->
+<!--						<th th:text="#{enforcement.car.search.driverType}">Driver License Type</th>-->
+<!--						<th th:text="#{enforcement.car.search.expiration}">Driver License Expiration Date</th>-->
+<!--						<th th:text="#{enforcement.car.search.birth}">Driver Brth</th>-->
+<!--						<th th:text="#{enforcement.car.search.searchAddress}">Driver Addr</th>-->
+<!--						<th th:text="#{enforcement.car.search.phNum}">Driver Phone Number</th>-->
+<!--						<th th:text="#{enforcement.car.search.vehicleNo}">Vehicle No</th>-->
+<!--						<th th:text="#{enforcement.car.search.vehicleType}">Vehicle Type</th>-->
+<!--					</tr>-->
+						<tr>
+							<th th:text="#{enforcement.car.search.name}">Driver Name</th>
+							<th th:text="#{enforcement.car.search.birth}">BirthDay</th>
+							<th th:text="#{enforcement.car.search.docType}">Document Type</th>
+							<th th:text="#{enforcement.car.search.docNo}">Document No</th>
+							<th th:text="#{enforcement.car.search.searchAddress}">Driver Address</th>
+							<th th:text="#{enforcement.car.search.phNum}">Driver Contact</th>
+							<th th:text="#{enforcement.car.search.state}">State</th>
+							<th th:text="#{enforcement.car.search.area}">Area</th>
+						</tr>
 				</thead>
 				<tbody id="resultTbody">
 				</tbody>
@@ -56,12 +65,14 @@
 	const resultTable = document.getElementById('api_table');
 	
 	function apiResultDetail(_this){
+		const searchValue = document.getElementById('searchContent').value;
 		let resultData = _this.dataset != null ? _this.dataset.prop : null;
 		let obj = JSON.parse(resultData);
 	    const form = document.createElement('form');
-	    form.method = 'post';
+	    form.method = 'get';
 	    form.action = '/enf/vehicle/detail.do';
 //		console.log(_this.dataset.prop);
+	    obj.vhRegNo = searchValue;
 	    Object.keys(obj).forEach(key => {
 	        const result = document.createElement('input');
 	        result.type = 'hidden';
@@ -74,9 +85,10 @@
 	    form.submit();
 	}
 	
-	$("#btnSearch").click(function () {
+	function apiSearch(){
         const searchType = document.getElementById('searchType').value;
         const searchValue = document.getElementById('searchContent').value;
+        const resultMsg = /*[[#{common.search.notFound}]]*/;
         
         if(searchType == null || searchType == '' || searchValue == null || searchValue == ''){
 			alert("Please Input SearchType and SearchContent");
@@ -85,33 +97,54 @@
         
 		const fetcher = new DriverSelectAPI();
 		
-        fetcher.fetchData(searchType, searchValue, function(data) {
+		const loading = new AdminLoading().start("API Searching...");
+		
+		fetcher.fetchData(searchType, searchValue, function(data) {
             const tbody = document.getElementById('resultTbody');
-            tbody.empty();
+		    tbody.empty();
+		    
+		    let parsedData = JSON.parse(data);
+		    
+		    if(parsedData != null &&  parsedData.tab1.length > 0){
+	            parsedData.tab1.forEach(item => {
+	                const tr = document.createElement('tr');
+	                tr.dataset.prop = JSON.stringify(item);
+	                //console.log(JSON.stringify(item));
+	                tr.setAttribute('onclick','apiResultDetail(this)');
+	                
+					let birthday = new Date(item.datadenascimento);
+					
+					let birthdayFormat = `${birthday.getDate()}.${birthday.getMonth() + 1}.${birthday.getFullYear()}`;
 
-            data.forEach(item => {
-                const tr = document.createElement('tr');
-                tr.dataset.prop = JSON.stringify(item);
-                //console.log(JSON.stringify(item));
-                tr.setAttribute('onclick','apiResultDetail(this)');
-                tr.innerHTML = `
-	               	<td>${item.driverLicenseId}</td>
-	               	<td>${item.driverLicenseType}</td>
-	               	<td>${item.expirationDate}</td>
-	               	<td>${item.driverNm}</td>
-	               	<td>${item.driverBrth}</td>
-	               	<td>${item.driverPno}</td>
-	               	<td>${item.driverAddr}</td>
-	               	<td>${item.vehicleNo}</td>
-	               	<td>${item.vehicleType}</td>
-               	`;
-               	
-                tbody.appendChild(tr);
+	                tr.innerHTML = `
+		               	<td>${item.nome}</td>
+		               	<td>${birthdayFormat}</td>
+		               	<td>${item.tipodedocumento}</td>
+		               	<td>${item.numerododocumento}</td>
+		               	<td>${item.domicilio}</td>
+		               	<td>${item.provincia}</td>
+		               	<td>${item.distrito}</td>
+		               	<td>${item.contacto}</td>
+	               	`;
+	               	
+	                tbody.appendChild(tr);
+	                
+	                resultTable.style.display = 'table';
+	            });
+			} else {
+				const tr = document.createElement('tr');
+				
+				 tr.innerHTML = `
+		               	<td colspan="8">${resultMsg}</td>
+	               	`;
+               	tbody.appendChild(tr);
                 
                 resultTable.style.display = 'table';
-            });
-        });
-	});
+			}
+			
+			loading.end();
+		});
+	};
 	
 	function resetForm(){
         const searchType = document.getElementById('searchType');

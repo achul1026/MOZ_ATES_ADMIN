@@ -84,7 +84,7 @@
 						<td>
 							<span class="tableStausOff" th:text="${administInfo.proHoldYn}"></span>
 						</td>
-						<td th:switch="${administInfo.processYn}">
+						<td class="flex justify-center" th:switch="${administInfo.processYn}">
 							<span th:case="N" class="tableStausProg">In Process</span>
 							<span th:case="Y" class="tableStausOn">Completed</span>
 						</td>

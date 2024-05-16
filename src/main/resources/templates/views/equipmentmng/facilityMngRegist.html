@@ -3,13 +3,9 @@
 	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-
 	<div id="container-fluid">
-
-		<!-- Page Heading -->
 		<h1 id="detail-content-title" th:text="#{equipment.facilityRegist.title}">교통시설물 등록</h1>
-		
-		<div class="">
+		<div>
 			<form id="frmFacilityRegist" enctype="multipart/form-data">
 			<table class="detail-table">
 				<colgroup>
@@ -21,48 +17,80 @@
 				<tbody>
 					<tr>
 						<th>
-							<span class="requiredMark" th:text="#{equipment.facilityRegist.trafficFacilityType}">시설물 유형</span>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.trafficFacilityName}">시설물 이름</span>
 						</th>
 						<!-- 여기서부터 /block까지 이미지 생성. -->
 						<td>
-							<select id="eqpTy" class="filter-select filter95 data-validate" name="facilityTy" th:data-valid-name="#{equipment.facilityRegist.trafficFacilityType}" data-valid-required>
+							<input type="text" class="main-input data-validate" name="facilityNm" th:placeholder="#{equipment.facilityRegist.placeholder.trafficFacilityName}"
+							th:data-valid-name="#{equipment.facilityRegist.trafficFacilityName}" data-valid-required>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.trafficFacilityType}">시설물 유형</span>
+						</th>
+						<td>
+							<select id="facilityTy" class="filter-select filter95 data-validate" name="facilityTy" th:data-valid-name="#{equipment.facilityRegist.trafficFacilityType}" data-valid-required>
 								<option value="">Select</option>
-								<th:block th:each="cdItem : ${cdList}">
-									<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}"></option>
+								<th:block th:each="item : ${facTyCd}">
+									<option th:value="${item.cdId}" th:text="${item.cdNm}"></option>
+								</th:block>
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.trafficFacilityDivision}">시설물 구분</span>
+						</th>
+						<!-- 여기서부터 /block까지 이미지 생성. -->
+						<td>
+							<select id="facilityDiv" name="facilityDiv" class="filter-select filter95 data-validate" th:data-valid-name="#{equipment.facilityRegist.trafficFacilityDivision}" data-valid-required>
+								<option value="">Select</option>
+								<th:block th:each="item : ${facDivCd}">
+									<option th:value="${item.cdId}" th:text="${item.cdNm}"></option>
 								</th:block>
 							</select>
 						</td>
 						<th>
-							<span class="requiredMark" th:text="#{equipment.facilityRegist.trafficFacilityName}">시설물 이름</span>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.trafficFacilityCategory}">시설물 카테고리</span>
 						</th>
-						<!-- 여기서부터 /block까지 이미지 생성. -->
-						<td><input type="text" class="main-input data-validate" name="facilityNm" placeholder="Please Enter Traffic Facility Name" th:data-valid-name="#{equipment.facilityRegist.trafficFacilityName}" data-valid-required></td>
+						<td>
+							<select id="facilityCate" name="facilityCate" class="filter-select filter95 data-validate" th:data-valid-name="#{equipment.facilityRegist.trafficFacilityCategory}" data-valid-required>
+								<option value="">Select</option>
+								<th:block th:each="item : ${facCateCd}">
+									<option th:value="${item.cdId}" th:text="${item.cdNm}"></option>
+								</th:block>
+							</select>
+						</td>
 					</tr>
 					<tr>
 						<th>
-							<span class="requiredMark" th:text="#{equipment.facilityRegist.modelNm}"></span>
-						</th>
-						<td><input type="text" class="main-input data-validate" name="modelNm" placeholder="Please Enter Model Name" th:data-valid-name="#{equipment.facilityRegist.modelNm}" data-valid-required></td>
-						<th>
-							<span class="requiredMark" th:text="#{equipment.facilityRegist.manufacturer}">제조사</span>
-						</th>
-						<td><input type="text" class="main-input data-validate" name="mnfctr" placeholder="Please Enter Manufacturer" th:data-valid-name="#{equipment.facilityRegist.manufacturer}" data-valid-required></td>
-					</tr>
-					<tr>
-						<th>
-							<span class="requiredMark" th:text="#{equipment.facilityRegist.installationStatus}">설치 여부</span>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.useYn}">사용 여부</span>
 						</th>
 						<td>
 							<label for="useY" class="radioBox">
-								<input type="radio" id="useY" name="instlYn" value="Y" checked>
-								<span class="radioOn"></span>
-								Installed
+								<input type="radio" id="useY" name="useYn" value="Y" checked>
+								<span class="radioOn">
+								</span>
+								<span th:text="#{equipment.facilityRegist.useY}">
+								</span>
 							</label>
 							<label for="useN" class="radioBox">
-								<input type="radio" id="useN" name="instlYn" value="N">
-								<span class="radioOn"></span>
-								Not installed
+								<input type="radio" id="useN" name="useYn" value="N">
+								<span class="radioOn">
+								</span>
+								<span th:text="#{equipment.facilityRegist.useN}">
+								</span>
 							</label>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{equipment.facilityRegist.area}">구역</span>
+						</th>
+						<td>
+							<select id="areaCd" name="areaCd" class="filter-select filter95 data-validate" th:data-valid-name="#{equipment.facilityRegist.area}" data-valid-required>
+								<option value="">Select</option>
+								<th:block th:each="item : ${areaCd}">
+									<option th:value="${item.cdId}" th:text="${item.cdNm}"></option>
+								</th:block>
+							</select>
 						</td>
 					</tr>
 					<tr>
@@ -70,37 +98,30 @@
 							<span class="requiredMark" th:text="#{equipment.facilityRegist.installationLocation}">설치 위치</span>
 						</th>
 						<td colspan="3" class="modal-find-line">
-							<input type="text" class="main-input data-validate" name="roadAddr" placeholder="Please Enter Installation Location" th:data-valid-name="#{equipment.facilityRegist.installationLocation}" data-valid-required>
-							<i class="search-icon mapSearch"></i>
+							<input type="text" class="main-input data-validate" name="roadAddr" th:placeholder="#{equipment.facilityRegist.placeholder.installationLocation}"
+							 th:data-valid-name="#{equipment.facilityRegist.installationLocation}" data-valid-required>
+<!--							<i class="search-icon mapSearch"></i>-->
 							<br><br>
 							<div id="map" class="detailMap">
-								<img src="/images/mapLocation_icon.png" alt="My Location" class="mapLocationIcon">
+								
 							</div>
 						</td>					
 					</tr>
 					<tr>
 						<th>
-							<span class="requiredMark" th:text="#{equipment.facilityRegist.installationDate}"></span>
+							<span th:text="#{equipment.facilityRegist.lat}">위도</span>
 						</th>
-						<td><input type="date" class="input-date data-validate" name="instlDate" th:data-valid-name="#{equipment.facilityRegist.installationDate}" data-valid-required></td>
+						<td>
+							<input type="text" class="main-input data-validate" id="lat" name="lat" th:placeholder="#{equipment.facilityRegist.placeholder.lat}"
+							th:data-valid-name="#{equipment.facilityRegist.lat}">
+						</td>					
 						<th>
-							<span class="requiredMark" th:text="#{equipment.facilityRegist.installer}">설치자</span>
+							<span th:text="#{equipment.facilityRegist.lng}">경도</span>
 						</th>
-						<td><input type="text" class="main-input data-validate" name="instler" placeholder="Please Enter Installer" th:data-valid-name="#{equipment.facilityRegist.installer}" data-valid-required></td>
-					</tr>
-					<tr>
-						<th>
-							<span class="requiredMark" th:text="#{equipment.facilityRegist.personInCharge}">담당자</span>
-						</th>
-						<td class="modal-find-line">
-							<input type="text" class="main-input data-validate" id="crOprtrNm" placeholder="Please Enter Person in Charge" readonly th:data-valid-name="#{equipment.facilityRegist.personInCharge}" data-valid-required>
-							<input type="hidden" name="crOprtrId" id="crOprtrId">
-							<i class="search-icon" onclick="changeDeptListModal('show')"></i>
-						</td>
-						<th>
-							<span class="requiredMark" th:text="#{equipment.facilityRegist.department}">담당자 행정기관</span>
-						</th>
-						<td><input type="text" class="main-input" name="crOprtrDept" id="crOprtrDept" placeholder="Please Enter Department" readonly></td>
+						<td>
+							<input type="text" class="main-input data-validate" id="lng" name="lng" th:placeholder="#{equipment.facilityRegist.placeholder.lng}"
+							th:data-valid-name="#{equipment.facilityRegist.lng}">
+						</td>					
 					</tr>
 					<tr>
 						<th th:text="#{equipment.facilityRegist.image}">시설물 사진첨부</th>
@@ -114,7 +135,7 @@
 										Only JPG, JPEG, PNG, and MP4 files can be uploaded
 								    </div>
 								    <div>
-								        <input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
+								        <input type="file" id="uploadFiles" accept="image/*" onchange="addFiles(this);" multiple style="display: none;">
 								        <button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
 								    </div>
 								</div>
@@ -125,8 +146,17 @@
 						</td>
 					</tr>
 					<tr>
+						<th th:text="#{equipment.facilityRegist.trafficFacilityStatus}">교통시설물 상태</th>
+						<td colspan="3">
+							<input type="text" class="main-input data-validate" id="facilityStts" name="facilityStts" th:placeholder="#{equipment.facilityRegist.placeholder.trafficFacilityStatus}"
+							th:data-valid-name="#{equipment.facilityRegist.trafficFacilityStatus}">						</td>
+					</tr>
+					<tr>
 						<th th:text="#{equipment.facilityRegist.details}">상세내용</th>
-						<td colspan="3"><textarea class="detail-table-textarea" name="facilityDesc" placeholder="Please Enter Details"></textarea></td>
+						<td colspan="3">
+							<textarea class="detail-table-textarea" name="facilityDesc" 
+							th:placeholder="#{equipment.facilityRegist.placeholder.enforceementEquipmentInfo}"></textarea>
+						</td>
 					</tr>
 
 				</tbody>
@@ -147,6 +177,13 @@
 
 </html>
 <script th:inline="javascript">
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : null,
+		center_lat : null,
+		isInitDrawCenterMarker : false
+	});
+	
 	function saveInfo() {
 		if($("#frmFacilityRegist").soValid()) {
 			var form = $("#frmFacilityRegist")[0];
@@ -196,16 +233,6 @@
 			}
 	
 		}
-	
-	//TODO 좌표값 확인하기
-	const lng = 22;
-	const lat = 60;
-	let map = new MozAtesMap({
-		elementId : 'map',
-		center_lng : lng,
-		center_lat : lat,
-		isInitDrawCenterMarker : true
-	});
 	
 	function findOprtrBtn(){
 		$("#modalTbody > tr").remove();

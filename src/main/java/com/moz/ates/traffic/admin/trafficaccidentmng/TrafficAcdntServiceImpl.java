@@ -392,4 +392,17 @@ public class TrafficAcdntServiceImpl implements TrafficAcdntService{
 	public List<MozTfcAcdntTrgtInfo> getAcdntTrgtList(String dvrLcenId) {
 		return tfcAcdntTrgtInfoRepository.findAllTfcAcdntTrgtByDvrLcenId(dvrLcenId);
 	}
+	
+	/**
+	 * @brief 사고타겟 이력 조회
+	 * @details : 사고타겟 이력 조회
+	 * @author KY.LEE
+	 * @date 2024. 4. 11.
+	 * @method getAcdntTrgtListByDocNid
+	 */
+	@Override
+	public List<MozTfcAcdntTrgtInfo> getAcdntTrgtListByDocNid(String docNid) {
+		//TODO:: docNid 추가시
+		return tfcAcdntTrgtInfoRepository.findAllTfcAcdntTrgtByDocNid(docNid);
+	}
 }

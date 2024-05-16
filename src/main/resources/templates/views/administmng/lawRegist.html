@@ -22,7 +22,10 @@
 	                        <th>
 								<span class="requiredMark" th:text="#{administ.lawRegist.legalNumber}">법률번호</span>
 							</th>
-	                        <td><input type="text" class="main-input data-validate" id="lawArticleNo" name="lawArticleNo" placeholder="Please Enter Law No." th:data-valid-name="#{administ.lawRegist.legalNumber}" data-valid-required></td>
+	                        <td>
+								<input type="text" class="main-input data-validate" id="lawArticleNo" name="lawArticleNo" th:placeholder="#{administ.lawRegist.placeholder.legalNumber}"
+								th:data-valid-name="#{administ.lawRegist.legalNumber}" data-valid-required>
+							</td>
 	                        <th>
 								<span class="requiredMark" th:text="#{administ.lawRegist.lawChapter}">법률타입</span>
 							</th>
@@ -45,21 +48,26 @@
 							 <th>
 								 <span class="requiredMark" th:text="#{administ.lawRegist.nameOfLaw}">법률명</span>
 							 </th>
-	                        <td><input type="text" class="main-input data-validate" id="lawNm" name="lawNm" placeholder="Please Enter Law Title" th:data-valid-name="#{administ.lawRegist.nameOfLaw}" data-valid-required></td>
+	                        <td>
+								<input type="text" class="main-input data-validate" id="lawNm" name="lawNm" th:placeholder="#{administ.lawRegist.placeholder.nameOfLaw}"
+								th:data-valid-name="#{administ.lawRegist.nameOfLaw}" data-valid-required>
+							</td>
 	                    </tr>
 	                     <tr>
 	                        <th>
 								<span class="requiredMark" th:text="#{administ.lawRegist.enforceDate}"></span>
 							</th>
-	                        <td><input type="date" class="input-date data-validate" id="eftvDe" name="eftvDe" placeholder="Please Enter Law Details" th:data-valid-name="#{administ.lawRegist.enforceDate}" data-valid-required></td>
+	                        <td><input type="date" class="input-date data-validate" id="eftvDe" name="eftvDe" th:data-valid-name="#{administ.lawRegist.enforceDate}" data-valid-required></td>
 	                        <th>
 								<span class="requiredMark" th:text="#{administ.lawRegist.dateOfPromulgation}">공포일자</span>
 							</th>
-	                        <td><input type="date" class="input-date data-validate" id="prmgtnDe" name="prmgtnDe" placeholder="Enter Keyword" th:data-valid-name="#{administ.lawRegist.dateOfPromulgation}" data-valid-required></td>
+	                        <td><input type="date" class="input-date data-validate" id="prmgtnDe" name="prmgtnDe" th:data-valid-name="#{administ.lawRegist.dateOfPromulgation}" data-valid-required></td>
 	                    </tr>
 	                    <tr>
 	                        <th th:text="#{administ.lawRegist.legalExplanation}">시행령 정보</th>
-	                        <td colspan="3"><textarea class="detail-table-textarea" id="txtLawDesc" name="lawDesc" rows="15" placeholder="Please Enter Details"></textarea></td>
+	                        <td colspan="3"><textarea class="detail-table-textarea" id="txtLawDesc" name="lawDesc" rows="15" 
+	                        th:placeholder="#{administ.lawRegist.placeholder.nameOfLaw}" th:placeholder="#{administ.lawRegist.placeholder.legalExplanation}"
+	                        ></textarea></td>
 	                    </tr>
                     </tbody>
                 </table>
@@ -101,8 +109,14 @@
 <!--						</tr>-->
 	                   	<tr id="fineAddTr">
 							<th>Fine Info Regist</th>
-							<td><input type="text"  class="main-input" id="fineDesc" placeholder="Please Enter Info Regist" style="width:100%"/></td>
-							<td><input type="text" class="main-input" id="finePrice" placeholder="Please Enter Info Regist" style="width:100%" onkeyup="keyupNumberEvent(this)"></td>
+							<td>
+								<input type="text" class="main-input" id="fineDesc" th:placeholder="#{administ.lawRegist.placeholder.infoRegist}"
+								 style="width:100%"/>
+							</td>
+							<td>
+								<input type="text" class="main-input" id="finePrice" th:placeholder="#{administ.lawRegist.placeholder.infoRegist}" 
+								style="width:100%" onkeyup="keyupNumberEvent(this)">
+							</td>
 							<td>
 								<button type="button" class="detailPriceBtn" onclick="addFineTr()"><img src="/images/table-plus.png" alt="범칙금 추가"></button>
 							</td>

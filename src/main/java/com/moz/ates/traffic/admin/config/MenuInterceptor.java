@@ -65,6 +65,7 @@ public class MenuInterceptor implements HandlerInterceptor {
 		
 		//쿠키값 비교 다국어 처리
 		Cookie[] cookies = request.getCookies();
+//		String lang = "por";
 		String lang = "eng";
 		for(Cookie cookie : cookies) {
 			if("lang".equals(cookie.getName())) {

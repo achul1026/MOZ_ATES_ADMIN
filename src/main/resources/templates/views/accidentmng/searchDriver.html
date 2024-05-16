@@ -67,7 +67,7 @@
 		let resultData = _this.dataset != null ? _this.dataset.prop : null;
 		let obj = JSON.parse(resultData);
 	    const form = document.createElement('form');
-	    form.method = 'post';
+	    form.method = 'get';
 	    form.action = '/acdnt/driver/detail.do';
 //		console.log(_this.dataset.prop);
 	    Object.keys(obj).forEach(key => {

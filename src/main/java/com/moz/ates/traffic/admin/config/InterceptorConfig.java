@@ -28,8 +28,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
 
         CookieLocaleResolver resolver = new CookieLocaleResolver();
         resolver.setCookieName("lang");
-        resolver.setDefaultLocale(new Locale("por"));
-//        resolver.setDefaultLocale(new Locale("eng"));
+//        resolver.setDefaultLocale(new Locale("por"));
+        resolver.setDefaultLocale(new Locale("eng"));
         return resolver;
     }
 
@@ -72,7 +72,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
 				.excludePathPatterns("/images/**")
 				.excludePathPatterns("/modal/**")
 				.excludePathPatterns("/js/**")
-				.excludePathPatterns("/common/**");
+				.excludePathPatterns("/common/**")
+				.excludePathPatterns("/api/**")
+				;
         
         //사이드 메뉴관련 추가
 				registry.addInterceptor(menuInterceptor)
@@ -90,6 +92,8 @@ public class InterceptorConfig implements WebMvcConfigurer {
 				.excludePathPatterns("/images/**")
 				.excludePathPatterns("/modal/**")
 				.excludePathPatterns("/js/**")
-				.excludePathPatterns("/common/**");
+				.excludePathPatterns("/common/**")
+				.excludePathPatterns("/api/**")
+				;
     }
 }

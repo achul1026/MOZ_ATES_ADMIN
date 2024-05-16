@@ -27,7 +27,9 @@ import com.moz.ates.traffic.common.component.validate.ValidateResult;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
 import com.moz.ates.traffic.common.entity.common.MozCmCd;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpMaster;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEqpMntnHst;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityMaster;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityMntnHst;
 import com.moz.ates.traffic.common.util.MozatesCommonUtils;
 
 @Controller
@@ -52,7 +54,6 @@ public class TrafficEqpController {
 	@Authority(type = MethodType.READ)
 	@GetMapping("/mng/list.do")
 	public String mngList(Model model, String pageType) {
-		
 		model.addAttribute("pageType", pageType);
 		return "views/equipmentmng/eqpMngList";
 	}
@@ -173,13 +174,13 @@ public class TrafficEqpController {
 
 		ValidateResult dtoValidatorResult = dtoValidator
 				.addRule("eqpTy", new ValidateChecker().setRequired())
-				.addRule("eqpNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment Name cannot be more than 200 characters"))
-				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "Model Name cannot be more than 200 characters"))
-				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "Manufacturer cannot be more than 200 characters"))
+				.addRule("eqpNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome do equipamento não pode ter mais de 200 caracteres."))
+				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome do modelo não pode ter mais de 200 caracteres."))
+				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "O fabricante não pode ter mais de 200 caracteres."))
 				.addRule("instlYn", new ValidateChecker().setRequired())
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Installation location cannot be more than 200 characters"))
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "O local de instalação não pode ter mais de 200 caracteres."))
 				.addRule("instlDate", new ValidateChecker().setRequired())
-				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "Installer cannot be more than 200 characters"))
+				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "The installation location cannot be longer than 200 characters."))
 				.addRule("crOprtrId", new ValidateChecker().setRequired())
 				.isValid();
 		
@@ -192,7 +193,7 @@ public class TrafficEqpController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Equipment has been registered.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Este equipamento de tráfego foi registado.");
 	}
 
 	/**
@@ -253,13 +254,13 @@ public class TrafficEqpController {
 
 		ValidateResult dtoValidatorResult = dtoValidator
 				.addRule("eqpTy", new ValidateChecker().setRequired())
-				.addRule("eqpNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment Name cannot be more than 200 characters"))
-				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "Model Name cannot be more than 200 characters"))
-				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "Manufacturer cannot be more than 200 characters"))
+				.addRule("eqpNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome do equipamento não pode ter mais de 200 caracteres."))
+				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome do modelo não pode ter mais de 200 caracteres."))
+				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "O fabricante não pode ter mais de 200 caracteres."))
 				.addRule("instlYn", new ValidateChecker().setRequired())
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Installation location cannot be more than 200 characters"))
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "O local de instalação não pode ter mais de 200 caracteres."))
 				.addRule("instlDate", new ValidateChecker().setRequired())
-				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "Installer cannot be more than 200 characters"))
+				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "O nome do instalador não pode ter mais de 200 caracteres."))
 				.addRule("crOprtrId", new ValidateChecker().setRequired())
 				.isValid();
 		
@@ -272,7 +273,7 @@ public class TrafficEqpController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Equipment has been modified.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Este Equipamento de Tráfego foi modificado.");
 	}
 	
 	/**
@@ -307,7 +308,7 @@ public class TrafficEqpController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This equipment information has been deleted.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta informação sobre o equipamento foi eliminada.");
 	}
 	
 	/**
@@ -323,7 +324,7 @@ public class TrafficEqpController {
 	public CommonResponse<?> hstDelete(@RequestParam("mntnHstId") String mntnHstId) {
 
 		if (MozatesCommonUtils.isNull(mntnHstId)) {
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"Delete Failed");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"A eliminação falhou.");
 		}
 
 		try {
@@ -332,7 +333,31 @@ public class TrafficEqpController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Deleted Success");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Eliminado com sucesso.");
+	}
+	
+	/**
+	 * @brief : 교통시설물 유지보수 이력 삭제
+	 * @details : 교통시설물 유지보수 이력 삭제
+	 * @author : KY.LEE
+	 * @date : 2024.04.24
+	 * @param : mntnHstId
+	 */
+	@Authority(type = MethodType.DELETE)
+	@PostMapping("/facility/mntnDelete.ajax")
+	@ResponseBody
+	public CommonResponse<?> facMntnDelete(@RequestParam("tfcFacilityLogId") String tfcFacilityLogId) {
+		if (MozatesCommonUtils.isNull(tfcFacilityLogId)) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"A eliminação falhou.");
+		}
+
+		try {
+			trafficEqpService.deleteFacilityHist(tfcFacilityLogId);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Eliminado com sucesso.");
 	}
 
 	/**
@@ -358,12 +383,57 @@ public class TrafficEqpController {
 	 * @param :
 	 * @return :
 	 */
-	@Authority(type = MethodType.READ)
+	@Authority(type = MethodType.CREATE)
 	@GetMapping(value = "/facility/save.do")
 	public String facilityMngRegist(Model model) {
-		List<MozCmCd> cdList = commonCdService.getCdList("TRAFFIC_FACILITY_TYPE");
-		model.addAttribute("cdList", cdList);
+		model.addAttribute("facTyCd", commonCdService.getCdList("TRAFFIC_FACILITY_TYPE"));
+		model.addAttribute("facCateCd", commonCdService.getCdList("FACILITY_CATE_CD"));
+		model.addAttribute("facDivCd", commonCdService.getCdList("FACILITY_DIV_CD"));
+		model.addAttribute("areaCd", commonCdService.getCdList("AREA_CD"));
 		return "views/equipmentmng/facilityMngRegist";
+	}
+
+	/**
+	 * @brief : 교통시설물,감시카메라 유지보수 이력 등록
+	 * @details : 교통시설물 관리 등록 화면
+	 * @author : IK.MOON
+	 * @date : 2024.01.10
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.CREATE)
+	@PostMapping(value = "/mng/mntnSave.ajax")
+	public @ResponseBody CommonResponse<?>  eqpMaintenanceSave(Model model,
+			MozTfcEqpMntnHst mozTfcEqpMntnHst
+			) {
+		try {
+			trafficEqpService.saveEquipmentMaintenance(mozTfcEqpMntnHst);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O histórico de manutenção foi registrado");
+	}
+
+	/**
+	 * @brief : 교통시설물 유지보수 이력 등록
+	 * @details :  교통시설물 유지보수 이력 등록
+	 * @author : KY.LEE
+	 * @date : 2024.01.10
+	 * @param :
+	 * @return :
+	 */
+	@Authority(type = MethodType.CREATE)
+	@PostMapping(value = "/facility/mntnSave.ajax")
+	public @ResponseBody CommonResponse<?>  facMaintenanceSave(Model model,
+			MozTfcFacilityMntnHst mozTfcFacilityMntnHst
+			) {
+		try {
+			trafficEqpService.saveFacilityMaintenance(mozTfcFacilityMntnHst);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O histórico de manutenção foi registrado");
 	}
 	
 	/**
@@ -379,19 +449,14 @@ public class TrafficEqpController {
 	@PostMapping("/facility/save.ajax")
 	public @ResponseBody CommonResponse<?> facilityRegistAjax(MozTfcFacilityMaster tfcFacilityMaster
 			, @RequestPart(required = false) MultipartFile[] uploadFiles){
-		
 		ValidateBuilder dtoValidator = new ValidateBuilder(tfcFacilityMaster);
 
 		ValidateResult dtoValidatorResult = dtoValidator
 				.addRule("facilityTy", new ValidateChecker().setRequired())
-				.addRule("facilityNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
-				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
-				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
-				.addRule("instlYn", new ValidateChecker().setRequired())
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
-				.addRule("instlDate", new ValidateChecker().setRequired())
-				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
-				.addRule("crOprtrId", new ValidateChecker().setRequired())
+				.addRule("facilityDiv", new ValidateChecker().setRequired())
+				.addRule("facilityCate", new ValidateChecker().setRequired())
+				.addRule("facilityNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome da instalação não pode ter mais de 200 caracteres."))
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "A localização não pode ter mais de 200 caracteres."))
 				.isValid();
 		
 		if (!dtoValidatorResult.isSuccess()) {
@@ -403,7 +468,7 @@ public class TrafficEqpController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Facility has been registered.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Este serviço de tráfego foi registado.");
 	}
 	
 	/**
@@ -419,6 +484,7 @@ public class TrafficEqpController {
 	public String facilityMngDetail(Model model, @RequestParam("tfcFacilityId") String tfcFacilityId) {
 		MozTfcFacilityMaster tfcFacilityMaster = trafficEqpService.getFacilityDetail(tfcFacilityId);
 		model.addAttribute("tfcFacilityMaster", tfcFacilityMaster);
+		model.addAttribute("tfcFacilityMntnHstList", trafficEqpService.getFacilityMntnHstList(tfcFacilityId));
 		return "views/equipmentmng/facilityMngDetail";
 	}
 	
@@ -481,7 +547,6 @@ public class TrafficEqpController {
 	@PostMapping("/facility/delete.ajax")
 	@ResponseBody
 	public CommonResponse<?> facilityDeleteAjax(@RequestParam("tfcFacilityId") String tfcFacilityId) {
-
 		MozTfcFacilityMaster tfcFacilityMaster = new MozTfcFacilityMaster();
 		tfcFacilityMaster.setTfcFacilityId(tfcFacilityId);
 
@@ -501,7 +566,7 @@ public class TrafficEqpController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Facility information has been deleted.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta informação sobre o mecanismo foi suprimida.");
 	}
 	
 	/**
@@ -515,13 +580,13 @@ public class TrafficEqpController {
 	@Authority(type = MethodType.READ)
 	@GetMapping("/facility/update.do")
 	public String facilityModify(Model model, @RequestParam("tfcFacilityId") String tfcFacilityId) {
-
 		MozTfcFacilityMaster tfcFacilityMaster = trafficEqpService.getFacilityDetail(tfcFacilityId);
-		List<MozCmCd> cdList = commonCdService.getCdList("TRAFFIC_FACILITY_TYPE");
 		
-		model.addAttribute("cdList", cdList);
+		model.addAttribute("facTyCd", commonCdService.getCdList("TRAFFIC_FACILITY_TYPE"));
+		model.addAttribute("facCateCd", commonCdService.getCdList("FACILITY_CATE_CD"));
+		model.addAttribute("facDivCd", commonCdService.getCdList("FACILITY_DIV_CD"));
+		model.addAttribute("areaCd", commonCdService.getCdList("AREA_CD"));
 		model.addAttribute("tfcFacilityMaster", tfcFacilityMaster);
-		
 		return "views/equipmentmng/facilityMngModify";
 	}
 	
@@ -542,14 +607,14 @@ public class TrafficEqpController {
 
 		ValidateResult dtoValidatorResult = dtoValidator
 				.addRule("facilityTy", new ValidateChecker().setRequired())
-				.addRule("facilityNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
-				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
-				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
-				.addRule("instlYn", new ValidateChecker().setRequired())
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
-				.addRule("instlDate", new ValidateChecker().setRequired())
-				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
-				.addRule("crOprtrId", new ValidateChecker().setRequired())
+				.addRule("facilityDiv", new ValidateChecker().setRequired())
+				.addRule("facilityCate", new ValidateChecker().setRequired())
+				.addRule("lat", new ValidateChecker().setRequired())
+				.addRule("lng", new ValidateChecker().setRequired())
+				.addRule("facilityNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome da instalação não pode ter mais de 200 caracteres."))
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "A localização não pode ter mais de 200 caracteres."))
+				.addRule("oprtrId", new ValidateChecker().setRequired())
+				.addRule("areaCd", new ValidateChecker().setRequired())
 				.isValid();
 		
 		if (!dtoValidatorResult.isSuccess()) {
@@ -561,7 +626,7 @@ public class TrafficEqpController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic facility has been modified.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta instalação de tráfego foi modificada.");
 	}
 
 	/**

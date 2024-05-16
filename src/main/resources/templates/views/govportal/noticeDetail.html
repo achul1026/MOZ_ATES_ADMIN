@@ -35,7 +35,17 @@
 					</tr>
 					<tr>
 						<th th:text="#{portal.noticeDetail.type}">유형</th>
-						<td><input type="checkbox" th:checked="${brd.imprtYn == 'Y'}" disabled> <label th:text="#{portal.noticeDetail.important}">중요</label></td>
+						<td>
+							<div class="checkStatus">
+								<th:block th:if="${brd.imprtYn == 'Y'}">
+									<img src="/images/status_icon01.png" alt="개시" class="statusImg">
+								</th:block>
+								<th:block th:unless="${brd.imprtYn == 'Y'}">
+									<img src="/images/status_icon02.png" alt="노개시" class="statusImg">
+								</th:block>
+								<label th:text="#{portal.noticeDetail.important}">중요</label>
+							</div>
+						</td>
 					</tr>
 					<tr>
 						<th th:text="#{portal.noticeDetail.attachment}">첨부파일</th>
@@ -47,11 +57,17 @@
 					</tr>
 					<tr>
 						<th th:text="#{portal.noticeDetail.exposure}">노출여부</th>
-						<td><input type="checkbox" th:checked="${brd.useYn == 'Y'}" disabled> <label th:text="#{portal.noticeDetail.exposureChkbox}">노출</label></td>
-					</tr>
-					<tr>
-						<th th:text="#{portal.noticeDetail.popupYn}">팝업여부</th>
-						<td><input type="checkbox" th:checked="${brd.popupYn == 'Y'}" disabled> <label th:text="#{portal.noticeDetail.popupYnChkbox}">사용</label></td>
+						<td>
+							<div class="checkStatus">
+								<th:block th:if="${brd.useYn == 'Y'}">
+									<img src="/images/status_icon01.png" alt="개시" class="statusImg">
+								</th:block>
+								<th:block th:unless="${brd.useYn == 'Y'}">
+									<img src="/images/status_icon02.png" alt="노개시" class="statusImg">
+								</th:block>
+								<label th:text="#{portal.noticeDetail.exposureChkbox}">노출</label>
+							</div>
+						</td>
 					</tr>
 					<tr>
 						<th th:text="#{portal.notice.common.content}">내용</th>

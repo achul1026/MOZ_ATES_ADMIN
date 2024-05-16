@@ -142,10 +142,10 @@ public class SiteMngController {
 			} catch (SQLException e) {
 				// 로그 등록
 				logService.insertUserLog("SLT001", "Regist Menu", "N");
-				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "메뉴 추가 실패");
+				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 			}
     	
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "메뉴 추가 성공");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O registo do menu foi bem sucedido.");
     }
     
     /**
@@ -168,10 +168,10 @@ public class SiteMngController {
     	} catch (SQLException e) {
     		//로그 등록
     		logService.insertUserLog("SLT001", "Update Menu", "N");
-    		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "메뉴 수정 실패");
+    		return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 			}
     	
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "메뉴 수정 성공");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "A modificação do menu foi bem sucedida.");
     }
     
     /**
@@ -196,10 +196,10 @@ public class SiteMngController {
 			} catch (CommonException e) {
 				//로그 등록
 				logService.insertUserLog("SLT001", "Delete Menu", "N");
-				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "메뉴 삭제 실패");
+				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 			}
     	
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "메뉴 삭제 성공");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Eliminou com êxito o menu.");
     }
     
     
@@ -281,9 +281,9 @@ public class SiteMngController {
         } catch (CommonException e) {
         	//로그 등록
     		logService.insertUserLog("SLT002", "Regist Authority", "N");
-        	return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"권한 등록 실패");
+        	return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
         }
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"권한 등록 성공");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O registo da permissão foi bem sucedido.");
     }
     
     /**
@@ -307,9 +307,9 @@ public class SiteMngController {
 			} catch (CommonException e) {
 				//로그 등록
 				logService.insertUserLog("SLT002", "Update Authority", "N");
-				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,"권한 수정 실패");
+				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 			}
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"권한 수정 성공");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"A modificação da permissão foi bem sucedida.");
     }
     
     /**
@@ -381,9 +381,9 @@ public class SiteMngController {
 			} catch (CommonException e) {
 				// 로그 등록
 				logService.insertUserLog("SLT003", "Regist Common Code", "N");
-				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "코드 등록에 실패하였습니다.");
+				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 			}
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "코드를 등록하였습니다.");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O resgate do código foi bem sucedido.");
 		}
 	
     /**
@@ -418,9 +418,9 @@ public class SiteMngController {
 				// 로그 등록
 				logService.insertUserLog("SLT003", "Regist Common Code", "N");
 
-				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "코드 등록에 실패하였습니다.");
+				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 			}
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "코드를 등록하였습니다.");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O resgate do código foi bem sucedido.");
 		}
     
     /**
@@ -491,9 +491,9 @@ public class SiteMngController {
 		} catch (CommonException e) {
 			//로그 등록
 			logService.insertUserLog("SLT003", "Update Common Code", "N");
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "코드 수정에 실패하였습니다.");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "코드를 수정하였습니다.");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "A modificação do código foi bem sucedida.");
     }
     
     /**
@@ -526,9 +526,9 @@ public class SiteMngController {
 		} catch (CommonException e) {
 			//로그 등록
 			logService.insertUserLog("SLT003", "Delete Common Code", "N");
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "코드 삭제에 실패하였습니다.");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "코드를 삭제하였습니다.");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "A eliminação do código foi bem sucedida.");
     }
 		
 		
@@ -560,9 +560,9 @@ public class SiteMngController {
     	try {
 			codeService.subCmCdDelete(mozCmCd);
 		} catch (CommonException e) {
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "서브 코드 삭제에 실패하였습니다.");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "서브 코드를 삭제하였습니다.");
+    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Subcódigo eliminado com êxito.");
     }
     
     /**
@@ -856,11 +856,11 @@ public class SiteMngController {
 			ValidateBuilder dtoValidator = new ValidateBuilder(brd);
 
 			ValidateResult dtoValidatorResult = dtoValidator
-					.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "Title cannot be more than 200 characters."))
+					.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 					.addRule("imprtYn", new ValidateChecker().setRequired())
 					.addRule("useYn", new ValidateChecker().setRequired())
 					.addRule("popupYn", new ValidateChecker().setRequired())
-					.addRule("boardContents", new ValidateChecker().setMaxLength(200, "Contents cannot be more than 200 characters."))
+					.addRule("boardContents", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 					.isValid();
 			
 			if (!dtoValidatorResult.isSuccess()) {
@@ -874,7 +874,7 @@ public class SiteMngController {
 				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 			}
 
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "The Notice has been registered.");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O presente aviso foi registado.");
 		}
 
 		/**
@@ -908,7 +908,7 @@ public class SiteMngController {
 				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 			}
 
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "The Notice has been deleted.");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Este aviso foi suprimido.");
 		}
 
 		/**
@@ -961,11 +961,11 @@ public class SiteMngController {
 				, @RequestPart(required = false) MultipartFile[] uploadFiles) {
 			ValidateBuilder dtoValidator = new ValidateBuilder(brd);
 			ValidateResult dtoValidatorResult = dtoValidator
-					.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "Title cannot be more than 200 characters."))
+					.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 					.addRule("imprtYn", new ValidateChecker().setRequired())
 					.addRule("useYn", new ValidateChecker().setRequired())
 					.addRule("popupYn", new ValidateChecker().setRequired())
-					.addRule("boardContents", new ValidateChecker().setMaxLength(200, "Contents cannot be more than 200 characters."))
+					.addRule("boardContents", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 					.isValid();
 
 			if (!dtoValidatorResult.isSuccess()) {
@@ -978,6 +978,6 @@ public class SiteMngController {
 				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 			}
 
-			return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "The Notice has been modified.");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O presente aviso foi alterado.");
 		}
 }

@@ -28,6 +28,7 @@ import com.moz.ates.traffic.common.component.Pagination;
 import com.moz.ates.traffic.common.component.validate.ValidateBuilder;
 import com.moz.ates.traffic.common.component.validate.ValidateChecker;
 import com.moz.ates.traffic.common.component.validate.ValidateResult;
+import com.moz.ates.traffic.common.entity.api.MojApiRequest;
 import com.moz.ates.traffic.common.entity.common.ApiDriverInfoDTO;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
 import com.moz.ates.traffic.common.entity.common.EnforcementDomain;
@@ -73,7 +74,7 @@ public class TrafficEnfController {
 	 * @param : searchDriverDetail
 	 */
 	@Authority(type = MethodType.READ)
-	@PostMapping("/driver/detail.do")
+	@GetMapping("/driver/detail.do")
 	public String searchDriverDetail(Model model, @ModelAttribute ApiDriverInfoDTO apiDriverInfoDTO) {
 		if(apiDriverInfoDTO != null && MozatesCommonUtils.isNull(apiDriverInfoDTO.getDriverLicenseId())) {
 			throw new CommonException(ErrorCode.INVALID_PARAMETER);
@@ -131,14 +132,14 @@ public class TrafficEnfController {
 	}
 	
 	@Authority(type = MethodType.READ)
-	@PostMapping(value = "/vehicle/detail.do")
-	public String searchVehicleDetail(Model model, @ModelAttribute ApiDriverInfoDTO apiDriverInfoDTO) {
-		if(apiDriverInfoDTO != null && MozatesCommonUtils.isNull(apiDriverInfoDTO.getDriverLicenseId())) {
+	@GetMapping(value = "/vehicle/detail.do")
+	public String searchVehicleDetail(Model model, @ModelAttribute MojApiRequest mojApiRequest) {
+		if(mojApiRequest != null && MozatesCommonUtils.isNull(mojApiRequest.getNumerododocumento())) {
 			throw new CommonException(ErrorCode.INVALID_PARAMETER);
 		}
 		
-		model.addAttribute("driverInfo", apiDriverInfoDTO);
-		model.addAttribute("violationList", trafficEnfService.getViolationInfoList(apiDriverInfoDTO.getDriverLicenseId()));
+		model.addAttribute("driverInfo", mojApiRequest);
+		model.addAttribute("violationList", trafficEnfService.getViolationInfoListByDocNid(mojApiRequest.getNumerododocumento()));
 		return "views/enforcementmng/searchCarDetail";
 	}
 
@@ -200,13 +201,13 @@ public class TrafficEnfController {
 	 */
 	@Authority(type = MethodType.READ)
 	@GetMapping(value = "/info/save.do")
-	public String infoRegist(Model model,@ModelAttribute ApiDriverInfoDTO apiDriverInfoDTO) {
+	public String infoRegist(Model model,@ModelAttribute MojApiRequest MojApiRequest) {
 		//법률 목록
 		List<MozTfcLwInfo> trafficLawList = trafficEnfService.getTrafficLawsListByNotNullFineInfo();
 		//납부지 목록
 		List<MozPlPymntInfo> placePaymentList = trafficEnfService.getPlacePaymentList();
 		
-		model.addAttribute("apiDriverInfo",apiDriverInfoDTO);
+		model.addAttribute("apiDriverInfo",MojApiRequest);
 		model.addAttribute("trafficLawList",trafficLawList);
 		model.addAttribute("placePaymentList",placePaymentList);
 		return "views/enforcementmng/infoRegist";
@@ -243,12 +244,12 @@ public class TrafficEnfController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfMaster);
 		
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("tfcEnfTtl", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("tfcEnfTtl", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 				.addRule("tfcEnfDt", new ValidateChecker().setRequired())
-				.addRule("vhTy", new ValidateChecker().setRequired().setMaxLength(200, "Classification cannot be more than 200 characters"))
-				.addRule("vhRegNo", new ValidateChecker().setRequired().setMaxLength(200, "Vehicle Plate No cannot be more than 200 characters"))
+				.addRule("vhTy", new ValidateChecker().setRequired().setMaxLength(200, "A classificação não pode ter mais de 200 caracteres."))
+				.addRule("vhRegNo", new ValidateChecker().setRequired().setMaxLength(200, "O número da matrícula do veículo não pode ter mais de 200 caracteres."))
 				.addRule("polId", new ValidateChecker().setRequired())
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Location cannot be more than 200 characters"))
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "A localização não pode ter mais de 200 caracteres."))
 				.addRule("lat", new ValidateChecker().setRequired())
 				.addRule("lng", new ValidateChecker().setRequired())
 				.isValid();
@@ -263,7 +264,7 @@ public class TrafficEnfController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 		
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Enforcement Information has been registered.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta informação sobre o controlo do tráfego foi registada.");
 	}
 
 	/**
@@ -333,12 +334,12 @@ public class TrafficEnfController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfMaster);
 		
 		ValidateResult dtoValidatorResult = dtoValidator
-				.addRule("tfcEnfTtl", new ValidateChecker().setRequired().setMaxLength(200, "Equipment name cannot be more than 200 characters"))
+				.addRule("tfcEnfTtl", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 				.addRule("tfcEnfDt", new ValidateChecker().setRequired())
-				.addRule("vhTy", new ValidateChecker().setRequired().setMaxLength(200, "Classification cannot be more than 200 characters"))
-				.addRule("vhRegNo", new ValidateChecker().setRequired().setMaxLength(200, "Vehicle Plate No cannot be more than 200 characters"))
+				.addRule("vhTy", new ValidateChecker().setRequired().setMaxLength(200, "A classificação não pode ter mais de 200 caracteres."))
+				.addRule("vhRegNo", new ValidateChecker().setRequired().setMaxLength(200, "O número da matrícula do veículo não pode ter mais de 200 caracteres."))
 				.addRule("polId", new ValidateChecker().setRequired())
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Location cannot be more than 200 characters"))
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "A localização não pode ter mais de 200 caracteres."))
 				.addRule("lat", new ValidateChecker().setRequired())
 				.addRule("lng", new ValidateChecker().setRequired())
 				.isValid();
@@ -353,7 +354,7 @@ public class TrafficEnfController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 		
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Enforcement Information has been modified.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Estas informações sobre o controlo do tráfego foram alteradas.");
 	}
 	
 	/**
@@ -387,7 +388,7 @@ public class TrafficEnfController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Enforcement Information has been deleted");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Estas informações sobre o controlo do tráfego foram suprimidas.");
 	}
 	
 	/**
@@ -421,7 +422,7 @@ public class TrafficEnfController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Enforcement Information has been deleted");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Estas informações sobre o controlo do tráfego foram suprimidas.");
 	}
 
 	/**
@@ -538,6 +539,6 @@ public class TrafficEnfController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 		
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Traffic Enforcement Information has been registered.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta informação sobre o controlo do tráfego foi registada.");
 	}
 }

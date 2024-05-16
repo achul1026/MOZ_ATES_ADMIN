@@ -8,7 +8,7 @@
 <div id="map-wrap">
 	<div id="map" class="listMap"></div>
 	<div id="map-search-wrap">
-		<div id="map-search-title">Equipment List</div>
+		<div id="map-search-title" th:text="#{equipment.mngList.map.title}">Camera List</div>
 		<div id="map-search">
 			<input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" 
 				th:placeholder="#{equipment.mngList.placeholder}" th:value="${tfcEnfEqpMaster.searchTxt}">
@@ -22,9 +22,9 @@
 				</colgroup>
 				<thead>
 					<tr>
-						<th>Equipment Type</th>
-						<th>Equipment Name</th>
-						<th>Installation location</th>
+						<th th:text="#{equipment.mngList.title.type}">Equipment Type</th>
+						<th th:text="#{equipment.mngList.title.name}">Equipment Name</th>
+						<th th:text="#{equipment.mngList.title.location}">Installation location</th>
 					</tr>
 				</thead>
 				<tbody>

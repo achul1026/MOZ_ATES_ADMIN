@@ -1,32 +1,32 @@
 class DriverSelectAPI {
+	constructor() {
+		
+    }
+	
     async fetchData(searchType, searchValue, callback) {
         let apiUrl = '';
         let data = {};
-        let apiToken = "laksjdnlkashourhqwo";
 
         switch (searchType) {
             case 'dvrLcenId':
                 apiUrl = '/common/api/searchDriver';
                 data = { 
 					"searchType" : searchType,
-					"searchValue" : searchValue,
-					"apiToken" : apiToken
+					"searchValue" : searchValue
 					};
                 break;
             case 'vehicleNo':
-                apiUrl = '/common/api/searchDriver';
+                apiUrl = '/api/searchVehicleNo';
                 data = { 
 					"searchType" : searchType,
-					"searchValue" : searchValue,
-					"apiToken" : apiToken
+					"searchValue" : searchValue
 					};
                 break;
             case 'driverNm':
                 apiUrl = '/common/api/searchDriver';
                 data = { 
 					"searchType" : searchType,
-					"searchValue" : searchValue,
-					"apiToken" : apiToken
+					"searchValue" : searchValue
 					};
                 break;
             default:

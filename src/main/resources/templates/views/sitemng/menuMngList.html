@@ -38,7 +38,7 @@
 						<td th:text="${mozMenuItem.subMenuTotalCnt}">5개</td>
 						<td th:text="${mozMenuItem.menuUrlPattrn}">/dashboard/**</td>
 						<td th:text="${mozMenuItem.menuUrl}">/dashboard/main</td>
-						<td>
+						<td class="flex justify-center">
 							<span class="tableStausOn" th:if="${mozMenuItem.useYn} == 'Y'" th:text="#{sitemng.common.menu.exposed}">노출</span>
 							<span class="tableStausOff" th:unless="${mozMenuItem.useYn} == 'Y'" th:text="#{sitemng.common.menu.nonExposed}">노출</span>
 						</td>

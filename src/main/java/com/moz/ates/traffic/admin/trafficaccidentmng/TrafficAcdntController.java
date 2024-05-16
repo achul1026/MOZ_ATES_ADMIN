@@ -26,6 +26,7 @@ import com.moz.ates.traffic.common.component.validate.ValidateBuilder;
 import com.moz.ates.traffic.common.component.validate.ValidateChecker;
 import com.moz.ates.traffic.common.component.validate.ValidateResult;
 import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntMaster;
+import com.moz.ates.traffic.common.entity.api.MojApiRequest;
 import com.moz.ates.traffic.common.entity.common.AccidentDomain;
 import com.moz.ates.traffic.common.entity.common.ApiDriverInfoDTO;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
@@ -69,7 +70,7 @@ public class TrafficAcdntController {
 	 * @param : searchDriverDetail
 	 */
 	@Authority(type = MethodType.READ)
-	@PostMapping("/driver/detail.do")
+	@GetMapping("/driver/detail.do")
 	public String searchDriverDetail(Model model, @ModelAttribute ApiDriverInfoDTO apiDriverInfoDTO) {
 		if(apiDriverInfoDTO != null && MozatesCommonUtils.isNull(apiDriverInfoDTO.getDriverLicenseId())) {
 			throw new CommonException(ErrorCode.INVALID_PARAMETER);
@@ -102,14 +103,14 @@ public class TrafficAcdntController {
 	 * @param : searchDriverDetail
 	 */
 	@Authority(type = MethodType.READ)
-	@PostMapping("/vehicle/detail.do")
-	public String searchCarDetail(Model model, @ModelAttribute ApiDriverInfoDTO apiDriverInfoDTO) {
-		if(apiDriverInfoDTO != null && MozatesCommonUtils.isNull(apiDriverInfoDTO.getDriverLicenseId())) {
+	@GetMapping("/vehicle/detail.do")
+	public String searchCarDetail(Model model, @ModelAttribute MojApiRequest mojApiRequest) {
+		if(mojApiRequest != null && MozatesCommonUtils.isNull(mojApiRequest.getNumerododocumento())) {
 			throw new CommonException(ErrorCode.INVALID_PARAMETER);
 		}
 		
-		model.addAttribute("driverInfo", apiDriverInfoDTO);
-		model.addAttribute("acdntTrgtList", trafficAcdntService.getAcdntTrgtList(apiDriverInfoDTO.getDriverLicenseId()));
+		model.addAttribute("driverInfo", mojApiRequest);
+		model.addAttribute("acdntTrgtList", trafficAcdntService.getAcdntTrgtList(mojApiRequest.getNumerododocumento()));
 		return "views/accidentmng/searchCarDetail";
 	}
 
@@ -146,13 +147,13 @@ public class TrafficAcdntController {
 	 */
 	@Authority(type = MethodType.READ)
 	@GetMapping("/mng/save.do")
-	public String acdntSave(Model model,@ModelAttribute ApiDriverInfoDTO apiDriverInfoDTO) {
+	public String acdntSave(Model model, @ModelAttribute MojApiRequest MojApiRequest) {
 		List<MozCmCd> acdntCdList = commonCdService.getCdList("ACCIDENT_TYPE");
 		model.addAttribute("acdntCdList", acdntCdList);
 
 		List<MozCmCd> dmgCdList = commonCdService.getCdList("PASSENGER_DAMAGE_CD");
 		model.addAttribute("dmgCdList", dmgCdList);
-		model.addAttribute("apiDriverInfo",apiDriverInfoDTO);
+		model.addAttribute("apiDriverInfo",MojApiRequest);
 		model.addAttribute("lng", "32.545187854883096");
 		model.addAttribute("lat", "-25.928567787685097");
 		return "views/accidentmng/acdntMngRegist";
@@ -176,10 +177,10 @@ public class TrafficAcdntController {
 		ValidateResult dtoValidatorResult = dtoValidator
 				.addRule("acdntDt", new ValidateChecker().setRequired())
 				.addRule("acdntTyCd", new ValidateChecker().setRequired())
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Location cannot be more than 200 characters"))
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "A localização não pode ter mais de 200 caracteres."))
 				.addRule("polId", new ValidateChecker().setRequired())
 				.addRule("acdntChildYn", new ValidateChecker().setRequired())
-				.addRule("acdntTyDtls", new ValidateChecker().setRequired().setMaxLength(200, "Details cannot be more than 200 characters"))
+				.addRule("acdntTyDtls", new ValidateChecker().setRequired().setMaxLength(200, "Os pormenores não podem ter mais de 200 caracteres."))
 				.isValid();
 		
 		if (!dtoValidatorResult.isSuccess()) {
@@ -191,7 +192,7 @@ public class TrafficAcdntController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Accident Information has been registered.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Esta informação sobre o acidente foi registada.");
 	}
 
 	/**
@@ -251,10 +252,10 @@ public class TrafficAcdntController {
 		ValidateResult dtoValidatorResult = dtoValidator
 				.addRule("acdntDt", new ValidateChecker().setRequired())
 				.addRule("acdntTyCd", new ValidateChecker().setRequired())
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "Location cannot be more than 200 characters"))
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "A localização não pode ter mais de 200 caracteres."))
 				.addRule("polId", new ValidateChecker().setRequired())
 				.addRule("acdntChildYn", new ValidateChecker().setRequired())
-				.addRule("acdntTyDtls", new ValidateChecker().setRequired().setMaxLength(200, "Details cannot be more than 200 characters"))
+				.addRule("acdntTyDtls", new ValidateChecker().setRequired().setMaxLength(200, "Os pormenores não podem ter mais de 200 caracteres."))
 				.isValid();
 		
 		if (!dtoValidatorResult.isSuccess()) {
@@ -266,7 +267,7 @@ public class TrafficAcdntController {
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "This Accident Information has been modified.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Estas informações sobre o acidente foram alteradas.");
 
 	}
 }

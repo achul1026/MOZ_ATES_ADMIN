@@ -26,12 +26,14 @@ import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpMaster;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcEqpMntnHst;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityFileInfo;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityMaster;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityMntnHst;
 import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfEqpFileInfoRepository;
 import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfEqpLogRepository;
 import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfEqpMasterRepository;
 import com.moz.ates.traffic.common.repository.equipment.MozTfcEqpMntnHstRepository;
 import com.moz.ates.traffic.common.repository.equipment.MozTfcFacilityFileInfoRepository;
 import com.moz.ates.traffic.common.repository.equipment.MozTfcFacilityMasterRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozTfcFacilityMntnHstRepository;
 import com.moz.ates.traffic.common.repository.monitoring.MonitoringMapRepository;
 import com.moz.ates.traffic.common.util.MozatesCommonUtils;
 
@@ -59,6 +61,9 @@ public class TrafficEqpServiceImpl implements TrafficEqpService {
 	@Autowired
 	MozTfcEqpMntnHstRepository mozTfcEqpMntnHstRepository;
     
+	@Autowired
+	MozTfcFacilityMntnHstRepository mozTfcFacilityMntnHstRepository;
+	
     @Autowired
     FileUploadComponent fileUploadComponent;
     
@@ -315,12 +320,11 @@ public class TrafficEqpServiceImpl implements TrafficEqpService {
 	@Transactional
 	public void registTfcFacility(MozTfcFacilityMaster tfcFacilityMaster, MultipartFile[] uploadFiles){
 		String tfcFacilityId = MozatesCommonUtils.getUuid();
+		if(MozatesCommonUtils.isNull(tfcFacilityMaster.getOprtrId())) {
+			tfcFacilityMaster.setOprtrId(LoginOprtrUtils.getOprtrId());
+		}
 		tfcFacilityMaster.setTfcFacilityId(tfcFacilityId);
-    	
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-    	if(!MozatesCommonUtils.isNull(tfcFacilityMaster.getInstlDate())) {
-    		tfcFacilityMaster.setInstlDateString(formatter.format(tfcFacilityMaster.getInstlDate()));  		
-    	}
+		tfcFacilityMaster.setCrtr(LoginOprtrUtils.getOprtrId());
 		mozTfcFacilityMasterRepository.insertTfcFacilityMaster(tfcFacilityMaster);
 
 		if(uploadFiles != null && uploadFiles.length >= 1) {
@@ -354,6 +358,7 @@ public class TrafficEqpServiceImpl implements TrafficEqpService {
 	@Override
 	@Transactional
 	public void deleteTfcFacilityMaster(String tfcFacilityId) {
+		mozTfcFacilityMntnHstRepository.deleteMozTfcFacilityMntnHstByTfcFacilityId(tfcFacilityId);
 		tfcFacilityFileInfoRepository.deleteMozTfcFacilityFileInfoByTfcFacilityId(tfcFacilityId);
 		mozTfcFacilityMasterRepository.deleteTfcFacilityMasterByTfcFacilityId(tfcFacilityId);
 	}
@@ -395,25 +400,7 @@ public class TrafficEqpServiceImpl implements TrafficEqpService {
 				}
 			}
 		}
-		SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
-    	if(!MozatesCommonUtils.isNull(tfcFacilityMaster.getInstlDate())) {
-    		tfcFacilityMaster.setInstlDateString(formatter.format(tfcFacilityMaster.getInstlDate()));  		
-    	}
-    	
 		mozTfcFacilityMasterRepository.updateMozTfcFacilityMaster(tfcFacilityMaster);
-	}
-
-	/**
-     * @brief : 교통시설물 이미지 삭제
-     * @details : 교통시설물 이미지 삭제
-     * @author : KC.KIM
-     * @date : 2024.03.04
-     * @param : tfcFacilityMaster
-     * @return : 
-     */
-	@Override
-	public void updateFacilityImage(MozTfcFacilityMaster tfcFacilityMaster) {
-		mozTfcFacilityMasterRepository.deleteFacilityImage(tfcFacilityMaster);
 	}
 
 	@Override
@@ -488,6 +475,60 @@ public class TrafficEqpServiceImpl implements TrafficEqpService {
 	@Override
 	public void deleteEqpHist(String mntnHstId) {
 		mozTfcEqpMntnHstRepository.deleteMozTfcEqpMntnHstByMntnHstId(mntnHstId);
+	}
+
+	/**
+     * @brief : 교통시설물 유지보수 이력 조회
+     * @details : getFacilityMntnHstList
+     * @author : KY.LEE
+     * @date : 2024.04.24
+     * @param : tfcFacilityId
+     */
+	@Override
+	public List<MozTfcFacilityMntnHst> getFacilityMntnHstList(String tfcFacilityId) {
+		return mozTfcFacilityMntnHstRepository.findAllByTfcFacilityId(tfcFacilityId);
+	}
+	
+	/**
+	 * @brief : 교통시설물 유지보수 이력 등록
+	 * @details : 교통시설물 유지보수 이력 등록
+	 * @author : KY.LEE
+	 * @date : 2024.04.24
+	 * @param : saveMaintenance
+	 */
+	@Override
+	public void saveEquipmentMaintenance(MozTfcEqpMntnHst mozTfcEqpMntnHst) {
+		mozTfcEqpMntnHst.setMntnHstId(MozatesCommonUtils.getUuid());
+		mozTfcEqpMntnHst.setOprtrId(LoginOprtrUtils.getOprtrId());
+		mozTfcEqpMntnHst.setCrtr(LoginOprtrUtils.getOprtrId());
+		mozTfcEqpMntnHstRepository.saveTfcEqpMntnHst(mozTfcEqpMntnHst);
+	}
+
+	/**
+     * @brief : 교통시설물 유지보수 이력 등록
+     * @details : 교통시설물 유지보수 이력 등록
+     * @author : KY.LEE
+     * @date : 2024.04.24
+     * @param : saveFacilityMaintenance
+     */
+	@Override
+	public void saveFacilityMaintenance(MozTfcFacilityMntnHst mozTfcFacilityMntnHst) {
+		mozTfcFacilityMntnHst.setTfcFacilityLogId(MozatesCommonUtils.getUuid());
+		mozTfcFacilityMntnHst.setOprtrId(LoginOprtrUtils.getOprtrId());
+		mozTfcFacilityMntnHst.setCrtr(LoginOprtrUtils.getOprtrId());
+		mozTfcFacilityMntnHstRepository.saveMozTfcFacilityMntnHst(mozTfcFacilityMntnHst);
+	}
+	 
+	/**
+    * @brief : 교통시설물 유지보수 삭제
+    * @details : 교통시설물 유지보수 삭제
+    * @author : KY.LEE
+    * @date : 2024.04.24
+    * @param : deleteFacilityHist
+    */
+	@Override
+	public void deleteFacilityHist(String tfcFacilityLogId) {
+		mozTfcFacilityMntnHstRepository.deleteMozTfcFacilityMntnHstByTfcFacilityLogId(tfcFacilityLogId);
 	}
 }
 

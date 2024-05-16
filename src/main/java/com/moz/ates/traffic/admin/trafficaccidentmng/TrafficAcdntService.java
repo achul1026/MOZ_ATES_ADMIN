@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntChgHst;
 import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntMaster;
 import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntTrgtInfo;
 
@@ -79,4 +78,13 @@ public interface TrafficAcdntService {
 	 * @method getAcdntTrgtList
 	 */
 	List<MozTfcAcdntTrgtInfo> getAcdntTrgtList(String dvrLcenId);
+
+	/**
+	 * @brief 사고타겟 이력 조회
+	 * @details : 사고타겟 이력 조회
+	 * @author KY.LEE
+	 * @date 2024. 4. 11.
+	 * @method getAcdntTrgtListByDocNid
+	 */
+	List<MozTfcAcdntTrgtInfo> getAcdntTrgtListByDocNid(String docNid);
 }

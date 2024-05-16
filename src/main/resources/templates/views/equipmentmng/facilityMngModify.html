@@ -12,7 +12,6 @@
 
 			<form id="frmFacilityModify" enctype="multipart/form-data">
 				<input type="hidden" name="tfcFacilityId" th:value="${tfcFacilityMaster.tfcFacilityId}">
-				
 				<table class="detail-table">
 					<colgroup>
 						<col width="15%">
@@ -22,67 +21,106 @@
 					</colgroup>
 					<tbody>
 						<tr>
-							<th th:text="#{equipment.facilityModify.trafficFacilityType}">단속장비 유형</th>
+							<th th:text="#{equipment.facilityModify.trafficFacilityName}">단속장비 이름</th>
 							<td>
-								<select id="eqpTy" class="filter-select filter95" name="facilityTy">
-									<th:block th:each="cdItem : ${cdList}">
-										<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}" th:selected="${tfcFacilityMaster.facilityTy} == ${cdItem.cdId}"></option>
+								<input type="text" id="facilityNm" class="main-input" name="facilityNm" th:placeholder="#{equipment.facilityModify.placeholder.trafficFacilityName}" th:value="${tfcFacilityMaster.facilityNm}">
+							</td>
+							<th th:text="#{equipment.facilityModify.trafficFacilityType}">장비종류</th>
+							<td>
+								<select id="facilityTy" class="filter-select filter95 data-validate" name="facilityTy" th:data-valid-name="#{equipment.facilityModify.trafficFacilityType}" data-valid-required>
+									<th:block th:each="item : ${facTyCd}">
+										<option th:value="${item.cdId}" th:text="${item.cdNm}" th:selected="${tfcFacilityMaster.facilityTy} == ${item.cdNm}"></option>
 									</th:block>
 								</select>
 							</td>
-							<th th:text="#{equipment.facilityModify.trafficFacilityName}">단속장비 이름</th>
-							<td><input type="text" class="main-input" name="facilityNm" placeholder="Please Enter Traffic Facility Name" th:value="${tfcFacilityMaster.facilityNm}"></td>
 						</tr>
 						<tr>
-							<th th:text="#{equipment.facilityModify.modelNm}">모델명</th>
-							<td><input type="text" id="txtEqpTy" class="main-input" name="modelNm" placeholder="Please Enter Model Name" th:value="${tfcFacilityMaster.modelNm}"></td>
-							<th th:text="#{equipment.facilityModify.manufacturer}">제조업체</th>
-							<td><input type="text" id="txtMnfctr" class="main-input" name="mnfctr" placeholder="Please Enter Manufacturer" th:value="${tfcFacilityMaster.mnfctr}"></td>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.facilityModify.trafficFacilityDivision}">시설물 구분</span>
+							</th>
+							<!-- 여기서부터 /block까지 이미지 생성. -->
+							<td>
+								<select id="facilityDiv" name="facilityDiv" class="filter-select filter95 data-validate" th:data-valid-name="#{equipment.facilityModify.trafficFacilityDivision}" data-valid-required>
+									<th:block th:each="item : ${facDivCd}">
+										<option th:value="${item.cdId}" th:text="${item.cdNm}" th:selected="${tfcFacilityMaster.facilityDiv} == ${item.cdNm}"></option>
+									</th:block>
+								</select>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.facilityModify.trafficFacilityCategory}">시설물 카테고리</span>
+							</th>
+							<td>
+								<select id="facilityCate" name="facilityCate" class="filter-select filter95 data-validate" th:data-valid-name="#{equipment.facilityModify.trafficFacilityCategory}" data-valid-required>
+									<th:block th:each="item : ${facCateCd}">
+										<option th:value="${item.cdId}" th:text="${item.cdNm}" th:selected="${tfcFacilityMaster.facilityCate} == ${item.cdNm}"></option>
+									</th:block>
+								</select>
+							</td>
 						</tr>
 						<tr>
-							<th th:text="#{equipment.facilityModify.installationStatus}">설치 여부</th>
-							<td colspan="3">
+							<th>
+								<span class="requiredMark" th:text="#{equipment.facilityModify.useYn}">사용 여부</span>
+							</th>
+							<td>
 								<label for="useY" class="radioBox">
-									<input type="radio" id="useY" name="instlYn" value="Y"
-									th:checked="${tfcFacilityMaster.instlYn} == 'Y'">
-									<span class="radioOn"></span>
-									Installed
+									<input type="radio" id="useY" name="useYn" value="Y" th:checked="${tfcFacilityMaster.useYn} == 'Y'">
+									<span class="radioOn">
+									</span>
+									<span th:text="#{equipment.facilityModify.useY}">
+									</span>
 								</label>
 								<label for="useN" class="radioBox">
-									<input type="radio" id="useN" name="instlYn" value="N"
-									th:checked="${tfcFacilityMaster.instlYn} == 'N'">
-									<span class="radioOn"></span>
-									Not installed
+									<input type="radio" id="useN" name="useYn" value="N" th:checked="${tfcFacilityMaster.useYn} == 'N'">
+									<span class="radioOn">
+									</span>
+									<span th:text="#{equipment.facilityModify.useN}" >
+									</span>
 								</label>
+							</td>
+							<th>
+								<span class="requiredMark" th:text="#{equipment.facilityModify.area}">구역</span>
+							</th>
+							<td>
+								<select id="areaCd" name="areaCd" class="filter-select filter95 data-validate" th:data-valid-name="#{equipment.facilityModify.area}" data-valid-required>
+									<th:block th:each="item : ${areaCd}">
+										<option th:value="${item.cdId}" th:text="${item.cdNm}" th:selected="${tfcFacilityMaster.areaCd} == ${item.cdNm}"></option>
+									</th:block>
+								</select>
 							</td>
 						</tr>
 						<tr>
 							<th th:text="#{equipment.facilityModify.installationLocation}">설치 위치</th>
 							<td colspan="3" class="modal-find-line">
 								<input type="text" class="main-input" name="roadAddr" placeholder="Please Enter Installation Location" th:value="${tfcFacilityMaster.roadAddr}">
-								<i class="search-icon mapSearch"></i>
 								<br><br>
 								<div id="map" class="detailMap"></div>
 							</td>							
 						</tr>
 						<tr>
-							<th th:text="#{equipment.facilityModify.installationDate}">설치일자</th>
+							<th>
+								<span th:text="#{equipment.facilityModify.lat}">위도</span>
+							</th>
 							<td>
-								<input type="date" class="input-date" name="instlDate" th:value="${#dates.format(tfcFacilityMaster.instlDate, 'yyyy-MM-dd')}">
-							</td>
-							<th th:text="#{equipment.facilityModify.installer}">설치자</th>
-							<td><input type="text" class="main-input" name="instler" placeholder="Please Enter Installer" th:value="${tfcFacilityMaster.instler}"></td>
+								<input type="text" class="main-input data-validate" id="lat" name="lat" th:placeholder="#{equipment.facilityModify.placeholder.lat}"
+								th:data-valid-name="#{equipment.facilityModify.lat}" th:value="${tfcFacilityMaster.lat}">
+							</td>					
+							<th>
+								<span th:text="#{equipment.facilityModify.lng}">경도</span>
+							</th>
+							<td>
+								<input type="text" class="main-input data-validate" id="lng" name="lng" th:placeholder="#{equipment.facilityModify.placeholder.lng}"
+								th:data-valid-name="#{equipment.facilityModify.lng}" th:value="${tfcFacilityMaster.lng}">
+							</td>					
 						</tr>
 						<tr>
 							<th th:text="#{equipment.facilityModify.personInCharge}">담당자</th>
 							<td class="modal-find-line">
-								<input type="text" class="main-input" placeholder="Please Enter Person in Charge" id="crOprtrNm"  th:value="${tfcFacilityMaster.webOprtr.oprtrNm}">
-								<input type="hidden" name="crOprtrId" id="crOprtrId" th:value="${tfcFacilityMaster.crOprtrId}">
+								<input type="text" class="main-input" placeholder="Please Enter Person in Charge" id="oprtrNm" th:value="${tfcFacilityMaster.webOprtr.oprtrNm}">
+								<input type="hidden" name="oprtrId" id="oprtrId" th:value="${tfcFacilityMaster.oprtrId}">
 								<i class="search-icon" onclick="changeDeptListModal('show')"></i>
 							</td>
 							<th th:text="#{equipment.facilityModify.department}">담당자부서</th>
-							<td><input type="text" class="main-input" id="crOprtrDept" name="crOprtrDept"
-								placeholder="Please Enter Department" th:value="${tfcFacilityMaster.crOprtrDept}"></td>
+							<td><input type="text" class="main-input" id="oprtrDeptNm" th:value="${tfcFacilityMaster.webOprtr.oprtrDeptNm}" readonly></td>
 						</tr>
 						<tr id="imageTr">
 							<th th:text="#{equipment.facilityModify.image}">현재 등록 사진</th>
@@ -127,10 +165,16 @@
 							</td>
 						</tr>
 						<tr>
+							<th th:text="#{equipment.facilityModify.trafficFacilityStatus}">교통시설물 상태</th>
+							<td colspan="3">
+							<input type="text" class="main-input data-validate" id="facilityStts" name="facilityStts" th:placeholder="#{equipment.facilityModify.placeholder.trafficFacilityStatus}"
+							th:data-valid-name="#{equipment.facilityModify.trafficFacilityStatus}" th:value="${tfcFacilityMaster.facilityStts}">
+							</td>
+						</tr>
+						<tr>
 							<th th:text="#{equipment.facilityModify.details}">상세정보</th>
 							<td colspan="3"><textarea class="detail-table-textarea" name="facilityDesc" placeholder="Please Enter Details" th:text="${tfcFacilityMaster.facilityDesc}"></textarea></td>
 						</tr>
-
 					</tbody>
 				</table>
 			</form>
@@ -152,12 +196,10 @@
 
 <script th:inline="javascript">
 	
-		// 모달 수정 여부 확인필요?
 	const modalContent = document.getElementById("modal");
 	
-		// modal control
+	// modal control
 	function changeDeptListModal(type) {
-
 		if (type == "show") {
 			$.ajax({
 				url: '/common/modal/oprtr/list.ajax',
@@ -172,9 +214,7 @@
 			modalContent.innerHTML = '';
 			modalContent.style.display = 'none';
 		}
-
 	}
-	
 
 	$("#btnimageModify").click(function () {
 		if ($(this).attr('data-flag') == 'N') {
@@ -191,7 +231,7 @@
 	})
 
 	$("#btnimageDelete").click(function () {
-		if (confirm("Do you want to delete?") == true) {
+		if (confirm(/*[[#{common.message.confirmDelete}]]*/) == true) {
 			$("#imageTr").hide();
 
 			var form = $("#frmFacilityModify")[0];
@@ -315,9 +355,13 @@
 	}
 	
 	function selectDept(oprtrId, oprtrNm, oprtrDeptNm){
-		$("#crOprtrNm").val(oprtrNm);
-		$("#crOprtrId").val(oprtrId);
-		$("#crOprtrDept").val(oprtrDeptNm);
+		$("#oprtrNm").val(oprtrNm);
+		$("#oprtrId").val(oprtrId);
+		if(oprtrDeptNm == null || oprtrDeptNm == ''){
+			$("#oprtrDeptNm").val('Nenhum departamento');			
+		} else {
+			$("#oprtrDeptNm").val(oprtrDeptNm);
+		}
 		changeDeptListModal('hide');
 	}
 	

@@ -22,17 +22,15 @@ public class LoginSuccessHandler extends SavedRequestAwareAuthenticationSuccessH
 	@Override
 	public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
 			Authentication authentication) throws ServletException, IOException {
-
 		// 성공시 실패한 세션 정리
 		authenticationAttributes(request);
 
 		// 로그인 성공시 보내는 주소
 		String redirectUrl = "/dashboard";
 		if (LoginOprtrUtils.getTmpPwIssuedYn().equals("Y")) {
-			// TODO :: my page 이동 필요
-			System.out.println("MOVE TO MYPAGE");
+			request.getSession().setAttribute("isPwChk", true);
+			redirectUrl = "/myinfo/changePw.do";
 		}
-		
 		getRedirectStrategy().sendRedirect(request, response, redirectUrl);
 
 	}

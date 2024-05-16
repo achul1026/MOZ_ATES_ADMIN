@@ -367,6 +367,9 @@ button {
 .modalPayMentList {
 	margin-bottom: 18px;
 }
+.modalMntnList {
+	margin-bottom: 18px;
+}
 .modalBtn {
 	margin-top: 16px;
 	padding: 16px;
@@ -524,6 +527,7 @@ button {
 .scaling-dots {
   display: grid;
   height: 10px;
+  justify-content: center;
   grid-gap: 15px;
   grid-template-columns: repeat(3, 10px); }
   .scaling-dots div {

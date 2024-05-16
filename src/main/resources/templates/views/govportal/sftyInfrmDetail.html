@@ -39,7 +39,17 @@
 					</tr>
 					<tr>
 						<th th:text="#{portal.infrmDetail.exposure}">노출여부</th>
-						<td><input type="checkbox" th:checked="${sftyInfrm.expYn == 'Y'}" disabled> <label th:text="#{portal.common.exposure}">노출</label></td>
+						<td>
+							<div class="checkStatus">
+								<th:block th:if="${sftyInfrm.expYn == 'Y'}">
+									<img src="/images/status_icon01.png" alt="개시" class="statusImg">
+								</th:block>
+								<th:block th:unless="${sftyInfrm.expYn == 'Y'}">
+									<img src="/images/status_icon02.png" alt="노개시" class="statusImg">
+								</th:block>
+								<label th:text="#{portal.common.exposure}">노출</label>
+							</div>
+						</td>
 					</tr>
 					<tr>
 						<th th:text="#{portal.infrmDetail.content}">내용</th>

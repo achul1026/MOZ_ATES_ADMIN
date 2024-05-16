@@ -40,3 +40,6 @@
 .textCenter {
 	text-align: center !important;
 }
+.justify-center {
+	justify-content: center;
+}

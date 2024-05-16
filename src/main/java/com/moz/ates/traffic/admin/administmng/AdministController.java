@@ -138,7 +138,7 @@ public class AdministController {
     @PostMapping("/mng/save.ajax")
     public @ResponseBody CommonResponse<?> administMngSave(MozCourtDcsn mozCourtDcsn){
 		administService.saveCourtDcsn(mozCourtDcsn);
-        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"법정 판결 결과 정보가 저장되었습니다.");
+        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"As informações foram guardadas na sequência de uma decisão judicial.");
     }
 	/**
 	 * @Method Name : administMngUpdatePage
@@ -173,7 +173,7 @@ public class AdministController {
     @PostMapping("/mng/update.ajax")
     public @ResponseBody CommonResponse<?> administMngUpdate(MozCourtDcsn mozCourtDcsn){
 		administService.updateCourtDcsn(mozCourtDcsn);
-        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"법정 판결 결과 정보가 수정되었습니다.");
+        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"As informações foram corrigidas na sequência de uma decisão judicial.");
     }
 	
 	/**
@@ -231,9 +231,9 @@ public class AdministController {
 		try {
 			administService.lawSave(tfcLwInfo);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "법률 등록에 실패하였습니다.");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "O registo legal falhou.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "법률을 등록하였습니다.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Registou uma lei.");
 	}
 
 	/**
@@ -251,9 +251,9 @@ public class AdministController {
 		try {
 			administService.lawRevise(tfcLwInfo);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "법률 추가개정에 실패했습니다.");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "A adição de uma lei falhou.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "법률 추가개정에 성공했습니다.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Acrescentou com êxito uma nova lei.");
 	}
 
 	/**
@@ -271,9 +271,9 @@ public class AdministController {
 		try {
 			administService.lawAddFine(tfcLwInfo);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "법률 추가개정에 실패했습니다.");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "A adição de uma lei falhou.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "법률 추가개정에 성공했습니다.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Acrescentou com êxito uma nova lei.");
 	}
 
 	/**
@@ -290,9 +290,9 @@ public class AdministController {
 		try {
 			administService.lawAbolition(tfcLawId);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "법률 폐지중 오류가 발생 했습니다.");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Houve um erro ao revogar a lei.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "법률이 폐지 되었습니다.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "A lei foi revogada.");
 	}
 
 	/**
@@ -309,9 +309,9 @@ public class AdministController {
 		try {
 			administService.lawRecovery(tfcLawId);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "법률 복구중 오류가 발생 했습니다.");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Ocorreu um erro durante a recuperação jurídica.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "법률이 복구 되었습니다.");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "A lei foi restaurada.");
 	}
 
 	/**
@@ -328,9 +328,9 @@ public class AdministController {
 		try {
 			administService.fineDelete(tfcLawFineId);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "범칙금 삭제 실패");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Falha na eliminação de uma penalização.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "범칙금 삭제 성공");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Penalidade eliminada com sucesso.");
 	}
 
 	/**
@@ -389,9 +389,9 @@ public class AdministController {
 		try {
 			administService.updateLaw(tfcLwInfo);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "법률 수정 실패");
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Não conseguiu alterar a lei.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "법률 수정 성공");
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "A alteração da lei foi bem sucedida.");
 	}
 
 	/**

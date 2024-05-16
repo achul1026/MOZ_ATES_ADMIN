@@ -88,13 +88,6 @@
 						</td>
 					</tr>
 					<tr>
-						<th th:text="#{sitemng.noticeModify.popupYn}">팝업여부</th>
-						<td>
-							<input type="hidden" name="popupYn" id="popupYn">
-							<input type="checkbox" id="popupYn-chkbox" th:checked="${brd.popupYn == 'Y'}"> <label th:text="#{sitemng.noticeModify.popupYnChkbox}">사용</label>
-						</td>
-					</tr>
-					<tr>
 						<th th:text="#{sitemng.notice.common.content}">내용</th>
 						<td><textarea class="form-control detail-table-textarea" id="txtBoardContents" name="boardContents"
 								rows="15" th:text="${brd.boardContents}"></textarea></td>

@@ -3,13 +3,9 @@
 	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-
 	<div id="container-fluid">
-
-		<!-- Page Heading -->
 		<h1 id="detail-content-title" th:text="#{equipment.facilityDetail.title}">교통시설물 상세</h1>
-
-		<div class="">
+		<div>
 			<table class="sub-table detail-table">
 				<colgroup>
 					<col width="15%">
@@ -18,27 +14,37 @@
 					<col width="35%">
 				</colgroup>
 				<tbody>
-					
 					<tr>
-						<th th:text="#{equipment.facilityDetail.trafficFacilityType}">장비종류</th>
-						<td th:text="${tfcFacilityMaster.cmCd.cdNm}"></td>
 						<th th:text="#{equipment.facilityDetail.trafficFacilityName}">단속장비 이름</th>
 						<td th:text="${tfcFacilityMaster.facilityNm}"></td>
+						<th th:text="#{equipment.facilityDetail.trafficFacilityType}">장비종류</th>
+						<td th:text="${tfcFacilityMaster.facilityTy}"></td>
 					</tr>
 					<tr>
-						<th th:text="#{equipment.facilityDetail.modelNm}">모델명</th>
-						<td th:text="${tfcFacilityMaster.modelNm}"></td>
-						<th th:text="#{equipment.facilityDetail.manufacturer}">제조업체</th>
-						<td th:text="${tfcFacilityMaster.mnfctr}"></td>
+						<th th:text="#{equipment.facilityDetail.trafficFacilityDivision}">단속장비 구분</th>
+						<td th:text="${tfcFacilityMaster.facilityDiv}"></td>
+						<th th:text="#{equipment.facilityDetail.trafficFacilityCategory}">카테고리/t<h>
+						<td th:text="${tfcFacilityMaster.facilityCate}"></td>
 					</tr>
 					<tr>
-						<th th:text="#{equipment.facilityDetail.installationStatus}">설치여부</th>
-						<td colspan="3" class="tdFlex">
-							<div class="statusComplete">
-								<img src="/images/status_icon01.png" alt="설치" class="statusImg">
-								<span th:text="${tfcFacilityMaster.instlYn}=='Y' ? 'Installed':'Not installed'" class="statusText"></span>
+						<th th:text="#{equipment.facilityDetail.trafficFacilityStatus}">상태</th>
+						<td th:text="${tfcFacilityMaster.facilityStts}"></td>
+						<th th:text="#{equipment.facilityDetail.regDate}">등록일/t<h>
+						<td th:text="${#dates.format(tfcFacilityMaster.crDt, 'dd.MM.yyyy')}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{equipment.facilityDetail.useYn}">사용 여부</th>
+						<td class="tdFlex">
+							<div th:switch="${tfcFacilityMaster.useYn}">
+								<div th:case="Y" class="statusComplete">
+									<img src="/images/status_icon01.png" alt="설치" class="statusImg">
+									<span class="statusText" th:text="#{equipment.facilityDetail.useY}"></span>
+								</div>
+								<span class="statusText" th:case="N" th:text="#{equipment.facilityDetail.useN}"></span>
 							</div>
 						</td>
+						<th th:text="#{equipment.facilityDetail.area}">지역코드</th>
+						<td th:text="${tfcFacilityMaster.areaCd}"></td>
 					</tr>
 					<tr>
 						<th th:text="#{equipment.facilityDetail.installationLocation}">장치위치정보</th>
@@ -48,59 +54,92 @@
 						</td>
 					</tr>
 					<tr>
-						<th th:text="#{equipment.facilityDetail.installationDate}">설치일자</th>
-						<td th:text="${#dates.format(tfcFacilityMaster.instlDate, 'yyyy-MM-dd')}"></td>
-						<th th:text="#{equipment.facilityDetail.installer}">설치자</th>
-						<td th:text="${tfcFacilityMaster.instler}"></td>
-					</tr>
-					<tr>
-						<th th:text="#{equipment.facilityDetail.personInCharge}">담당자</th>
+						<th th:text="#{equipment.facilityDetail.personInCharge}">등록자</th>
 						<td th:text="${tfcFacilityMaster.webOprtr.oprtrNm}"></td>
 						<th th:text="#{equipment.facilityDetail.department}">담당자소속</th>
-						<td th:text="${tfcFacilityMaster.crOprtrDept}"></td>
+						<td th:text="${tfcFacilityMaster.webOprtr.oprtrDeptNm}"></td>
 					</tr>
 					<tr>
 						<th th:text="#{equipment.facilityDetail.image}">단속장비 사진수정</th>
-						
 						<td colspan="3">
-							<th:block th:each="fileInfo : ${tfcFacilityMaster.tfcFacilityFileInfoList}">
-								<p th:text="${fileInfo.fileOrgNm}"></p>
+							<th:block th:if="${not #lists.isEmpty(tfcFacilityMaster.tfcFacilityFileInfoList)}">
+								<div th:each="fileInfo : ${tfcFacilityMaster.tfcFacilityFileInfoList}">
+									<p th:text="${fileInfo.fileOrgNm}"></p>
+								</div>
 							</th:block>
-							<!-- 여기서부터 /block까지 이미지 생성<block th:each="images : ${#strings.arraySplit(tfcEnfEqpMaster.tfcEnfEqpImageorgn,',')}"
-								th:remove="tag">
-								<img th:src="@{/images/}+${images}" style="width:250px;height:250px; margin-left:10px;"
-									alt=" " />
-								<!--                                    <td colspan="3"> 
-                    	<img th:src="@{/images/}+${tfcEnfEqpMaster.tfcEnfEqpImage_OrgFile_name}" style="width:900px;height:300px;" alt=" " />
-							</block>-->
+							<th:block th:unless="${not #lists.isEmpty(tfcFacilityMaster.tfcFacilityFileInfoList)}">
+								<div th:text="#{equipment.facilityDetail.fileEmpty}">업로드 파일 없음</div>
+							</th:block>
 						</td>
 					</tr>
 					<tr>
 						<th th:text="#{equipment.facilityDetail.details}">상세내용</th>
 						<td colspan="3"><pre th:text="${tfcFacilityMaster.facilityDesc}"></pre></td>
 					</tr>
-
 				</tbody>
 			</table>
+			<div class="equipmentTableHisWrap">
+				<h2 class="equipmentTableTitle" th:text"#{equipment.facilityDetail.history.title}">Inspection history</h2>
+				<button type="button" class="main-btn" onclick="showHistRegistModal('facility')" th:text="#{common.button.register}">등록 모달 버튼</button>
+				<table class="main-table equipmentTable">
+				    <colgroup>
+				        <col style="width: 15%;">
+				        <col style="width: 15%;">
+				        <col style="width: 15%;">
+				        <col style="width: 15%;">
+				        <col style="width: 35%;">
+				        <col style="width: 5%;">
+				    </colgroup>
+					<thead>
+						<tr>
+							<th th:text="#{equipment.facilityDetail.history.date}">관리 날짜</th>
+							<th th:text="#{equipment.facilityDetail.history.oprtrNm}">담당자 명</th>
+							<th th:text="#{equipment.facilityDetail.history.mntnType}">관리 타입</th>
+							<th th:text="#{equipment.facilityDetail.history.mntnStts}">시설물 상태</th>
+							<th th:text="#{equipment.facilityDetail.history.desc}">상세 정보</th>
+							<th th:text="#{equipment.facilityDetail.history.option}">기능</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:if="${#lists.isEmpty(tfcFacilityMntnHstList)}">
+							<td colspan="6" th:text="#{equipment.facilityDetail.history.none}">None Result</td>
+						</tr>
+						<tr th:if="${!#lists.isEmpty(tfcFacilityMntnHstList)}" th:each="hstItem : ${tfcFacilityMntnHstList}">
+							<td th:text="${#dates.format(hstItem.crDt, 'yyyy-MM-dd')}"></td>
+							<td th:text="${hstItem.mozWebOprtr.oprtrNm}"></td>
+							<td th:text="${hstItem.mntnType}"></td>
+							<td th:text="${hstItem.mntnStts}"></td>
+							<td onclick="showDetail(this)" th:text="${hstItem.mntnDetail}" th:data-value="${hstItem.mntnDetail}"></td>
+							<td>
+								<button type="button" class="innerDeleteBtn delete-btn" th:onclick="deleteHst([[${hstItem.tfcFacilityLogId}]])" th:text="#{common.button.delete}">Delete</button>
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 			<div class="btn-wrap-center">
-				<button type="button" id="btnGoList" class="sub-btn left-btn" th:onclick="|location.href='@{/eqp/facility/list.do(pageType=list)}'|"
+				<button type="button" id="btnGoList" class="sub-btn left-btn" 
+					th:onclick="|location.href='@{/eqp/facility/list.do(pageType=list)}'|"
 					th:text="#{equipment.common.button.list}">목록</button>
 				<button type="button" id="btnDelete" class="delete-btn" th:text="#{equipment.common.button.delete}">삭제</button>
-				<button type="button" id="btnRegist" class="main-btn" th:text="#{equipment.common.button.modify}"
+				<button type="button" id="btnModify" class="main-btn" th:text="#{equipment.common.button.modify}"
 					th:onclick="|location.href='@{/eqp/facility/update.do(tfcFacilityId=${tfcFacilityMaster.tfcFacilityId})}'|">수정</button>
 			</div>
-			
+			<div class="modal-wrap" id="modal">
+
+			</div>
 		</div>
-		
 	</div>
-
-
 </th:block>
 
 </html>
 <script th:inline="javascript">
 	const lng = /*[[${tfcFacilityMaster.lng}]]*/;
 	const lat = /*[[${tfcFacilityMaster.lat}]]*/;
+	const idx = /*[[${tfcFacilityMaster.tfcFacilityId}]]*/;
+	
+	const modalContent = document.getElementById("modal");
+	
 	let map = new MozAtesMap({
 		elementId : 'map',
 		center_lng : lng,
@@ -109,9 +148,9 @@
 	});
 	
 	$("#btnDelete").click(function () {
-		new ModalBuilder().init().alertBody([[#{equipment.facilityDetail.deleteMessage}]]).footer(2,'확인',function(button, modal){
+		new ModalBuilder().init().alertBody(/*[[#{equipment.facilityDetail.deleteMessage}]]*/).footer(2,'확인',function(button, modal){
 			modal.close();
-			var idx = [[${tfcFacilityMaster.tfcFacilityId}]];
+			var idx = /*[[${tfcFacilityMaster.tfcFacilityId}]]*/;
 			$.ajax({
 				url: /*[[@{/eqp/facility/delete.ajax}]]*/ "/eqp/facility/delete.ajax",
 				type: "post",
@@ -132,4 +171,123 @@
 			});
 			}, '취소', function(button, modal){}).open();
 	});
+	
+	function showHistRegistModal(type){
+		//등록 모달 호출
+		$.ajax({
+			url: `/common/modal/${type}/modalMaintenanceRegist.do`,
+			type: "get",
+			dataType: 'html',
+			success: function (data) {
+				modalContent.innerHTML += data;
+				modalContent.style.display = 'block';
+				
+				//모달 닫기버튼 활성화
+				let registBtn = document.getElementById('mntnRegistBtn');
+				let closeBtn = document.getElementById('modalRegistClose');
+				
+				closeBtn.addEventListener('click', function(e){
+					modalContent.innerHTML="";
+					modalContent.style.display = "none";				
+				});
+
+				registBtn.addEventListener('click', function(e){
+					//TODO:: Validation 변경
+					let mntnType = document.getElementById('mntnType').value;
+					let mntnStts = document.getElementById('mntnStts').value;
+					let mntnDetail = document.getElementById('mntnDetail').value;
+					
+					if(mntnType == null || mntnType == ''){
+						alert('mntnType is null');
+						return;
+					}
+					if(mntnStts == null || mntnStts == ''){
+						alert('mntnStts is null');
+						return;
+					}
+					if(mntnDetail == null || mntnDetail == ''){
+						alert('mntnDetail is null');
+						return;
+					}
+					
+					$.ajax({
+						url: /*[[@{/eqp/facility/mntnSave.ajax}]]*/ "/eqp/facility/mntnSave.ajax",
+						data : {
+							"tfcFacilityId" : idx,
+							"mntnType" : mntnType,
+							"mntnStts" : mntnStts,
+							"mntnDetail" : mntnDetail
+						},
+						type: "post",
+						dataType: 'json',
+						success: function (result) {
+							if(result.code == 200){
+								new ModalBuilder().init().successBody(result.message).footer(4,'확인',function(button, modal){
+									modal.close();
+									location.reload();
+								}).open();
+								modalAlertWrap();
+							}
+						}
+					});
+				});
+			}
+		})
+	}
+	
+	function showDetail(_this){
+		let detailValue = _this.dataset.value;
+		let title = /*[[#{equipment.mngDetail.maintenance.history.desc}]]*/;
+		
+		let modalDetailHtml = `
+			<div class="modal-contents modal-company-group">
+				<div class="modal-title">
+					<dt class="modal-title-text">${title}</dt>
+					<img id="modalDetailClose"src="/images/close.png" alt="닫기" class="close">
+				</div>
+				<div class="modal-body">
+					<div class="modalMntnList">
+						<dd class="modal-form-wrap">
+							${detailValue}
+						</dd>
+					</div>
+				</div>
+			</div>
+		`;
+		
+		modalContent.innerHTML += modalDetailHtml;
+		modalContent.style.display = 'block';
+		
+		let closeBtn = document.getElementById('modalDetailClose');
+		
+		closeBtn.addEventListener('click', function(e){
+			modalContent.innerHTML="";
+			modalContent.style.display = "none";				
+		});
+	}
+	
+	function deleteHst(tfcFacilityLogId){
+		const deleteConfirm = /*[[#{common.message.confirmDelete}]]*/;
+		const successMsg = /*[[#{common.message.success}]]*/;
+		const failMsg = /*[[#{common.message.fail}]]*/;
+		
+		if (confirm(deleteConfirm)) {
+			$.ajax({
+				url: /*[[@{/eqp/facility/mntnDelete.ajax}]]*/ "/eqp/facility/mntnDelete.ajax",
+				type: "post",
+				data: {"tfcFacilityLogId": tfcFacilityLogId},
+				success: function (data) {
+					alert(successMsg);
+					location.reload();
+				},
+				error: function (data) {
+					alert(failMsg);
+					console.log(data.responseJSON.message);
+				}
+
+			});
+		} else {
+			return;
+		}
+	}
 </script>
