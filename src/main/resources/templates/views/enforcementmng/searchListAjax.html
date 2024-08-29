@@ -1,0 +1,68 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="status__list_con">
+    <div id="content-sub-title"
+         th:text="${type} == 'vehicle' ? #{searchListAjax.vehicle.desc} : #{searchListAjax.driver.desc}">차량 번호 또는 문서 번호로 조회한 결과 입니다.</div>
+    <div th:if="${not #lists.isEmpty(enfHistory)}">
+        <div class="status__list_search_total">
+            <th:block th:text="#{enforcement.car.search.Detail.found}">Found</th:block>
+            <span th:text='|"${pagination.totalListCnt}"|'></span>
+            <th:block th:text="#{enforcement.car.search.Detail.result}">results</th:block>
+        </div>
+        <div class="table-wrap">
+            <table class="main-table">
+                <colgroup>
+
+                </colgroup>
+                <thead>
+                <tr>
+                    <th th:text="#{enforcement.car.search.Detail.table.number}">No.</th>
+                    <th th:text="#{enforcement.car.search.Detail.tfcEnfDt}">Enforcement Date</th>
+                    <th th:text="#{enforcement.car.search.Detail.tfcEnfId}">Enforcement Id</th>
+                    <th:block th:if="${type == 'vehicle'}">
+                        <th th:text="#{enforcement.car.search.Detail.vioNm}">Violator Name</th>
+                        <th th:text="#{enforcement.car.search.Detail.birth}">Birthday</th>
+                        <th th:text="#{enforcement.car.search.Detail.docNo}">Document No.</th>
+                    </th:block>
+                    <th th:text="#{enforcement.car.search.Detail.vehicleNo}">Vehicle No.</th>
+                    <th th:text="#{enforcement.car.search.Detail.roadAddr}">Enforcement Road Address</th>
+                    <th th:text="#{enforcement.car.search.Detail.fine}">Amount of Fine</th>
+                    <th th:text="#{enforcement.car.search.Detail.table.payment.title}">Payment Status</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${enfHistory}" th:onclick="|location.href='@{/enf/info/detail.do(tfcEnfId=${item.tfcEnfId})}'|">
+                    <td th:text="${item.rnum}"></td>
+                    <td th:text="${#dates.format(item.tfcEnfDt, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${item.tfcEnfId}"></td>
+                    <th:block th:if="${type == 'vehicle'}">
+                        <td th:text="${item.vioInfo.vioNm}"></td>
+                        <td th:text="${item.vioInfo.vioBrth}">14.05.1987</td>
+                        <td th:text="${item.vioInfo.docNid}"></td>
+                    </th:block>
+                    <td th:text="${item.vhRegNo}"></td>
+                    <td th:text="${item.roadAddr}"></td>
+                    <td th:text="${@mozatesCommonUtils.priceFmt(item.finePymntInfo.totalPrice, 'MOZAMBIQUE_METICAL')}">
+                    10,000 MT
+                    </td>
+                    <td class="flex justify-center">
+                        <span class="tableStausOn" th:if="${item.finePymntInfo.pymntStts == 'Y'}"
+                        th:text="#{enforcement.car.search.Detail.table.payment.y}"></span>
+                        <span class="tableStausOff" th:unless="${item.finePymntInfo.pymntStts == 'Y'}"
+                        th:text="#{enforcement.car.search.Detail.table.payment.n}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="page_wrap">
+            <div th:insert="tags/paging :: pagingFragment"></div>
+        </div>
+    </div>
+    <div th:unless="${not #lists.isEmpty(enfHistory)}">
+        <div class="searchNoDater" th:text="#{enforcement.car.search.Detail.result.empty}">
+            조회 결과가 없습니다.
+        </div>
+    </div>
+</div>

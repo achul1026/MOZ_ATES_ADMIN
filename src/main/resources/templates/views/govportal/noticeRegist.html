@@ -20,8 +20,12 @@
 						<th>
 							<span class="requiredMark" th:text="#{portal.noticeRegist.ttl}">제목</span>
 						</th>
-						<td><input type="text" class="main-input data-validate" name="boardTitle" th:placeholder="#{portal.noticeRegist.ttl.placeholder}"
-						th:data-valid-name="#{portal.noticeRegist.ttl}" data-valid-required></td>
+						<td>
+							<input type="text" id="boardTitle" class="main-input data-validate" name="boardTitle" maxlength="150" 
+							th:placeholder="#{portal.noticeRegist.ttl.placeholder}"
+							th:data-valid-name="#{portal.noticeRegist.ttl}" 
+							data-valid-required data-valid-minimum="5" data-valid-maximum="150">
+						</td>
 					</tr>
 					<tr>
 						<th>
@@ -29,15 +33,15 @@
 						</th>
 						<td>
 							<label for="away-check" class="radioBox">
-								<input type="radio" name="check" id="away-check" class="" onclick="dateCheck('true')"
+								<input type="radio" name="check" id="away-check" onclick="dateCheck('true')"
 								th:data-valid-name="#{portal.noticeRegist.posting}" checked>
 								<span class="radioOn"></span>
-								Always Posted
+								<span th:text="#{portal.common.alwaysPosted}">Always Posted</span>
 							</label>
 							<label for="timeline-check" class="radioBox">
 								<input type="radio" name="check" id="timeline-check" class="time-check" onclick="dateCheck('false')">
 								<span class="radioOn"></span>
-								Posting Period Settings
+								<span th:text="#{portal.common.postingPeriodSetting}">Posting Period Settings</span>
 							</label>
 						</td>
 					</tr>
@@ -63,22 +67,19 @@
 	              	<tr>
 	                  	<th th:text="#{portal.noticeRegist.attachment}">첨부파일</th>
 	                  	<td colspan="3">
-							<input type="file" id="uploadFiles" name="uploadFiles" multiple/>
-							<div id="dragArea">
-							<div class="drag-area">
+							<div id="dragArea" class="drag-area">
 								<div class="dragText">
 								   	File name cannot be more than 50 characters<br>
 									The file size can only be uploaded under 5MB<br>
 									Only WORD, XLSX, PDF files can be uploaded
 								</div>
 								<div>
-									<input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
-									<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+									<input type="file" id="uploadFiles" name="uploadFiles" multiple style="display: none;">
+									<button type="button" id="uploadBtn" class="main-btn">File Upload</button>
 								</div>
 							</div>
-							</div>
 							<div class="upload_wrap none">
-							<div id="upload_list_box"></div>	
+								<div id="newFilesContainer" class="upload_list_box"></div>
 							</div>
 						</td>
 	              	</tr>
@@ -88,14 +89,17 @@
 					 	</th>
                  		<td>
                  			<input type="hidden" name="useYn" id="useYn">
-                 			<input type="checkbox" id="useYn-chkbox" class="" name="useYn-chkbox"> <label th:text="#{portal.noticeRegist.exposureChkbox}" for="useYn-chkbox">노출</label>
+                 			<input type="checkbox" id="useYn-chkbox" name="useYn-chkbox">
+                 			<label th:text="#{portal.noticeRegist.exposureChkbox}" for="useYn-chkbox">노출</label>
                  		</td>
               		</tr>
               		<tr>
                   		<th th:text="#{portal.notice.common.content}">상세</th>
 						<td>
-							<textarea class="form-control detail-table-textarea" id="txtBoardContents" 
-								name="boardContents" th:placeholder="#{portal.noticeRegist.content.placeholder}"></textarea>
+							<textarea class="form-control detail-table-textarea data-validate" id="txtBoardContents" maxlength="1000"
+							name="boardContents" th:placeholder="#{portal.noticeRegist.content.placeholder}"
+							th:data-valid-name="#{portal.notice.common.content}"
+							data-valid-required data-valid-minimum="5" data-valid-maximum="1000"></textarea>
 						</td>
               		</tr>
              	</tbody>
@@ -116,7 +120,12 @@
 
 </html>
 <script th:inline="javascript">
+    $(document).ready(function() {
+        fileDrag(5, 10, 50, ['doc', 'docx', 'xls', 'xlsx', 'pdf']);
+    });
+    
 	$("#btnRegist").click(function () {
+		trimValues(['boardTitle', 'txtBoardContents']);
 		if($("#frmNoticeRegist").soValid()) {
 			
 			if($("#away-check").is(":checked")){
@@ -124,12 +133,10 @@
 			}
 			
 			var imprtYn = $("#imprtYn-chkbox").prop("checked")? "Y" :"N";
-			var popupYn = $("#popupYn-chkbox").prop("checked")? "Y" :"N";
 			var useYn = $("#useYn-chkbox").prop("checked")? "Y" :"N";
 			
 			$("#imprtYn").val(imprtYn);
 			$("#useYn").val(useYn);
-			$("#popupYn").val(popupYn);
 			
 			var form = $("#frmNoticeRegist")[0];
 			var data = new FormData(form);
@@ -145,12 +152,12 @@
 					var resultCode = result.code;
 					var resultMessage = result.message;
 					if (resultCode == '200') {
-						new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){
+						new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){
 							modal.close();
 							location.href =/*[[@{/portal/notice/list.do}]]*/ "";
 						}).open();
 					} else {
-						new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
+						new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){
 							modal.close();}).open();
 					}
 				}

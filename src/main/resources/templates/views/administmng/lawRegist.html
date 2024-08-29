@@ -1,275 +1,431 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-    <div id="container-fluid">
-        <!-- Page Heading -->
-        <h1 id="detail-content-title" th:text="#{administ.lawRegist.title}">법률 등록</h1>
+	<div id="container-fluid">
+		<!-- Page Heading -->
+		<h1 id="detail-content-title" th:text="#{administ.lawRegist.title}">법률 등록</h1>
+		<form id="frmLawRegist">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{administ.lawRegist.articleId}">법률번호</span>
+						</th>
+						<td>
+							<input type="text" class="main-input data-validate" id="lawArticleNo" name="lawArticleNo"
+								th:placeholder="#{administ.lawRegist.placeholder.legalNumber}"
+								th:data-valid-name="#{administ.lawRegist.articleId}" data-valid-required>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{administ.lawRegist.lawType}">법률타입</span>
+						</th>
+						<td>
+							<select class="filter-select filter95 data-validate" id="lawType" name="lawType"
+								th:data-valid-name="#{administ.lawRegist.lawType}" data-valid-required>
+								<option value=""></option>
+								<option th:each="item : ${lawTypeCd}" 
+								th:value="${item.cdId}" th:text="${item.cdNm}"></option>
+							</select>
+						</td>
+					</tr>
 
-            <div class="">
-                <form id="frmLawRegist">
-                <table class="detail-table">
-                    <colgroup>
-                        <col width="15%">
-                        <col width="35%">
-                        <col width="15%">
-                        <col width="35%">
-                    </colgroup>
-                    <tbody>
-						<tr>
-	                        <th>
-								<span class="requiredMark" th:text="#{administ.lawRegist.legalNumber}">법률번호</span>
-							</th>
-	                        <td>
-								<input type="text" class="main-input data-validate" id="lawArticleNo" name="lawArticleNo" th:placeholder="#{administ.lawRegist.placeholder.legalNumber}"
-								th:data-valid-name="#{administ.lawRegist.legalNumber}" data-valid-required>
-							</td>
-	                        <th>
-								<span class="requiredMark" th:text="#{administ.lawRegist.lawChapter}">법률타입</span>
-							</th>
-	                        <td>
-								<select class="filter-select filter95" id="lawType" name="lawType">
-									<option th:each="item : ${lawTypeCd}" th:value="${item.cdId}" th:text="${item.cdNm}"></option>
-								</select>
-	                        </td>
-	                    </tr>
-
-						<tr>
-	                        <th>
-								<span class="requiredMark" th:text="#{administ.lawRegist.lawType}">법률챕터</span>
-							</th>
-	                        <td>
-								<select class="filter-select" id="lawChapter" name="lawChapter">
-									<option th:each="item : ${lawChtrCd}" th:value="${item.cdId}" th:text="${item.cdNm}"></option>
-								</select>
-							</td>
-							 <th>
-								 <span class="requiredMark" th:text="#{administ.lawRegist.nameOfLaw}">법률명</span>
-							 </th>
-	                        <td>
-								<input type="text" class="main-input data-validate" id="lawNm" name="lawNm" th:placeholder="#{administ.lawRegist.placeholder.nameOfLaw}"
-								th:data-valid-name="#{administ.lawRegist.nameOfLaw}" data-valid-required>
-							</td>
-	                    </tr>
-	                     <tr>
-	                        <th>
-								<span class="requiredMark" th:text="#{administ.lawRegist.enforceDate}"></span>
-							</th>
-	                        <td><input type="date" class="input-date data-validate" id="eftvDe" name="eftvDe" th:data-valid-name="#{administ.lawRegist.enforceDate}" data-valid-required></td>
-	                        <th>
-								<span class="requiredMark" th:text="#{administ.lawRegist.dateOfPromulgation}">공포일자</span>
-							</th>
-	                        <td><input type="date" class="input-date data-validate" id="prmgtnDe" name="prmgtnDe" th:data-valid-name="#{administ.lawRegist.dateOfPromulgation}" data-valid-required></td>
-	                    </tr>
-	                    <tr>
-	                        <th th:text="#{administ.lawRegist.legalExplanation}">시행령 정보</th>
-	                        <td colspan="3"><textarea class="detail-table-textarea" id="txtLawDesc" name="lawDesc" rows="15" 
-	                        th:placeholder="#{administ.lawRegist.placeholder.nameOfLaw}" th:placeholder="#{administ.lawRegist.placeholder.legalExplanation}"
-	                        ></textarea></td>
-	                    </tr>
-                    </tbody>
-                </table>
-                
-                <table class="detail-table">
-                    <colgroup>
-                        <col width="15%">
-                        <col width="45%">
-                        <col width="25%">
-                        <col width="15%">
-                    </colgroup>
-                    <tbody>
-	                    <tr>
-	                        <th colspan="4">Fine List</th>
-	                    </tr>
-<!--	                    <tr class="fineTr">-->
-<!--							<th>범칙금</th>-->
-<!--							<td><span class="fineDesc">오토바이 과속</span></td>-->
-<!--							<td>-->
-<!--								<span>10,000MT</span>-->
-<!--								<span class="finePrice d-none">10000.00</span></td>-->
-<!--							<td onclick="deleteFineTr(this)">삭제</td>-->
-<!--						</tr>-->
-<!--	                    <tr class="fineTr">-->
-<!--							<th>범칙금</th>-->
-<!--							<td><span class="fineDesc">승용차 과속</span></td>-->
-<!--							<td>-->
-<!--								<span>13000.24MT</span>-->
-<!--								<span class="finePrice d-none">13000.24</span></td>-->
-<!--							<td onclick="deleteFineTr(this)">삭제</td>-->
-<!--						</tr>-->
-<!--	                    <tr class="fineTr">-->
-<!--							<th>범칙금</th>-->
-<!--							<td><span class="fineDesc">트럭 과속</span></td>-->
-<!--							<td>-->
-<!--								<span>15000.35MT</span>-->
-<!--								<span class="finePrice d-none">15000.35</span></td>-->
-<!--							<td onclick="deleteFineTr(this)">삭제</td>-->
-<!--						</tr>-->
-	                   	<tr id="fineAddTr">
-							<th>Fine Info Regist</th>
-							<td>
-								<input type="text" class="main-input" id="fineDesc" th:placeholder="#{administ.lawRegist.placeholder.infoRegist}"
-								 style="width:100%"/>
-							</td>
-							<td>
-								<input type="text" class="main-input" id="finePrice" th:placeholder="#{administ.lawRegist.placeholder.infoRegist}" 
-								style="width:100%" onkeyup="keyupNumberEvent(this)">
-							</td>
-							<td>
-								<button type="button" class="detailPriceBtn" onclick="addFineTr()"><img src="/images/table-plus.png" alt="범칙금 추가"></button>
-							</td>
-						</tr>
-                    </tbody>
-				</table>
-                </form>
-            </div>
-            <div class="registor-btn-right">
-				<button type="button" id="btnGoList" class="sub-btn form-button" th:onclick="|location.href='@{/administCourt/law/list.do}'|" th:text="#{administ.lawRegist.list}">목록</button>
-                <button type="button" id="btnRegist" class="main-btn form-button" th:text="#{administ.lawRegist.registrationButton}">등록</button>
+					<tr>
+						<th th:text="#{administ.lawRegist.legalExplanation}">상세 정보</th>
+						<td colspan="3"><textarea class="detail-table-textarea" id="txtLawDesc" name="lawDesc" rows="15"
+								th:placeholder="#{administ.lawRegist.placeholder.legalExplanation}"></textarea></td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<!-- Fine Info -->
+		<div id="search-form-result-wrap">
+			<div id="table-search-result-text">
+				<h1 id="content-title" th:text="#{administ.lawRegist.addFine}">범칙금 목록</h1>
 			</div>
-    </div>
+<!--			<button type="button" class="detailPriceBtn main-btn" onclick="addFineDiv()">-->
+<!--				추가-->
+<!--			</button>-->
+			<button type="button" class="tableAddMinus" onclick="addFineDiv()">
+				<img th:src="@{/images/table-plus.png}"></button>
+		</div>
+
+		<table class="detail-table">
+			<colgroup>
+				<col width="15%">
+				<col width="35%">
+				<col width="15%">
+				<col width="35%">
+			</colgroup>
+			<tbody>
+				<!--	                    <tr>-->
+				<!--	                        <th colspan="4">범칙금 정보</th>-->
+				<!--	                    </tr>-->
+				<!--	                   	<tr id="fineAddTr">-->
+				<!--							<th>Fine Info Regist</th>-->
+				<!--							<td>-->
+				<!--								<input type="text" class="main-input" id="fineDesc" th:placeholder="#{administ.lawRegist.placeholder.infoRegist}"-->
+				<!--								 style="width:100%"/>-->
+				<!--							</td>-->
+				<!--							<td>-->
+				<!--								<input type="text" class="main-input" id="finePrice" th:placeholder="#{administ.lawRegist.placeholder.infoRegist}" -->
+				<!--								style="width:100%" onkeyup="keyupNumberEvent(this)">-->
+				<!--							</td>-->
+				<!--							<td>-->
+				<!--								<button type="button" class="detailPriceBtn" onclick="addFineTr()"><img src="/images/table-plus.png" alt="범칙금 추가"></button>-->
+				<!--							</td>-->
+				<!--						</tr>-->
+
+				<tr>
+					<th>
+						<span class="requiredMark">ID</span>
+					</th>
+					<td>
+						<input type="text" class="main-input" id="tfcLawFineId">
+					</td>
+				</tr>
+				<tr>
+					<th th:text="#{administ.lawRegist.articelNo}">문서 번호</th>
+					<td>
+						<input type="text" class="main-input" id="artclNo">
+					</td>
+					<th th:text="#{administ.lawRegist.paragraph}">절</th>
+					<td>
+						<input type="text" class="main-input" id="par">
+					</td>
+				</tr>
+				<tr id="fineAddTr">
+					<th>
+						<span class="requiredMark" th:text="#{administ.lawModify.finePrice}">범칙금 금액</span>
+					</th>
+					<td>
+						<input type="text" class="main-input" id="finePrice" onkeyup="keyupNumberEvent(this)">
+					</td>
+					<th th:text="#{administ.lawRegist.contraventionType}">경범죄 유형</th>
+					<td>
+						<select class="filter-select" id="cntrvTy">
+							<option value="" data-cd-nm=""></option>
+							<option th:each="cdItem : ${cntrvTyCd}" 
+							th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}" th:data-cd-nm="${cdItem.cdNm}">
+							</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th th:text="#{administ.lawRegist.additionalPenalty}">추가 패널티</th>
+					<td>
+						<select class="filter-select" id="addlPn">
+							<option value="" data-cd-nm=""></option>
+							<option th:each="cdItem : ${addlPnCd}" 
+							th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}" th:data-cd-nm="${cdItem.cdNm}">
+							</option>
+						</select>
+					</td>
+					<th th:text="#{administ.lawRegist.transgressionType}">위반 유형</th>
+					<td>
+						<select class="filter-select" id="trnTy">
+							<option value="" data-cd-nm=""></option>
+							<option th:each="cdItem : ${trnTyCd}" 
+							th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}" th:data-cd-nm="${cdItem.cdNm}">
+							</option>
+						</select>
+					</td>
+				</tr>
+				<tr>
+					<th>
+						<span class="requiredMark" th:text="#{administ.lawModify.fineDescription}">범칙금 설명</span>
+					</th>
+					<td colspan="3">
+						<textarea class="detail-table-textarea" id="fineDesc"></textarea>
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		
+		<!-- 입력된 범칙금 Wrap -->
+		<div id="fineWrap">
+<!--			<div>-->
+<!--				<div id="search-form-result-wrap">-->
+<!--					<div></div>-->
+<!--					<button type="button" class="tableAddMinus">-->
+<!--						<img th:src="@{/images/table-minus.png}">-->
+<!--					</button>-->
+<!--				</div>-->
+<!--				<div class="sub-table detail-table fine-div">-->
+<!--					<table class="table-col2">-->
+<!--						<colgroup>-->
+<!--							<col width="15%">-->
+<!--							<col width="35%">-->
+<!--							<col width="15%">-->
+<!--							<col width="35%">-->
+<!--						</colgroup>-->
+<!--						<tbody>-->
+<!--							<tr>-->
+<!--								<th>문서 번호</th>-->
+<!--								<td>7</td>-->
+<!--								<th>절</th>-->
+<!--								<td></td>-->
+<!--							</tr>-->
+<!--							<tr>-->
+<!--								<th>Fine Price</th>-->
+<!--								<td>750.0MT</td>-->
+<!--								<th>경범죄 유형</th>-->
+<!--								<td>Leve</td>-->
+<!--							</tr>-->
+<!--							<tr>-->
+<!--								<th>추가 패널티</th>-->
+<!--								<td>Sem pena acessória</td>-->
+<!--								<th>위반 유형</th>-->
+<!--								<td>Baixa</td>-->
+<!--							</tr>-->
+<!--							<tr>-->
+<!--								<th>Fine Description</th>-->
+<!--								<td colspan="3" class="text-pre-wrap">quando se trate de motociclo, automovel com ou sem reboque</td>-->
+<!--							</tr>-->
+<!--						</tbody>-->
+<!--					</table>-->
+<!--				</div>-->
+<!--			</div>-->
+			
+		</div>
+
+		<div class="registor-btn-right">
+			<button type="button" id="btnGoList" class="sub-btn form-button"
+				th:onclick="|location.href='@{/administCourt/law/list.do}'|"
+				th:text="#{administ.lawRegist.list}">목록</button>
+			<button type="button" id="btnRegist" class="main-btn form-button"
+				th:text="#{administ.lawRegist.registrationButton}" onclick="lawRegist()">등록</button>
+		</div>
+	</div>
 </th:block>
+
 </html>
 <script th:inline="javascript">
 
-    $("#btnRegist").click(function () {
-		
-		if($("#frmLawRegist").soValid()) {
-			
-			//validation
-
-		var mozTfcLwInfo = new Object();
-		
+	function lawRegist() {
+		trimValues(['lawArticleNo', 'txtLawDesc']);
+		if(!$("#frmLawRegist").soValid()) return false;
+		const loading = new AdminLoading().start();
+		let mozTfcLwInfo = new Object();
 		const lawArticleNo = document.getElementById("lawArticleNo").value;
-		const lawNm = document.getElementById("lawNm").value;
 		const lawType = document.getElementById("lawType").value;
-		const lawChapter = document.getElementById("lawChapter").value;
 		const lawDesc = document.getElementById("txtLawDesc").value;
-		const eftvDe = document.getElementById("eftvDe").value;
-		const prmgtnDe = document.getElementById("prmgtnDe").value;
-		
-		if(lawArticleNo == null || lawArticleNo == ''){
-			return false;
-		}
-		
-		if(lawChapter == null || lawChapter == ''){
-			return false;
-		}
-		
-		if(lawType == null || lawType == ''){
-			return false;
-		}
-		
-		if(lawNm == null || lawNm == ''){
-			return false;
-		}
-		
-		if(eftvDe == null || eftvDe == ''){
-			return false;
-		}
-		
-		if(prmgtnDe == null || prmgtnDe == ''){
-			return false;
-		}
-		
-		if(lawDesc == null || lawDesc == ''){
-			return false;
-		}
-		
-		var mozTfcLwFineInfoArr = new Array();
 	
-		const fineTr = document.querySelectorAll(".fineTr");
-		const fineDescList = document.querySelectorAll(".fineDesc");
-		const finePriceList = document.querySelectorAll(".finePrice");
-		
-		
-		for(var i = 0; i < fineTr.length; i++){
+		const fineDiv = document.querySelectorAll(".fine-div");
+		let mozTfcLwFineInfoArr = new Array();
+	
+		for (const fine of fineDiv) {
+			const tfcLawFineId = fine.querySelector(".tfcLawFineId").innerText;
+			const artclNo = fine.querySelector(".artclNo").innerText;
+			const par = fine.querySelector(".par").innerText;
+			const finePrice = fine.querySelector(".finePrice").innerText;
+			const cntrvTy = fine.querySelector(".cntrvTy").getAttribute('data-cntrv-ty');
+			const addlPn = fine.querySelector(".addlPn").getAttribute('data-addl-pn');
+			const trnTy = fine.querySelector(".trnTy").getAttribute('data-trn-ty');
+			const fineDesc = fine.querySelector(".fineDesc").innerText;
+	
 			const mozTfcLwFineInfo = new Object();
-			const fineDesc = fineDescList[i].innerText;
-			const finePrice = finePriceList[i].innerText;
-			
-			mozTfcLwFineInfo.fineDesc = fineDesc;
+			mozTfcLwFineInfo.tfcLawFineId = tfcLawFineId;
+			mozTfcLwFineInfo.artclNo = artclNo;
+			mozTfcLwFineInfo.par = par;
 			mozTfcLwFineInfo.finePrice = finePrice;
-			
+			mozTfcLwFineInfo.cntrvTy = cntrvTy;
+			mozTfcLwFineInfo.addlPn = addlPn;
+			mozTfcLwFineInfo.trnTy = trnTy;
+			mozTfcLwFineInfo.fineDesc = fineDesc;
+	
 			mozTfcLwFineInfoArr.push(mozTfcLwFineInfo);
 		}
-
+	
 		mozTfcLwInfo.lawArticleNo = lawArticleNo;
-		mozTfcLwInfo.lawNm = lawNm;
+		mozTfcLwInfo.lawNm = lawArticleNo;
 		mozTfcLwInfo.lawType = lawType;
-		mozTfcLwInfo.lawChapter = lawChapter;
-		mozTfcLwInfo.eftvDe = eftvDe;
-		mozTfcLwInfo.prmgtnDe = prmgtnDe;
 		mozTfcLwInfo.lawDesc = lawDesc;
-		
-		if(mozTfcLwFineInfoArr.length > 0){
+	
+		if (mozTfcLwFineInfoArr.length > 0) {
 			mozTfcLwInfo.mozTfcLwFineInfoArr = mozTfcLwFineInfoArr;
 		}
 		
-        $.ajax({
-            url: /*[[@{/administCourt/law/save.ajax}]]*/ "/administCourt/law/save.ajax",
-            type: "post",
-			contentType : "application/json; charset=UTF-8",
-			dataType : "json",
-			data : JSON.stringify(mozTfcLwInfo),
-            success: function (data) {
-				if (data.code == '200') {
-					alert(data.message);
-					location.href = "/administCourt/law/list.do";
-				} else {
-					alert(data.message);
-				}
+		fetch(/*[[@{/administCourt/law/save.ajax}]]*/, {
+		      method: 'POST',
+		      headers: {
+		        'Content-Type': 'application/json; charset=UTF-8'
+		      },
+		      body: JSON.stringify(mozTfcLwInfo)
+		})
+		.then(response => response.json())
+		.then(data => {
+			if (data.code == '200') {
+				new ModalBuilder().init().successBody(data.message).footer(4, 'Confirmar', function (button, modal) {
+					modal.close();
+					location.href = /*[[@{/administCourt/law/list.do}]]*/;
+				}).open();
+			} else {
+				new ModalBuilder().init().successBody(data.message).footer(4, 'Confirmar', function (button, modal) {
+					modal.close();
+				}).open();
 			}
-        });
+		})
+		.catch(error => {
+			new ModalBuilder().init().successBody("Não foi registrado com sucesso.").footer(4, 'Confirmar', function (button, modal) {
+				modal.close();
+			}).open();
 			
+		})
+		.finally(() => {
+			loading.end();
+		});		
+	}
+
+	function addFineDiv() {
+		trimValues(['artclNo', 'par', 'finePrice', 'fineDesc', 'tfcLawFineId']);
+		const fineWrap = document.getElementById('fineWrap');
+		
+		const elements = {
+			tfcLawFineIdInput : document.getElementById('tfcLawFineId'),
+			artclNoInput : document.getElementById('artclNo'),
+			parInput : document.getElementById('par'),
+			finePriceInput : document.getElementById('finePrice'),
+			cntrvTySelect : document.getElementById('cntrvTy'),
+			addlPnSelect : document.getElementById('addlPn'),
+			trnTySelect : document.getElementById('trnTy'),
+			fineDescInput : document.getElementById('fineDesc')
 		}
 		
+		const values = {
+			tfcLawFineId : elements.tfcLawFineIdInput.value,
+			artclNo : elements.artclNoInput.value,
+			par : elements.parInput.value,
+			finePrice : elements.finePriceInput.value,
+			cntrvTy : getSelectedOptionData(elements.cntrvTySelect),
+			addlPn : getSelectedOptionData(elements.addlPnSelect),
+			trnTy : getSelectedOptionData(elements.trnTySelect),
+			fineDesc : elements.fineDescInput.value
+		}
 		
+		const pattern = /(^\d+$)|(^\d{1,}.\d{0,2}$)/;
+		const tfcLawFineIdList = document.querySelectorAll(".tfcLawFineId");
+		const isIdDuplicated = Array.from(tfcLawFineIdList).some(e => e.innerText == values.tfcLawFineId);
+		
+		if (!values.tfcLawFineId) {
+			alertAndFocus(elements.tfcLawFineIdInput);
+			return false;
+		}
+		
+		if (isIdDuplicated) {
+			// ID는 중복될 수 없습니다.
+			alertAndFocus(elements.tfcLawFineIdInput, 'Os IDs não podem ser duplicados.');
+			return false;
+		}
+		
+		if (!values.finePrice || !pattern.test(values.finePrice)) {
+			alertAndFocus(elements.finePriceInput);
+			return false;
+		}
 
-    })
-    
-   function deleteFineTr(_this){
-	   $(_this).parent('tr').remove();
-   }
-   
-   function addFineTr(){
-	   const fineDesc = document.getElementById('fineDesc').value;
-	   const finePrice = document.getElementById('finePrice').value;
-	   const pattern = /(^\d+$)|(^\d{1,}.\d{0,2}$)/;
-	   
-	   if(!pattern.test(finePrice)){
-		   alert("가격이 올바르지 않습니다.")
-		   return false;
-	   }
-	   
-	   const fmtPrice = numberComma(finePrice);
-	   
-	   if(fineDesc == null || fineDesc == ''){
-		   return false;
-	   }
-	   
-	   if(finePrice == null || finePrice == ''){
-		   return false;
-	   }
-	   
-	   const addTr = document.createElement('tr');
-	   
-	   	addTr.classList.add('fineTr');
-	   	
-	    addTr.innerHTML =  `<th>Law Price</th>
-							<td><span class="fineDesc priceDe">${fineDesc}</span></td>
-							<td>
-								<span class="priceDe">${fmtPrice}MT</span>
-								<span class="finePrice d-none priceDe">${finePrice}</span></td>
-							<td>
-								<button type="button" class="detailPriceBtn" onclick="deleteFineTr(this)">
-									<img src="/images/table-delete.png" alt="범칙금 삭제">
-								</button>
-							</td>`;
-						
-		document.querySelector('#fineAddTr').before(addTr);
-   }
+		if (!values.fineDesc) {
+			alertAndFocus(elements.fineDescInput);
+			return false;
+		}
+		
+		const fmtPrice = numberComma(values.finePrice);
+		const addDiv = document.createElement('div');
+		addDiv.classList.add('fine-div');
+		
+		addDiv.innerHTML = `
+		<div id="search-form-result-wrap">
+			<div></div>
+			<button type="button" class="tableAddMinus remove-btn">
+					<img src="${[[@{/images/table-minus.png}]]}">
+			</button>
+		</div>
+				<tbody>
+			<table class="table-col2 sub-table detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				
+					<tr>
+						<th>ID</th>
+						<td colspan="3" class="tfcLawFineId">${values.tfcLawFineId}</td>
+					<tr>
+					<tr>
+						<th>${[[#{administ.lawRegist.articelNo}]]}</th>
+						<td class="artclNo">${values.artclNo}</td>
+						<th>${[[#{administ.lawRegist.paragraph}]]}</th>
+						<td class="par">${values.par}</td>
+					</tr>
+					<tr>
+						<th>${[[#{administ.lawModify.finePrice}]]}</th>
+						<td class="finePrice">${values.finePrice}</td>
+						<th>${[[#{administ.lawRegist.contraventionType}]]}</th>
+						<td class="cntrvTy" data-cntrv-ty="${values.cntrvTy.value}">${values.cntrvTy.cdNm}</td>
+					</tr>
+					<tr>
+						<th>${[[#{administ.lawRegist.additionalPenalty}]]}</th>
+						<td class="addlPn" data-addl-pn="${values.addlPn.value}">${values.addlPn.cdNm}</td>
+						<th>${[[#{administ.lawRegist.transgressionType}]]}</th>
+						<td class="trnTy" data-trn-ty="${values.trnTy.value}">${values.trnTy.cdNm}</td>
+					</tr>
+					<tr>
+						<th>Fine Description</th>
+						<td colspan="3" class="text-pre-wrap fineDesc">${values.fineDesc}</td>
+					</tr>
+				</tbody>
+			</table>
+		`;
+
+		fineWrap.appendChild(addDiv);
+		
+		// 삭제버튼 이벤트 리스너
+	    const removeBtn = addDiv.querySelector('.remove-btn');
+	    removeBtn.addEventListener('click', () => addDiv.remove());
+		
+		setTimeout(function () {
+			addDiv.focus();
+			addDiv.scrollIntoView({behavior: 'smooth', block: 'center'});
+		}, 0);
+		
+		cleaninput(Object.values(elements));
+	}
+	
+	function alertAndFocus(element, msg = 'O valor de entrada está incorreto.') {
+		// 입력값이 잘못 되었습니다.
+		new ModalBuilder().init().successBody(msg).footer(4, 'Confirmar', function (button, modal) {
+			modal.close();
+			setTimeout(function () {
+				element.focus();
+				element.scrollIntoView({behavior: 'smooth', block: 'center'});
+			}, 0);
+		}).open();
+	}
+	
+	function getSelectedOptionData(selectElement) {
+		const selectedOption = selectElement[selectElement.selectedIndex];
+		return {
+			value: selectedOption.value,
+			cdNm: selectedOption.getAttribute('data-cd-nm')
+		}
+	}
+	
+	function cleaninput(inputArr) {
+		inputArr.forEach(element => {
+			if (element.tagName === 'SELECT') {
+				element.selectedIndex = 0;
+			} else {
+				element.value = '';
+			}
+		})
+	}
 
 </script>

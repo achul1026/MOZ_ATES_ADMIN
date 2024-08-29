@@ -15,7 +15,7 @@ import com.moz.ates.traffic.common.entity.api.MojApiAccessToken;
 import com.moz.ates.traffic.common.entity.common.ApiDriverInfoDTO;
 
 @Controller
-@RequestMapping(value = "/api")
+@RequestMapping(value = "/api/moj")
 public class MojApiController {
 	
 	@Value("${moj.api.username}")
@@ -40,13 +40,11 @@ public class MojApiController {
     		MojApiAccessToken mojApiAccessToken = mojApiComponent.getBearerToken(username,password,grantType,getTokenUrl);
     		
     		if(mojApiAccessToken != null) {
-    			apiDriverInfoDTO.setApiToken(mojApiAccessToken.getAccessToken());
+    			apiDriverInfoDTO.setMojApiAccessToken(mojApiAccessToken);
     		} else {
-    			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed to get token");
-    			
+    			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Falha ao obter token");
     		}
     		String result  = mojApiComponent.searchVehicleNo(apiDriverInfoDTO);
-    		
     		return ResponseEntity.ok(result);
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());

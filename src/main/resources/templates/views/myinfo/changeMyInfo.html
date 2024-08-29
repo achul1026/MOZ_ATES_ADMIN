@@ -60,8 +60,8 @@
 			</div>
 			
 			<div class="registor-btn-right">
-				<button type="button" class="main-btn" onclick="myInfoModify()" th:text="#{myinfo.common.btn.modify.myInfo}">Myinfo Modify</button>
 				<a href="/myinfo/myPage.do" class="border-btn" th:text="#{myinfo.common.btn.cancel}">Cancel</a>
+				<button type="button" class="main-btn" onclick="myInfoModify()" th:text="#{myinfo.common.btn.modify.myInfo}">Myinfo Modify</button>
 			</div>
 		</div>
 	</form>
@@ -83,10 +83,14 @@
 		.then(response => response.json())
 		.then((result) => {
 			 if (result.code === 200) {
-				 	alert(successMsg);
-					location.href="/myinfo/myPage.do";
+					 new ModalBuilder().init().successBody(successMsg).footer(4,'Confirmar',function(button, modal){
+						modal.close();
+						location.href="/myinfo/myPage.do";
+					}).open();
 	            } else {
-	                alert(failedMsg);
+					 new ModalBuilder().init().successBody(failedMsg).footer(4,'Confirmar',function(button, modal){
+						modal.close();
+					}).open();
 	            }
 		}).finally(() => {
 			//loading.end();

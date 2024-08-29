@@ -40,7 +40,7 @@ public class StatController {
 	@Authority(type = MethodType.READ)
     @GetMapping("/enforce/chart.do")
     public String enforceChartList(Model model){
-		List<MozCmCd> lawCdList = commonCdService.getCdList("LAW_CHTR_CD");
+		List<MozCmCd> lawCdList = commonCdService.getCdList("LAW_TYPE_CD");
 		model.addAttribute("lawCdList", lawCdList);
         return "views/statistic/enforceChart";
     }

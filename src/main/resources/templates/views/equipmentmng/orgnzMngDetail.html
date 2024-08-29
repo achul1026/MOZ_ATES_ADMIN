@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="#{organization.orgnzMngDetail.title}">유관기관 / 지역 상세</h1>
+		<div>
+			<table class="sub-table detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th th:text="#{organization.orgnzMngDetail.name}">이름</th>
+						<td th:text="${tfcFacilityMaster.facilityNm}"></td>
+						<th th:text="#{organization.orgnzMngDetail.registerDate}">등록일</th>
+						<td th:text="${#dates.format(tfcFacilityMaster.crDt, 'dd.MM.yyyy')}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{organization.orgnzMngDetail.usageStatus}">사용 여부</th>
+
+						<th:block th:if="${tfcFacilityMaster.useYn == 'Y'}">
+							<td class="tdFlex">
+								<div class="statusComplete">
+									<img src="/images/status_icon01.png" alt="V" class="statusImg">
+									<span th:text="#{organization.orgnzMngDetail.usageStatus.useY}" class="statusText"></span>
+								</div>
+							</td>
+						</th:block>
+						<th:block th:unless="${tfcFacilityMaster.useYn == 'Y'}">
+							<td class="tdFlex">
+								<div class="statusFail">
+									<img src="/images/status_icon02.png" alt="X" class="statusImg">
+									<span th:text="#{organization.orgnzMngDetail.usageStatus.useN}" class="statusText"></span>
+								</div>
+							</td>
+						</th:block>
+
+						<th th:text="#{organization.orgnzMngDetail.status}">상태</th>
+						<td th:text="${tfcFacilityMaster.facilityStts}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{organization.orgnzMngDetail.location}">위치</th>
+						<td colspan="3">
+							<p th:text="${tfcFacilityMaster.roadAddr}"></p>
+							<br>
+							<div id="map" class="detailMap"></div>
+						</td>
+					</tr>
+					<tr>
+						<th th:text="#{organization.orgnzMngDetail.details}">상세내용</th>
+						<td colspan="3"><pre th:text="${tfcFacilityMaster.facilityDesc}"></pre></td>
+					</tr>
+					<tr>
+						<th th:text="#{organization.orgnzMngDetail.images}">첨부 파일</th>
+						<td colspan="3">
+							<div class="fileListWrap">
+								<th:block th:if="${#lists.isEmpty(tfcFacilityMaster.tfcFacilityFileInfoList)}">-</th:block>
+								<th:block th:unless="${#lists.isEmpty(tfcFacilityMaster.tfcFacilityFileInfoList)}"
+										  th:each="fileItem : ${tfcFacilityMaster.tfcFacilityFileInfoList}">
+									<a class="list_item" th:href="@{/common/file/facility/download(fileId = ${fileItem.tfcFacilityFileNo})}">
+										<div class="file_list" th:text="${fileItem.fileOrgNm}"></div>
+										<img src="/images/download.png" alt="download">
+									</a>
+								</th:block>
+							</div>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<div class="btn-wrap-center">
+				<button type="button" id="btnGoList" class="sub-btn left-btn" 
+					th:onclick="|location.href='@{/eqp/orgnz/list.do(pageType=list)}'|"
+					th:text="#{equipment.common.button.list}">목록</button>
+				<button type="button" id="btnModify" class="main-btn" th:text="#{equipment.common.button.modify}"
+					th:onclick="|location.href='@{/eqp/orgnz/update.do(tfcFacilityId=${tfcFacilityMaster.tfcFacilityId})}'|">수정</button>
+			</div>
+
+			<div class="modal-wrap" id="modal"></div>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	const lng = /*[[${tfcFacilityMaster.lng}]]*/;
+	const lat = /*[[${tfcFacilityMaster.lat}]]*/;
+	const idx = /*[[${tfcFacilityMaster.tfcFacilityId}]]*/;
+	
+	const modalContent = document.getElementById("modal");
+	
+	let map = new MozAtesMap({
+		elementId : 'map',
+		center_lng : lng,
+		center_lat : lat,
+		isInitDrawCenterMarker : true
+	});
+</script>

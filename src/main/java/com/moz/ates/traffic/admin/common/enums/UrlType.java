@@ -5,9 +5,9 @@ import lombok.Getter;
 @Getter
 public enum UrlType {
 
-	SAVE("save.do","SAVE","SAVE_POR"),
-	DETAIL("detail.do","DETAIL","DETAIL_POR"),
-	UPDATE("update.do","UPDATE","UPDATE_POR")
+	SAVE("save.do","SAVE","Salvar"),
+	DETAIL("detail.do","DETAIL","Detalhes"),
+	UPDATE("update.do","UPDATE","Atualizar")
 	;
 	
 	private String urlPattern;

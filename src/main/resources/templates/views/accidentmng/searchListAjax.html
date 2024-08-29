@@ -1,0 +1,59 @@
+<html xmlns:th="http://www.thymeleaf.org">
+
+<div class="status__list_con">
+    <div id="content-sub-title"
+         th:text="${type} == 'vehicle' ? #{searchListAjax.vehicle.desc} : #{searchListAjax.driver.desc}">차량 번호 또는 문서 번호로 조회한 결과 입니다.</div>
+    <div th:if="${not #lists.isEmpty(acdntHistory)}">
+        <div class="status__list_search_total">
+            <th:block th:text="#{accident.driver.search.Detail.found}">Found</th:block>
+            <span th:text='|"${pagination.totalListCnt}"|'></span>
+            <th:block th:text="#{accident.driver.search.Detail.result}">results</th:block>
+        </div>
+        <div class="table-wrap">
+            <table class="main-table">
+                <colgroup>
+
+                </colgroup>
+                <thead>
+                <tr>
+                    <th th:text="#{searchListAjax.table.number}">No.</th>
+                    <th th:text="#{accident.driver.search.Detail.tfcAcdntDt}">Accident Date</th>
+                    <th th:text="#{accident.driver.search.Detail.tfcAcdntId}">Accident Id</th>
+                    <th:block th:if="${type == 'vehicle'}">
+                        <th th:text="#{accident.driver.search.Detail.vioNm}">Name</th>
+                        <th th:text="#{searchListAjax.table.birth}">Birth Day</th>
+                        <th th:text="#{searchListAjax.table.docNo}">Doc No.</th>
+                        <th th:text="#{accident.driver.search.Detail.dvrLcenId}">DriverLicenseId</th>
+                    </th:block>
+                    <th th:text="#{searchListAjax.table.vehicleNo}">Vehicle Plate No.</th>
+                    <th th:text="#{accident.driver.search.Detail.roadAddr}">accident Road Address</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="item : ${acdntHistory}" th:onclick="|location.href='@{/acdnt/mng/detail.do(tfcAcdntId=${item.tfcAcdntId})}'|">
+                    <td th:text="${item.rnum}"></td>
+                    <td th:text="${#dates.format(item.acdntDt, 'yyyy-MM-dd')}"></td>
+                    <td th:text="${item.tfcAcdntId}"></td>
+                    <th:block th:if="${type == 'vehicle'}">
+                        <td th:text="${item.acdntTrgtNm}"></td>
+                        <td th:text="${item.acdntTrgtBrth}"></td>
+                        <td th:text="${item.docNid}"></td>
+                        <td th:text="${item.dvrLcenId}"></td>
+                    </th:block>
+                    <td th:text="${item.vhRegNo}"></td>
+                    <td th:text="${item.roadAddr}"></td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="page_wrap">
+            <div th:insert="tags/paging :: pagingFragment"></div>
+        </div>
+    </div>
+    <div th:unless="${not #lists.isEmpty(acdntHistory)}">
+        <div class="searchNoDater" th:text="#{accident.driver.search.Detail.resultNone}">
+            조회 결과가 없습니다.
+        </div>
+    </div>
+</div>

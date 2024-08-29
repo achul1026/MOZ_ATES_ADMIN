@@ -26,9 +26,9 @@
 				</table>
 			</div>
 			<div class="registor-btn-right">
+				<a href="/myinfo/myPage.do" class="border-btn" th:text="#{myinfo.common.btn.cancel}">Cancel</a>
 				<button type="button" class="main-btn" th:if="${type == 'user'}" th:text="#{myinfo.password.confirmPw.passwordConfirm}" onclick="verfyPassword()">Password Confirm</button>
 				<button type="button" class="main-btn" th:if="${type == 'password'}" th:text="#{myinfo.password.confirmPw.passwordConfirm}" onclick="verfyPassword()">Password Confirm</button>
-				<a href="/myinfo/myPage.do" class="border-btn" th:text="#{myinfo.common.btn.cancel}">Cancel</a>
 			</div>
 		</div>
 	</form>

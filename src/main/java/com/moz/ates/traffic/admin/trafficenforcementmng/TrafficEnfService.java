@@ -1,111 +1,588 @@
 package com.moz.ates.traffic.admin.trafficenforcementmng;
 
-import java.util.List;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.util.*;
 
+import org.apache.commons.lang3.time.DateFormatUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.moz.ates.traffic.admin.common.util.LoginOprtrUtils;
+import com.moz.ates.traffic.common.component.FileUploadComponent;
+import com.moz.ates.traffic.common.component.enforcement.TrafficEnforcementStatus;
+import com.moz.ates.traffic.common.entity.common.MozMsgQueue;
+import com.moz.ates.traffic.common.entity.common.UploadFileInfo;
 import com.moz.ates.traffic.common.entity.driver.MozVioInfo;
+import com.moz.ates.traffic.common.entity.enforcement.MozDivProvince;
 import com.moz.ates.traffic.common.entity.enforcement.MozTfcEnfHst;
 import com.moz.ates.traffic.common.entity.enforcement.MozTfcEnfMaster;
 import com.moz.ates.traffic.common.entity.equipment.MozCameraEnfOrg;
 import com.moz.ates.traffic.common.entity.equipment.MozCameraEnfOrgFile;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfFileInfo;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfFineInfo;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEqpEnfInfo;
+import com.moz.ates.traffic.common.entity.finentc.MozFineNtcInfo;
 import com.moz.ates.traffic.common.entity.law.MozTfcLwFineInfo;
 import com.moz.ates.traffic.common.entity.law.MozTfcLwInfo;
 import com.moz.ates.traffic.common.entity.payment.MozFinePymntInfo;
 import com.moz.ates.traffic.common.entity.payment.MozPlPymntInfo;
+import com.moz.ates.traffic.common.entity.police.MozPolInfo;
+import com.moz.ates.traffic.common.enums.FileUploadType;
+import com.moz.ates.traffic.common.enums.MsgQueueStatus;
+import com.moz.ates.traffic.common.enums.MsgType;
+import com.moz.ates.traffic.common.enums.NtcTypeCd;
+import com.moz.ates.traffic.common.enums.RegisterType;
+import com.moz.ates.traffic.common.enums.TrafficIdClassification;
+import com.moz.ates.traffic.common.repository.accident.MozTfcAcdntMasterRepository;
+import com.moz.ates.traffic.common.repository.common.MozCmCdRepository;
+import com.moz.ates.traffic.common.repository.common.MozMsgQueueRepository;
+import com.moz.ates.traffic.common.repository.driver.MozVioInfoRepository;
+import com.moz.ates.traffic.common.repository.enforcement.MozDivDistrictRepository;
+import com.moz.ates.traffic.common.repository.enforcement.MozDivProvinceRepository;
+import com.moz.ates.traffic.common.repository.enforcement.MozTfcEnfHstRepository;
+import com.moz.ates.traffic.common.repository.enforcement.MozTfcEnfMasterRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozCameraEnfOrgFileRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozCameraEnfOrgRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfFileInfoRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfFineInfoRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozTfcEqpEnfInfoRepository;
+import com.moz.ates.traffic.common.repository.finentc.MozFineNtcInfoRepository;
+import com.moz.ates.traffic.common.repository.law.MozTfcLwAdtnRvsnRepository;
+import com.moz.ates.traffic.common.repository.law.MozTfcLwFineInfoRepository;
+import com.moz.ates.traffic.common.repository.law.MozTfcLwInfoRepository;
+import com.moz.ates.traffic.common.repository.operator.MozWebOprtrRepository;
+import com.moz.ates.traffic.common.repository.payment.MozFinePymntInfoRepository;
+import com.moz.ates.traffic.common.repository.payment.MozPlPymntInfoRepository;
+import com.moz.ates.traffic.common.repository.police.MozPolInfoRepository;
+import com.moz.ates.traffic.common.support.exception.CommonException;
+import com.moz.ates.traffic.common.support.exception.ErrorCode;
+import com.moz.ates.traffic.common.util.MozatesCommonUtils;
+import com.moz.ates.traffic.common.util.SmsSendContentUtils;
 
-public interface TrafficEnfService {
-    DriverVO getDriverDetail(EnfSearchVO enfSearchVO);
+@Service
+public class TrafficEnfService {
 
-    CarVO getCarDetail(EnfSearchVO enfSearchVO);
+	@Value("${mail.sender.inatro}")
+	private String sender;
 
-    /**
-     * @brief : 교통단속 정보 리스트 조회
-     * @details : 교통단속 정보 리스트 조회
-     * @author : KC.KIM
-     * @date : 2023.08.08
-     * @param : tfcEnfMaster
-     * @return : 
-     */
-    List<MozTfcEnfMaster> getInfoList(MozTfcEnfMaster tfcEnfMaster);
+	@Value("${mail.url.inatro}")
+	private String url;
 
-    int getInfoListCnt(MozTfcEnfMaster tfcEnfMaster);
+	@Autowired
+	MozTfcEnfMasterRepository tfcEnfMasterRepository;
 
-    /**
-     * @brief : 교통단속 정보 상세 조회
-     * @details : 교통단속 정보 상세 조회
-     * @author : KC.KIM
-     * @date : 2023.08.08
-     * @param : tfcEnfId
-     * @return : 
-     */
-    MozTfcEnfMaster getTrafficEnfDetail(String tfcEnfId);
-    
-    /**
-     * @brief : 교통단속 정보 등록
-     * @details : 교통단속 정보 등록
-     * @author : KC.KIM
-     * @date : 2024.03.06
-     * @param : tfcEnfMaster
-     * @param : uploadFiles
-     * @return : 
-     */
-    void insertMozTfcEnfMaster(MozTfcEnfMaster tfcEnfMaster, MultipartFile[] uploadFiles);
-    
-    /**
-     * @brief : 교통단속 정보 수정
-     * @details : 교통단속 정보 수정
-     * @author : KC.KIM
-     * @date : 2023.08.08
-     * @param uploadFiles 
-     * @param : tfcEnfMaster
-     * @return : 
-     */
-    void updateInfo(MozTfcEnfMaster tfcEnfMaster, MultipartFile[] uploadFiles);
-    
-    /**
+	@Autowired
+	MozFinePymntInfoRepository finePymntInfoRepository;
+
+	@Autowired
+	MozTfcEnfHstRepository tfcEnfHstRepository;
+
+	@Autowired
+	MozTfcLwInfoRepository tfcLwInfoRepository;
+
+	@Autowired
+	MozTfcLwFineInfoRepository tfcLwFineInfoRepository;
+
+	@Autowired
+	MozTfcLwAdtnRvsnRepository tfcLwAdtnRvsnRepository;
+
+	@Autowired
+	MozFineNtcInfoRepository fineNtcInfoRepository;
+
+	@Autowired
+	MozVioInfoRepository vioInfoRepository;
+
+	@Autowired
+	MozTfcEnfFileInfoRepository tfcEnfFileInfoRepository;
+
+	@Autowired
+	MozTfcEnfFineInfoRepository tfcEnfFineInfoRepository;
+
+	@Autowired
+	MozPlPymntInfoRepository plPymntInfoRepository;
+
+	@Autowired
+	MozPolInfoRepository polInfoRepository;
+
+	@Autowired
+	MozTfcAcdntMasterRepository tfcAcdntMasterRepository;
+
+	@Autowired
+	MozWebOprtrRepository webOprtrRepository;
+
+    @Autowired
+    MozCameraEnfOrgRepository mozCameraEnfOrgRepository;
+
+    @Autowired
+    MozCameraEnfOrgFileRepository mozCameraEnfOrgFileRepository;
+
+    @Autowired
+    MozTfcEqpEnfInfoRepository mozTfcEqpEnfInfoRepository;
+
+	@Autowired
+	MozMsgQueueRepository mozMsgQueueRepository;
+
+	@Autowired
+	MozCmCdRepository mozCmCdRepository;
+
+	@Autowired
+	MozDivDistrictRepository mozDivDistrictRepository;
+
+	@Autowired
+	MozDivProvinceRepository mozDivProvinceRepository;
+
+	@Autowired
+	FileUploadComponent fileUploadComponent;
+
+	/**
+	 * @brief : 교통단속 정보 리스트 조회
+	 * @details : 교통단속 정보 리스트 조회
+	 * @author : KC.KIM
+	 * @date : 2023.08.08
+	 * @param : tfcEnfMaster
+	 * @return :
+	 */
+	public List<MozTfcEnfMaster> getInfoList(MozTfcEnfMaster tfcEnfMaster) {
+		return tfcEnfMasterRepository.findAllInfoList(tfcEnfMaster);
+	}
+
+	/**
+	 * @brief : 교통단속 정보 카운트 조회
+	 * @details : 교통단속 정보 카운트 조회
+	 * @author : KC.KIM
+	 * @date : 2023.08.08
+	 * @param : tfcEnfMaster
+	 * @return :
+	 */
+	public int getInfoListCnt(MozTfcEnfMaster tfcEnfMaster) {
+		return tfcEnfMasterRepository.countInfoList(tfcEnfMaster);
+	}
+
+	/**
+	 * @brief : 교통단속 정보 상세 조회
+	 * @details : 교통단속 정보 상세 조회
+	 * @author : KC.KIM
+	 * @date : 2023.08.08
+	 * @param : tfcEnfId
+	 * @return :
+	 */
+	public MozTfcEnfMaster getTrafficEnfDetail(String tfcEnfId) {
+		MozTfcEnfMaster tfcEnfMaster = tfcEnfMasterRepository.findOneMozTfcEnfMasterBytfcEnfId(tfcEnfId);
+
+		if (tfcEnfMaster.getDelYn().equals("Y")) {
+			throw new CommonException(ErrorCode.INVALID_PARAMETER);
+		}
+
+		List<MozTfcEnfFileInfo> fileList = new ArrayList<MozTfcEnfFileInfo>();
+		fileList = tfcEnfFileInfoRepository.findTfcEnfFileInfoByTfcEnfId(tfcEnfId);
+		tfcEnfMaster.setTfcEnfFileInfoList(fileList);
+
+		return tfcEnfMaster;
+	}
+
+	/**
+	  * @Method Name : getAllTfcEnfFineInfo
+	  * @Date : 2024. 6. 21.
+	  * @Author : IK.MOON
+	  * @Method Brief : 범칙금 정보 조회
+	  * @param tfcEnfId
+	  * @return
+	  */
+	public List<MozTfcEnfFineInfo> getAllTfcEnfFineInfo(String tfcEnfId) {
+		List<MozTfcEnfFineInfo> lawfineList = tfcEnfFineInfoRepository.findAllTfcEnfFineInfoJoinTfcLwFineInfoAndTfcLwInfoByTfcEnfId(tfcEnfId);
+		for (MozTfcEnfFineInfo lawFine : lawfineList) {
+			String lawType = lawFine.getTfcLwInfo().getLawType();
+			String lawArticleNo = lawFine.getTfcLwInfo().getLawArticleNo();
+			String artclNo = lawFine.getTfcLwFineInfo().getArtclNo();
+			String par = lawFine.getTfcLwFineInfo().getPar();
+
+			StringBuilder titleBuilder = new StringBuilder();
+
+			if (MozatesCommonUtils.isNull(artclNo) && MozatesCommonUtils.isNull(par)) {
+				titleBuilder.append("[").append(lawType).append("] ")
+					.append(lawArticleNo);
+			} else {
+				if (MozatesCommonUtils.isNull(artclNo)) {
+					titleBuilder.append("[").append(lawType).append("] ")
+						.append(lawArticleNo).append("--").append(par);
+				} else if (MozatesCommonUtils.isNull(par)) {
+					titleBuilder.append("[").append(lawType).append("] ")
+					.append(lawArticleNo).append("-").append(artclNo);
+				} else {
+					titleBuilder.append("[").append(lawType).append("] ")
+					.append(lawArticleNo).append("-").append(artclNo).append("-").append(par);
+				}
+
+			}
+
+			lawFine.getTfcLwInfo().setLawNm(titleBuilder.toString());
+		}
+
+		return lawfineList;
+	}
+
+	/**
+	 * @brief : 교통단속 정보 등록
+	 * @details : 교통단속 정보 등록
+	 * @author : KC.KIM
+	 * @date : 2024.03.06
+	 * @param : tfcEnfMaster
+	 * @param : uploadFiles
+	 * @return :
+	 */
+	@Transactional
+	public void insertMozTfcEnfMaster(MozTfcEnfMaster tfcEnfMaster, MultipartFile[] uploadFiles) {
+		String crtr = LoginOprtrUtils.getOprtrId();
+		String code = TrafficEnforcementStatus.REG;
+        String date = DateFormatUtils.format(tfcEnfMaster.getTfcEnfDt(), "yyyyMMdd");
+        LocalDateTime now = LocalDateTime.now();
+        Date crDt = Timestamp.valueOf(now);
+
+        MozPolInfo dbPolInfo =  polInfoRepository.findOneMozPolInfo(tfcEnfMaster.getPolId());
+        String enfIdStr = TrafficIdClassification.ENFORCEMENT + "-" + date + "-" + dbPolInfo.getPolLcenId();
+        Long tfcEnfSeq = tfcEnfMasterRepository.countPolSeqByTfcEnfId(enfIdStr);
+        String creator = dbPolInfo.getPolLcenId() + "-" + String.valueOf(tfcEnfSeq);
+
+        String tfcEnfId = MozatesCommonUtils.getTfcEnfId(creator, tfcEnfMaster.getTfcEnfDt());
+		tfcEnfMaster.setTfcEnfId(tfcEnfId);
+		tfcEnfMaster.setCrtr(crtr);
+
+		//위반자 정보 저장
+		String vioId = MozatesCommonUtils.getUuid();
+		MozVioInfo vioInfo = tfcEnfMaster.getVioInfo();
+		vioInfo.setVioId(vioId);
+		vioInfo.setCrtr(crtr);
+
+		vioInfoRepository.insertVioInfo(vioInfo);
+
+		// 교통단속 정보 저장
+		tfcEnfMaster.setVioId(vioId);
+		tfcEnfMaster.setLastTfcEnfProcCd(code);
+		tfcEnfMasterRepository.insertTfcEnfInfo(tfcEnfMaster);
+
+		//단속 파일 저장
+		for(MultipartFile uploadFile : uploadFiles) {
+			if (!uploadFile.isEmpty()) {
+				String[] extArr = {"jpg", "jpeg", "png", "PNG", "tif", "gif"};
+				UploadFileInfo uploadFileInfo = fileUploadComponent.uploadFileToUploadFileInfoChkExtension(uploadFile, extArr);
+				MozTfcEnfFileInfo atchFile = new MozTfcEnfFileInfo();
+				atchFile.setTfcEnfId(tfcEnfId);
+				atchFile.setFileNm(uploadFileInfo.getFileNm());
+				atchFile.setFilePath(uploadFileInfo.getFilePath());
+				atchFile.setFileSize(String.valueOf(uploadFileInfo.getFileSize()));
+				atchFile.setFileOrgNm(uploadFileInfo.getOriginalFileNm());
+				tfcEnfFileInfoRepository.insertTfcEnfFileInfo(atchFile);
+
+			}
+		}
+
+		//범칙금 정보 저장
+		List<MozTfcEnfFineInfo> fineInfoList = tfcEnfMaster.getTfcFineNtcInfoList();
+		for(MozTfcEnfFineInfo fineInfo : fineInfoList) {
+			fineInfo.setTfcEnfId(tfcEnfId);
+			fineInfo.setTfcEnfDt(tfcEnfMaster.getTfcEnfDt());
+			tfcEnfFineInfoRepository.insertTfcEnfFineInfo(fineInfo);
+		}
+
+		//고지관리 정보 저장
+		MozFineNtcInfo fineNtcInfo = new MozFineNtcInfo();
+		String fineNtcId = MozatesCommonUtils.getUuid();
+		fineNtcInfo.setFineNtcId(fineNtcId);
+		fineNtcInfo.setTfcEnfId(tfcEnfId);
+		fineNtcInfo.setFirstFineNtcDt(tfcEnfMaster.getTfcEnfDt());
+		fineNtcInfo.setFirstFineNtcPrice(tfcEnfMaster.getTotalPrice());
+		fineNtcInfo.setNtcTy(NtcTypeCd.FIRST_NOTICE.getCode());
+		fineNtcInfo.setFirstFineNtcDdln(MozatesCommonUtils.calculateAfterDays(tfcEnfMaster.getTfcEnfDt(), 15, Calendar.DAY_OF_MONTH));
+		fineNtcInfo.setCrtr(crtr);
+		fineNtcInfo.setCrDt(crDt);
+		fineNtcInfoRepository.insertFineNtcInfo(fineNtcInfo);
+
+		//벌금 결제 정보 저장
+        MozFinePymntInfo finePymntInfo = new MozFinePymntInfo();
+        finePymntInfo = tfcEnfMaster.getFinePymntInfo();
+        String pymntId = MozatesCommonUtils.getUuid();
+        finePymntInfo.setPymntId(pymntId);
+        finePymntInfo.setFineNtcId(fineNtcId);
+        finePymntInfo.setPayerNm(vioInfo.getVioNm());
+        finePymntInfo.setTotalPrice(tfcEnfMaster.getTotalPrice());
+        finePymntInfo.setPymntPrice(0F);
+        finePymntInfo.setPymntStts("N");
+        finePymntInfo.setCrtr(crtr);
+        finePymntInfoRepository.insertFinePaymentInfo(finePymntInfo);
+
+		//단속 로그 저장
+		MozTfcEnfHst tfcEnfHst = new MozTfcEnfHst();
+        String enfHstId = MozatesCommonUtils.getUuid();
+        String crtrIpAddr = LoginOprtrUtils.getUserIpAddr();
+        String registerType = getEnfRegType(LoginOprtrUtils.getOprtrPermission());
+        tfcEnfHst.setHstId(enfHstId);
+        tfcEnfHst.setTfcEnfRegTy(registerType);
+        tfcEnfHst.setTfcEnfId(tfcEnfId);
+        tfcEnfHst.setTfcEnfPrcCd(code);
+        tfcEnfHst.setCrtr(crtr);
+        tfcEnfHst.setCrtrIpAddr(crtrIpAddr);
+        tfcEnfHstRepository.insertTfcEnfHstInfo(tfcEnfHst);
+
+        // SMS 발송
+        MozMsgQueue mozMsgQueue = new MozMsgQueue();
+		mozMsgQueue.setSender(sender);
+		mozMsgQueue.setMsgType(MsgType.SMS);
+		mozMsgQueue.setStatus(MsgQueueStatus.WAITING);
+		mozMsgQueue.setRetry(0);
+		//TODO::URL추가 이나트로 결제
+		mozMsgQueue.setContent(SmsSendContentUtils.fineNoticeSmsContent(vioInfo.getVioNm(), url, NtcTypeCd.FIRST_NOTICE ,sender,tfcEnfId));
+		mozMsgQueue.setReceiver(vioInfo.getVioPno());
+		mozMsgQueue.setTfcEnfId(tfcEnfId);
+		mozMsgQueueRepository.saveMozMsgQueue(mozMsgQueue);
+	}
+
+	/**
+	 * @brief : 교통단속 정보 수정
+	 * @details : 교통단속 정보 수정
+	 * @author : KC.KIM
+	 * @date : 2023.08.08
+	 * @param : tfcEnfMaster
+	 * @return :
+	 */
+	@Transactional
+	public void updateInfo(MozTfcEnfMaster tfcEnfMaster, MultipartFile[] uploadFiles) {
+		String crtr = LoginOprtrUtils.getOprtrId();
+		LocalDateTime now = LocalDateTime.now();
+        Date crDt = Timestamp.valueOf(now);
+        String code = TrafficEnforcementStatus.UPD;
+		//위반자 정보 수정
+		vioInfoRepository.updateMozVioINfo(tfcEnfMaster.getVioInfo());
+
+		//교통단속 정보 수정
+		tfcEnfMasterRepository.updateMozTfcEnfMaster(tfcEnfMaster);
+
+		//단속 파일 수정
+		List<MozTfcEnfFileInfo> deleteAtchFileList = new ArrayList<MozTfcEnfFileInfo>();
+		deleteAtchFileList = tfcEnfMaster.getTfcEnfFileInfoList();
+
+		if(deleteAtchFileList != null) {
+			for(MozTfcEnfFileInfo deleteFileInfo : deleteAtchFileList) {
+				if(!MozatesCommonUtils.isNull(deleteFileInfo.getVioFileNo())) {
+					MozTfcEnfFileInfo fileInfo = new MozTfcEnfFileInfo();
+					fileInfo = tfcEnfFileInfoRepository.findOneByMozTfcEnfFileInfoByVioFileId(String.valueOf(deleteFileInfo.getVioFileNo()));
+					fileUploadComponent.deleteUploadFile(fileInfo.getFilePath());
+					tfcEnfFileInfoRepository.deleteMozTfcEnfFileInfoByVioFileNo(String.valueOf(fileInfo.getVioFileNo()));
+				}
+			}
+		}
+		for (MultipartFile uploadFile : uploadFiles) {
+			if (!uploadFile.isEmpty()) {
+				String[] extArr = {"jpg", "jpeg", "png", "PNG", "tif", "gif"};
+				UploadFileInfo uploadFileInfo = fileUploadComponent.uploadFileToUploadFileInfoChkExtension(uploadFile, extArr);
+				MozTfcEnfFileInfo atchFile = new MozTfcEnfFileInfo();
+				atchFile.setTfcEnfId(tfcEnfMaster.getTfcEnfId());
+				atchFile.setFileNm(uploadFileInfo.getFileNm());
+				atchFile.setFilePath(uploadFileInfo.getFilePath());
+				atchFile.setFileSize(String.valueOf(uploadFileInfo.getFileSize()));
+				atchFile.setFileOrgNm(uploadFileInfo.getOriginalFileNm());
+				tfcEnfFileInfoRepository.insertTfcEnfFileInfo(atchFile);
+			}
+		}
+		MozFineNtcInfo dbFineNtcInfo = fineNtcInfoRepository.findOneFineNtcInfoByTfcEnfId(tfcEnfMaster.getTfcEnfId());
+		finePymntInfoRepository.deleteFinePymntInfoByTfcEnfId(dbFineNtcInfo.getFineNtcId());
+		fineNtcInfoRepository.deleteFineNtcInfoByTfcEnfId(tfcEnfMaster.getTfcEnfId());
+		tfcEnfFineInfoRepository.deleteFineNtcInfoByTfcEnfId(tfcEnfMaster.getTfcEnfId());
+
+		//범칙금 정보 저장
+		List<MozTfcEnfFineInfo> fineInfoList = tfcEnfMaster.getTfcFineNtcInfoList();
+		for(MozTfcEnfFineInfo fineInfo : fineInfoList) {
+			fineInfo.setTfcEnfId(tfcEnfMaster.getTfcEnfId());
+			fineInfo.setTfcEnfDt(tfcEnfMaster.getTfcEnfDt());
+			tfcEnfFineInfoRepository.insertTfcEnfFineInfo(fineInfo);
+		}
+
+		//고지관리 정보 저장
+		MozFineNtcInfo fineNtcInfo = new MozFineNtcInfo();
+		String fineNtcId = MozatesCommonUtils.getUuid();
+		fineNtcInfo.setFineNtcId(fineNtcId);
+		fineNtcInfo.setTfcEnfId(tfcEnfMaster.getTfcEnfId());
+		fineNtcInfo.setFirstFineNtcDt(tfcEnfMaster.getTfcEnfDt());
+		fineNtcInfo.setFirstFineNtcPrice(tfcEnfMaster.getTotalPrice());
+		fineNtcInfo.setNtcTy(NtcTypeCd.FIRST_NOTICE.getCode());
+		fineNtcInfo.setFirstFineNtcDdln(MozatesCommonUtils.calculateAfterDays(tfcEnfMaster.getTfcEnfDt(), 15, Calendar.DAY_OF_MONTH));
+		fineNtcInfo.setCrtr(crtr);
+		fineNtcInfo.setCrDt(crDt);
+		fineNtcInfoRepository.insertFineNtcInfo(fineNtcInfo);
+
+		//벌금 결제 정보 저장
+        MozFinePymntInfo finePymntInfo = new MozFinePymntInfo();
+        finePymntInfo = tfcEnfMaster.getFinePymntInfo();
+        String pymntId = MozatesCommonUtils.getUuid();
+        finePymntInfo.setPymntId(pymntId);
+        finePymntInfo.setFineNtcId(fineNtcId);
+        finePymntInfo.setPayerNm(tfcEnfMaster.getVioInfo().getVioNm());
+        finePymntInfo.setTotalPrice(tfcEnfMaster.getTotalPrice());
+        finePymntInfo.setPymntPrice(0F);
+        finePymntInfo.setPymntStts("N");
+        finePymntInfo.setCrtr(crtr);
+        finePymntInfoRepository.insertFinePaymentInfo(finePymntInfo);
+
+       //단속 로그 저장
+       MozTfcEnfHst tfcEnfHst = new MozTfcEnfHst();
+       String enfHstId = MozatesCommonUtils.getUuid();
+       String crtrIpAddr = LoginOprtrUtils.getUserIpAddr();
+       String registerType = getEnfRegType(LoginOprtrUtils.getOprtrPermission());
+       tfcEnfHst.setHstId(enfHstId);
+       tfcEnfHst.setTfcEnfRegTy(registerType);
+       tfcEnfHst.setTfcEnfId(tfcEnfMaster.getTfcEnfId());
+       tfcEnfHst.setTfcEnfPrcCd(code);
+       tfcEnfHst.setCrtr(crtr);
+       tfcEnfHst.setCrtrIpAddr(crtrIpAddr);
+       tfcEnfHstRepository.insertTfcEnfHstInfo(tfcEnfHst);
+	}
+
+	/**
      * @brief : 교통단속 정보 삭제
      * @details : 교통단속 정보 삭제
      * @author : KC.KIM
      * @date : 2024.03.11
      * @param : tfcEnfMaster
-     * @return : 
+     * @return :
      */
-	void deleteTfcEnfMasterByTfcEnfId(MozTfcEnfMaster tfcEnfMaster);
-    
-    /**
-     * @brief : 벌금 정보 수정
-     * @details : 벌금 정보 수정
-     * @author : KC.KIM
-     * @date : 2023.08.08
-     * @param : finePymntInfo
-     * @return : 
-     */
-    void updateInfoPrice(MozFinePymntInfo finePymntInfo);
-    
-    /**
-     * @brief : 교통단속 로그 리스트 조회
-     * @details : 교통단속 로그 리스트 조회
-     * @author : KC.KIM
-     * @date : 2023.08.08
-     * @param : tfcEnfHst
-     * @return : 
-     */
-    List getLogList(MozTfcEnfHst tfcEnfHst);
+	@Transactional
+	public void deleteTfcEnfMasterByTfcEnfId(MozTfcEnfMaster tfcEnfMaster) {
+		String code = TrafficEnforcementStatus.DTL;
+		String crtr = LoginOprtrUtils.getOprtrId();
+		if(MozatesCommonUtils.isNull(tfcEnfMaster.getTfcEnfId())) {
+			throw new CommonException(ErrorCode.INVALID_PARAMETER);
+		}
 
-    int getLogListCnt(MozTfcEnfHst tfcEnfHst);
-    
-    /**
-     * @brief : 위반 차량 사진 삭제
-     * @details : 위반 차량 사진 삭제
+		// 위반 파일 정보 삭제
+		List<MozTfcEnfFileInfo> tfcEnfFileInfoList = new ArrayList<MozTfcEnfFileInfo>();
+		tfcEnfFileInfoList = tfcEnfFileInfoRepository.findTfcEnfFileInfoByTfcEnfId(tfcEnfMaster.getTfcEnfId());
+		if(tfcEnfFileInfoList != null) {
+			for(MozTfcEnfFileInfo fileItem : tfcEnfFileInfoList) {
+				fileUploadComponent.deleteUploadFile(fileItem.getFilePath());
+			}
+		}
+		tfcEnfFileInfoRepository.deleteTfcEnfFileInfoByTfcEnfId(tfcEnfMaster.getTfcEnfId());
+
+		MozTfcEnfMaster dbEnfMaster = tfcEnfMasterRepository.findOneMozTfcEnfMasterBytfcEnfId(tfcEnfMaster.getTfcEnfId());
+		MozFineNtcInfo fineNtcInfo = fineNtcInfoRepository.findOneFineNtcInfoByTfcEnfId(tfcEnfMaster.getTfcEnfId());
+		finePymntInfoRepository.deleteFinePymntInfoByTfcEnfId(fineNtcInfo.getFineNtcId());
+		fineNtcInfoRepository.deleteFineNtcInfoByTfcEnfId(tfcEnfMaster.getTfcEnfId());
+		tfcEnfFineInfoRepository.deleteFineNtcInfoByTfcEnfId(tfcEnfMaster.getTfcEnfId());
+		tfcEnfMasterRepository.deleteTfcEnfMasterByTfcEnfId(dbEnfMaster.getTfcEnfId());
+		vioInfoRepository.deleteVioInfoByVioId(dbEnfMaster.getVioId());
+
+		//단속 로그 저장
+	    MozTfcEnfHst tfcEnfHst = new MozTfcEnfHst();
+	    String enfHstId = MozatesCommonUtils.getUuid();
+	    String crtrIpAddr = LoginOprtrUtils.getUserIpAddr();
+	    String registerType = getEnfRegType(LoginOprtrUtils.getOprtrPermission());
+	    tfcEnfHst.setHstId(enfHstId);
+	    tfcEnfHst.setTfcEnfRegTy(registerType);
+	    tfcEnfHst.setTfcEnfId(tfcEnfMaster.getTfcEnfId());
+	    tfcEnfHst.setTfcEnfPrcCd(code);
+	    tfcEnfHst.setCrtr(crtr);
+	    tfcEnfHst.setCrtrIpAddr(crtrIpAddr);
+	    tfcEnfHstRepository.insertTfcEnfHstInfo(tfcEnfHst);
+	}
+
+	/**
+     * @brief : 교통단속 정보 삭제(soft Delete)
+     * @details : 교통단속 정보 삭제(soft Delete)
      * @author : KC.KIM
-     * @date : 2023.08.08
+     * @date : 2024.03.11
      * @param : tfcEnfMaster
-     * @return : 
+     * @return :
      */
-    void deleteEnfImage(MozTfcEnfMaster tfcEnfMaster);
+	@Transactional
+	public void deleteTfcEnfMaster(MozTfcEnfMaster tfcEnfMaster) {
+		String code = TrafficEnforcementStatus.DTL;
+		String crtr = LoginOprtrUtils.getOprtrId();
+		tfcEnfMaster.setDelYn("Y");
 
-    /**
+		MozTfcEnfMaster dbTfcEnfMaster = tfcEnfMasterRepository.findOneMozTfcEnfMaster(tfcEnfMaster.getTfcEnfId());
+
+		if(!MozatesCommonUtils.isNull(dbTfcEnfMaster.getTfcEnfEqpId())) {
+			//단속장비 단속정보 삭제
+			mozTfcEqpEnfInfoRepository.deleteTfcEqpEnfInfoByTfcEnfId(dbTfcEnfMaster.getTfcEnfId());
+		}
+
+
+		tfcEnfMasterRepository.deleteTfcEnfMaster(tfcEnfMaster);
+
+		//고지정보 수정
+		MozFineNtcInfo fineNtcInfo = fineNtcInfoRepository.findOneFineNtcInfoByTfcEnfId(tfcEnfMaster.getTfcEnfId());
+		if(fineNtcInfo != null) {
+			fineNtcInfo.setNtcTy(NtcTypeCd.DELETE_NOTICE.getCode());
+			fineNtcInfoRepository.updateNtcTyForDeleteEnfInfo(fineNtcInfo);
+		}
+
+		//단속 로그 저장
+	    MozTfcEnfHst tfcEnfHst = new MozTfcEnfHst();
+	    String enfHstId = MozatesCommonUtils.getUuid();
+	    String crtrIpAddr = LoginOprtrUtils.getUserIpAddr();
+	    String registerType = getEnfRegType(LoginOprtrUtils.getOprtrPermission());
+	    tfcEnfHst.setHstId(enfHstId);
+	    tfcEnfHst.setTfcEnfRegTy(registerType);
+	    tfcEnfHst.setTfcEnfId(tfcEnfMaster.getTfcEnfId());
+	    tfcEnfHst.setTfcEnfPrcCd(code);
+	    tfcEnfHst.setCrtr(crtr);
+	    tfcEnfHst.setCrtrIpAddr(crtrIpAddr);
+	    tfcEnfHstRepository.insertTfcEnfHstInfo(tfcEnfHst);
+	}
+
+	/**
+	 * @brief : 교통단속 로그 리스트 조회
+	 * @details : 교통단속 로그 리스트 조회
+	 * @author : KC.KIM
+	 * @date : 2023.08.08
+	 * @param : tfcEnfHst
+	 * @return :
+	 */
+	public List<MozTfcEnfHst> getLogList(MozTfcEnfHst tfcEnfHst) {
+		return tfcEnfHstRepository.findAllLogListsByTfcEnfHst(tfcEnfHst);
+
+	}
+
+	/**
+	 * @brief : 교통단속 로그 카운트 조회
+	 * @details : 교통단속 로그 카운트 조회
+	 * @author : KC.KIM
+	 * @date : 2023.08.08
+	 * @param : tfcEnfHst
+	 * @return :
+	 */
+	public int getLogListCnt(MozTfcEnfHst tfcEnfHst) {
+		return tfcEnfHstRepository.countLogListsByTfcEnfHst(tfcEnfHst);
+	}
+
+	/**
+	 * @brief : 벌금 정보 수정
+	 * @details : 벌금 정보 수정
+	 * @author : KC.KIM
+	 * @date : 2023.08.08
+	 * @param : finePymntInfo
+	 * @return :
+	 */
+	public void updateInfoPrice(MozFinePymntInfo finePymntInfo) {
+		finePymntInfoRepository.updateFineTotalPrice(finePymntInfo);
+	}
+
+	/**
+	 * @brief : 위반 차량 사진 삭제
+	 * @details : 위반 차량 사진 삭제
+	 * @author : KC.KIM
+	 * @date : 2023.08.08
+	 * @param : tfcEnfMaster
+	 * @return :
+	 */
+	public void deleteEnfImage(MozTfcEnfMaster tfcEnfMaster) {
+		tfcEnfMasterRepository.deleteEnfImage(tfcEnfMaster);
+	}
+
+	/**
      * @brief : 교통단속 로그 상세 조회
      * @details : 교통단속 로그 상세 조회
      * @author : KC.KIM
@@ -113,24 +590,90 @@ public interface TrafficEnfService {
      * @param : hstId
      * @return : MozTfcEnfHst
      */
-	public MozTfcEnfHst getLogDetail(String hstId);
+	public MozTfcEnfHst getLogDetail(String hstId) {
+		return tfcEnfHstRepository.findOneTfcEnfHst(hstId);
+	}
 
-	List<MozTfcLwInfo> getTrafficLawsListByNotNullFineInfo();
+	/**
+     * @brief : 교통법률범칙금미조회
+     * @details : 교통법률범칙금미조회
+     * @author : KC.KIM
+     * @date : 2024.01.31
+     * @param : hstId
+     * @return : MozTfcEnfHst
+     */
+	public List<MozTfcLwInfo> getTrafficLawsListByNotNullFineInfo() {
+		return tfcLwInfoRepository.findAllLawListsIsNotNullFineInfo();
+	}
 
-	List<MozPlPymntInfo> getPlacePaymentList();
+	/**
+     * @brief : 결제 기관 목록 조회
+     * @details : 결제 기관 목록 조회
+     * @author : KC.KIM
+     * @date : 2024.01.31
+     * @param : hstId
+     * @return : MozTfcEnfHst
+     */
+	public List<MozPlPymntInfo> getPlacePaymentList() {
+		MozPlPymntInfo plPymntInfo = new MozPlPymntInfo();
+		return plPymntInfoRepository.findAllPlacePaymentList(plPymntInfo);
+	}
 
-	List<MozTfcLwFineInfo> getLawFineInfoList(String tfcLawId);
+	/**
+     * @brief : 법률 조회
+     * @details : 법률 조회
+     * @author : KC.KIM
+     * @date : 2024.01.31
+     * @param : hstId
+     * @return : MozTfcEnfHst
+     */
+	public List<MozTfcLwFineInfo> getLawFineInfoList(String tfcLawId) {
+		MozTfcLwFineInfo tfcLwFineInfo = new MozTfcLwFineInfo();
+		tfcLwFineInfo.setTfcLawId(tfcLawId);
+		return tfcLwFineInfoRepository.findMozTfcLwFineInfoByTfcLawIdJoinMozCmCd(tfcLawId);
+	}
 
-	void deleteTfcEnfMaster(MozTfcEnfMaster tfcEnfMaster);
+
+	/**
+     * @brief : 단속 타입 조회
+     * @details : 단속 타입 조회
+     * @author : KC.KIM
+     * @date : 2024.01.31
+     * @param : hstId
+     * @return : MozTfcEnfHst
+     */
+	public String getEnfRegType(String oprtrPermissionCdStr) {
+		String registerType = "";
+		switch (oprtrPermissionCdStr) {
+		case "OPC000":
+			registerType = RegisterType.SUPER_ADMIN.getCode();
+			break;
+		case "OPC001":
+			registerType = RegisterType.ADMIN_USER.getCode();
+			break;
+		case "OPC002":
+			registerType = RegisterType.OFFICE_OPERATOR.getCode();
+			break;
+		case "OPC003":
+			registerType = RegisterType.POLICE_OPERATOR.getCode();
+			break;
+		case "OPC004":
+			registerType = RegisterType.POLICE_OFFICER.getCode();
+			break;
+		}
+		return registerType;
+	}
 
 	/**
      * @brief : getViolationCount
-     * @details : 단속카메라 단속대상 목록 카운트 
+     * @details : 단속카메라 단속대상 목록 카운트
      * @author : KY.LEE
      * @date : 2024.04.06
      * @param : mozCameraEnfOrg
      */
-	int getViolationCount(MozCameraEnfOrg mozCameraEnfOrg);
+	public int getViolationCount(MozCameraEnfOrg mozCameraEnfOrg) {
+		return mozCameraEnfOrgRepository.countBySearchOption(mozCameraEnfOrg);
+	}
 
 	/**
 	 * @brief : getViolationList
@@ -139,7 +682,9 @@ public interface TrafficEnfService {
 	 * @date : 2024.04.06
 	 * @param : mozCameraEnfOrg
 	 */
-	List<MozCameraEnfOrg> getViolationList(MozCameraEnfOrg mozCameraEnfOrg);
+	public List<MozCameraEnfOrg> getViolationList(MozCameraEnfOrg mozCameraEnfOrg) {
+		return mozCameraEnfOrgRepository.findAllBySearchOption(mozCameraEnfOrg);
+	}
 
 	/**
 	 * @brief : getViolationDetail
@@ -148,7 +693,9 @@ public interface TrafficEnfService {
 	 * @date : 2024.04.06
 	 * @param : mozCameraEnfOrg
 	 */
-	MozCameraEnfOrg getViolationDetail(Long idx);
+	public MozCameraEnfOrg getViolationDetail(Long idx) {
+		return mozCameraEnfOrgRepository.fineOneByIdx(idx);
+	}
 
 	/**
 	 * @brief : getViolationImageList
@@ -157,7 +704,9 @@ public interface TrafficEnfService {
 	 * @date : 2024.04.06
 	 * @param : MozCameraEnfOrgFile
 	 */
-	List<MozCameraEnfOrgFile> getViolationImageList(Long idx);
+	public List<MozCameraEnfOrgFile> getViolationImageList(Long orgIdx) {
+		return mozCameraEnfOrgFileRepository.findAllByOrgIdx(orgIdx);
+	}
 
 	/**
 	 * @brief : getViolationImage
@@ -166,8 +715,28 @@ public interface TrafficEnfService {
 	 * @date : 2024.04.06
 	 * @param : MozCameraEnfOrgFile
 	 */
-	String getViolationImage(Long idx);
+	public String getViolationImage(Long idx) {
+		return mozCameraEnfOrgFileRepository.findOneByIdx(idx);
+	}
 
+	/**
+	 * methodName : updateCarPlate
+	 * author : IK.MOON
+	 * date : 2024-08-23
+	 * description : 차량번호 업데이트
+	 *
+	 * @param cameraEnfOrg
+	 * @return int
+	 */
+	@Transactional
+    public int updateCarPlate(MozCameraEnfOrg cameraEnfOrg) {
+		int successCount = mozCameraEnfOrgRepository.updateCarPlateByIdx(cameraEnfOrg);
+		if (successCount != 1) {
+			throw new CommonException(ErrorCode.ENTITY_UPDATE_FAIL);
+		}
+
+		return successCount;
+	}
 
 	/**
 	 * @brief : insertMozTfcEnfMasterForEquipment
@@ -176,23 +745,195 @@ public interface TrafficEnfService {
 	 * @date : 2024.04.09
 	 * @param : MozTfcEnfMaster
 	 */
-	public void insertMozTfcEnfMasterForEquipment(MozTfcEnfMaster tfcEnfMaster);
+	@Transactional
+	public String insertMozTfcEnfMasterForEquipment(MozTfcEnfMaster tfcEnfMaster) {
+		List<String> uploadFileList = new ArrayList<String>();
+
+		//기본값 세팅
+		String crtr = LoginOprtrUtils.getOprtrId();
+		String code = TrafficEnforcementStatus.REG;
+        String date = DateFormatUtils.format(tfcEnfMaster.getTfcEnfDt(), "yyyyMMdd");
+        Date crDt = new Date();
+        Long idx = tfcEnfMaster.getIdx();
+
+        //DB조회 시작
+        MozPolInfo dbPolInfo =  polInfoRepository.findOneMozPolInfo(tfcEnfMaster.getPolId());
+        String enfIdStr = TrafficIdClassification.ENFORCEMENT + "-" + date + "-" + dbPolInfo.getPolLcenId();
+        Long tfcEnfSeq = tfcEnfMasterRepository.countPolSeqByTfcEnfId(enfIdStr);
+        String creator = dbPolInfo.getPolLcenId() + "-" + String.valueOf(tfcEnfSeq);
+
+        String tfcEnfId = MozatesCommonUtils.getTfcEnfId(creator, tfcEnfMaster.getTfcEnfDt());
+        String tfcEnfEqpId = tfcEnfMaster.getTfcEnfEqpId();
+		tfcEnfMaster.setTfcEnfId(tfcEnfId);
+		tfcEnfMaster.setCrtr(crtr);
+
+		//위반자 정보 저장
+		String vioId = MozatesCommonUtils.getUuid();
+		MozVioInfo vioInfo = tfcEnfMaster.getVioInfo();
+		vioInfo.setVioId(vioId);
+		vioInfo.setCrtr(crtr);
+		vioInfoRepository.insertVioInfo(vioInfo);
+
+		// 교통단속 정보 저장
+		tfcEnfMaster.setVioId(vioId);
+		tfcEnfMaster.setLastTfcEnfProcCd(code);
+		tfcEnfMasterRepository.insertTfcEnfInfo(tfcEnfMaster);
+
+		MozTfcEqpEnfInfo mozTfcEqpEnfInfo = new MozTfcEqpEnfInfo();
+		mozTfcEqpEnfInfo.setIdx(idx);
+		mozTfcEqpEnfInfo.setTfcEnfId(tfcEnfId);
+		mozTfcEqpEnfInfo.setTfcEnfEqpId(tfcEnfEqpId);
+		mozTfcEqpEnfInfo.setCrDt(crDt);
+		mozTfcEqpEnfInfo.setCrtr(creator);
+		mozTfcEqpEnfInfoRepository.saveMozTfcEqpEnfInfo(mozTfcEqpEnfInfo);
+
+		List<MozCameraEnfOrgFile> tfcEnfImgList = mozCameraEnfOrgFileRepository.findAllByOrgIdx(idx);
+
+		try {
+			if(!tfcEnfImgList.isEmpty()) {
+				for(MozCameraEnfOrgFile mozCameraEnfOrgFile : tfcEnfImgList) {
+					//단속 케메라 파일 저장
+					UploadFileInfo uploadFileInfo = fileUploadComponent.uploadFileToCopyFilePath(mozCameraEnfOrgFile.getFilePath() , FileUploadType.ENFORCEMENT);
+
+					MozTfcEnfFileInfo atchFile = new MozTfcEnfFileInfo();
+
+					uploadFileList.add(uploadFileInfo.getFilePath());
+					atchFile.setTfcEnfId(tfcEnfId);
+					atchFile.setFileNm(uploadFileInfo.getFileNm());
+					atchFile.setFilePath(uploadFileInfo.getFilePath());
+					atchFile.setFileSize(String.valueOf(uploadFileInfo.getFileSize()));
+					atchFile.setFileOrgNm(uploadFileInfo.getOriginalFileNm());
+					tfcEnfFileInfoRepository.insertTfcEnfFileInfo(atchFile);
+				}
+			}
+			//범칙금 정보 저장
+			List<MozTfcEnfFineInfo> fineInfoList = tfcEnfMaster.getTfcFineNtcInfoList();
+			for(MozTfcEnfFineInfo fineInfo : fineInfoList) {
+				fineInfo.setTfcEnfId(tfcEnfId);
+				fineInfo.setTfcEnfDt(tfcEnfMaster.getTfcEnfDt());
+				tfcEnfFineInfoRepository.insertTfcEnfFineInfo(fineInfo);
+			}
+
+			//고지관리 정보 저장
+			MozFineNtcInfo fineNtcInfo = new MozFineNtcInfo();
+			String fineNtcId = MozatesCommonUtils.getUuid();
+			fineNtcInfo.setFineNtcId(fineNtcId);
+			fineNtcInfo.setTfcEnfId(tfcEnfId);
+			fineNtcInfo.setFirstFineNtcDt(tfcEnfMaster.getTfcEnfDt());
+			fineNtcInfo.setFirstFineNtcPrice(tfcEnfMaster.getTotalPrice());
+			fineNtcInfo.setNtcTy(NtcTypeCd.FIRST_NOTICE.getCode());
+			fineNtcInfo.setFirstFineNtcDdln(MozatesCommonUtils.calculateAfterDays(tfcEnfMaster.getTfcEnfDt(), 15, Calendar.DAY_OF_MONTH));
+			fineNtcInfo.setCrtr(crtr);
+			fineNtcInfo.setCrDt(crDt);
+			fineNtcInfoRepository.insertFineNtcInfo(fineNtcInfo);
+
+			//벌금 결제 정보 저장
+	        MozFinePymntInfo finePymntInfo = new MozFinePymntInfo();
+	        finePymntInfo = tfcEnfMaster.getFinePymntInfo();
+	        String pymntId = MozatesCommonUtils.getUuid();
+	        finePymntInfo.setPymntId(pymntId);
+	        finePymntInfo.setFineNtcId(fineNtcId);
+	        finePymntInfo.setPayerNm(vioInfo.getVioNm());
+	        finePymntInfo.setTotalPrice(tfcEnfMaster.getTotalPrice());
+	        finePymntInfo.setPymntPrice(0F);
+	        finePymntInfo.setPymntStts("N");
+	        finePymntInfo.setCrtr(crtr);
+	        finePymntInfoRepository.insertFinePaymentInfo(finePymntInfo);
+
+			//단속 로그 저장
+			MozTfcEnfHst tfcEnfHst = new MozTfcEnfHst();
+	        String enfHstId = MozatesCommonUtils.getUuid();
+	        String crtrIpAddr = LoginOprtrUtils.getUserIpAddr();
+	        String registerType = getEnfRegType(LoginOprtrUtils.getOprtrPermission());
+	        tfcEnfHst.setHstId(enfHstId);
+	        tfcEnfHst.setTfcEnfRegTy(registerType);
+	        tfcEnfHst.setTfcEnfId(tfcEnfId);
+	        tfcEnfHst.setTfcEnfPrcCd(code);
+	        tfcEnfHst.setCrtr(crtr);
+	        tfcEnfHst.setCrtrIpAddr(crtrIpAddr);
+	        tfcEnfHstRepository.insertTfcEnfHstInfo(tfcEnfHst);
+		} catch (CommonException e) {
+			//업로드 했던 파일이 존재하면 삭제
+			if(!uploadFileList.isEmpty()) {
+				for(String uploadFilePath : uploadFileList) {
+					fileUploadComponent.deleteUploadFile(uploadFilePath);
+				}
+			}
+		}
+		return tfcEnfId;
+	}
 
 	/**
-	 * @brief : 위반자 정보 조회
-	 * @details : 위반자 정보 조회
-	 * @author : KY.LEE
-	 * @date : 2024.04.09
-	 * @param : driverLicenseId
+	 * methodName : getViolationInfoByVehicleNo
+	 * author : IK.MOON
+	 * date : 2024-08-20
+	 * description : 면허 번호로 단속내역 조회
+	 *
+	 * @param vioInfo
+	 * @return list
 	 */
-	List<MozVioInfo> getViolationInfoList(String dvrLcenId);
+	public List<MozTfcEnfMaster> getViolationInfoList(MozVioInfo vioInfo) {
+		return tfcEnfMasterRepository.findAllByDvrLcenId(vioInfo);
+	}
 
 	/**
-	 * @brief : 위반자 정보 조회
-	 * @details : 위반자 정보 조회
-	 * @author : KY.LEE
-	 * @date : 2024.05.02
-	 * @param : docNid
+	 * methodName : getViolationInfoByVehicleNo
+	 * author : IK.MOON
+	 * date : 2024-08-20
+	 * description : 면허 번호로 단속내역 카운트 조회
+	 *
+	 * @param vioInfo
+	 * @return list
 	 */
-	List<MozVioInfo> getViolationInfoListByDocNid(String docNid);
+	public int getViolationInfoCount(MozVioInfo vioInfo) {
+		return tfcEnfMasterRepository.countAllByDvrLcenId(vioInfo);
+	}
+
+	/**
+	 * methodName : getViolationInfoByVehicleNo
+	 * author : IK.MOON
+	 * date : 2024-08-20
+	 * description : 차량 번호로 단속내역 조회
+	 *
+	 * @param tfcEnfMaster
+	 * @return list
+	 */
+	public List<MozTfcEnfMaster> getViolationInfoByVehicleNo(MozTfcEnfMaster tfcEnfMaster) {
+		return tfcEnfMasterRepository.findAllByVhRegNo(tfcEnfMaster);
+	}
+
+	/**
+	 * methodName : getViolationCountByVehicleNo
+	 * author : IK.MOON
+	 * date : 2024-08-20
+	 * description : 차량 번호로 단속내역 카운트 조회
+	 *
+	 * @param tfcEnfMaster
+	 * @return int
+	 */
+	public int getViolationCountByVehicleNo(MozTfcEnfMaster tfcEnfMaster) {
+		return tfcEnfMasterRepository.countAllByVhRegNo(tfcEnfMaster);
+	}
+
+	/**
+	  * @Method Name : getProvinceList
+	  * @Date : 2024. 7. 1.
+	  * @Author : IK.MOON
+	  * @Method Brief : 지역 구 전체 조회
+	  * @return
+	  */
+	public List<MozDivProvince> getProvinceList() {
+		return mozDivProvinceRepository.findAll();
+	}
+
+	/**
+	  * @Method Name : getDistrictList
+	  * @Date : 2024. 7. 1.
+	  * @Author : IK.MOON
+	  * @Method Brief : 지역 주 조회
+	  * @return
+	  */
+	public List<MozDivProvince> getDistrictList() {
+		return mozDivDistrictRepository.findAll();
+	}
 }

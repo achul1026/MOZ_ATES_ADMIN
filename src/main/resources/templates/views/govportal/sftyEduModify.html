@@ -19,7 +19,12 @@
                 <tbody>
 					<tr>
 						<th th:text="#{portal.eduModify.ttl}">제목</th>
-						<td><input type="text" class="main-input" id="postTtl" name="postTtl" th:value="${tfcSftyEdctn.postTtl}"></td>
+						<td>
+							<input type="text" class="main-input" id="postTtl" name="postTtl" maxlength="150" 
+							th:value="${tfcSftyEdctn.postTtl}"
+							th:data-valid-name="#{portal.eduModify.ttl}"
+							data-valid-required data-valid-minimum="5" data-valid-maximum="150">
+						</td>
 					</tr>
 					<tr>
 						<th th:text="#{portal.eduModify.posting}">게시 여부</th>
@@ -61,47 +66,39 @@
 	                <tr>
 	                    <th th:text="#{portal.eduModify.attachment}">첨부파일</th>
 						<td colspan="3">
-							<input type="file" id="uploadFiles" name="uploadFiles"/>
-							<th:block th:if="${tfcSftyEdctn.atchFile == null}">
-								<div id="dragArea">
-									<div class="drag-area">
-										<div class="dragText">
-										   	File name cannot be more than 50 characters<br>
-											The file size can only be uploaded under 5MB<br>
-											Only WORD, XLSX, PDF, and ZIP file can be uploaded
-										</div>
-										<div>
-											<input type="file" id="uploadFiles" onchange="addFiles(this);" style="display: none;">
-											<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
-										</div>
-									</div>
+							<div id="dragArea" class="drag-area" th:classappend="${tfcSftyEdctn.atchFile == null ? '' : 'none'}">
+								<div class="dragText">
+								   	File name cannot be more than 50 characters<br>
+									The file size can only be uploaded under 5MB<br>
+									Only WORD, XLSX, PDF, and ZIP file can be uploaded
 								</div>
-								<div class="upload_wrap">
-									<div id="upload_list_box">
-									</div>
+								<div>
+									<input type="file" id="uploadFiles" name="uploadFiles" class="none">
+									<button type="button" id="uploadBtn" class="main-btn">File Upload</button>
 								</div>
-							</th:block>
-							<th:block th:if="${tfcSftyEdctn.atchFile != null}">
-								<div class="upload_wrap">
-									<div id="upload_list_box">
-										<div class="upload_list">
-											<div class="list_item input_same group_box flex-center">
-					                			<div class="file_list" th:text="${tfcSftyEdctn.atchFile.fileOrgNm}"></div>
-						                		<button type="button" th:data-name="${tfcSftyEdctn.atchFile.fileOrgNm}"
-						                			th:data-value="${tfcSftyEdctn.atchFile.fileIdx}" class="fileDelBtn">
-														<img src="/images/upload_close.png" alt="업로드파일 삭제">
-						                		</button>
-	               							</div>
-										</div>
-									</div>	
-								</div>
-							</th:block>
+							</div>
+							
+							<!-- 업로드 된 파일 영역 -->
+							<div id="fileInfoDiv" class="drag-area" th:classappend="${tfcSftyEdctn.atchFile == null ? 'none' : ''}">
+					            <div id="upFileWrap" th:if="${tfcSftyEdctn.atchFile != null}">
+					                <div id="upFileCon">
+					                    <span th:text="${tfcSftyEdctn.atchFile.fileOrgNm}">파일이름.pdf</span>
+					                     <button type="button" class="fileDelBtn uploadedFileDelBtn" th:data-value="${tfcSftyEdctn.atchFile.fileIdx}">
+						                    <img src="/images/upload_close_one.png" alt="업로드파일 삭제">
+						                </button>
+					                </div>
+					            </div>
+							</div>
+							
 						</td>
 	                </tr>
 	                <tr>
 	                    <th th:text="#{portal.eduModify.content}">상세</th>
 						<td>
-							<textarea class="form-control detail-table-textarea" id="potCn"name="postCn" th:text="${tfcSftyEdctn.postCn}"></textarea>
+							<textarea class="form-control detail-table-textarea data-validate" id="postCn" name="postCn" maxlength="1000"
+							th:text="${tfcSftyEdctn.postCn}"
+							th:data-valid-name="#{portal.eduRegist.content}"
+							data-valid-required data-valid-minimum="5" data-valid-maximum="1000"></textarea>
 						</td>
 	                </tr>
                 </tbody>
@@ -125,34 +122,24 @@
 	$(document).ready(function(){
 		var postStrDe = [[${tfcSftyEdctn.postStrDe}]];
 		var postEndDe = [[${tfcSftyEdctn.postEndDe}]];
-		if(!isNull(postStrDt) && !isNull(postEndDt)){
+		if(!isNull(postStrDe) && !isNull(postEndDe)){
 			$('.time-check-change').show();
 		}else{
 			$('.time-check-change').hide();
 		}
+		
+		fileUploadInit(5, 50, ['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip']);
 	})
 	
 	var deleteFileId;
 	let $fileInput = $("#uploadFiles");
 	
-	$(".fileDelBtn").on('click',function(){
+	$(".uploadedFileDelBtn").on('click',function() {
         var $this = $(this);
-        var fileNm = $this.data('name');
         var fileId = $this.data('value');
-        const dataTransfer = new DataTransfer();
-        let trans = $('#uploadFiles')[0].files;
-        let fileArray = Array.from(trans);
 
-        $this.closest('.upload_list').remove();
-        fileArray.filter(file => file.name != fileNm).forEach(file => {
-            dataTransfer.items.add(file);
-        });
-        $fileInput.prop('files',dataTransfer.files);
-        
-        let uploadLength = $('#upload_list_box').children().length;
-		if(uploadLength <= 0){
-			$('.upload_wrap').addClass('none');
-		}
+        $this.closest('#upFileWrap').remove();
+		$('#fileInfoDiv').addClass('none');
 		
 		$("#dragArea").removeClass("none");
 		deleteFileId = fileId;
@@ -160,45 +147,47 @@
 	
 	
 	$("#btnRegist").click(function () {
-		new ModalBuilder().init().alertBody([[#{portal.eduModify.modifyMessage}]]).footer(2,'확인',function(button, modal){
-		
-		var expYn = $("#expYn-chkbox").prop("checked")? "Y" :"N";
-		$("#expYn").val(expYn);
-		
-		if($("#away-check").prop("checked")){
-			$("#postStrDe").val("");
-			$("#postEndDe").val("");
-		}
-		
-		var form = $("#sftyEducnRegistFrm")[0];
-		var data = new FormData(form);
-		
-		if(!isNull(deleteFileId)){
-			data.append("atchFile.fileIdx", deleteFileId);
-		}
-		
-		$.ajax({
-			url: /*[[@{/portal/sftyEdu/update.ajax}]]*/ "/portal/sftyEdu/update.ajax",
-			type: "post",
-			data: data,
-			enctype: 'multipart/form-data',
-		    processData: false,
-		    contentType: false,
-		    cache: false,
-			success: function (result) {
-				var resultCode = result.code;
-				var resultMessage = result.message;
-				if (resultCode == '200') {
-					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
-						var baseUrl = /*[[@{/portal/sftyEdu/detail.do}]]*/ '';
-						window.location.href = baseUrl + "?tfcSftyEdctnId=" + [[${tfcSftyEdctn.tfcSftyEdctnId}]];
-					}).open();
-				} else {
-					new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
-				}
+		trimValues(['postTtl','postCn']);
+		if(!$("#sftyEducnRegistFrm").soValid()) return false;	
+		new ModalBuilder().init().alertBody([[#{portal.eduModify.modifyMessage}]]).footer(2,'Confirmar',function(button, modal){
+			
+			var expYn = $("#expYn-chkbox").prop("checked")? "Y" :"N";
+			$("#expYn").val(expYn);
+			
+			if($("#away-check").prop("checked")){
+				$("#postStrDe").val("");
+				$("#postEndDe").val("");
 			}
-		});
-		modal.close();
-		}, '취소', function(button, modal){}).open();
+			
+			var form = $("#sftyEducnRegistFrm")[0];
+			var data = new FormData(form);
+			
+			if(!isNull(deleteFileId)){
+				data.append("atchFile.fileIdx", deleteFileId);
+			}
+			
+			$.ajax({
+				url: /*[[@{/portal/sftyEdu/update.ajax}]]*/ "/portal/sftyEdu/update.ajax",
+				type: "post",
+				data: data,
+				enctype: 'multipart/form-data',
+			    processData: false,
+			    contentType: false,
+			    cache: false,
+				success: function (result) {
+					var resultCode = result.code;
+					var resultMessage = result.message;
+					if (resultCode == '200') {
+						new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();
+							var baseUrl = /*[[@{/portal/sftyEdu/detail.do}]]*/ '';
+							window.location.href = baseUrl + "?tfcSftyEdctnId=" + [[${tfcSftyEdctn.tfcSftyEdctnId}]];
+						}).open();
+					} else {
+						new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();}).open();
+					}
+				}
+			});
+			modal.close();
+		}, 'Cancelar', function(button, modal){}).open();
 	})
 </script>

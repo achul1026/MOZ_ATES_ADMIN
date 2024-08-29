@@ -17,22 +17,16 @@
 				</colgroup>
 				<tbody>
 					<tr>
-						<th th:text="#{finentc.mngDetail.vioInfo}">Violation information</th>
-						<td th:text="${fineNtcInfo.cmCd.cdNm}"></td>
+						<th th:text="#{finentc.mngDetail.enfId}">단속 번호</th>
+						<td th:text="${fineNtcInfo.tfcEnfId}"></td>
 						<th th:text="#{finentc.mngDetail.date}">Date</th>
 						<td th:text="${#dates.format(fineNtcInfo.crDt, 'yyyy-MM-dd')}"></td>
 					</tr>
 					<tr>
-						<th th:text="#{finentc.mngDetail.enfId}">단속 번호</th>
-						<td th:text="${fineNtcInfo.tfcEnfId}"></td>
-						<th th:text="#{finentc.mngDetail.placePayment}">납부처</th>
-						<td th:text="${fineNtcInfo.plPymntInfo.placePymntNm}"></td>
-					</tr>
-					<tr>
 						<th th:text="#{finentc.mngDetail.driverNm}">운전자명</th>
 						<td th:text="${fineNtcInfo.vioInfo.vioNm}"></td>
-						<th th:text="#{finentc.mngDetail.enfVhNumber}">차량등록번호</th>
-						<td th:text="${fineNtcInfo.tfcEnfMaster.vhRegNo}"></td>
+						<th>License Id</th>
+						<td th:text="${fineNtcInfo.vioInfo.dvrLcenId}"></td>
 					</tr>
 					<tr>
 						<th th:text="#{finentc.mngDetail.vehiclType}">차량</th>
@@ -49,14 +43,14 @@
 					<tr>
 						<th th:text="#{finentc.mngDetail.area}">적발지역</th>
 						<td th:text="${fineNtcInfo.tfcEnfMaster.roadAddr}"></td>
-						<th th:text="#{finentc.mngDetail.fine}">범칙금</th>
-						<td th:text="${@mozatesCommonUtils.priceFmt(fineNtcInfo.tfcLwFineInfo.finePrice,'MOZAMBIQUE_METICAL')}">5.000MT</td>
 					</tr>
 					<tr>
 						<th th:text="#{finentc.mngDetail.violationOfLaw}">위반 법령</th>
-						<td th:text="${fineNtcInfo.tfcLwInfo.lawArticleNo}"></td>
-						<th th:text="#{finentc.mngDetail.lawDetails}">상세 유형</th>
-						<td th:text="${fineNtcInfo.tfcLwInfo.lawNm}"></td>
+						<td colspan="3">
+							<div id="lawStauWrap">
+								<span class="tableStausOn" th:each="item : ${fineInfoList}" th:text="${item.tfcLwInfo.lawNm}"></span>
+							</div>
+						</td>
 					</tr>
 					<tr>
 						<th th:text="#{finentc.mngDetail.policeNm}">담당 경찰명</th>
@@ -67,6 +61,12 @@
 					<tr>
 						<th th:text="#{finentc.mngDetail.detail}">상세 내용</th>
 						<td colspan="3" th:text="${fineNtcInfo.tfcEnfMaster.tfcEnfDetail}">과도한 음주 후, 신호위반</td>
+					</tr>
+					<tr>
+						<th th:text="#{finentc.mngDetail.fine}">범칙금</th>
+						<td th:text="${@mozatesCommonUtils.priceFmt(fineNtcInfo.tfcLwFineInfo.finePrice,'MOZAMBIQUE_METICAL')}">5.000MT</td>
+						<th th:text="#{finentc.mngDetail.placePayment}">납부처</th>
+						<td th:text="${fineNtcInfo.plPymntInfo.placePymntNm}"></td>
 					</tr>
 					<tr>
 						<th th:text="#{finentc.mngDetail.firstPrice}">1차 납부금액</th>
@@ -102,7 +102,7 @@
 			<button type="button" class="sub-btn left-btn" onclick="javascript:window.history.back()" th:text="#{finentc.common.btn.list}">목록</button>
 			<button type="button" class="sub-btn" th:text="#{finentc.common.btn.modify}"
 					th:onclick="|location.href='@{/finentc/second/modify.do(fineNtcId = ${fineNtcInfo.fineNtcId})}'|">수정</button>
-			<button type="button" th:onclick="emailRe()" class="main-btn" th:text="#{finentc.common.btn.reNotice}">재고지</button>
+<!--			<button type="button" th:onclick="emailRe()" class="main-btn" th:text="#{finentc.common.btn.reNotice}">재고지</button>-->
 			<button type="button" onclick="printPage()" class="main-btn" th:text="#{finentc.common.btn.print}">인쇄</button>
 			
 		</div>
@@ -142,6 +142,7 @@
 	
 	function reNotice(fineNtcId){
 		if(fineNtcId == null || fineNtcId == ''){
+			alert('test');
 			return false;
 		}
 		

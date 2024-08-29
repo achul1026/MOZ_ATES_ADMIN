@@ -1,10 +1,21 @@
 const Env = {
     icons : [
+        {"url" : "/images/facility_TFT000.png", "id" : "TFT000"},
         {"url" : "/images/facility_TFT001.png", "id" : "TFT001"},
-        {"url" : "/images/facility_TFT002.png", "id" : "TFT002"},
         {"url" : "/images/facility_TFT003.png", "id" : "TFT003"},
         {"url" : "/images/facility_TFT004.png", "id" : "TFT004"},
         {"url" : "/images/facility_TFT005.png", "id" : "TFT005"},
+        {"url" : "/images/facility_TFT006.png", "id" : "TFT006"},
+        {"url" : "/images/facility_TFT006.png", "id" : "TFT007"},
+        {"url" : "/images/facility_TFT008.png", "id" : "TFT008"},
+        {"url" : "/images/facility_TFT009.png", "id" : "TFT009"},
+        {"url" : "/images/facility_TFT010.png", "id" : "TFT010"},
+        {"url" : "/images/facility_TFT011.png", "id" : "TFT011"},
+        {"url" : "/images/facility_TFT012.png", "id" : "TFT012"},
+        {"url" : "/images/facility_TFT015.png", "id" : "TFT015"},
+        {"url" : "/images/facility_TFT016.png", "id" : "TFT016"},
+        {"url" : "/images/facility_TFT018.png", "id" : "TFT018"},
+        {"url" : "/images/facility_TFT019.png", "id" : "TFT019"},
         {"url" : "/images/enfrocement_ENF001.png", "id" : "LTC000"},
         {"url" : "/images/enfrocement_ENF001.png", "id" : "LTC001"},
         {"url" : "/images/enfrocement_ENF001.png", "id" : "LTC002"},
@@ -21,21 +32,24 @@ const Env = {
         {"url" : "/images/accident_ACT001.png", "id" : "ACT005"},
         {"url" : "/images/accident_ACT001.png", "id" : "ACT006"},
         {"url" : "/images/accident_ACT001.png", "id" : "ACT007"},
-        {"url" : "/images/equipment_EQP001.png", "id" : "EQT001"}
+        {"url" : "/images/equipment_EQP001.png", "id" : "EQT001"},
+        {"url" : "/images/organization_TFT900.png", "id" : "TFT900"}
     ],
     source : {
         warning : "MOZ_ATES_WARNING",
         enforcement : "MOZ_ATES_ENFORCEMENT",
         accident : "MOZ_ATES_ACCIDENT",
         facility : "MOZ_ATES_FACILITY",
-        equipment : "MOZ_ATES_EQUIPMENT"
+        equipment : "MOZ_ATES_EQUIPMENT",
+        organization : "MOZ_ATES_ORGANIZATION"
     },
     layer : {
         warning : "MOZ_ATES_WARNING",
         enforcement : "MOZ_ATES_ENFORCEMENT_LAYER",
         accident : "MOZ_ATES_ACCIDENT_LAYER",
         facility : "MOZ_ATES_FACILITY_LAYER",
-        equipment : "MOZ_ATES_EQUIPMENT_LAYER"
+        equipment : "MOZ_ATES_EQUIPMENT_LAYER",
+        organization : "MOZ_ATES_ORGANIZATION_LAYER"
     }
 }
 /**
@@ -48,7 +62,7 @@ const Env = {
  * @returns {MozAtesMap}
  * @constructor
  */
-const MozAtesMap = function({elementId, center_lng, center_lat, useGeoLocation = false ,isInitDrawCenterMarker,isFacility = false , isEquipment = false, isEnforcement = false, isAccident = false}){
+const MozAtesMap = function({elementId, center_lng, center_lat, useGeoLocation = false ,isInitDrawCenterMarker,isFacility = false , isEquipment = false, isOrganization = false,isEnforcement = false, isAccident = false}){
     const _core = this;
     const _pbkey = "pk.eyJ1IjoiZGVzaW1pbjIiLCJhIjoiY2xvbzMwN2t3Mm52dzJrcXR6em5lZ3hmMyJ9.pu7IdtCJVHme2QXzu4sT7w";
     let _center = center_lng && center_lat ? [center_lng, center_lat] : [32.609310,-25.907068];
@@ -165,17 +179,33 @@ const MozAtesMap = function({elementId, center_lng, center_lat, useGeoLocation =
 	            _core.facility = new Facility();
 	
 	            _core.facility.getSource().then(()=>{
+	                _core.facility.drawFacility('TFT000');
 	                _core.facility.drawFacility('TFT001');
-	                _core.facility.drawFacility('TFT002');
 	                _core.facility.drawFacility('TFT003');
 	                _core.facility.drawFacility('TFT004');
 	                _core.facility.drawFacility('TFT005');
 	                _core.facility.drawFacility('TFT006');
 	                _core.facility.drawFacility('TFT007');
 	                _core.facility.drawFacility('TFT008');
+	                _core.facility.drawFacility('TFT009');
+	                _core.facility.drawFacility('TFT010');
+	                _core.facility.drawFacility('TFT011');
+	                _core.facility.drawFacility('TFT012');
+	                _core.facility.drawFacility('TFT015');
+	                _core.facility.drawFacility('TFT016');
+	                _core.facility.drawFacility('TFT018');
+	                _core.facility.drawFacility('TFT019');
 	            });
 			}
-			
+
+            if (isOrganization) {
+                _core.organization = new Organization();
+
+                _core.organization.getSource().then(() => {
+                    _core.organization.drawOrganization('TFT900');
+                })
+            }
+
 			if(isEnforcement){
 				_core.enforcement = new Enforcement();
 	
@@ -322,22 +352,22 @@ const MozAtesMap = function({elementId, center_lng, center_lat, useGeoLocation =
 			
             const html = `
                 <div class="mkPopWrap">
-                    <div class="mkCon">
-                        <p class="mkTitle">Case No.</p>
-                        <p>${prop.TFC_ENF_ID}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Type</p>
-                        <p>${prop.CD_NM}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Road</p>
-                        <p>${prop.ROAD_ADDR}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Status</p>
-                        <p>${prop.FACILITY_STTS === 'Y' ? 'Activate' : 'Deactivate'}</p>
-                    </div>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Caso não.</dt>
+                        <dd class="mkContents">${prop.TFC_ENF_ID}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Tipo</dt>
+                        <dd class="mkContents">${prop.CD_NM}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Estrada</dt>
+                        <dd class="mkContents">${prop.ROAD_ADDR}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Status</dt>
+                        <dd class="mkContents">${prop.FACILITY_STTS === 'Y' ? 'Activate' : 'Deactivate'}</dd>
+                    </dl>
                 </div>
             `
             while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -403,22 +433,22 @@ const MozAtesMap = function({elementId, center_lng, center_lat, useGeoLocation =
 			
             const html = `
                 <div class="mkPopWrap">
-                    <div class="mkCon">
-                        <p class="mkTitle">Case No.</p>
-                        <p>${prop.TFC_ACDNT_ID}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Type</p>
-                        <p>${prop.CD_NM}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Road</p>
-                        <p>${prop.ROAD_ADDR}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Status</p>
-                        <p>${prop.FACILITY_STTS === 'Y' ? 'Activate' : 'Deactivate'}</p>
-                    </div>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Caso não.</dt>
+                        <dd class="mkContents>${prop.TFC_ACDNT_ID}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Tipo</dt>
+                        <dd class="mkContents>${prop.CD_NM}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Estrada</dt>
+                        <dd class="mkContents>${prop.ROAD_ADDR}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Status</dt>
+                        <dd class="mkContents>${prop.FACILITY_STTS === 'Y' ? 'Activate' : 'Deactivate'}</dd>
+                    </dl>
                 </div>
             `
             while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -482,25 +512,105 @@ const MozAtesMap = function({elementId, center_lng, center_lat, useGeoLocation =
             const coordinates = e.features[0].geometry.coordinates.slice();
             const prop = e.features[0].properties;
 			
-			
             const html = `
                 <div class="mkPopWrap">
-                    <div class="mkCon">
-                        <p class="mkTitle">Type</p>
-                        <p>${prop.CD_NM}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Name</p>
-                        <p>${prop.FACILITY_NM}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Road</p>
-                        <p>${prop.ROAD_ADDR}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Status</p>
-                        <p>${prop.FACILITY_STTS === 'Y' ? 'Activate' : 'Deactivate'}</p>
-                    </div>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Tipo</dt>
+                        <dd class="mkContents">${prop.CD_NM}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Nome</dt>
+                        <dd class="mkContents">${prop.FACILITY_NM}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Estrada</dt>
+                        <dd class="mkContents">${prop.ROAD_ADDR}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Status</dt>
+                        <dd class="mkContents">${prop.FACILITY_STTS}</dd>
+                    </dl>
+                </div>
+            `
+            while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
+                coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
+            }
+
+            // Populate the popup and set its coordinates
+            // based on the feature found.
+            popup.setLngLat(coordinates).setHTML(html).addTo(_map);
+        }
+        leaveEvent() {
+            _map.getCanvas().style.cursor = '';
+            popup.remove();
+        }
+    }
+
+    class Organization{
+        constructor() {
+
+        }
+
+        async getSource() {
+            await fetch("/eqp/mng/orgnzMngGeojson.ajax", {})
+                .then((response) => {
+                    return response.json()
+                })
+                .then((geoJson)=>{
+                    this.geoJson = geoJson;
+                    if(_map.getSource(Env.source.facility)){
+                        _map.getSource(Env.source.facility).setData(geoJson);
+                    }else{
+                        _map.addSource(Env.source.facility, {
+                            type : "geojson",
+                            data : geoJson
+                        });
+                    }
+                })
+                .catch((err)=>{
+                    console.error(err);
+                    // alert("An error occurred while retrieving facility information. Please contact the administrator");
+                })
+        }
+        toggleOrganizationLayer = function(typeCode) {
+            _core.toggleLayer(Env.layer.facility+"_"+typeCode);
+        }
+        drawOrganization = function(typeCode){
+            const _this = this;
+            _core.drawIcon(['get','CD_ID'],Env.source.facility,Env.layer.facility+"_"+typeCode, ['==','CD_ID',typeCode], function(...layerObj){
+                for(const obj of layerObj){
+                    _map.off("mouseenter",obj.id,_this.hoverEvent);
+                    _map.off("mouseleave",obj.id,_this.leaveEvent);
+                    _map.on("mouseenter",obj.id,_this.hoverEvent);
+                    _map.on("mouseleave",obj.id,_this.leaveEvent);
+                }
+            });
+        }
+        hoverEvent(e) {
+            _map.getCanvas().style.cursor = 'pointer';
+
+            // Copy coordinates array.
+            const coordinates = e.features[0].geometry.coordinates.slice();
+            const prop = e.features[0].properties;
+            console.log(prop.FACILITY_STTS)
+            const html = `
+                <div class="mkPopWrap">
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Tipo</dt>
+                        <dd class="mkContents">${prop.CD_NM}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Nome</dt>
+                        <dd class="mkContents">${prop.FACILITY_NM}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Estrada</dt>
+                        <dd class="mkContents">${prop.ROAD_ADDR}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Status</dt>
+                        <dd class="mkContents">${prop.FACILITY_STTS}</dd>
+                    </dl>
                 </div>
             `
             while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -565,26 +675,25 @@ const MozAtesMap = function({elementId, center_lng, center_lat, useGeoLocation =
             // Copy coordinates array.
             const coordinates = e.features[0].geometry.coordinates.slice();
             const prop = e.features[0].properties;
-            
 
             const html = `
                 <div class="mkPopWrap">
-                    <div class="mkCon">
-                        <p class="mkTitle">Type</p>
-                        <p>${prop.CD_NM}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Name</p>
-                        <p>${prop.EQP_NM}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Road</p>
-                        <p>${prop.ROAD_ADDR}</p>
-                    </div>
-                    <div class="mkCon">
-                        <p class="mkTitle">Status</p>
-                        <p>${prop.USE_YN === 'Y' ? 'Activate' : 'Deactivate'}</p>
-                    </div>
+                    <dl class="mkCon bdTop">
+                        <dt class="mkTitle">Tipo</dt>
+                        <dd class="mkContents">${prop.CD_NM}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Nome</dt>
+                        <dd class="mkContents">${prop.EQP_NM}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Estrada</dt>
+                        <dd class="mkContents">${prop.ROAD_ADDR}</dd>
+                    </dl>
+                    <dl class="mkCon">
+                        <dt class="mkTitle">Status</dt>
+                        <dd class="mkContents">${prop.USE_YN === 'Y' ? 'Em uso' : 'Não está em uso'}</dd>
+                    </dl>
                 </div>
             `
             while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
@@ -600,6 +709,5 @@ const MozAtesMap = function({elementId, center_lng, center_lat, useGeoLocation =
             popup.remove();
         }
     }
-    
     return _core;
 };

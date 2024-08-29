@@ -3,7 +3,7 @@
 <div class="modal-contents modal-company-group">
 	
 	<div class="modal-title">
-		<div class="modal-title-text">Police Info Search</div>
+		<div class="modal-title-text" th:text="#{common.oprtr.title}">담당경찰관 검색</div>
 		<img src="/images/close.png" alt="닫기" class="close" onclick="changePolListModal('hide')">
 	</div>
 	
@@ -11,29 +11,29 @@
 		<div class="modal-form-wrap">
 			<input type="hidden" id="modalPage" name="page" value="1">
 			<input type="hidden" id="modalStart" name="start" th:value="${polInfo.start}">			
-			<input type="text" class="modal-search" id="searchContent" placeholder="담당자 정보 검색">
+			<input type="text" class="modal-search" id="searchContent" th:placeholder="#{common.placeholder.enterName}">
 			<i class="modal-search-icon"onclick="findPolBtn()"></i>
 		</div>
 		
-		<div class="ex-group-name">
-			Example) Please enter at least two characters for the police officer’s name.
-		</div>
+		<div class="ex-group-name" th:text="#{common.oprtr.exmpTxt}">경찰관 이름2글자 이상 입력</div>
 
 		<div class="modal-search-list">
 			<div class="modal-search-result">
-				Found <span th:text='|"${pagination.totalListCnt}"|' id="totalCnt"></span> results
+				<span th:text="#{common.search.prefix}">Found</span>
+				<span class="searchResult" th:text='|"${pagination.totalListCnt}"|' id="totalCnt"></span>
+				<span th:text="#{common.search.suffix}">results</span>
 			</div>
 			<table class="main-table">
 				<thead>
-					<th>Number</th>
-					<th>Department</th>
-					<th>Manager</th>
+					<th th:text="#{common.oprtr.tableNo}">번호</th>
+					<th th:text="#{common.oprtr.tableNm}">담당자</th>
+					<th th:text="#{common.oprtr.tableJur}">관할지역</th>
 				</thead>
 				<tbody id="modalTbody">
-					<tr th:each="polItem : ${polList}" th:onclick="selectPol([[${polItem.polId}]],  [[${polItem.polNm}]], [[${polItem.polDeptNm}]])">
+					<tr th:each="polItem : ${polList}" th:onclick="selectPol([[${polItem.polId}]],  [[${polItem.polNm}]], [[${polItem.jur}]])">
 						<td th:text="${polItem.rnum}"></td>
-						<td th:text="${polItem.polDeptNm != null ? polItem.polDeptNm : '-'}"></td>
 						<td th:text="${polItem.polNm != null ? polItem.polNm : '-'}"></td>
+						<td th:text="${polItem.jur != null ? polItem.jur : '-'}"></td>
 					<tr>
 				</tbody>
 			</table>

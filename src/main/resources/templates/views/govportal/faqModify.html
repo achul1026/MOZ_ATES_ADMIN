@@ -23,9 +23,11 @@
 						<th>
 							<span class="requiredMark" th:text="#{portal.faq.title}">제목</span>
 						</th>
-						<td><input type="text" class="main-input" id="txtPostTitle" name="postTitle" th:value="${faq.postTitle}"></td>
-					</tr>
-					<tr>
+						<td>
+							<input type="text" class="main-input data-validate" id="txtPostTitle" name="postTitle" th:value="${faq.postTitle}" maxlength="150"
+							th:data-valid-name="#{portal.faq.title}" 
+							data-valid-required data-valid-minimum="5" data-valid-maximum="150">
+						</td>
 						<th>
 							<span class="requiredMark" th:text="#{portal.faq.classifi}">분류</span>
 						</th>
@@ -42,8 +44,12 @@
 						<th>
 							<span class="requiredMark" th:text="#{portal.faq.answerContent}">답변</span>
 						</th>
-						<td colspan="3"><textarea class="form-control detail-table-textarea" rows="15" id="txtPostContent" name="postContent"
-								th:text="${faq.postContent}"></textarea></td>
+						<td colspan="3">
+							<textarea class="form-control detail-table-textarea data-validate" rows="15" id="txtPostContent" name="postContent" maxlength="1000"
+							th:data-valid-name="#{portal.faq.answerContent}"
+							data-valid-required data-valid-minimum="5" data-valid-maximum="1000"
+							th:text="${faq.postContent}"></textarea>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -59,7 +65,8 @@
 </html>
 <script th:inline="javascript">
 	$("#btnModify").click(function () {
-		// TODO Validation
+		trimValues(['postTitle','postContent']);
+		if (!$("#frmFaqModify").soValid()) return false;
 		$.ajax({
 			url: /*[[@{/portal/faq/update.ajax}]]*/ "/portal/faq/update.ajax",
 			type: "post",
@@ -68,13 +75,13 @@
 				var resultCode = result.code;
 				var resultMessage = result.message;
 				if (resultCode == '200') {
-					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){
+					new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){
 						modal.close();
 						var baseUrl = /*[[@{/portal/faq/detail.do}]]*/ '';
 						window.location.href = baseUrl + "?faqIdx=" + [[${faq.faqIdx}]];
 					}).open();
 				} else {
-					new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
+					new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){
 						modal.close();}).open();
 				}
 			}

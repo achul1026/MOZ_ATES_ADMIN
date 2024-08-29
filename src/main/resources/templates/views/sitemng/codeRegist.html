@@ -58,11 +58,11 @@
 			     data: $("#codeRegistForm").serialize(),
 			     success: function (data) {
 						if (data.code == '200') {
-							new ModalBuilder().init().successBody(/*[[#{common.message.completeRegister}]]*/).footer(4,'확인',function(button, modal){
+							new ModalBuilder().init().successBody(/*[[#{common.message.completeRegister}]]*/).footer(4,'Confirmar',function(button, modal){
 							location.href = "/siteMng/code/list.do";
 							}).open();
 						} else {
-							new ModalBuilder().init().alertBody(data.message).footer(4,'확인',function(button, modal){modal.close();}).open();
+							new ModalBuilder().init().alertBody(data.message).footer(4,'Confirmar',function(button, modal){modal.close();}).open();
 						}
 					}
 			 });

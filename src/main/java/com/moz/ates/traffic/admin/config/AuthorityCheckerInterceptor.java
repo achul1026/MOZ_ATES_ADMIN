@@ -8,9 +8,7 @@ import com.moz.ates.traffic.common.entity.menu.MozAuthMenu;
 import com.moz.ates.traffic.common.entity.operator.MozWebOprtr;
 import com.moz.ates.traffic.common.entity.operator.MozWebOprtrDTO;
 import com.moz.ates.traffic.common.repository.menu.MozAuthMenuRepository;
-import com.moz.ates.traffic.common.support.exception.ErrorCode;
-import com.moz.ates.traffic.common.support.exception.NoLoginException;
-import com.moz.ates.traffic.common.support.exception.NotPermissionException;
+import com.moz.ates.traffic.common.support.exception.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.AntPathMatcher;
@@ -33,61 +31,69 @@ public class AuthorityCheckerInterceptor implements HandlerInterceptor {
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response , Object handler ) throws Exception {
-		
-		MozWebOprtrDTO mozWebOprtrDTO = LoginOprtrUtils.getMozWebOprtr();
-			
-		//세션 정보 못가져올때
-		if(mozWebOprtrDTO == null) {
-			throw new NoLoginException();
-		}
-		
-		MozWebOprtr dbMozWebOprtr = userService.getUserDetail(mozWebOprtrDTO.getOprtrId());
-		//탈퇴한 계정일 경우
-		if (dbMozWebOprtr.getOprtrStts().equals(OprtrSttsCd.WITHDRAW.getCode())) {
-			// 임시 예외처리
-			throw new NotPermissionException();
-		}
-		if (handler instanceof HandlerMethod) {
-			HandlerMethod handlerMethod = (HandlerMethod) handler;
-			Authority auth = handlerMethod.getMethodAnnotation(Authority.class);
+		try {
+			MozWebOprtrDTO mozWebOprtrDTO = LoginOprtrUtils.getMozWebOprtr();
 
-			if(auth != null) {
-				MozAuthMenu mozAuthMenu = null;
-				String url = request.getRequestURI().toString();
+			//세션 정보 못가져올때
+			if (mozWebOprtrDTO == null) {
+				throw new NoLoginException();
+			}
 
-				//메뉴 사용 여부 조회
-				switch(auth.type()) {
-				case CREATE:
-					mozAuthMenu = new MozAuthMenu(mozWebOprtrDTO.getAuthId(), "Y", null, null, null);
-					break;
-				case READ:
-					mozAuthMenu = new MozAuthMenu(mozWebOprtrDTO.getAuthId(), null, "Y", null, null);
-					break;
-				case UPDATE:
-					mozAuthMenu = new MozAuthMenu(mozWebOprtrDTO.getAuthId(), null, null, "Y", null);
-					break;
-				case DELETE:
-					mozAuthMenu = new MozAuthMenu(mozWebOprtrDTO.getAuthId(), null, null, null, "Y");
-					break;
-				default:
-					break;
-				}
+			MozWebOprtr dbMozWebOprtr = userService.getUserDetail(mozWebOprtrDTO.getOprtrId());
+			//탈퇴한 계정일 경우
+			if (dbMozWebOprtr.getOprtrStts().equals(OprtrSttsCd.WITHDRAW.getCode())) {
+				// 임시 예외처리
+				throw new NotPermissionException();
+			}
+			if (handler instanceof HandlerMethod) {
+				HandlerMethod handlerMethod = (HandlerMethod) handler;
+				Authority auth = handlerMethod.getMethodAnnotation(Authority.class);
 
-				List<MozAuthMenu> authMenuList = mozAuthMenuRepository.findMozAuthMenuAndUrlPatternBAnyYn(mozAuthMenu);
+				if (auth != null) {
+					MozAuthMenu mozAuthMenu = null;
+					String url = request.getRequestURI().toString();
 
-				AntPathMatcher pathMatcher = new AntPathMatcher();
+					//메뉴 사용 여부 조회
+					switch (auth.type()) {
+						case CREATE:
+							mozAuthMenu = new MozAuthMenu(mozWebOprtrDTO.getAuthId(), "Y", null, null, null);
+							break;
+						case READ:
+							mozAuthMenu = new MozAuthMenu(mozWebOprtrDTO.getAuthId(), null, "Y", null, null);
+							break;
+						case UPDATE:
+							mozAuthMenu = new MozAuthMenu(mozWebOprtrDTO.getAuthId(), null, null, "Y", null);
+							break;
+						case DELETE:
+							mozAuthMenu = new MozAuthMenu(mozWebOprtrDTO.getAuthId(), null, null, null, "Y");
+							break;
+						default:
+							break;
+					}
 
-				Optional<MozAuthMenu> currentMenuAuthInfo = authMenuList.stream().filter(x -> pathMatcher.match(x.getMenuUrlPattrn(), url)).findFirst();
-				if(!currentMenuAuthInfo.isPresent()) {
+					List<MozAuthMenu> authMenuList = mozAuthMenuRepository.findMozAuthMenuAndUrlPatternBAnyYn(mozAuthMenu);
+
+					AntPathMatcher pathMatcher = new AntPathMatcher();
+
+					Optional<MozAuthMenu> currentMenuAuthInfo = authMenuList.stream().filter(x -> pathMatcher.match(x.getMenuUrlPattrn(), url)).findFirst();
+					if (!currentMenuAuthInfo.isPresent()) {
+						throw new NotPermissionException(ErrorCode.PERMISSION_DENIED);
+					}
+
+					request.setAttribute("currentMenuAuthInfo", currentMenuAuthInfo.get());
+				} else {
 					throw new NotPermissionException(ErrorCode.PERMISSION_DENIED);
 				}
-
-				request.setAttribute("currentMenuAuthInfo", currentMenuAuthInfo.get());
-			} else {
-				throw new NotPermissionException(ErrorCode.PERMISSION_DENIED);
 			}
+		} catch (CommonException | CommonResponseException e) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.setContentType("application/json");
+			response.setCharacterEncoding("UTF-8");
+			String jsonResponse = String.format("{\"message\": \"%s\"}", e.getMessage());
+			response.getWriter().write(jsonResponse);
+			return false;
 		}
-	    
+
 		return true;
 	}
 }

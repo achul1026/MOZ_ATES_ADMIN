@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+    <div id="container-fluid">
+        <h1 id="detail-content-title" th:text="#{organization.orgnzMngRegist.title}">연관기관/지역 등록</h1>
+        <div>
+            <form id="frmFacilityRegister" enctype="multipart/form-data">
+                <table class="detail-table">
+                    <colgroup>
+                        <col width="15%">
+                        <col width="35%">
+                        <col width="15%">
+                        <col width="35%">
+                    </colgroup>
+                    <tbody>
+                    <tr>
+                        <th>
+                            <span class="requiredMark"
+                                  th:text="#{organization.orgnzMngRegist.name}">이름</span>
+                        </th>
+                        <td>
+                            <input type="text" class="main-input data-validate" id="facilityNm" name="facilityNm"
+                                   th:placeholder="#{organization.orgnzMngRegist.placeholder.name}"
+                                   th:data-valid-name="#{organization.orgnzMngRegist.name}"
+                                   data-valid-required maxlength="100">
+                        </td>
+                        <th>
+                            <span class="requiredMark" th:text="#{organization.orgnzMngRegist.useYn}">사용 여부</span>
+                        </th>
+                        <td>
+                            <label for="useY" class="radioBox">
+                                <input type="radio" id="useY" name="useYn" value="Y" checked>
+                                <span class="radioOn">
+								</span>
+                                <span th:text="#{organization.orgnzMngRegist.useY}">
+								</span>
+                            </label>
+                            <label for="useN" class="radioBox">
+                                <input type="radio" id="useN" name="useYn" value="N">
+                                <span class="radioOn">
+								</span>
+                                <span th:text="#{organization.orgnzMngRegist.useN}">
+								</span>
+                            </label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <span class="requiredMark"
+                                  th:text="#{organization.orgnzMngRegist.location}">위치</span>
+                        </th>
+                        <td colspan="3" class="modal-find-line">
+                            <input type="text" class="main-input data-validate" id="roadAddr" name="roadAddr"
+                                   th:placeholder="#{organization.orgnzMngRegist.placeholder.location}"
+                                   th:data-valid-name="#{organization.orgnzMngRegist.location}"
+                                   data-valid-required maxlength="100">
+                            <br><br>
+                            <div id="map" class="detailMap"></div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>
+                            <span class="requiredMark" th:text="#{organization.orgnzMngRegist.lat}">위도</span>
+                        </th>
+                        <td>
+                            <input type="text" class="main-input data-validate" id="lat" name="lat"
+                                   data-valid-lat data-valid-required
+                                   th:placeholder="#{organization.orgnzMngRegist.placeholder.lat}"
+                                   th:data-valid-name="#{organization.orgnzMngRegist.lat}">
+                        </td>
+                        <th>
+                            <span class="requiredMark" th:text="#{organization.orgnzMngRegist.lng}">경도</span>
+                        </th>
+                        <td>
+                            <input type="text" class="main-input data-validate" id="lng" name="lng"
+                                   data-valid-lng data-valid-required
+                                   th:placeholder="#{organization.orgnzMngRegist.placeholder.lng}"
+                                   th:data-valid-name="#{organization.orgnzMngRegist.lng}">
+                        </td>
+                    </tr>
+                    <tr>
+                        <th th:text="#{organization.orgnzMngRegist.image}">사진첨부</th>
+                        <td colspan="3">
+                            <div id="dragArea" class="drag-area">
+                                <div class="dragText">
+                                    File name cannot be more than 50 characters<br>
+                                    The file size can only be uploaded under 5MB<br>
+                                    Only JPG, JPEG, PNG, and MP4 files can be uploaded
+                                </div>
+                                <div>
+                                    <input type="file" id="uploadFiles" name="uploadFiles" multiple
+                                           style="display: none;">
+                                    <button type="button" id="uploadBtn" class="main-btn"
+                                            th:text="#{organization.orgnzMngRegist.btn.File}">File Upload
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="upload_wrap none">
+                                <div id="newFilesContainer" class="upload_list_box"></div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <th th:text="#{organization.orgnzMngRegist.status}">교통시설물 상태</th>
+                        <td colspan="3">
+                            <input type="text" class="main-input data-validate" id="facilityStts" name="facilityStts"
+                                   th:placeholder="#{organization.orgnzMngRegist.placeholder.status}"
+                                   th:data-valid-name="#{organization.orgnzMngRegist.status}" maxlength="100"></td>
+                    </tr>
+                    <tr>
+                        <th th:text="#{organization.orgnzMngRegist.details}">상세내용</th>
+                        <td colspan="3">
+							<textarea class="detail-table-textarea" id="facilityDesc" name="facilityDesc"
+                                      th:placeholder="#{organization.orgnzMngRegist.placeholder.details}" maxlength="1000"></textarea>
+                        </td>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </form>
+            <div class="btn-wrap-center">
+                <button type="button" id="btnGoList" class="sub-btn form-button"
+                        th:text="#{organization.orgnzMngRegist.btn.list}"
+                        onclick="location.href='/eqp/orgnz/list.do?pageType=list'">취소
+                </button>
+                <button type="button" id="btnRegist" class="main-btn form-button"
+                        th:text="#{organization.orgnzMngRegist.btn.register}"
+                        onclick="saveInfo()">등록
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-wrap" id="modal"></div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+    $(document).ready(function () {
+        fileDrag(10, 5, 100, ["jpg", "jpeg", "png", "PNG"]);
+    });
+
+    let map = new MozAtesMap({
+        elementId: 'map',
+        center_lng: null,
+        center_lat: null,
+        isInitDrawCenterMarker: false
+    });
+
+    function saveInfo() {
+        trimValues(['facilityNm', 'roadAddr', 'lat', 'lng', 'facilityStts', 'facilityDesc']);
+        const $frmFacilityRegister = $("#frmFacilityRegister");
+        if (!$frmFacilityRegister.soValid()) return;
+
+        const form = $frmFacilityRegister[0];
+        const data = new FormData(form);
+        $.ajax({
+            url: /*[[@{/eqp/orgnz/save.ajax}]]*/ "/eqp/orgnz/save.ajax",
+            type: "post",
+            enctype: 'multipart/form-data',
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                if (result.code === 200) {
+                    new ModalBuilder().init().successBody(result.message).footer(4, 'Confirmar', function (button, modal) {
+                        modal.close();
+                        location.href =/*[[@{/eqp/orgnz/list.do?pageType=list}]]*/ "";
+                    }).open();
+                } else {
+                    new ModalBuilder().init().alertBody(result.message).footer(4, 'Confirmar', function (button, modal) {
+                        modal.close();
+                    }).open();
+                }
+            }
+        });
+    }
+
+</script>

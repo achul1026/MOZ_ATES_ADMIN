@@ -3,10 +3,7 @@
 	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-
 	<div id="container-fluid">
-
-		<!-- Page Heading -->
 		<h1 id="detail-content-title" th:text="#{portal.inquiryDetail.title.desc}">문의하기 상세</h1>
 		
 		<div class="">
@@ -15,39 +12,45 @@
 				<table class="sub-table detail-table">
 					<colgroup>
 						<col width="15%">
-						<col width="85%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
 					</colgroup>
 					<tbody>
 						<tr>
-							<th th:text="#{portal.inquiryDetail.title}">제목</th>
-							<td th:text="${inqry.postTtl}"></td>
-						</tr>
-						<tr>
+							<th th:text="#{portal.inquiryDetail.category}">카테고리</th>
+							<td th:text="${inqry.cmCd.cdNm}"></td>
 							<th th:text="#{portal.inquiryDetail.date}">날짜</th>
 							<td th:text="${#dates.format(inqry.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
 						</tr>
 						<tr>
-							<th th:text="#{portal.inquiryDetail.category}">카테고리</th>
-							<td th:text="${inqry.cmCd.cdNm}"></td>
-						</tr>
-						<tr>
-							<th th:text="#{portal.inquiryDetail.attachment}">첨부파일</th>
-							<th:block th:each="fileItem : ${inqry.atchFile}">
-								<td th:text="${fileItem != null ? fileItem.fileOrgNm : '-'}"></td>
-							</th:block>
-						</tr>
-						<tr>
-							<th th:text="#{portal.inquiryDetail.writer}">게시자</th>
-							<td th:text="${inqry.wrtrEmail}"></td>
+							<th th:text="#{portal.inquiryDetail.title}">제목</th>
+							<td colspan="3" th:text="${inqry.postTtl}"></td>
 						</tr>
 						<tr>
 							<th th:text="#{portal.inquiryDetail.inquriy}">문의내용</th>
-							<td><pre th:text="${inqry.postCn}"></pre></td>
+							<td colspan="3"><pre th:text="${inqry.postCn}"></pre></td>
+						</tr>
+						<tr>
+							<th th:text="#{portal.inquiryDetail.attachment}">첨부파일</th>
+							<td colspan="3" th:if="${#lists.isEmpty(inqry.qstAtchFileList)}">-</td>
+							<td colspan="3" th:unless="${#lists.isEmpty(inqry.qstAtchFileList)}">
+								<div class="fileListWrap">
+									<div class="list_item" th:each="fileItem : ${inqry.qstAtchFileList}">
+										<div class="file_list" th:text="${fileItem.fileOrgNm}"></div>
+										<a th:href="@{/common/file/portal/download(fileId = ${fileItem.fileIdx})}">
+											<img src="/images/download.png" alt="download">
+										</a>
+									</div>
+								</div>
+								
+							</td>
 						</tr>
 					</tbody>
 				</table>
 	
 				<div class="btn-wrap-center">
+					<button th:text="#{portal.common.unnecessary}" type="button" th:onclick="unnecessaryQna([[${inqry.inqryId}]])" class="delete-btn">스팸 처리</button>
 					<button th:text="#{penalty.common.list}" type="button" id="btnGoList"
 						class="sub-btn list-btn form-button" th:onclick="|location.href='@{/portal/inqr/list.do}'|">목록</button>
 					<button type="button" class="main-btn find answer-btn form-button" th:text="#{portal.common.registerAnswerBtn}">답변 등록하기</button>
@@ -57,46 +60,57 @@
 					<h1 id="detail-content-title" th:text="#{portal.inquiryDetail.answer}">답변하기</h1>
 					<table class="sub-table detail-table">
 						<colgroup>
-							<col width="20%">
-							<col width="80%">
+							<col width="15%">
+							<col width="85%">
 						</colgroup>
 						<tbody>
 							<tr>
 								<th><span th:text="#{portal.inquiryDetail.attachment}">Attachment</span></th>
 								<td colspan="3">
-									<input type="file" id="uploadFiles" name="uploadFiles" multiple/>
-									<div id="dragArea">
-										<div class="drag-area">
-											<div class="dragText">
-											   	File name cannot be more than 50 characters<br>
-												The file size can only be uploaded under 5MB<br>
-												Only WORD, XLSX, PDF, and ZIP file can be uploaded
-											</div>
-											<div>
-												<input type="file" id="uploadFiles" onchange="addFiles(this);" multiple style="display: none;">
-												<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
-											</div>
+									<div id="dragArea" class="drag-area">
+										<div class="dragText">
+										   	File name cannot be more than 50 characters<br>
+											The file size can only be uploaded under 5MB<br>
+											Only WORD, XLSX, PDF, and ZIP file can be uploaded
+										</div>
+										<div>
+											<input type="file" id="uploadFiles" name="uploadFiles" multiple style="display: none;">
+											<button type="button" id="uploadBtn" class="main-btn">File Upload</button>
 										</div>
 									</div>
+									
 									<div class="upload_wrap">
-										<div id="upload_list_box">
+										<div id="uploadedFilseContainer" class="upload_list_box">
 											<th:block th:each="item : ${inqry.ansAtchFileList}">
 												<div class="upload_list">
-													<div class="list_item input_same group_box flex-center">
-							                			<div class="file_list" th:text="${item.fileOrgNm}"></div>
-								                		<button type="button" th:data-name="${item.fileOrgNm}" th:data-value="${item.fileIdx}" class="fileDelBtn">
-																<img src="/images/upload_close.png" alt="업로드파일 삭제">
-								                		</button>
-		                							</div>
+													<div class="list_item">
+							                				<div class="file_list" th:text="${item.fileOrgNm}"></div>
+							                				<div class="flex gap8">
+															<a th:href="@{/common/file/portal/download(fileId = ${item.fileIdx})}">
+																<img th:src="@{/images/download.png}" alt="download">
+										                		</a>
+										                		<button type="button" th:data-name="${item.fileOrgNm}" th:data-value="${item.fileIdx}" class="fileDelBtn uploadedFileDelBtn">
+																<img th:src="@{/images/upload_close.png}" alt="delete">
+									                			</button>
+														</div>
+		                								</div>
 												</div>
 											</th:block>
-										</div>	
+										</div>
+										
+										<div id="newFilesContainer" class="upload_list_box"></div>
 									</div>
 								</td>
 							</tr>
 							<tr>
 								<th><span class="requiredMark"  th:text="#{portal.complaint.answerContent}">답변 내용</span></th>
-								<td><textarea class="detail-table-textarea" id="ansCn" name="ansCn" th:placeholder="#{portal.common.search.placeholder}" th:text="${inqry.ansCn}"></textarea><br><br>
+								<td>
+									<textarea class="detail-table-textarea data-validate" id="ansCn" name="ansCn" maxlength="1000" 
+									th:placeholder="#{portal.common.search.placeholder}"
+									th:data-valid-name="#{portal.complaint.answerContent}" 
+									data-valid-required data-valid-minimum="5" data-valid-maximum="1000"
+									th:text="${inqry.ansCn}"></textarea>
+									<br><br>
 									<th:block th:if="${inqry.ansYn == 'N'}">
 										<button th:text="#{portal.objection.submit}" type="button" id="btnRegist" class="main-btn form-button">답변 등록</button>
 									</th:block>
@@ -119,6 +133,7 @@
 </html>
 
 <script th:inline="javascript">
+	let oldFileNameArr =  /*[[${oldFileArr}]]*/;
 	$(document).ready(function(){
 		var answer = $("#ansCn").val();
 		if(!isNull(answer) && answer != ''){
@@ -127,6 +142,8 @@
 			$(".answer-btn").hide();
 			$(".list-btn").hide();
 		}
+		
+		fileDrag(5, 10, 50, ['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip'], oldFileNameArr);
 	})
 	
 	$(".answer-btn").on('click', function(){
@@ -136,15 +153,8 @@
 	})
 	
 	$("#btnRegist").click(function () {
-		var ansCn = $("#ansCn").val();
-		
-		if(isNull(ansCn)){
-			new ModalBuilder().init().alertBody([[#{portal.infrm.common.message.contents}]]).footer(4,'확인',function(button, modal){
-				modal.close();
-				$("#ansCn").focus();
-			}).open();
-			return false;
-		}
+		trimValues(['ansCn']);
+		if(!$("#frmSearch").soValid()) return false;
 		
 		var form = $("#frmSearch")[0];
 		var data = new FormData(form);
@@ -165,12 +175,12 @@
 				var resultCode = result.code;
 				var resultMessage = result.message;
 				if (resultCode == '200') {
-					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
+					new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();
 						var baseUrl = /*[[@{/portal/inqr/detail.do}]]*/ '';
 						window.location.href = baseUrl + "?inqryId=" + idx;
 					}).open();
 				} else {
-					new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
+					new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){
 						modal.close();
 					}).open();
 				}
@@ -179,25 +189,45 @@
 	});
 	
 	var deleteFilesArr = new Array();
-	let $fileInput = $("#uploadFiles");
-	$(".fileDelBtn").on('click',function(){
+	$(".uploadedFileDelBtn").on('click',function() {	
         var $this = $(this);
         var fileNm = $this.data('name');
         var fileId = $this.data('value');
-        const dataTransfer = new DataTransfer();
-        let trans = $('#uploadFiles')[0].files;
-        let fileArray = Array.from(trans);
-
-        $this.closest('.upload_list').remove();
-        fileArray.filter(file => file.name != fileNm).forEach(file => {
-            dataTransfer.items.add(file);
-        });
-        $fileInput.prop('files',dataTransfer.files);
         
-        let uploadLength = $('#upload_list_box').children('.upload_list').length;
-		if(uploadLength <= 0){
-			$('.upload_wrap').addClass('none');
+        $this.closest('.upload_list').remove();
+        
+        let uploadLength = $('#uploadedFilseContainer').children('.upload_list').length;
+		if (uploadLength < 1) {
+			$('#uploadedFilseContainer').addClass('none');
 		}
 		deleteFilesArr.push(fileId);
+		
+		let deleteIdx = oldFileNameArr.indexOf(fileNm);
+		oldFileNameArr.splice(deleteIdx, 1);
+		fileDrag(5, 10, 50, ['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip'], oldFileNameArr);
     });
+
+	function unnecessaryQna(inqryId) {
+		let confirmMsg = /*[[#{portal.inquiryDetail.confirm}]]*/;
+		let successMsg = /*[[#{portal.inquiryDetail.unnecessary.success}]]*/;
+		new ModalBuilder().init().body(confirmMsg).footer(2, 'Confirm', function (button, modal) {
+			modal.close();
+			setTimeout(() => {
+				$.ajax({
+					url: /*[[@{/portal/inqr/unnecessary.ajax}]]*/ "/portal/inqr/unnecessary.ajax}",
+					type: "post",
+					data: {
+						"inqryId": inqryId
+					},
+					success: function (result) {
+						console.log(result);
+						new ModalBuilder().init().successBody(successMsg).footer(4, 'Confirmar', function (button, modal) {
+							modal.close();
+							location.href = "/portal/inqr/list.do";
+						}).open();
+					}
+				});
+			}, 500);
+		}).open();
+	}
 </script>

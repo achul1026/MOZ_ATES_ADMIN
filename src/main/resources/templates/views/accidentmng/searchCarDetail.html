@@ -4,105 +4,88 @@
 	layout:decorate="~{layout/layout}">
 <th:block layout:fragment="content">
 	<div id="container-fluid">
-		<h1 id="detail-content-title" th:text="#{accident.car.search.Detail.title}">운전자 정보</h1>
-		<div id="content-sub-title" th:text="#{accident.car.search.Detail.subtitle}">Manage the code.</div>
-			<form id="frmDriverInfo" method="get" th:action="@{/acdnt/mng/save.do}">
-<!--				<input type="hidden" name="driverLicenseId" th:value="${driverInfo.driverLicenseId}"/>-->
-<!--				<input type="hidden" name="driverLicenseType" th:value="${driverInfo.driverLicenseType}"/>-->
-				<input th:if="${driverInfo.searchType == 'vehicleNo'}"type="hidden" name="vhRegNo" th:value="${driverInfo.vhRegNo}"/>
-				<input type="hidden" name="nome" th:value="${driverInfo.nome}"/>
-				<input type="hidden" name="datadenascimento" th:value="${driverInfo.datadenascimento}"/>
-				<input type="hidden" name="tipodedocumento" th:value="${driverInfo.tipodedocumento}"/>
-				<input type="hidden" name="numerododocumento" th:value="${driverInfo.numerododocumento}"/>
-				<input type="hidden" name="domicilio" th:value="${driverInfo.domicilio}"/>
-				<input type="hidden" name="contacto" th:value="${driverInfo.contacto}"/>
-				<input type="hidden" name="provincia" th:value="${driverInfo.provincia}"/>
-				<input type="hidden" name="distrito" th:value="${driverInfo.distrito}"/>
-				<table class="detail-table">
-					<colgroup>
-						<col width="15%">
-						<col width="35%">
-						<col width="15%">
-						<col width="35%">
-					</colgroup>
-					<tbody id="driverInfoTable">
-						<tr>
-							<th th:text="#{accident.car.search.Detail.name}">driverNm</th>
-							<td th:text="${driverInfo.nome}">DriverLicenseId</td>
-							<th th:text="#{accident.car.search.Detail.birth}">birth</th>
-							<td th:text="${driverInfo.datadenascimento}">oprtrAccountId</td>
-						</tr>
-						<tr>
-							<th th:text="#{accident.car.search.Detail.docType}">DocumentType</th>
-							<td th:text="${driverInfo.tipodedocumento}"></td>
-							<th th:text="#{accident.car.search.Detail.docNo}">Document Number</th>
-							<td th:text="${driverInfo.numerododocumento}"></td>
-						</tr>
-						<tr>
-							<th th:text="#{accident.car.search.Detail.address}">address</th>
-							<td th:text="${driverInfo.domicilio}"></td>
-							<th th:text="#{accident.car.search.Detail.phoneNum}">phoneNum</th>
-							<td th:text="${driverInfo.contacto}"></td>
-						</tr>
-						<tr>
-							<th th:text="#{accident.car.search.Detail.state}">state</th>
-							<td th:text="${driverInfo.provincia}"></td>
-							<th th:text="#{accident.car.search.Detail.area}">area</th>
-							<td th:text="${driverInfo.distrito}"></td>
-						</tr>
-						</tbody>
-				</table>
-			<h1 id="detail-content-title" th:text="#{accident.car.search.Detail.accidentHist}">단속 이력</h1>
-			<div id="content-sub-title" th:text="#{accident.car.search.Detail.accidentHist.desc}">이전에 단속된 이력 목록입니다.</div>
-			
-			<div th:if="${not #lists.isEmpty(acdntTrgtList)}">
-				<div id="search-form-result-wrap">
-					<div id="table-search-result-text">
-						<span th:text="#{accident.car.search.Detail.found}">Found</span> 
-						<span th:text="${#lists.size(acdntTrgtList)}"></span> 
-						<span th:text="#{accident.car.search.Detail.result}">results</span> 
-					</div>
-				</div>
-				<div class="table-wrap">
-					<table class="main-table">
-						<colgroup>
-							<col width="20%">
-							<col width="20%">
-							<col width="20%">
-							<col width="20%">
-							<col width="20%">
-						</colgroup>
-						<thead>
-							<tr>
-								<th th:text="#{accident.car.search.Detail.tfcAcdntId}">Accident Id</th>
-								<th th:text="#{accident.car.search.Detail.vioNm}">Name</th>
-								<th th:text="#{accident.car.search.Detail.roadAddr}">accident Road Address</th>
-								<th th:text="#{accident.car.search.Detail.dvrLcenId}">DriverLicenseId</th>
-								<th th:text="#{accident.car.search.Detail.tfcAcdntDt}">Accident Date</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr th:each="item : ${acdntTrgtList}">
-								<td th:text="${item.tfcAcdntId}"></td>
-								<td th:text="${item.acdntTrgtNm}"></td>
-								<td th:text="${item.roadAddr}"></td>
-								<td th:text="${item.dvrLcenId}"></td>
-								<td th:text="${#dates.format(item.acdntDt, 'yyyy-MM-dd')}"></td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div th:unless="${not #lists.isEmpty(acdntTrgtList)}">
-				 <div class="searchNoDater" th:text="#{accident.car.search.Detail.resultNone}">
-			   	    단속 조회 결과가 없습니다.
-			    </div>
-			</div>
-			<div class="btn-wrap-center">
-				<button type="button" class="sub-btn" onclick="javascript:window.history.back()"
-					th:text="#{common.button.back}"> 이전 페이지</button>
-				<button type="submit" class="main-btn" th:text="#{accident.common.button.tfcAcdntRegist}">사고 등록 페이지</button>
-			</div>
+		<h1 id="detail-content-title" th:text="#{accident.car.search.Detail.title}">차량 정보</h1>
+
+		<table class="detail-table">
+			<colgroup>
+				<col width="15%">
+				<col width="35%">
+				<col width="15%">
+				<col width="35%">
+			</colgroup>
+			<tbody id="driverInfoTable">
+				<tr>
+					<th th:text="#{accident.car.search.carNum}"></th>
+					<td th:text="${driverInfo.vhRegNo}"></td>
+				</tr>
+				<tr>
+					<th th:text="#{accident.car.search.Detail.name}">driverNm</th>
+					<td th:text="${driverInfo.nome}">DriverLicenseId</td>
+					<th th:text="#{accident.car.search.Detail.birth}">birth</th>
+					<td th:text="${driverInfo.vioBrth}">oprtrAccountId</td>
+				</tr>
+				<tr>
+					<th th:text="#{accident.car.search.Detail.docType}">DocumentType</th>
+					<td th:text="${driverInfo.tipodedocumento}"></td>
+					<th th:text="#{accident.car.search.Detail.docNo}">Document Number</th>
+					<td th:text="${driverInfo.numerododocumento}"></td>
+				</tr>
+				<tr>
+					<th th:text="#{accident.car.search.Detail.address}">address</th>
+					<td th:text="${driverInfo.domicilio}"></td>
+					<th th:text="#{accident.car.search.Detail.phoneNum}">phoneNum</th>
+					<td th:text="${driverInfo.contacto}"></td>
+				</tr>
+				<tr>
+					<th th:text="#{accident.car.search.Detail.state}">state</th>
+					<td th:text="${driverInfo.provincia}"></td>
+					<th th:text="#{accident.car.search.Detail.area}">area</th>
+					<td th:text="${driverInfo.distrito}"></td>
+				</tr>
+				</tbody>
+		</table>
+
+		<h1 id="detail-content-title" th:text="#{accident.driver.search.Detail.accidentHist}">사고 내역</h1>
+		<div id="ajaxContent"></div>
+		<form id="frmSearch">
+			<input type="hidden" id="page" name="page" value="1">
+			<input type="hidden" name="vhRegNo" th:value="${driverInfo.vhRegNo}">
+			<input type="hidden" name="docNid" th:value="${driverInfo.numerododocumento}">
 		</form>
+
+		<div class="btn-wrap-center">
+			<button type="button" class="sub-btn" onclick="javascript:window.history.back()"
+				th:text="#{common.button.back}"> 이전 페이지</button>
+		</div>
 	</div>
+
+	<script th:inline="javascript">
+		const ajaxContent = document.getElementById('ajaxContent');
+
+		document.addEventListener('DOMContentLoaded', getDetailList);
+
+		function fnPageMove(page) {
+			document.getElementById('page').value = page;
+			getDetailList();
+		}
+
+		function getDetailList() {
+			const loading = new AdminLoading().start(/*[[#{accident.common.loading}]]*/);
+
+			const frmSearch = document.getElementById("frmSearch");
+			const formData = new FormData(frmSearch);
+
+			fetch(/*[[@{/acdnt/vehicle/list.ajax}]]*/, {
+				method: 'post'
+				, body: formData
+			})
+					.then(response => response.text())
+					.then((html) => {
+						ajaxContent.innerHTML = html;
+					})
+					.finally(() => {
+						loading.end();
+					});
+		}
+	</script>
 </th:block>

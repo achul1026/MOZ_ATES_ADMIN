@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 S<th:block layout:fragment="content">
 	<div id="container-fluid">
 		<h1 id="detail-content-title" th:text="'Second bill of payment'">2차 납부 고지서(배치 생성 후 적용 필요)</h1>
 		<div class="btn-wrap-right" th:switch="${finePymntInfo.pymntStts}">
-			<button th:case="N" type="button" class="main-btn big-menu-plus form-button" th:text="#{penalty.penaltyDetail.btn.payment}" th:onclick="viewOnSitePaymentModal('[[${finePymntInfo.totalPrice}]]')">On-site payment</button>
-			<button th:case="Y" type="button" class="delete-btn big-menu-plus form-button" th:text="#{penalty.penaltyDetail.btn.paymentCancel}" th:onclick="cancelPayment()">결제철회</button>
+			<button th:case="N" type="button" class="main-btn big-menu-plus form-button"
+				th:text="#{penalty.penaltyDetail.btn.payment}"
+				th:onclick="viewOnSitePaymentModal('[[${finePymntInfo.totalPrice}]]')">On-site payment</button>
+			<button th:case="Y" type="button" class="delete-btn big-menu-plus form-button"
+				th:text="#{penalty.penaltyDetail.btn.paymentCancel}" th:onclick="cancelPayment()">결제철회</button>
 		</div>
 		<div class="detail-table-wrap">
 			<table class="detail-table">
@@ -49,11 +51,19 @@ S<th:block layout:fragment="content">
 						<th th:text="#{penalty.penaltyDetail.tfcEnfocation}">적발지역</th>
 						<td th:text="${finePymntInfo.tfcEnfMaster?.roadAddr}"></td>
 					</tr>
+<!--					<tr>-->
+<!--						<th th:text="#{penalty.penaltyDetail.vioLaws}">위반법령</th>-->
+<!--						<td th:text="${finePymntInfo.tfcLwInfo?.lawNm}"></td>-->
+<!--						<th th:text="#{penalty.penaltyDetail.lawType}">법률유형</th>-->
+<!--						<td th:text="${finePymntInfo.tfcLwInfo?.lawType}">법률 유형</td>-->
+<!--					</tr>-->
 					<tr>
 						<th th:text="#{penalty.penaltyDetail.vioLaws}">위반법령</th>
-						<td th:text="${finePymntInfo.tfcLwInfo?.lawNm}"></td>
-						<th th:text="#{penalty.penaltyDetail.lawType}">법률유형</th>
-						<td th:text="${finePymntInfo.tfcLwInfo?.lawType}">법률 유형</td>
+						<td colspan="3">
+							<div id="lawStauWrap">
+								<span class="tableStausOn" th:each="item : ${fineInfoList}" th:text="${item.tfcLwInfo.lawNm}"></span>
+							</div>
+						</td>
 					</tr>
 					<tr>
 						<th th:text="#{penalty.penaltyDetail.manage}">담당 경찰명</th>
@@ -63,9 +73,13 @@ S<th:block layout:fragment="content">
 					</tr>
 					<tr>
 						<th th:text="#{penalty.penaltyDetail.finePrice}">범칙금</th>
-						<td th:text="${finePymntInfo.totalPrice > 0 && finePymntInfo.totalPrice != null ? @mozatesCommonUtils.priceFmt(finePymntInfo.totalPrice,'MOZAMBIQUE_METICAL') : '0'}">법률 테이블 ERD/DB 수정 후 가져오기</td>
+						<td
+							th:text="${finePymntInfo.totalPrice > 0 && finePymntInfo.totalPrice != null ? @mozatesCommonUtils.priceFmt(finePymntInfo.totalPrice,'MOZAMBIQUE_METICAL') : '0'}">
+							법률 테이블 ERD/DB 수정 후 가져오기</td>
 						<th th:text="#{penalty.penaltyDetail.paymentPrice}">납부금액</th>
-						<td th:text="${finePymntInfo.pymntPrice > 0 && finePymntInfo.pymntPrice != null ? @mozatesCommonUtils.priceFmt(finePymntInfo.pymntPrice,'MOZAMBIQUE_METICAL') : '0'}"></td>
+						<td
+							th:text="${finePymntInfo.pymntPrice > 0 && finePymntInfo.pymntPrice != null ? @mozatesCommonUtils.priceFmt(finePymntInfo.pymntPrice,'MOZAMBIQUE_METICAL') : '0'}">
+						</td>
 					</tr>
 					<tr>
 						<th th:text="#{penalty.penaltyDetail.paymentDueDate}">납부기한</th>
@@ -95,126 +109,153 @@ S<th:block layout:fragment="content">
 			</table>
 		</div>
 		<div class="bill-text">
-			<div th:text="#{penalty.penaltyDetail.firstCautionMessage}">- If you are in arrears for more than 15 days after the first notice, the second notice will proceed.</div>
-			<div th:text="#{penalty.penaltyDetail.secondCautionMessage}">- If you are in arrears for more than 15 days for the second notice, you will be subject to administrative disposition.</div>
+			<div th:text="#{penalty.penaltyDetail.firstCautionMessage}">- If you are in arrears for more than 15 days
+				after the first notice, the second notice will proceed.</div>
+			<div th:text="#{penalty.penaltyDetail.secondCautionMessage}">- If you are in arrears for more than 15 days
+				for the second notice, you will be subject to administrative disposition.</div>
 			<div th:text="#{penalty.penaltyDetail.adminContect}">- contact : INATRO 002-023-12347</div>
 		</div>
 		<div class="btn-wrap-center">
-			<button th:text="#{penalty.common.list}" type="button" id="btnGoList" class="sub-btn" th:onclick="|location.href='@{/penalty/second/list.do}'|">목록</button>
-<!--			<button th:text="#{penalty.penaltyDetail.modify}" type="button" id="btnModify" class="main-btn" th:onclick="'location.href=\''+@{/penalty/second/update.do(pymntId=${finePymntInfo.pymntId})}+'\''">수정</button>-->
-			<button th:if="${finePymntInfo.pymntStts == 'Y'}" th:text="#{penalty.penaltyDetail.receipt}" type="button" id="btnReceipt" class="main-btn" onclick="printReceipt()">영수증 출력</button>
+			<button th:text="#{penalty.common.list}" type="button" id="btnGoList" class="sub-btn"
+				th:onclick="|location.href='@{/penalty/second/list.do}'|">목록</button>
+			<!--			<button th:text="#{penalty.penaltyDetail.modify}" type="button" id="btnModify" class="main-btn" th:onclick="'location.href=\''+@{/penalty/second/update.do(pymntId=${finePymntInfo.pymntId})}+'\''">수정</button>-->
+			<button th:if="${finePymntInfo.pymntStts == 'Y'}" th:text="#{penalty.penaltyDetail.receipt}" type="button"
+				id="btnReceipt" class="main-btn" onclick="printReceipt()">영수증 출력</button>
 		</div>
 	</div>
 	<div class="modal-wrap" id="modal">
 
 	</div>
 </th:block>
+
 </html>
 <script th:inline="javascript">
 	const pymntId = /*[[${finePymntInfo.pymntId}]]*/;
-	
-	function viewOnSitePaymentModal(totalPrice){
-		const modalContent = document.getElementById("modal");
-		
-		$.ajax({
-				url: '/common/modal/payment/onsite.ajax',
-				data : {
-					"totalPrice" : totalPrice
-				},
-				type: "get",
-				dataType: 'html',
-				success: function (data) {
-					modalContent.innerHTML = data;
-					modalContent.style.display = 'block';
-					
-					document.getElementById('modalOff').addEventListener('click', function() {
-						modalContent.style.display = 'none';
-						modalContent.innerHTML = ""
-					});
-					
-					document.getElementById('paymentBtn').addEventListener('click', function() {
-						const pymntPrice = document.getElementById('pymntPrice').value;
-						const payerNm = document.getElementById('payerNm').value;
-						const penaltydetail = document.getElementById('penaltydetail').value;
-						const placePymntId = document.getElementById('placePymntId').value;
-						
-						
-						if(payerNm == null || payerNm == '' ||pymntPrice == null || pymntPrice == '' || placePymntId == null) {
-							alert('PayerName or Payment Amount a required value.');
-							return;
-						}
 
-						if(totalPrice != parseFloat(pymntPrice)){
-							alert('Please enter the payment amount accurately');
-							return;
-						}
+	function viewOnSitePaymentModal(totalPrice) {
+		const modalContent = document.getElementById("modal");
+
+		$.ajax({
+			url: '/common/modal/payment/onsite.ajax',
+			data: {
+				"totalPrice": totalPrice
+			},
+			type: "get",
+			dataType: 'html',
+			success: function (data) {
+				modalContent.innerHTML = data;
+				modalContent.style.display = 'block';
+
+				document.getElementById('modalOff').addEventListener('click', function () {
+					modalContent.style.display = 'none';
+					modalContent.innerHTML = ""
+				});
+
+				document.getElementById('paymentBtn').addEventListener('click', function () {
+					const pymntPrice = document.getElementById('pymntPrice').value;
+					const payerNm = document.getElementById('payerNm').value;
+					const penaltydetail = document.getElementById('penaltydetail').value;
+					const placePymntId = document.getElementById('placePymntId').value;
+
 						
-						const confirmMsg =  /*[[#{penalty.penaltyDetail.confirm.payment}]]*/;
-						const successMsg =  /*[[#{penalty.penaltyDetail.payment.success}]]*/;
-						const failedMsg =  /*[[#{penalty.penaltyDetail.payment.failed}]]*/;
-						
-						if(confirm(confirmMsg)){
-							$.ajax({
-								url: '/penalty/second/onsite/payment.ajax',
-								data : {
-									"pymntId"	   : pymntId,
-									"pymntPrice" : pymntPrice,
-									"payerNm" : payerNm,
-									"penaltydetail"	   : penaltydetail,
-									"placePymntId"	: placePymntId
-								},
-								type: "post",
-								dataType: 'json',
-								success: function (data) {
-									if(data.code == '200'){
-										alert(successMsg);
+					if (pymntPrice == null || pymntPrice == '') {
+						/*결제 금액을 입력해주세요.*/
+						alert('Por favor, insira o valor do pagamento com precisão.');
+						return;
+						modal.close();
+					}
+					
+					if (payerNm == null || payerNm == '') {
+						/*지불자 이름을 입력해주세요.*/
+						alert('Por favor, insira o nome do pagador.');
+						return;
+						modal.close();
+					}
+
+					if (totalPrice != parseFloat(pymntPrice)) {
+						/*입력한 금액과 지불해야 할 금액이 다릅니다.*/
+						alert('O valor inserido é diferente do valor a ser pago.');
+						return;
+					}
+					
+	
+
+					if (confirm("Deseja prosseguir com o pagamento?")) {
+						$.ajax({
+							url: '/penalty/second/onsite/payment.ajax',
+							data: {
+								"pymntId": pymntId,
+								"pymntPrice": pymntPrice,
+								"payerNm": payerNm,
+								"penaltydetail": penaltydetail,
+								"placePymntId": placePymntId
+							},
+							type: "post",
+							dataType: 'json',
+							success: function (data) {
+								if (data.code == '200') {
+									modalContent.style.display = 'none';
+									modalContent.innerHTML = ""
+									new ModalBuilder().init().successBody(data.message).footer(4, 'Confirmar', function (button, modal) {
 										location.reload();
-									} else {
-										alert(failedMsg);
-									}
+										modal.close();
+									}).open();
+								} else {
+									new ModalBuilder().init().successBody(data.message).footer(4, 'Confirmar', function (button, modal) {
+										modal.close();
+									}).open();
 								}
-							});
-						} else {
-							return;
-						}
-					});
-				}
+							}
+						});
+					} else {
+						return;
+					}
+				});
+			}
 		});
 	}
-	
-	function cancelPayment(){
+
+	function cancelPayment() {
 		const confirmMsg =  /*[[#{penalty.penaltyDetail.confirm.paymentCancel}]]*/;
 		const successMsg =  /*[[#{penalty.penaltyDetail.paymentCancel.success}]]*/;
 		const failedMsg =  /*[[#{penalty.penaltyDetail.paymentCancel.failed}]]*/;
-		
-		if(confirm(confirmMsg)){
-			$.ajax({
-				url: '/penalty/second/cancel/onsite/payment.ajax',
-				data : {
-					"pymntId" : pymntId
-				},
-				type: "post",
-				dataType: 'json',
-				success: function (data) {
-					if(data.code == '200'){
-						alert(successMsg);
-						location.reload();
-					} else {
-						alert(failedMsg);
+
+
+		new ModalBuilder().init().alertBody(confirmMsg).footer(2, 'Confirmar', function (button, modal) {
+			modal.close();
+
+			setTimeout(() => {
+				$.ajax({
+					url: '/penalty/second/cancel/onsite/payment.ajax',
+					data: {
+						"pymntId": pymntId
+					},
+					type: "post",
+					dataType: 'json',
+					success: function (data) {
+						if (data.code == '200') {
+							new ModalBuilder().init().successBody(successMsg).footer(4, 'Confirmar', function (button, modal) {
+								location.reload();
+								modal.close();
+							}).open();
+						} else {
+							new ModalBuilder().init().successBody(failedMsg).footer(4, 'Confirmar', function (button, modal) {
+								location.reload();
+								modal.close();
+							}).open();
+						}
+					},
+					error: function (err) {
+						new ModalBuilder().init().successBody(failedMsg).footer(4, 'Confirmar', function (button, modal) {
+							modal.close();
+						}).open();
 					}
-				},
-				error : function (err) {
-					alert(failedMsg);
-				}
-			})
-		}
-		//new ModalBuilder().init().alertBody(result.message).footer(4,'확인',function(button, modal){
-		//	modal.close();
-		//}).open();
-		//modalAlertWrap();
+				})
+			}, 500);
+		}).open();
 	}
-	
-	function printReceipt(){
+
+	function printReceipt() {
 		console.log("TODO:: 영수증 출력");
 	}
 </script>

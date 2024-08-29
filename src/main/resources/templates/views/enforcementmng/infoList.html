@@ -22,7 +22,7 @@
 					<tr>
 						<th th:text="#{enforcement.common.search.searchOp}">유형 선택</th>
 						<td>
-							<select name="searchType" id="searchType" class="filter-select">
+							<select name="searchType" id="searchType" class="filter-select" th:field="${tfcEnfMaster.searchType}">
 								<option value="all" th:text="#{enforcement.common.search.selectAll}">전체</option>
 								<option value="enfNo" th:text="#{enforcement.info.list.enforcementNumber}">단속번호</option>
 								<option value="vhNo" th:text="#{enforcement.info.list.vhRegNo}">차량번호</option>
@@ -46,8 +46,8 @@
 			</table>
 
 			<div class="btn-wrap-center">
-				<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{enforcement.info.list.check}">조회</button>
 				<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')" th:text="#{enforcement.common.search.reset}">검색 초기화</button>
+				<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{enforcement.info.list.check}">조회</button>
 			</div>
 		</form>
 
@@ -89,8 +89,8 @@
 							<td th:text="${infoItem.vioInfo.vioNm}"></td>
 							<td th:text="${infoItem.vhRegNo}"></td>
 							<td class="flex justify-center">
-								<span class="tableStausOn" th:if="${infoItem.finePymntInfo?.pymntStts == 'Y'}" th:text="'Paid'"></span>
-								<span class="tableStausOff" th:unless="${infoItem.finePymntInfo?.pymntStts == 'Y'}" th:text="'Non Paid'"></span>
+								<span class="tableStausOn" th:if="${infoItem.finePymntInfo?.pymntStts == 'Y'}" th:text="#{enforcement.info.list.paid}"></span>
+								<span class="tableStausOff" th:unless="${infoItem.finePymntInfo?.pymntStts == 'Y'}" th:text="#{enforcement.info.list.nonPaid}"></span>
 							</td>
 						</tr>
 					</tbody>

@@ -5,7 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
-
+import java.util.List;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +25,7 @@ import com.moz.ates.traffic.common.component.Pagination;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
 import com.moz.ates.traffic.common.entity.driver.MozVioInfo;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfFileInfo;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfFineInfo;
 import com.moz.ates.traffic.common.entity.finentc.MozFineNtcInfo;
 import com.moz.ates.traffic.common.enums.NtcTypeCd;
 import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfFileInfoRepository;
@@ -84,11 +85,23 @@ public class FineNtcController {
      * @date : 2023.08.17
      * @param : 
      * @return : 
+     * @throws Exception 
      */
 	@Authority(type = MethodType.READ)
 	@GetMapping("/first/detail.do")
-	public String fineNtcFirstDetail(Model model , @RequestParam(name="fineNtcId") String fineNtcId) {
-		model.addAttribute("fineNtcInfo", fineNtcService.findOneNtcDetailByFineNtcId(fineNtcId));
+	public String fineNtcFirstDetail(Model model , @RequestParam(name="fineNtcId") String fineNtcId) throws Exception {
+		MozFineNtcInfo fineNtcInfo = null;
+		List<MozTfcEnfFineInfo> fineInfoList = null;
+		try {
+			fineNtcInfo = fineNtcService.findOneNtcDetailByFineNtcId(fineNtcId);
+			String tfcEnfId = fineNtcInfo.getTfcEnfId();
+			fineInfoList = fineNtcService.getAllTfcEnfFineInfo(tfcEnfId);
+		} catch (CommonException e) {
+			throw new Exception(e.getMessage());
+		}
+		
+		model.addAttribute("fineNtcInfo", fineNtcInfo);
+		model.addAttribute("fineInfoList", fineInfoList);
 		return "views/finentc/fineNtcFirstDetail";
 	}
 
@@ -242,11 +255,23 @@ public class FineNtcController {
      * @date : 2023.08.17
      * @param : 
      * @return : 
+     * @throws Exception 
      */
 	@Authority(type = MethodType.READ)
 	@GetMapping("/second/detail.do")
-	public String fineNtcSecondDetail(Model model , @RequestParam(name="fineNtcId") String fineNtcId) {
-		model.addAttribute("fineNtcInfo", fineNtcService.findOneNtcDetailByFineNtcId(fineNtcId));
+	public String fineNtcSecondDetail(Model model , @RequestParam(name="fineNtcId") String fineNtcId) throws Exception {
+		MozFineNtcInfo fineNtcInfo = null;
+		List<MozTfcEnfFineInfo> fineInfoList = null;
+		try {
+			fineNtcInfo = fineNtcService.findOneNtcDetailByFineNtcId(fineNtcId);
+			String tfcEnfId = fineNtcInfo.getTfcEnfId();
+			fineInfoList = fineNtcService.getAllTfcEnfFineInfo(tfcEnfId);
+		} catch (CommonException e) {
+			throw new Exception(e.getMessage());
+		}
+		
+		model.addAttribute("fineNtcInfo", fineNtcInfo);
+		model.addAttribute("fineInfoList", fineInfoList);
 		return "views/finentc/fineNtcSecondDetail";
 	}
 
@@ -280,7 +305,7 @@ public class FineNtcController {
 		try {
 			fineNtcService.updateMozVioInfo(mozVioInfo);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Falha ao editar as informações da fatura.");
+			throw new CommonException(ErrorCode.INTERNAL_SERVER_ERROR, "Falha ao editar as informações da fatura.");
 		}
 		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Correção das informações da fatura.");
 	}

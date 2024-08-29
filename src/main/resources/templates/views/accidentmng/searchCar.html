@@ -6,7 +6,7 @@
 
 	<div id="container-fluid">
 		<h1 id="content-title" th:text="|#{accident.car.search.title}|">차량 검색</h1>
-		<div id="content-sub-title" th:text="#{accident.car.search.descr}">차량번호를 통해 차량을 검색할 수 있습니다.</div>
+		<div id="content-sub-title" th:text="#{accident.car.search.descr}">차량 번호로 검색이 가능합니다.</div>
 		<form id="frmCarSearch">
 			<table id="filter-table">
 				<colgroup>
@@ -26,24 +26,14 @@
 		</form>
 
 		<div class="btn-wrap-center">
-			<button type="button" onclick="apiSearch()" class="main-btn form-button" th:text="#{accident.car.search.check}">조회</button>
 			<button type="button" id="resetSearch" onclick="resetForm()" class="sub-btn form-button" th:text="#{accident.common.search.reset}">검색 초기화</button>
+			<button type="button" onclick="apiSearch()" class="main-btn form-button" th:text="#{accident.car.search.check}">조회</button>
 		</div>
 		<div class="">
 			<table id="api_table" class="main-table" style="display:none">
 				<thead>
-<!--					<tr>-->
-<!--						<th th:text="#{accident.car.search.driverLicense}">Driver License Id</th>-->
-<!--						<th th:text="#{accident.car.search.driverType}">Driver License Type</th>-->
-<!--						<th th:text="#{accident.car.search.expiration}">Driver License Expiration Date</th>-->
-<!--						<th th:text="#{accident.car.search.name}">Driver Name</th>-->
-<!--						<th th:text="#{accident.car.search.birth}">Driver Brth</th>-->
-<!--						<th th:text="#{accident.car.search.searchAddress}">Driver Addr</th>-->
-<!--						<th th:text="#{accident.car.search.phNum}">Driver Phone Number</th>-->
-<!--						<th th:text="#{accident.car.search.vehicleNo}">Vehicle No</th>-->
-<!--						<th th:text="#{accident.car.search.vehicleType}">Vehicle Type</th>-->
-<!--					</tr>-->
 					<tr>
+						<th th:text="#{accident.car.search.vehicleNo}">Vehicle No</th>
 						<th th:text="#{accident.car.search.name}">Driver Name</th>
 						<th th:text="#{accident.car.search.birth}">BirthDay</th>
 						<th th:text="#{accident.car.search.docType}">Document Type</th>
@@ -67,6 +57,7 @@
 	
 	function apiResultDetail(_this){
 		let resultData = _this.dataset != null ? _this.dataset.prop : null;
+		const searchValue = document.getElementById('searchContent').value;
 		let obj = JSON.parse(resultData);
 	    const form = document.createElement('form');
 	    form.method = 'get';
@@ -80,7 +71,7 @@
 	        result.value = obj[key];
 	        form.appendChild(result);
 	    });
-	
+
 	    document.body.appendChild(form);
 	    form.submit();
 	}
@@ -89,9 +80,13 @@
         const searchType = document.getElementById('searchType').value;
         const searchValue = document.getElementById('searchContent').value;
         const resultMsg = /*[[#{common.search.notFound}]]*/;
+        const notSearch = /*[[#{common.search.notSearch}]]*/;
+        const conFirm = /*[[#{common.button.confirm}]]*/;
         
         if(searchType == null || searchType == '' || searchValue == null || searchValue == ''){
-			alert("Please Input SearchType and SearchContent");
+			new ModalBuilder().init().successBody(notSearch).footer(4,conFirm,function(button, modal){
+				modal.close();
+			}).open();
 			return;
 		}
         
@@ -103,47 +98,62 @@
             const tbody = document.getElementById('resultTbody');
             tbody.empty();
 
-		    let parsedData = JSON.parse(data);
-		    
-		    if(parsedData != null &&  parsedData.tab1.length > 0){
-	            parsedData.tab1.forEach(item => {
-	                const tr = document.createElement('tr');
-	                tr.dataset.prop = JSON.stringify(item);
-	                //console.log(JSON.stringify(item));
-	                tr.setAttribute('onclick','apiResultDetail(this)');
-	                
-					let birthday = new Date(item.datadenascimento);
-					
-					let birthdayFormat = `${birthday.getDate()}.${birthday.getMonth() + 1}.${birthday.getFullYear()}`;
+			if(data != null && data != ''){
+			    let parsedData = JSON.parse(data);
+			    
+			    if(parsedData != null &&  parsedData.tab1.length > 0){
+		            parsedData.tab1.forEach(item => {
+		                const tr = document.createElement('tr');
+		                tr.dataset.prop = JSON.stringify(item);
+		                //console.log(JSON.stringify(item));
+		                tr.setAttribute('onclick','apiResultDetail(this)');
 
-	                tr.innerHTML = `
-		               	<td>${item.nome}</td>
-		               	<td>${birthdayFormat}</td>
-		               	<td>${item.tipodedocumento}</td>
-		               	<td>${item.numerododocumento}</td>
-		               	<td>${item.domicilio}</td>
-		               	<td>${item.provincia}</td>
-		               	<td>${item.distrito}</td>
-		               	<td>${item.contacto}</td>
-	               	`;
-	               	
-	                tbody.appendChild(tr);
+						let birthdayFormat = '';
+
+						if (item.datadenascimento != null) {
+							let birthday = new Date(item.datadenascimento);
+							birthdayFormat = `${birthday.getDate()}.${birthday.getMonth() + 1}.${birthday.getFullYear()}`;
+						}
+
+		                tr.innerHTML = `
+							<td>${searchValue}</td>
+			               	<td>${item.nome ?? ''}</td>
+			               	<td>${birthdayFormat ?? ''}</td>
+			               	<td>${item.tipodedocumento ?? ''}</td>
+			               	<td>${item.numerododocumento ?? ''}</td>
+			               	<td>${item.domicilio ?? ''}</td>
+			               	<td>${item.provincia ?? ''}</td>
+			               	<td>${item.distrito ?? ''}</td>
+			               	<td>${item.contacto ?? ''}</td>
+		               	`;
+		               	
+		                tbody.appendChild(tr);
+		                
+		                resultTable.style.display = 'table';
+		            });
+				} else {
+					const tr = document.createElement('tr');
+					
+					 tr.innerHTML = `
+			               	<td colspan="8">${resultMsg}</td>
+		               	`;
+	               	tbody.appendChild(tr);
 	                
 	                resultTable.style.display = 'table';
-	            });
+				}
 			} else {
-				const tr = document.createElement('tr');
-				
-				 tr.innerHTML = `
-		               	<td colspan="8">${resultMsg}</td>
-	               	`;
-               	tbody.appendChild(tr);
-                
-                resultTable.style.display = 'table';
+					const tr = document.createElement('tr');
+					
+					 tr.innerHTML = `
+			               	<td colspan="8">${resultMsg}</td>
+		               	`;
+	               	tbody.appendChild(tr);
+	                
+	                resultTable.style.display = 'table';
 			}
 	        loading.end();
         });
-	};
+	}
 	
 	function resetForm(){
         const searchType = document.getElementById('searchType');

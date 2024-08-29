@@ -48,7 +48,9 @@
 	height:30px;
 	width:97%;
 }
-
+textarea:focus {
+	outline: 2px solid #00967a;
+}
 input[type="text"]::placeholder {
 	color: #d7d7d7;
 }
@@ -110,6 +112,9 @@ input::-webkit-inner-spin-button {
 }
 button {
 	cursor: pointer;
+	margin: 0;
+    padding: 0;
+    margin-bottom: -2px;
 }
 /*버튼 종류*/
 .registor-btn-wrap button {
@@ -224,6 +229,7 @@ button {
 	width:100%;
 	height:100%;
 	background: rgba(0, 0, 0, 0.6);
+	z-index: 9999999;
 }
 .modal-contents {
 	position: absolute;
@@ -352,7 +358,7 @@ button {
 	font-size:14px;
 	text-align: left;
 }
-.modal-search-result span {
+.modal-search-result .searchResult {
 	color:#ff3142;
 	font-weight:bold;
 }
@@ -391,16 +397,26 @@ button {
 	left:0;
 	width: 100%;
 	height: 100%;
+	z-index: 99999;
 }
 #modal-wrap {
-	border-radius: 6px;
+	padding: 48px;
+	border-radius: 12px;
     overflow: hidden;
     background: #fff;
     position: absolute;
     top: 50%;
     left: 50%;
+    transform: translate(-50%, -70%);
+    width:300px;
+    max-width:400px;
+    transition:0.5s;
+    opacity: 0;
+}
+#modal-wrap.on {
     transform: translate(-50%, -50%);
-    min-width:400px;
+    opacity: 1;
+    transition: 0.5s;
 }
 #modal-background {
 	background: #00000030;
@@ -423,7 +439,6 @@ button {
 	font-weight: 600;
 }
 #modal-body {
-	padding: 30px;
 	text-align: center;
 }
 #alert-img {
@@ -432,19 +447,29 @@ button {
 #modal-txt {
 	font-weight: 600;
 	font-size:18px;
+	word-break: break-all;
 }
 #modal-footer {
 	display: flex;
+	gap: 12px;
+}
+#modal-footer-onebtn {
+	margin-top:48px;
 }
 #modal-footer button {
-	padding: 16px;
-	width:100%;
-	border-radius: 0;
+	margin-top: 48px;
+	padding: 18px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: 500;
 }
 #modal-footer-onebtn button {
-	padding: 16px;
-	border-radius: 0;
-	width:100%;
+	padding: 18px;
+    border-radius: 8px;
+    width: 100%;
+    font-size: 18px;
+    font-weight: 500;
 }
 .txt-underline {
 	text-decoration: underline;
@@ -459,7 +484,7 @@ button {
 }
 #loading-cover {
 	position:fixed;
-	z-index:9999;
+	z-index:99999999;
 	left:0;
 	right:0;
 	top:0;
@@ -558,6 +583,9 @@ button {
 .text-pre-line{
 	white-space:pre-line
 }
+.text-pre-wrap{
+	white-space: pre-wrap;
+}
 .eye {
 	display: block;
 	cursor: pointer;
@@ -577,23 +605,109 @@ button {
 	min-width: 200px;
 }
 .mkCon {
-	display: flex;
-	gap:10px;
-	align-items: center;
-	justify-content: space-between;
+	display: table;
 }
+/*.mkCon {*/
+/*	display: flex;*/
+/*	gap:10px;*/
+/*	align-items: center;*/
+/*	justify-content: space-between;*/
+/*}*/
 .mkTitle {
-	padding-left:8px;
+	padding:8px;
+	display: table-cell;
+	min-width: 60px;
+	text-align: center;
+	border-bottom: 1px solid #fff;
+	vertical-align: middle;
+	background: #efefef;
 	position: relative;
 	font-weight: 600;
 }
-.mkTitle::before {
-	content: '';
+/*.mkTitle {*/
+/*	padding-left:8px;*/
+/*	position: relative;*/
+/*	font-weight: 600;*/
+/*}*/
+/*.mkTitle::before {*/
+/*	content: '';*/
+/*	position: absolute;*/
+/*	top:8px;*/
+/*	left: 0;*/
+/*	width: 3px;*/
+/*	height: 3px;*/
+/*	background: #000;*/
+/*	border-radius: 20px;*/
+/*}*/
+.mkContents {
+	padding: 8px;
+	display: table-cell;
+	width: 100%;
+	text-align: left;
+	border-bottom: 1px solid #efefef;
+	color: #878787;
+	font-weight: 300;
+}
+.cm-delete-img {
+	width: 18px;
+}
+#legend {
 	position: absolute;
-	top:8px;
-	left: 0;
-	width: 3px;
-	height: 3px;
-	background: #000;
-	border-radius: 20px;
+    bottom: 10px;
+    left: 10px;
+    z-index: 9999;
+    background: #fff;
+    padding: 18px;
+    max-width: 250px;
+    min-width: 230px;
+    border-radius: 12px;
+}
+.lg-head {
+	display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: margin-bottom ease-out;
+}
+/*.lg-head.on {*/
+/*	margin-bottom: 0;*/
+/*}*/
+.toggle-btn {
+	 transition: transform ease-out 0.3s;
+}
+.toggle-btn.on {
+	transform: rotate(180deg);
+}
+.lg-container {
+	margin-top: 18px;
+	max-height: 150px;
+	overflow-y: auto;
+}
+.lg-container.on {
+	max-height: 0;
+	margin-top: 0;
+}
+#toggleBtn {
+	cursor: pointer;
+}
+.lg__list {
+	margin-bottom: 8px;
+	display: flex;
+	gap: 8px;
+	align-items: center;
+}
+.lg__list:last-child {
+	margin-bottom: 0;
+}
+.lg_list_con {
+	display: flex;
+}
+.lg_list_con img {
+	width: 20px;
+}
+#cmDetailSubNumber {
+	margin-bottom: 8px;
+}
+#cmDetailSubNumber span {
+	color: #ff0000;
+	font-weight: 600;
 }

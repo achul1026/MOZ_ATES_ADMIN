@@ -181,130 +181,147 @@
 		var authCd = $("#authCd").val().trim();
 		
 		if(authNm == null || authNm == ''){
-			alert(/*[[#{sitemng.common.auth.message.enterAuthName}]]*/);
+			new ModalBuilder().init().successBody(/*[[#{sitemng.common.auth.message.enterAuthName}]]*/).footer(4,'Confirmar',function(button, modal){
+				modal.close();
+			}).open();
+			//alert(/*[[#{sitemng.common.auth.message.enterAuthName}]]*/);
 			return false;
 		};
 		if(authDesc == null || authDesc == ''){
-			alert(/*[[#{sitemng.common.auth.message.enterAuthDesc}]]*/);
+			new ModalBuilder().init().successBody(/*[[#{sitemng.common.auth.message.enterAuthDesc}]]*/).footer(4,'Confirmar',function(button, modal){
+				modal.close();
+			}).open();
+			//alert(/*[[#{sitemng.common.auth.message.enterAuthDesc}]]*/);
 			return false;
 		};
 		if(authCd == null || authCd == ''){
-			alert(/*[[#{sitemng.common.auth.message.selectAuthCode}]]*/);
+			new ModalBuilder().init().successBody(/*[[#{sitemng.common.auth.message.selectAuthCode}]]*/).footer(4,'Confirmar',function(button, modal){
+				modal.close();
+			}).open();
+			//alert(/*[[#{sitemng.common.auth.message.selectAuthCode}]]*/);
 			return false;
 		};
 
-		if(!confirm(confirmMsg)){
-			return false;
-		}
-		
-		var result = new Object();
-		var authMenuList = new Array();
-		var mainMenu = $(".mainMenuCheckBox");
+		new ModalBuilder().init().successBody(confirmMsg).footer(2,'Confirmar',function(button, modal){
+			modal.close();
+			setTimeout(() => {
 
-		for (var i = 0; i < mainMenu.length; i++) {
-			var mainMenuId = $(".mainMenuCheckBox").eq(i).data("menuid");
-			var mainAuthMenuId = $("#authMenuId_" + mainMenuId).val();
-			var mainMenuIsChecked = mainMenu.eq(i).is(":checked");
-			var menuUrlPattrn = $("#menuUrlPattrn_"+mainMenuId).val();
-			
-			var mainAuthMenu = new Object();
-			var subMenu = $(".subMenu_" + mainMenuId);
-			
-			mainAuthMenu.menuUrlPattrn = menuUrlPattrn;
-			
-			if (mainMenuIsChecked) {
-				// 메인메뉴 Y인 경우
-				let isSubMenuHasAnyY = false;
+			var result = new Object();
+			var authMenuList = new Array();
+			var mainMenu = $(".mainMenuCheckBox");
+	
+			for (var i = 0; i < mainMenu.length; i++) {
+				var mainMenuId = $(".mainMenuCheckBox").eq(i).data("menuid");
+				var mainAuthMenuId = $("#authMenuId_" + mainMenuId).val();
+				var mainMenuIsChecked = mainMenu.eq(i).is(":checked");
+				var menuUrlPattrn = $("#menuUrlPattrn_"+mainMenuId).val();
 				
-				mainAuthMenu.menuId = mainMenuId;
-				mainAuthMenu.authMenuId = mainAuthMenuId;
-				mainAuthMenu.createYn = "Y";
-				mainAuthMenu.readYn = "Y";
-				mainAuthMenu.deleteYn = "Y";
-				mainAuthMenu.updateYn = "Y";
-
-				for (var j = 0; j < subMenu.length; j++) {
-					var subAuthMenu = new Object();
-					var subMenuId = subMenu.eq(j).data("submenuid");
-					var subauthMenuId = $("#authMenuId_" + subMenuId).val();
+				var mainAuthMenu = new Object();
+				var subMenu = $(".subMenu_" + mainMenuId);
+				
+				mainAuthMenu.menuUrlPattrn = menuUrlPattrn;
+				
+				if (mainMenuIsChecked) {
+					// 메인메뉴 Y인 경우
+					let isSubMenuHasAnyY = false;
 					
-					var readYn = $("#readYn_" + subMenuId).is(":checked") ? "Y" : "N";
-					var createYn = $("#createYn_" + subMenuId).is(":checked") ? "Y" : "N";
-					var deleteYn = $("#deleteYn_" + subMenuId).is(":checked") ? "Y" : "N";
-					var updateYn = $("#updateYn_" + subMenuId).is(":checked") ? "Y" : "N";
+					mainAuthMenu.menuId = mainMenuId;
+					mainAuthMenu.authMenuId = mainAuthMenuId;
+					mainAuthMenu.createYn = "Y";
+					mainAuthMenu.readYn = "Y";
+					mainAuthMenu.deleteYn = "Y";
+					mainAuthMenu.updateYn = "Y";
+	
+					for (var j = 0; j < subMenu.length; j++) {
+						var subAuthMenu = new Object();
+						var subMenuId = subMenu.eq(j).data("submenuid");
+						var subauthMenuId = $("#authMenuId_" + subMenuId).val();
 						
-					if(readYn == "Y" || createYn == "Y" || deleteYn == "Y" || updateYn == "Y") {
-						isSubMenuHasAnyY = true;
-					}	
-						
-						
-					subAuthMenu.menuId = subMenuId;
-					subAuthMenu.authMenuId = subauthMenuId;
-					subAuthMenu.createYn = createYn;
-					subAuthMenu.readYn = readYn;
-					subAuthMenu.deleteYn = deleteYn;
-					subAuthMenu.updateYn = updateYn;
-
-					authMenuList.push(subAuthMenu);
-				}
-				
-				// 서브메뉴에 부여된 권한이 하나도 없는 경우
-				if(!isSubMenuHasAnyY) {
+						var readYn = $("#readYn_" + subMenuId).is(":checked") ? "Y" : "N";
+						var createYn = $("#createYn_" + subMenuId).is(":checked") ? "Y" : "N";
+						var deleteYn = $("#deleteYn_" + subMenuId).is(":checked") ? "Y" : "N";
+						var updateYn = $("#updateYn_" + subMenuId).is(":checked") ? "Y" : "N";
+							
+						if(readYn == "Y" || createYn == "Y" || deleteYn == "Y" || updateYn == "Y") {
+							isSubMenuHasAnyY = true;
+						}	
+							
+							
+						subAuthMenu.menuId = subMenuId;
+						subAuthMenu.authMenuId = subauthMenuId;
+						subAuthMenu.createYn = createYn;
+						subAuthMenu.readYn = readYn;
+						subAuthMenu.deleteYn = deleteYn;
+						subAuthMenu.updateYn = updateYn;
+	
+						authMenuList.push(subAuthMenu);
+					}
+					
+					// 서브메뉴에 부여된 권한이 하나도 없는 경우
+					if(!isSubMenuHasAnyY) {
+						mainAuthMenu.createYn = "N";
+						mainAuthMenu.readYn = "N";
+						mainAuthMenu.deleteYn = "N";
+						mainAuthMenu.updateYn = "N";
+					}
+					authMenuList.push(mainAuthMenu);
+					
+				} else {
+					// 메인메뉴 N인 경우
+					mainAuthMenu.menuId = mainMenuId;
+					mainAuthMenu.authMenuId = mainAuthMenuId;
 					mainAuthMenu.createYn = "N";
 					mainAuthMenu.readYn = "N";
 					mainAuthMenu.deleteYn = "N";
 					mainAuthMenu.updateYn = "N";
-				}
-				authMenuList.push(mainAuthMenu);
-				
-			} else {
-				// 메인메뉴 N인 경우
-				mainAuthMenu.menuId = mainMenuId;
-				mainAuthMenu.authMenuId = mainAuthMenuId;
-				mainAuthMenu.createYn = "N";
-				mainAuthMenu.readYn = "N";
-				mainAuthMenu.deleteYn = "N";
-				mainAuthMenu.updateYn = "N";
-
-				authMenuList.push(mainAuthMenu);
-
-				for (var j = 0; j < subMenu.length; j++) {
-					var subAuthMenu = new Object();
-					var subMenuId = subMenu.eq(j).data("submenuid");
-					var subauthMenuId = $("#authMenuId_" + subMenuId).val();
-					subAuthMenu.menuId = subMenuId;
-					subAuthMenu.authMenuId = subauthMenuId;
-					subAuthMenu.createYn = "N";
-					subAuthMenu.readYn = "N";
-					subAuthMenu.deleteYn = "N";
-					subAuthMenu.updateYn = "N";
-
-					authMenuList.push(subAuthMenu);
+	
+					authMenuList.push(mainAuthMenu);
+	
+					for (var j = 0; j < subMenu.length; j++) {
+						var subAuthMenu = new Object();
+						var subMenuId = subMenu.eq(j).data("submenuid");
+						var subauthMenuId = $("#authMenuId_" + subMenuId).val();
+						subAuthMenu.menuId = subMenuId;
+						subAuthMenu.authMenuId = subauthMenuId;
+						subAuthMenu.createYn = "N";
+						subAuthMenu.readYn = "N";
+						subAuthMenu.deleteYn = "N";
+						subAuthMenu.updateYn = "N";
+	
+						authMenuList.push(subAuthMenu);
+					}
 				}
 			}
-		}
-
-		result.authId = authId;
-		result.authNm = authNm;
-		result.authCd = authCd;
-		result.authDesc = authDesc;
-		result.authMenuList = authMenuList;
-		
-		$.ajax({
-			type: "post",
-			dataType: "json",
-			contentType: "application/json",
-			data : JSON.stringify(result),
-			url: '/siteMng/auth/update.ajax',
-			success: function (data) {
-				if (data.code == '200') {
-					alert(data.message);
-					location.href="/siteMng/auth/list.do";
-				} else {
-					alert(data.message);
+	
+			result.authId = authId;
+			result.authNm = authNm;
+			result.authCd = authCd;
+			result.authDesc = authDesc;
+			result.authMenuList = authMenuList;
+			
+			$.ajax({
+				type: "post",
+				dataType: "json",
+				contentType: "application/json",
+				data : JSON.stringify(result),
+				url: '/siteMng/auth/update.ajax',
+				success: function (data) {
+					if (data.code === 200) {
+						new ModalBuilder().init().successBody(data.message).footer(4,'Confirmar',function(button, modal){
+							modal.close();
+							location.href="/siteMng/auth/list.do";
+						}).open();
+					} else {
+						new ModalBuilder().init().successBody(data.message).footer(4,'Confirmar',function(button, modal){
+							modal.close();
+						}).open();
+					}
 				}
-			}
-		});
+			});
+
+			}, 500);
+		}).open();
+			
 	}
 
 	/*]]>*/

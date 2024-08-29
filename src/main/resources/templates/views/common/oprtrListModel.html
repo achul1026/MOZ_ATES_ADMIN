@@ -19,7 +19,9 @@
 
 		<div class="modal-search-list">
 			<div class="modal-search-result">
-				Found <span th:text='|"${pagination.totalListCnt}"|' id="totalCnt"></span> results
+				<span th:text="#{common.search.prefix}">Found</span>
+				<span class="searchResult" th:text='|"${pagination.totalListCnt}"|' id="totalCnt"></span>
+				<span th:text="#{common.search.suffix}">results</span>
 			</div>
 			<table class="main-table">
 				<thead>

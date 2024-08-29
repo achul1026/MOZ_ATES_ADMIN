@@ -46,13 +46,16 @@
 					</tr>
 					<tr>
 						<th th:text="#{administ.common.retentionSttts}">영치여부</th>
-						<td th:text="${administDipInfo.proHoldYn}">영치</td>
+						<td th:switch="${administDipInfo.proHoldYn}">
+							<span th:case="N" class="tableStausOn" th:text="#{administ.common.retentionN}"></span>
+							<span th:case="Y" class="tableStausOff" th:text="#{administ.common.retentionY}"></span>
+						</td>
 						<th th:text="#{administ.common.retentionAddress}">영치주소</th>
 						<td th:text="${administDipInfo.proHoldAddr}"></td>
 					</tr>
 					<tr>
 						<th th:text="#{administ.mngDetail.caseDetail}">상세 내용</th>
-						<td rowspan="3" th:text="${administDipInfo.dipDesc}"></td>
+						<td colspan="3" th:text="${administDipInfo.dipDesc}"></td>
 					</tr>
 				</tbody>
 			</table>
@@ -117,18 +120,13 @@
 		</form>
 		<div class="registor-btn-right">
 			<button type="button" id="btnGoList" class="sub-btn form-button" th:text="#{administ.mngDetail.listButton}"  th:onclick="|location.href='@{/administCourt/mng/list.do}'|">목록</button>
-			<button type="button" class="main-btn form-button" id="courtDcsnModifyBtn" th:text="#{administ.mngDetail.modifyButton}" onclick="saveInfo()"></button>
+			<button type="button" class="main-btn form-button" onclick="saveInfo()" th:text="#{administ.mngDetail.modifyButton}" ></button>
 		</div>
 	</div>
 </th:block>
 </html>
 <script>
 	function saveInfo() {
-	new ModalBuilder().init().successBody('수정되었습니다.').footer(4,'확인',function(button, modal){modal.close();}).open();
-}
-	
-	
-	$("#courtDcsnModifyBtn").on('click', function(){
 		let administDipId = $("input[name='administDipId']").val();
 		$.ajax({
             url: "/administCourt/mng/update.ajax",
@@ -136,12 +134,18 @@
             data: $("#courtDcsnModifyForm").serialize(),
             success: function(data){
                 if(data.code == "200"){
-                    alert(data.message);
-                    window.location.href="/administCourt/mng/detail.do?administDipId="+administDipId;
+					new ModalBuilder().init().successBody(data.message).footer(4,'Confirmar',function(button, modal){
+						modal.close();
+	                    window.location.href="/administCourt/mng/detail.do?administDipId="+administDipId;
+					}).open();
                 }else{
-                    alert(data.message);
+					new ModalBuilder().init().successBody(data.message).footer(4,'Confirmar',function(button, modal){
+						modal.close();
+					}).open();
                 }
             }
         });
-	})
+	}
+	
+	
 </script>

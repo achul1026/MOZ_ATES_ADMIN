@@ -1,26 +1,31 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="EUC-KR">
-  <link th:href="@{/css/main.css}" rel="stylesheet">
+    <meta charset="EUC-KR">
+    <link th:href="@{/css/main.css}" rel="stylesheet">
 </head>
 <body>
-	<div id="error-wrap">
-		<div id="error-container">
-			<div id="error-img">
-				<img src="/images/error_img.png" alt="에러이미지">
-			</div>
-			<div id="error-title">
-				<h2>Página não encontrada.</h2>
-			</div>
-			<div id="error-sub-title">
-				Página não encontrada ou expirada.<br>
-	            Por favor, verifique a página e tente novamente.
-			</div>
-			<div id="error-btn">
-				<a href="">Ir para a página principal.</a>
-			</div>
-		</div>
-	</div>
+<div id="error-wrap">
+    <div id="error-container">
+        <div id="error-img">
+            <img src="/images/error_img.png" alt="에러이미지">
+        </div>
+        <div id="error-title">
+            <h2>Página não encontrada.</h2>
+        </div>
+        <div id="error-sub-title">
+            <th:block th:if="${message} == null">
+                Página não encontrada ou expirada.<br>
+                Por favor, verifique a página e tente novamente.
+            </th:block>
+            <th:block th:unless="${message} == null" th:text="${message}">
+            </th:block>
+        </div>
+
+        <div id="error-btn">
+            <a th:href="@{/dashboard}">Ir para a página principal.</a>
+        </div>
+    </div>
+</div>
 </body>
 </html>

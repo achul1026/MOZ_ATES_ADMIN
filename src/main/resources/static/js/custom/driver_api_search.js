@@ -9,21 +9,14 @@ class DriverSelectAPI {
 
         switch (searchType) {
             case 'dvrLcenId':
-                apiUrl = '/common/api/searchDriver';
+                apiUrl = '/api/ites/searchDvrLcenId';
                 data = { 
 					"searchType" : searchType,
 					"searchValue" : searchValue
 					};
                 break;
             case 'vehicleNo':
-                apiUrl = '/api/searchVehicleNo';
-                data = { 
-					"searchType" : searchType,
-					"searchValue" : searchValue
-					};
-                break;
-            case 'driverNm':
-                apiUrl = '/common/api/searchDriver';
+                apiUrl = '/api/moj/searchVehicleNo';
                 data = { 
 					"searchType" : searchType,
 					"searchValue" : searchValue
@@ -33,7 +26,6 @@ class DriverSelectAPI {
                 console.error('Invalid search type');
                 return;
         }
-
         fetch(apiUrl, {
             method: 'POST',
             headers: {
@@ -49,7 +41,7 @@ class DriverSelectAPI {
         })
         .then(data => callback(data))
         .catch(error => 
-        	console.error('Error:', error)
+        	callback(null)
         );
     }
 }

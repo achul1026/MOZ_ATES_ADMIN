@@ -46,7 +46,10 @@
 					</tr>
 					<tr>
 						<th th:text="#{administ.common.retentionSttts}">영치여부</th>
-						<td th:text="${administDipInfo.proHoldYn}">영치</td>
+						<td th:switch="${administDipInfo.proHoldYn}">
+							<span th:case="N" class="tableStausOn" th:text="#{administ.common.retentionN}"></span>
+							<span th:case="Y" class="tableStausOff" th:text="#{administ.common.retentionY}"></span>
+						</td>
 						<th th:text="#{administ.common.retentionAddress}">영치주소</th>
 						<td th:text="${administDipInfo.proHoldAddr}"></td>
 					</tr>
@@ -81,8 +84,8 @@
 							<th th:text="#{administ.common.handlingStts}">판결완료여부</th>
 							<td>
 								<select name="dcsnStts" class="filter-select">
-									<option value="DSC001">완료</option>									
-									<option value="DSC002">처리중</option>									
+									<option value="DSC002" th:text="#{administ.common.handlingPrcss}">처리중</option>
+									<option value="DSC001" th:text="#{administ.common.handlingCmplt}">완료</option>
 								</select>
 							</td>
 							<th th:text="#{administ.mngDetail.judgeFineInfo}">벌금정보</th>
@@ -104,30 +107,31 @@
 		</form>
 		<div class="registor-btn-right">
 			<button type="button" class="sub-btn form-button" th:text="#{administ.mngDetail.listButton}"  th:onclick="|location.href='@{/administCourt/mng/list.do}'|">목록</button>
-			<button type="button" class="main-btn form-button" id="courtDcsnSaveBtn" th:text="#{administ.mngDetail.saveButton}" onclick="saveInfo()"></button>
+			<button type="button" class="main-btn form-button" th:text="#{administ.mngDetail.saveButton}" onclick="saveInfo()"></button>
 		</div>
 	</div>
 </th:block>
 </html>
 <script>
 function saveInfo() {
-	new ModalBuilder().init().successBody('저장되었습니다.').footer(4,'확인',function(button, modal){modal.close();}).open();
+	let administDipId = $("input[name='administDipId']").val();
+	$.ajax({
+        url: "/administCourt/mng/save.ajax",
+        type: "post",
+        data: $("#courtDcsnSaveForm").serialize(),
+        success: function(data){
+            if(data.code == "200"){
+				new ModalBuilder().init().successBody(data.message).footer(4,conFirm,function(button, modal){
+                    window.location.href="/administCourt/mng/detail.do?administDipId="+administDipId;
+					modal.close();
+				}).open();
+            }else{
+               new ModalBuilder().init().successBody(data.message).footer(4,conFirm,function(button, modal){
+					modal.close();
+				}).open();
+            }
+        }
+    });
 }
 	
-	$("#courtDcsnSaveBtn").on('click', function(){
-		let administDipId = $("input[name='administDipId']").val();
-		$.ajax({
-            url: "/administCourt/mng/save.ajax",
-            type: "post",
-            data: $("#courtDcsnSaveForm").serialize(),
-            success: function(data){
-                if(data.code == "200"){
-                    alert(data.message);
-                    window.location.href="/administCourt/mng/detail.do?administDipId="+administDipId;
-                }else{
-                    alert(data.message);
-                }
-            }
-        });
-	})
 </script>

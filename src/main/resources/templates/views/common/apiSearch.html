@@ -3,20 +3,20 @@
 <div class="modal-contents modal-company-group">
 	<div class="modal-title ">
 		<div class="modal-title-text" th:text="#{common.modal.apiSearch.title}">운전자/차량 검색</div>
-		<img src="/images/close.png" alt="닫기" class="close" onclick="searchForApiData('hide',this)">
+		<img src="/images/close.png" alt="닫기" class="close" onclick="changePolListModal('hide')">
 	</div>
 	<div class="modal-body">
 		<div class="modal-form-wrap">
             <select id="searchType" name="searchType" class="filter-select modalSelect filter98">
-				<option value="dvrLcenId" th:selected="${type == 'dvrLcenId'}">Driver License Id</option>
-				<option value="vehicleNo" th:selected="${type == 'vehicleNo'}">Vehicle Plate Number</option>
-				<option value="driverNm" th:selected="${type == 'driverNm'}">Driver Name</option>
+				<option value="dvrLcenId">Driver License Id</option>
+				<option value="vehicleNo">Vehicle Plate Number</option>
             </select>
 		</div>
 		<div class="modal-form-wrap">
-			<input type="text" class="modal-search" id="searchContent" th:placeholder="#{common.modal.apiSearch.placeholder.searchTxt}" th:value="${searchContent}">
+			<input type="text" class="modal-search" id="searchContent" th:placeholder="#{common.modal.apiSearch.placeholder.searchTxt}">
 			<i id="searchBtn" class="modal-search-icon"></i>
 		</div>
+<!--		<div id="textAlert">Por favor, insira o tipo de pesquisa e o conteúdo da pesquisa.</div>-->
 		<div class="modal-search-list">
 			<table id="table_api_search" class="main-table" style="display:none">
 				<thead>
@@ -25,10 +25,7 @@
 						<th th:text="#{common.modal.apiSearch.birth}">Driver Brth</th>
 						<th th:text="#{common.modal.apiSearch.docType}">Document Type</th>
 						<th th:text="#{common.modal.apiSearch.docNo}">Document Number</th>
-						<th th:text="#{common.modal.apiSearch.searchAddress}">Driver Addr</th>
 						<th th:text="#{common.modal.apiSearch.phNum}">Driver Phone Number</th>
-						<th th:text="#{common.modal.apiSearch.state}">Vehicle No</th>
-						<th th:text="#{common.modal.apiSearch.area}">Vehicle Type</th>
 					</tr>
 				</thead>
 				<tbody id="modalTbody">

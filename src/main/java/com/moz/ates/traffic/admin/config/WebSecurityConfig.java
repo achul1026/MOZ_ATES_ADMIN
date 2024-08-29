@@ -34,7 +34,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable();
         http.authorizeRequests()
-                .antMatchers("/joinUs","/joinUsAjax","/password/**" ,"/id/**" ,"/css/**","/js/**", "/images/**", "/modal/**", "/common/**").permitAll()
+                .antMatchers("/joinUs","/joinUsAjax","/password/**" ,"/id/**" ,"/css/**","/js/**", "/images/**", "/modal/**", "/common/**", "/api/mozates/**").permitAll()
 //                .antMatchers("/**").hasAnyRole("sup","pol","opr")
                 .antMatchers("/**").hasAnyRole("OPC000","OPC001","OPC002", "OPC003")
                 .anyRequest().authenticated();

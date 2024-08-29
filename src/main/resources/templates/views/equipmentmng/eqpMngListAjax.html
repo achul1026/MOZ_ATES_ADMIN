@@ -21,9 +21,8 @@
 			<tr>
 				<th th:text="#{equipment.mngList.tableNumber}">No.</th>
 				<th th:text="#{equipment.mngList.equipmentType}">단속장비 유형</th>
-<!--				<th th:text="#{equipment.mngList.equipmentId}">단속장비 ID</th>-->
 				<th th:text="#{equipment.mngList.equipmentName}">단속장비 이름</th>
-				<th th:text="#{equipment.mngList.equipmentStatus}">단속장비 상태</th>
+				<th th:text="#{equipment.mngList.usageStatus}">단속장비 상태</th>
 				<th th:text="#{equipment.mngList.address}">위치</th>
 				<th th:text="#{equipment.mngList.registrationDate}">설치일</th>
 				<th th:text="#{equipment.mngList.manager}">담당자</th>
@@ -35,9 +34,8 @@
 				th:onclick="|location.href='@{/eqp/mng/detail.do(tfcEnfEqpId=${eqpItem.tfcEnfEqpId})}'|">
 				<td th:text="${eqpItem.rnum}"></td>
 				<td th:text="${eqpItem.cmCd.cdNm}"></td>
-<!--				<td th:text="${eqpItem.tfcEnfEqpId}"></td>-->
 				<td th:text="${eqpItem.eqpNm}"></td>
-				<td th:text="${eqpItem.useYn == 'Y' ? 'Normal' : 'Breakdown'}"></td>
+				<td th:text="${eqpItem.useYn} == 'Y' ? #{equipment.mngList.usageStatus.useY} : #{equipment.mngList.usageStatus.useN}"></td>
 				<td th:text="${eqpItem.roadAddr}"></td>
 				<td th:text="${#dates.format(eqpItem.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
 				<td th:text="${eqpItem.webOprtr.oprtrNm}"></td>

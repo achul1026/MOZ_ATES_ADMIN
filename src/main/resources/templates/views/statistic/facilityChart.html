@@ -92,6 +92,24 @@
 		yesterday.setDate(yesterday.getDate() - 1);
 		$('#sDate').val(yesterday.toISOString().slice(0, 10));
 		$('#eDate').val(today.toISOString().slice(0, 10));
+
+		const yyyyMax = today.getFullYear();
+		const mmMax = String(today.getMonth() + 1).padStart(2, '0');
+		const ddMax = String(today.getDate()).padStart(2, '0');
+		const todayMaxStr = `${yyyyMax}-${mmMax}-${ddMax}`;
+
+		const minDate = new Date(today);
+		minDate.setMonth(today.getMonth() - 2);
+		const yyyyMin = minDate.getFullYear();
+		const mmMin = String(minDate.getMonth() + 1).padStart(2, '0');
+		const ddMin = String(minDate.getDate()).padStart(2, '0');
+		const todayMinStr = `${yyyyMin}-${mmMin}-${ddMin}`;
+
+		document.getElementById('eDate').setAttribute('max', todayMaxStr);
+		document.getElementById('sDate').setAttribute('max', todayMaxStr);
+
+		document.getElementById('eDate').setAttribute('min', todayMinStr);
+		document.getElementById('sDate').setAttribute('min', todayMinStr);
 	})
 
 	/**단속/사고 차트***/

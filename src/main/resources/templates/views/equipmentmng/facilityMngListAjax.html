@@ -22,7 +22,6 @@
 			<tr>
 				<th th:text="#{equipment.facilityMngList.tableNumber}">No.</th>
 				<th th:text="#{equipment.facilityMngList.facType}">시설물 타입</th>
-				<th th:text="#{equipment.facilityMngList.facId}">시설물 ID</th>
 				<th th:text="#{equipment.facilityMngList.facName}">시설물 이름</th>
 				<th th:text="#{equipment.facilityMngList.facStts}">시설물 상태</th>
 				<th th:text="#{equipment.facilityMngList.facLocation}">위치</th>
@@ -36,9 +35,8 @@
 				th:onclick="|location.href='@{/eqp/facility/detail.do(tfcFacilityId=${facilityItem.tfcFacilityId})}'|">
 				<td th:text="${facilityItem.rnum}"></td>
 				<td th:text="${facilityItem.cmCd.cdNm}"></td>
-				<td th:text="${facilityItem.tfcFacilityId}"></td>
 				<td th:text="${facilityItem.facilityNm}"></td>
-				<td th:text="${facilityItem.facilityStts == 'Y' ? 'Normal' : 'Breakdown'}"></td>
+				<td th:text="${facilityItem.facilityStts}"></td>
 				<td th:text="${facilityItem.roadAddr}"></td>
 				<td th:text="${#dates.format(facilityItem.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
 				<td th:text="${facilityItem.webOprtr.oprtrNm}"></td>

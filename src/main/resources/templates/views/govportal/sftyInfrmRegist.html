@@ -20,8 +20,12 @@
 						<th>
 							<span class="requiredMark" th:text="#{portal.infrmRegist.ttl}">제목</span>
 						</th>
-						<td><input type="text" id="postTtl" name="postTtl" class="main-input data-validate" th:data-valid-name="#{portal.infrmRegist.ttl}" 
-							th:placeholder="#{portal.infrmRegist.title.placeholder}" data-valid-required></td>
+						<td>
+							<input type="text" id="postTtl" name="postTtl" class="main-input data-validate" maxlength="150"
+							th:data-valid-name="#{portal.infrmRegist.ttl}" 
+							th:placeholder="#{portal.infrmRegist.title.placeholder}" 
+							data-valid-required data-valid-minimum="5" data-valid-maximum="150">
+						</td>
 					</tr>
 					<tr>
 						<th>
@@ -53,37 +57,37 @@
 						</th>
 	                    <td>
                   			<input type="hidden" name="expYn" id="expYn" value="Y">
-                  			<input type="checkbox" name="expYn-chkbox" id="expYn-chkbox" class="" th:data-valid-name="#{portal.infrmRegist.exposure}"> 
+                  			<input type="checkbox" name="expYn-chkbox" id="expYn-chkbox"> 
                   			<label th:text="#{portal.common.exposure}">노출</label>
                   		</td>
 	                </tr>
 	                <tr>
 	                    <th th:text="#{portal.infrmRegist.attachment}">첨부파일</th>
 	                   	<td colspan="3">
-							<input type="file" id="uploadFiles" name="uploadFiles"/>
-							<div id="dragArea">
-							<div class="drag-area">
+							<!-- 업로드 된 파일 영역 -->
+							<div id="fileInfoDiv" class="drag-area none"></div>
+							
+							<!-- 파일 업로드 영역 -->
+							<div id="dragArea" class="drag-area">
 								<div class="dragText">
 								   	File name cannot be more than 50 characters<br>
 									The file size can only be uploaded under 5MB<br>
 									Only WORD, XLSX, PDF, and ZIP file can be uploaded
 								</div>
 								<div>
-									<input type="file" id="uploadFiles" onchange="addFiles(this);" style="display: none;">
-									<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+									<input type="file" id="uploadFiles" name="uploadFiles" class="none">
+									<button type="button" id="uploadBtn" class="main-btn">File Upload</button>
 								</div>
-							</div>
-							</div>
-							<div class="upload_wrap none">
-							<div id="upload_list_box"></div>	
 							</div>
 						</td>
 	                </tr>
 	                <tr>
 	                    <th th:text="#{portal.infrmRegist.content}">상세</th>
 						<td>
-							<textarea class="form-control detail-table-textarea" type="text" id="postCn"name="postCn" 
-							th:placeholder="#{portal.infrmRegist.content.placeholder}"></textarea>
+							<textarea class="form-control detail-table-textarea data-validate" type="text" id="postCn" name="postCn" maxlength="1000"
+							th:data-valid-name="#{portal.infrmRegist.content}" 
+							th:placeholder="#{portal.infrmRegist.content.placeholder}"
+							data-valid-required data-valid-minimum="5" data-valid-maximum="150"></textarea>
 						</td>
 	                </tr>
                 </tbody>
@@ -99,32 +103,37 @@
 
 </html>
 <script th:inline="javascript">
+    $(document).ready(function() {
+        fileUploadInit(5, 50, ['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip']);
+    });
+
 	$("#btnRegist").click(function () {
-		if($("#sftyInfrmRegistFrm").soValid()){
-			var expYn = $("#expYn-chkbox").prop("checked")? "Y" :"N";
-			
-			$("#expYn").val(expYn);
-			$.ajax({
-				url: /*[[@{/portal/sftyInfrm/save.ajax}]]*/ "/portal/sftyInfrm/save.ajax",
-				type: "post",
-				data: new FormData($("#sftyInfrmRegistFrm")[0]),
-				enctype: 'multipart/form-data',
-			    processData: false,
-			    contentType: false,
-			    cache: false,
-				success: function (result) {
-					var resultCode = result.code;
-					var resultMessage = result.message;
-					if (resultCode == '200') {
-						new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){
-							modal.close();
-							location.href =/*[[@{/portal/sftyInfrm/list.do}]]*/ "";
-						}).open();
-					} else {
-						new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
-					}
+		trimValues(['postTtl', 'postCn']);
+		if(!$("#sftyInfrmRegistFrm").soValid()) return false;
+		
+		var expYn = $("#expYn-chkbox").prop("checked")? "Y" :"N";
+		
+		$("#expYn").val(expYn);
+		$.ajax({
+			url: /*[[@{/portal/sftyInfrm/save.ajax}]]*/ "/portal/sftyInfrm/save.ajax",
+			type: "post",
+			data: new FormData($("#sftyInfrmRegistFrm")[0]),
+			enctype: 'multipart/form-data',
+		    processData: false,
+		    contentType: false,
+		    cache: false,
+			success: function (result) {
+				var resultCode = result.code;
+				var resultMessage = result.message;
+				if (resultCode == '200') {
+					new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){
+						modal.close();
+						location.href =/*[[@{/portal/sftyInfrm/list.do}]]*/ "";
+					}).open();
+				} else {
+					new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();}).open();
 				}
-			});
-		}
+			}
+		});
 	})
 </script>

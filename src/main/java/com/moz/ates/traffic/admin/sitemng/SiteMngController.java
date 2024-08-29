@@ -2,6 +2,8 @@ package com.moz.ates.traffic.admin.sitemng;
 
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,11 +34,11 @@ import com.moz.ates.traffic.common.component.validate.ValidateBuilder;
 import com.moz.ates.traffic.common.component.validate.ValidateChecker;
 import com.moz.ates.traffic.common.component.validate.ValidateResult;
 import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntChgHst;
+import com.moz.ates.traffic.common.entity.board.MozAtchFile;
 import com.moz.ates.traffic.common.entity.board.MozBrd;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
 import com.moz.ates.traffic.common.entity.common.MozCmCd;
 import com.moz.ates.traffic.common.entity.enforcement.MozTfcEnfHst;
-import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpLog;
 import com.moz.ates.traffic.common.entity.log.MozTfcClctnFlrLog;
 import com.moz.ates.traffic.common.entity.log.MozTfcSystmErrLog;
 import com.moz.ates.traffic.common.entity.log.MozTfcUserLog;
@@ -121,32 +123,48 @@ public class SiteMngController {
     public String addMainMenu() {
     	return "views/sitemng/menuMngSave";
     }
-    
-    /**
-      * @Method Name : saveMenuAjax
-      * @Date : 2024. 1. 22.
-      * @Author : IK.MOON
-      * @Method Brief : 메뉴 추가 비동기 호출
-      * @param mozMenu
-      * @return
-      */
-		@Authority(type = MethodType.CREATE)
-    @PostMapping("menu/save.ajax")
-    public @ResponseBody CommonResponse<?> saveMenuAjax(MozMenu mozMenu) {
-    	// TODO :: validation
-    	
-    	try {
-				menuService.saveMenu(mozMenu);
-				// 로그 등록
-	    		logService.insertUserLog("SLT001", "Regist Menu", "Y");
-			} catch (SQLException e) {
-				// 로그 등록
-				logService.insertUserLog("SLT001", "Regist Menu", "N");
-				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
-			}
-    	
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O registo do menu foi bem sucedido.");
-    }
+
+	/**
+	 * @param mozMenu
+	 * @return
+	 * @Method Name : saveMenuAjax
+	 * @Date : 2024. 1. 22.
+	 * @Author : IK.MOON
+	 * @Method Brief : 메뉴 추가 비동기 호출
+	 */
+	@Authority(type = MethodType.CREATE)
+	@PostMapping("menu/save.ajax")
+	public @ResponseBody CommonResponse<?> saveMenuAjax(MozMenu mozMenu) {
+		ValidateBuilder dtoValidator = new ValidateBuilder(mozMenu);
+
+		ValidateResult validationResult = dtoValidator
+				.addRule("menuNmEng", new ValidateChecker().setRequired().setMaxLength(50))
+				.addRule("menuNmPor", new ValidateChecker().setRequired().setMaxLength(50))
+				.addRule("mainSortNo", new ValidateChecker().setRequired().setMaxLength(3))
+				.addRule("useYn", new ValidateChecker().setRequired().setMaxLength(1))
+				.addRule("menuUrlPattrn", new ValidateChecker().setRequired().setMaxLength(50))
+				.addRule("subSortNo", new ValidateChecker().setRequired().setMaxLength(3))
+				.addRule("menuUrl", new ValidateChecker().setRequired().setMaxLength(50))
+				.addRule("menuAbv", new ValidateChecker().setRequired().setMaxLength(50))
+				.isValid()
+		;
+
+		if (!validationResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, validationResult.getMessage());
+		}
+
+		try {
+			menuService.saveMenu(mozMenu);
+			// 로그 등록
+			logService.insertUserLog("SLT001", "Regist Menu", "Y");
+		} catch (SQLException e) {
+			// 로그 등록
+			logService.insertUserLog("SLT001", "Regist Menu", "N");
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O registo do menu foi bem sucedido.");
+	}
     
     /**
       * @Method Name : updateMainMenuAjax
@@ -158,7 +176,19 @@ public class SiteMngController {
 		@Authority(type = MethodType.UPDATE)
     @PostMapping("menu/update.ajax")
     public @ResponseBody CommonResponse<?> updateMainMenuAjax(@RequestBody MozMenu mozMenu) {
-    	// TODO :: validation
+		ValidateBuilder dtoValidator = new ValidateBuilder(mozMenu);
+
+		ValidateResult validationResult = dtoValidator
+				.addRule("menuNmEng", new ValidateChecker().setRequired().setMaxLength(50))
+				.addRule("menuNmPor", new ValidateChecker().setRequired().setMaxLength(50))
+				.addRule("mainSortNo", new ValidateChecker().setRequired().setMaxLength(3))
+				.addRule("useYn", new ValidateChecker().setRequired().setMaxLength(1))
+				.addRule("menuUrlPattrn", new ValidateChecker().setRequired().setMaxLength(50))
+				.addRule("subSortNo", new ValidateChecker().setRequired().setMaxLength(3))
+				.addRule("menuUrl", new ValidateChecker().setRequired().setMaxLength(50))
+				.addRule("menuAbv", new ValidateChecker().setRequired().setMaxLength(50))
+				.isValid()
+				;
     	
     	try {
     		menuService.updateMenu(mozMenu);
@@ -589,9 +619,6 @@ public class SiteMngController {
     	case "acdnt":
     		logType = "acdnt";
     		break;
-    	case "eqp":
-    		logType = "eqp";
-    		break;
     	case "user":
     		logType = "user";
     		break;
@@ -658,28 +685,6 @@ public class SiteMngController {
 		model.addAttribute("acdntLogList", logService.getAcdntLogList(tfcAcdntChgHst));
 		model.addAttribute("pagination", pagination);
 		return "views/sitemng/logAcdntAjax";
-	}
-	
-	/**
-	 * @Method Name : enfLogListAjax
-	 * @Date : 2024. 2. 6.
-	 * @Author : IK.MOON
-	 * @Method Brief : 교통 단속 목록 비동기호출
-	 * @return
-	 */
-	@Authority(type = MethodType.READ)
-	@PostMapping("/log/eqp/list.ajax")
-	public String eqpLogListAjax(Model model, @ModelAttribute MozTfcEnfEqpLog tfcEnfEqpLog) {
-		int page = tfcEnfEqpLog.getPage();
-		int totalCnt = logService.getEqpLogListCnt(tfcEnfEqpLog);
-		Pagination pagination = new Pagination(totalCnt, page);
-		
-		tfcEnfEqpLog.setStart((page - 1) * pagination.getPageSize());
-		
-		model.addAttribute("tfcEnfEqpLog", tfcEnfEqpLog);
-		model.addAttribute("eqpLogList", logService.getEqpLogList(tfcEnfEqpLog));
-		model.addAttribute("pagination", pagination);
-		return "views/sitemng/logEqpAjax";
 	}
 		
     /**
@@ -773,10 +778,6 @@ public class SiteMngController {
     		model.addAttribute("logType", "acdnt");
     		model.addAttribute("tfcAcdntChgHst", logService.getAcdntLogDetail(logId));
     		return "views/sitemng/logAcdntDetail";
-    	case "eqp":
-    		model.addAttribute("logType", "eqp");
-    		model.addAttribute("logInfo", logService.getEqpLogDetail(logId));
-    		return "views/sitemng/logEqpDetail";
     	case "user":
     		logType = "user";
     		model.addAttribute("logDetail", logService.getUserLogDetail(logId));
@@ -859,7 +860,6 @@ public class SiteMngController {
 					.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 					.addRule("imprtYn", new ValidateChecker().setRequired())
 					.addRule("useYn", new ValidateChecker().setRequired())
-					.addRule("popupYn", new ValidateChecker().setRequired())
 					.addRule("boardContents", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 					.isValid();
 			
@@ -940,6 +940,12 @@ public class SiteMngController {
 		@GetMapping("/polNtc/update.do")
 		public String noticeModify(Model model, @RequestParam("boardIdx") String boardIdx) {
 			MozBrd brd = policeNoticeService.getNoticeDetail(boardIdx);
+			List<String> oldFileArr = brd.getAtchFileList().stream()
+					.map(MozAtchFile::getFileOrgNm)
+					.filter(Objects::nonNull)
+					.collect(Collectors.toList())
+					;
+			model.addAttribute("oldFileArr", oldFileArr);
 			model.addAttribute("brd", brd);
 			
 			return "views/sitemng/polNtcModify";
@@ -964,7 +970,6 @@ public class SiteMngController {
 					.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 					.addRule("imprtYn", new ValidateChecker().setRequired())
 					.addRule("useYn", new ValidateChecker().setRequired())
-					.addRule("popupYn", new ValidateChecker().setRequired())
 					.addRule("boardContents", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 					.isValid();
 

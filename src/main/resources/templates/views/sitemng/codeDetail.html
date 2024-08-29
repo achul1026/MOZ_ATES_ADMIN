@@ -72,10 +72,14 @@
 					var resultCode = result.code;
 					var resultMessage = result.message;
 					if (resultCode == '200') {
-						alert(resultMessage);
-						location.href = /*[[@{/siteMng/code/list.do}]]*/ '/siteMng/code/list.do';
+						new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){
+							modal.close();
+							location.href = /*[[@{/siteMng/code/list.do}]]*/ '/siteMng/code/list.do';
+						}).open();
 					} else {
-						alert(resultMessage);
+						new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){
+							modal.close();
+						}).open();
 					}
 				}
 			});

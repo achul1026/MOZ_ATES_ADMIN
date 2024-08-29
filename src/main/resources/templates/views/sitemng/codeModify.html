@@ -21,7 +21,7 @@
 								<span class="requiredMark" th:text="#{sitemng.common.code.codeId}">코드 ID</span>
 							</th>
 							<td>
-								<input type="text" class="main-input" name="cdId" th:value="${mozCmCd.cdId}" th:readonly="${#lists.size(subMozCmCdList) > 0}">
+								<input type="text" class="main-input" id="cdId" name="cdId" th:value="${mozCmCd.cdId}" th:readonly="${#lists.size(subMozCmCdList) > 0}">
 								<input type="hidden" name="cdIdOg" th:value="${mozCmCd.cdId}">
 							</td>
 						</tr>
@@ -44,8 +44,8 @@
             </form>
         </div>
         <div class="btn-wrap-center">
-            <button type="button" id="btnModify" class="main-btn form-button" th:onclick="updateSubCode(this, [[${mozCmCd.cdId}]], [[${mozCmCd.cdGroupId}]])" th:text="#{common.button.modify}">수정</button>
 			<button type="button" class="sub-btn form-button" th:onclick="cancleInfo([[${mozCmCd.cdId}]])" th:text="#{common.button.cancel}">취소</button>
+            <button type="button" id="btnModify" class="main-btn form-button" th:onclick="updateSubCode(this, [[${mozCmCd.cdId}]], [[${mozCmCd.cdGroupId}]])" th:text="#{common.button.modify}">수정</button>
 		</div>
 
 	        <table class="main-table code-table">
@@ -75,9 +75,6 @@
 	        				<input type="button" class="delete-btn detail-table-button" th:value="#{common.button.delete}" th:onclick="deleteSubCode([[${item.cdId}]], [[${item.cdGroupId}]])"/>
 	        			</td>
 	        		</tr>
-	        		<tr th:if="${#lists.size(subMozCmCdList) == 0}">
-						<td colspan="3" th:text="#{common.search.notFound}">검색 결과를 찾을 수 없습니다.</td>
-					</tr>
         			<tr>
 	        			<td>
 	        				<input type="text" class="main-input" id="subCdId" th:placeholder="#{sitemng.common.code.placeholder.codeId}"/>
@@ -99,7 +96,7 @@
 </html>
 <script th:inline="javascript">
 	function cancleInfo(cdId) {
-		new ModalBuilder().init().successBody(/*[[#{common.message.completeCancel}]]*/).footer(4,'확인',function(button, modal){
+		new ModalBuilder().init().successBody(/*[[#{common.message.completeCancel}]]*/).footer(4,'Confirmar',function(button, modal){
 			window.location.href = '/siteMng/code/detail.do?cdId=' + cdId;
 		}).open();
 	}
@@ -110,7 +107,7 @@
 			let itemNum = element.getAttribute('data-item-num');
 			let selectedTr = $(element).closest('tr');
 			let formData = {};
-			let url = cdGroupId == null ? cdId : cdGroupId;
+			let url = cdGroupId == null ? $("#cdId").val() : cdGroupId;
 			if (cdGroupId == null) {
 				formData = $("#frmCodeModify").serialize();
 			} else {
@@ -127,27 +124,31 @@
 				});
 				formData = $.param(formData); // 객체를 쿼리 스트링으로 변환
 			}
-			if (confirm(/*[[#{sitemng.codeModify.message.confirmModify}]]*/)) {
-				$.ajax({
-					url: /*[[@{/siteMng/code/update.ajax}]]*/ "/siteMng/code/update.ajax",
-					type: "post",
-					data: formData,
-					success: function (result) {
-						var resultCode = result.code;
-						var resultMessage = result.message;
-						if (result.code == '200') {
-							new ModalBuilder().init().successBody(/*[[#{common.message.completeModify}]]*/).footer(4, '확인', function (button, modal) {
-								window.location.href = "/siteMng/code/detail.do?cdId=" + url;
-							}).open();
-						} else {
-							new ModalBuilder().init().alertBody(result.message).footer(4,'확인',function(button, modal){modal.close();}).open();
-						}
-					}
-				});
-				
-			} else {
-				return;
-			}
+			
+			new ModalBuilder().init().successBody(/*[[#{sitemng.codeModify.message.confirmModify}]]*/).footer(2, 'Confirmar', function (button, modal) {
+				modal.close();
+				setTimeout(() => {
+					$.ajax({
+							url: /*[[@{/siteMng/code/update.ajax}]]*/ "/siteMng/code/update.ajax",
+							type: "post",
+							data: formData,
+							success: function (result) {
+								var resultCode = result.code;
+								var resultMessage = result.message;
+								if (result.code == '200') {
+									new ModalBuilder().init().successBody(resultMessage).footer(4, 'Confirmar', function (button, modal) {
+										window.location.href = "/siteMng/code/detail.do?cdId=" + url;
+										modal.close();
+									}).open();
+								} else {
+									new ModalBuilder().init().alertBody(result.message).footer(4,'Confirmar',function(button, modal){
+										modal.close();
+									}).open();
+								}
+							}
+						});
+				}, 500);
+			}).open();
 		}
 	}
     
@@ -166,7 +167,8 @@
 					if (result.code == '200') {
 						window.location.href = "/siteMng/code/detail.do?cdId="+ cdGroupId;
 					} else {
-						alert(result.message);
+						new ModalBuilder().init().successBody(result.message).footer(4, 'Confirmar', function (button, modal) {
+						}).open();
 					}
 				}
 			});
@@ -182,12 +184,15 @@
 			const cdDesc = document.getElementById("subCdDesc").value;
 			
 			if(cdId == null || cdId == ''){
-				alert('Please enter your code ID');
+				new ModalBuilder().init().successBody('Por favor, insira o seu código de identificação.').footer(4, 'Confirmar', function (button, modal) {
+					window.location.href = "/siteMng/code/detail.do?cdId=" + url;
+				}).open();
 				cdId.focus();
 				return false;
 			}
 			if(cdNm == null || cdNm == ''){
-				alert('Please enter your code Nm');
+				new ModalBuilder().init().successBody('Por favor, insira o seu nome de código.').footer(4, 'Confirmar', function (button, modal) {
+				}).open();
 				cdId.focus();
 				return false;
 			}
@@ -207,7 +212,8 @@
 					if (result.code == '200') {
 						window.location.href = "/siteMng/code/detail.do?cdId="+ cdGroupId;
 					} else {
-						alert(result.message);
+						new ModalBuilder().init().successBody(result.message).footer(4, 'Confirmar', function (button, modal) {
+						}).open();
 					}
 				}
 			});	

@@ -2,6 +2,8 @@ package com.moz.ates.traffic.admin.trafficequipmentmng;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -26,8 +28,10 @@ import com.moz.ates.traffic.common.component.validate.ValidateChecker;
 import com.moz.ates.traffic.common.component.validate.ValidateResult;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
 import com.moz.ates.traffic.common.entity.common.MozCmCd;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpFileInfo;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpMaster;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcEqpMntnHst;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityFileInfo;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityMaster;
 import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityMntnHst;
 import com.moz.ates.traffic.common.util.MozatesCommonUtils;
@@ -148,7 +152,7 @@ public class TrafficEqpController {
 	 * @param :
 	 * @return :
 	 */
-	@Authority(type = MethodType.READ)
+	@Authority(type = MethodType.CREATE)
 	@GetMapping("/mng/save.do")
 	public String mngRegist(Model model) {
 		List<MozCmCd> cdList = commonCdService.getCdList("EQUIPMENT_TYPE");
@@ -173,21 +177,39 @@ public class TrafficEqpController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfEqpMaster);
 
 		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("tfcEnfEqpId", new ValidateChecker().setRequired().setMaxLength(50))
 				.addRule("eqpTy", new ValidateChecker().setRequired())
-				.addRule("eqpNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome do equipamento não pode ter mais de 200 caracteres."))
-				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome do modelo não pode ter mais de 200 caracteres."))
-				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "O fabricante não pode ter mais de 200 caracteres."))
+				.addRule("eqpNm", new ValidateChecker().setRequired()
+						.setMaxLength(100, "O nome do equipamento não pode ter mais de 100 caracteres."))
+				.addRule("modelNm", new ValidateChecker().setRequired()
+						.setMaxLength(100, "O nome do modelo não pode ter mais de 100 caracteres."))
+				.addRule("mnfctr", new ValidateChecker().setRequired()
+						.setMaxLength(100, "O fabricante não pode ter mais de 100 caracteres."))
 				.addRule("instlYn", new ValidateChecker().setRequired())
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "O local de instalação não pode ter mais de 200 caracteres."))
+				.addRule("useYn", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired()
+						.setMaxLength(100, "O local de instalação não pode ter mais de 100 caracteres."))
+				.addRule("lat", new ValidateChecker().setRequired().setLatitude())
+				.addRule("lng", new ValidateChecker().setRequired().setLongitude())
 				.addRule("instlDate", new ValidateChecker().setRequired())
-				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "The installation location cannot be longer than 200 characters."))
+				.addRule("instler", new ValidateChecker().setRequired()
+						.setMaxLength(100, "The installation location cannot be longer than 100 characters."))
+				.addRule("crOprtrId", new ValidateChecker().setRequired())
+				.addRule("tfcEnfEqpInfo", new ValidateChecker().setMaxLength(1000))
 				.addRule("crOprtrId", new ValidateChecker().setRequired())
 				.isValid();
 		
 		if (!dtoValidatorResult.isSuccess()) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
 		}
-		
+
+		int duplicateCnt = trafficEqpService.getEqpDupliCnt(tfcEnfEqpMaster.getTfcEnfEqpId());
+
+		if (duplicateCnt > 0) {
+			// Duplicate ID exists.
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Existe um ID duplicado.");
+		}
+
 		try {
 			trafficEqpService.registEqp(tfcEnfEqpMaster, uploadFiles);
 		} catch (Exception e) {
@@ -221,15 +243,22 @@ public class TrafficEqpController {
 	 * @param : tfcEnfEqpId
 	 * @return :
 	 */
-	@Authority(type = MethodType.READ)
+	@Authority(type = MethodType.UPDATE)
 	@GetMapping("/mng/update.do")
 	public String mngModify(Model model, @RequestParam("tfcEnfEqpId") String tfcEnfEqpId) {
 
 		MozTfcEnfEqpMaster tfcEnfEqpMaster = trafficEqpService.getEqpDetail(tfcEnfEqpId);
+		List<String> oldFileArr = tfcEnfEqpMaster.getTfcEnfEqpFileInfoList().stream()
+				.map(MozTfcEnfEqpFileInfo::getFileOrgNm)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList())
+				;
+				
 		List<MozCmCd> cdList = commonCdService.getCdList("EQUIPMENT_TYPE");
 		
 		model.addAttribute("cdList", cdList);
 		model.addAttribute("tfcEnfEqpMaster", tfcEnfEqpMaster);
+		model.addAttribute("oldFileArr", oldFileArr);
 		model.addAttribute("eqpMntnHstList", trafficEqpService.getEqpMntnHstList(tfcEnfEqpId));
 		model.addAttribute("mntnSttsCdList", commonCdService.getCdList("MNTN_STTS_CD"));
 		model.addAttribute("mntnTypeCdList", commonCdService.getCdList("MNTN_TYPE_CD"));
@@ -253,23 +282,44 @@ public class TrafficEqpController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(tfcEnfEqpMaster);
 
 		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("tfcEnfEqpId", new ValidateChecker().setRequired())
+				.addRule("newTfcEnfEqpId", new ValidateChecker().setRequired().setMaxLength(50))
 				.addRule("eqpTy", new ValidateChecker().setRequired())
-				.addRule("eqpNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome do equipamento não pode ter mais de 200 caracteres."))
-				.addRule("modelNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome do modelo não pode ter mais de 200 caracteres."))
-				.addRule("mnfctr", new ValidateChecker().setRequired().setMaxLength(200, "O fabricante não pode ter mais de 200 caracteres."))
+				.addRule("eqpNm", new ValidateChecker().setRequired()
+						.setMaxLength(100, "O nome do equipamento não pode ter mais de 100 caracteres."))
+				.addRule("modelNm", new ValidateChecker().setRequired()
+						.setMaxLength(100, "O nome do modelo não pode ter mais de 100 caracteres."))
+				.addRule("mnfctr", new ValidateChecker().setRequired()
+						.setMaxLength(100, "O fabricante não pode ter mais de 100 caracteres."))
 				.addRule("instlYn", new ValidateChecker().setRequired())
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "O local de instalação não pode ter mais de 200 caracteres."))
+				.addRule("useYn", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired()
+						.setMaxLength(100, "O local de instalação não pode ter mais de 100 caracteres."))
+				.addRule("lat", new ValidateChecker().setRequired().setLatitude())
+				.addRule("lng", new ValidateChecker().setRequired().setLongitude())
 				.addRule("instlDate", new ValidateChecker().setRequired())
-				.addRule("instler", new ValidateChecker().setRequired().setMaxLength(200, "O nome do instalador não pode ter mais de 200 caracteres."))
+				.addRule("instler", new ValidateChecker().setRequired()
+						.setMaxLength(100, "The installation location cannot be longer than 100 characters."))
+				.addRule("crOprtrId", new ValidateChecker().setRequired())
+				.addRule("tfcEnfEqpInfo", new ValidateChecker().setMaxLength(1000))
 				.addRule("crOprtrId", new ValidateChecker().setRequired())
 				.isValid();
 		
 		if (!dtoValidatorResult.isSuccess()) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
 		}
-		
+
+		if (!tfcEnfEqpMaster.getTfcEnfEqpId().equals(tfcEnfEqpMaster.getNewTfcEnfEqpId())) {
+			int duplicateCnt = trafficEqpService.getEqpDupliCnt(tfcEnfEqpMaster.getNewTfcEnfEqpId());
+
+			if (duplicateCnt > 0) {
+				// Duplicate ID exists.
+				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Existe um ID duplicado.");
+			}
+		}
+
 		try {
-			trafficEqpService.updateEqp(tfcEnfEqpMaster, uploadFiles);
+			 trafficEqpService.updateEqp(tfcEnfEqpMaster, uploadFiles);
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
@@ -303,7 +353,7 @@ public class TrafficEqpController {
 		}
 
 		try {
-			trafficEqpService.deleteTfcEnfEqpMatser(tfcEnfEqpId);
+			trafficEqpService.deleteTfcEnfEqpMaster(tfcEnfEqpId);
 		} catch (Exception e) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
@@ -452,13 +502,24 @@ public class TrafficEqpController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(tfcFacilityMaster);
 
 		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("facilityNm", new ValidateChecker().setRequired()
+						.setMaxLength(100, "O nome da instalação não pode ter mais de 100 caracteres."))
 				.addRule("facilityTy", new ValidateChecker().setRequired())
 				.addRule("facilityDiv", new ValidateChecker().setRequired())
 				.addRule("facilityCate", new ValidateChecker().setRequired())
-				.addRule("facilityNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome da instalação não pode ter mais de 200 caracteres."))
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "A localização não pode ter mais de 200 caracteres."))
+				.addRule("useYn", new ValidateChecker().setRequired())
+				.addRule("areaCd", new ValidateChecker().setRequired())
+				.addRule("oprtrId", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired()
+						.setMaxLength(100, "A localização não pode ter mais de 100 caracteres."))
+				.addRule("lat", new ValidateChecker().setRequired().setLatitude())
+				.addRule("lng", new ValidateChecker().setRequired().setLongitude())
+				.addRule("facilityStts", new ValidateChecker().setRequired()
+						.setMaxLength(100))
+				.addRule("facilityDesc", new ValidateChecker()
+						.setMaxLength(1000))
 				.isValid();
-		
+
 		if (!dtoValidatorResult.isSuccess()) {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
 		}
@@ -577,16 +638,26 @@ public class TrafficEqpController {
 	 * @param : tfcEnfEqpId
 	 * @return :
 	 */
-	@Authority(type = MethodType.READ)
+	@Authority(type = MethodType.UPDATE)
 	@GetMapping("/facility/update.do")
 	public String facilityModify(Model model, @RequestParam("tfcFacilityId") String tfcFacilityId) {
 		MozTfcFacilityMaster tfcFacilityMaster = trafficEqpService.getFacilityDetail(tfcFacilityId);
-		
-		model.addAttribute("facTyCd", commonCdService.getCdList("TRAFFIC_FACILITY_TYPE"));
+		List<String> oldFileArr = tfcFacilityMaster.getTfcFacilityFileInfoList().stream()
+				.map(MozTfcFacilityFileInfo::getFileOrgNm)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList())
+				;
+		List<MozCmCd> facliltyTypeCodeList = commonCdService.getCdList("TRAFFIC_FACILITY_TYPE");
+		// 유관기관 코드 제거
+		facliltyTypeCodeList.removeIf(x -> x.getCdId().equals("TFT900"));
+
+		model.addAttribute("facTyCd", facliltyTypeCodeList);
 		model.addAttribute("facCateCd", commonCdService.getCdList("FACILITY_CATE_CD"));
 		model.addAttribute("facDivCd", commonCdService.getCdList("FACILITY_DIV_CD"));
 		model.addAttribute("areaCd", commonCdService.getCdList("AREA_CD"));
+		model.addAttribute("tfcFacilityMntnHstList", trafficEqpService.getFacilityMntnHstList(tfcFacilityId));
 		model.addAttribute("tfcFacilityMaster", tfcFacilityMaster);
+		model.addAttribute("oldFileArr", oldFileArr);
 		return "views/equipmentmng/facilityMngModify";
 	}
 	
@@ -606,15 +677,22 @@ public class TrafficEqpController {
 		ValidateBuilder dtoValidator = new ValidateBuilder(tfcFacilityMaster);
 
 		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("facilityNm", new ValidateChecker().setRequired()
+						.setMaxLength(100, "O nome da instalação não pode ter mais de 100 caracteres."))
 				.addRule("facilityTy", new ValidateChecker().setRequired())
 				.addRule("facilityDiv", new ValidateChecker().setRequired())
 				.addRule("facilityCate", new ValidateChecker().setRequired())
-				.addRule("lat", new ValidateChecker().setRequired())
-				.addRule("lng", new ValidateChecker().setRequired())
-				.addRule("facilityNm", new ValidateChecker().setRequired().setMaxLength(200, "O nome da instalação não pode ter mais de 200 caracteres."))
-				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(200, "A localização não pode ter mais de 200 caracteres."))
-				.addRule("oprtrId", new ValidateChecker().setRequired())
+				.addRule("useYn", new ValidateChecker().setRequired())
 				.addRule("areaCd", new ValidateChecker().setRequired())
+				.addRule("oprtrId", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired()
+						.setMaxLength(100, "A localização não pode ter mais de 100 caracteres."))
+				.addRule("lat", new ValidateChecker().setRequired().setLatitude())
+				.addRule("lng", new ValidateChecker().setRequired().setLongitude())
+				.addRule("facilityStts", new ValidateChecker().setRequired()
+						.setMaxLength(100))
+				.addRule("facilityDesc", new ValidateChecker()
+						.setMaxLength(1000))
 				.isValid();
 		
 		if (!dtoValidatorResult.isSuccess()) {
@@ -641,5 +719,185 @@ public class TrafficEqpController {
 	@RequestMapping(value = "/facilitylog/list.do")
 	public String facilityLogList(Model model) {
 		return "views/equipmentmng/facilityLogList";
+	}
+
+	/**
+	 * @brief : 유관기관 리스트 화면
+	 * @author : IK.MOON
+	 * @date : 2024.07.15
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping("/orgnz/list.do")
+	public String orgnzMngList(Model model, String pageType) {
+		model.addAttribute("pageType", pageType);
+		return "views/equipmentmng/orgnzMngList";
+	}
+
+	/**
+	 * @brief : 유관기관 리스트 ajax
+	 * @author : IK.MOON
+	 * @date : 2024.07.15
+	 */
+	@Authority(type = MethodType.READ)
+	@PostMapping("/orgnz/orgnzMngListAjax")
+	public String orgnzMngListAjax(Model model, @ModelAttribute MozTfcFacilityMaster tfcFacilityMaster) {
+		int page = tfcFacilityMaster.getPage();
+		int totalCnt = trafficEqpService.getOrganizationCount(tfcFacilityMaster);
+		Pagination pagination = new Pagination(totalCnt, page);
+
+		tfcFacilityMaster.setStart((page - 1) * pagination.getPageSize());
+
+		model.addAttribute("facilityInfo", tfcFacilityMaster);
+		model.addAttribute("facilityList", trafficEqpService.getOrganizationList(tfcFacilityMaster));
+		model.addAttribute("pagination", pagination);
+		return "views/equipmentmng/orgnzMngListAjax";
+	}
+
+	/**
+	 * @brief : 유관기관 MAP ajax
+	 * @author : IK.MOON
+	 * @date : 2024.07.15
+	 */
+	@Authority(type = MethodType.READ)
+	@RequestMapping(value = "/orgnz/orgnzMngMapAjax")
+	public String orgnzMngMapAjax(Model model, @ModelAttribute MozTfcFacilityMaster tfcFacilityMaster) {
+		int page = tfcFacilityMaster.getPage();
+		int totalCnt = trafficEqpService.getOrganizationCount(tfcFacilityMaster);
+		Pagination pagination = new Pagination(totalCnt, page, 5, 5);
+
+		tfcFacilityMaster.setLength(5);
+		tfcFacilityMaster.setStart((page - 1) * pagination.getPageSize());
+
+		model.addAttribute("pagination", pagination);
+		model.addAttribute("facilityList", trafficEqpService.getOrganizationList(tfcFacilityMaster));
+		model.addAttribute("tfcFacilityMaster", tfcFacilityMaster);
+		return "views/equipmentmng/orgnzMngMapAjax";
+	}
+
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/mng/orgnzMngGeojson.ajax")
+	public @ResponseBody
+	FeaturesLayerDTO getOrganizationGeoJson(Map<String,String> param) {
+		return trafficEqpService.getOrganizationGeoJson(param);
+	}
+
+	/**
+	 * @brief : 유관기관 regist 화면
+	 * @author : IK.MOON
+	 * @date : 2024.07.15
+	 */
+	@Authority(type = MethodType.CREATE)
+	@GetMapping(value = "/orgnz/save.do")
+	public String orgnzMngRegist(Model model) {
+		return "views/equipmentmng/orgnzMngRegist";
+	}
+
+	/**
+	 * @brief : 유관기관 Regist ajax
+	 * @author : IK.MOON
+	 * @date : 2024.07.15
+	 */
+	@Authority(type = MethodType.CREATE)
+	@PostMapping("/orgnz/save.ajax")
+	public @ResponseBody CommonResponse<?> orgnzRegistAjax(MozTfcFacilityMaster tfcFacilityMaster
+			, @RequestPart(required = false) MultipartFile[] uploadFiles){
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcFacilityMaster);
+
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("facilityNm", new ValidateChecker().setRequired().setMaxLength(100))
+				.addRule("useYn", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(100))
+				.addRule("lat", new ValidateChecker().setRequired().setLatitude())
+				.addRule("lng", new ValidateChecker().setRequired().setLongitude())
+				.addRule("facilityDesc", new ValidateChecker().setMaxLength(1000))
+				.isValid();
+
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
+		}
+
+		try {
+			trafficEqpService.registOrganization(tfcFacilityMaster, uploadFiles);
+		} catch (Exception e) {
+			// 오류가 발생했습니다
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Um erro ocorreu");
+		}
+
+		// 등록을 성공 했습니다.
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O registro foi realizado com sucesso.");
+	}
+
+	/**
+	 * @brief : 유관기관 상세 화면
+	 * @author : IK.MOON
+	 * @date : 2024.07.15
+	 */
+	@Authority(type = MethodType.READ)
+	@GetMapping(value = "/orgnz/detail.do")
+	public String orgnzMngDetail(Model model, @RequestParam("tfcFacilityId") String tfcFacilityId) {
+		MozTfcFacilityMaster tfcFacilityMaster = trafficEqpService.getFacilityDetail(tfcFacilityId);
+		model.addAttribute("tfcFacilityMaster", tfcFacilityMaster);
+		model.addAttribute("tfcFacilityMntnHstList", trafficEqpService.getFacilityMntnHstList(tfcFacilityId));
+		return "views/equipmentmng/orgnzMngDetail";
+	}
+
+	/**
+	 * @brief : 유관기관 수정 화면
+	 * @author : IK.MOON
+	 * @date : 2024.07.18
+	 * @param model
+	 * @param tfcFacilityId
+	 * @return
+	 */
+	@Authority(type = MethodType.UPDATE)
+	@GetMapping("/orgnz/update.do")
+	public String organizationModify(Model model, @RequestParam("tfcFacilityId") String tfcFacilityId) {
+		MozTfcFacilityMaster tfcFacilityMaster = trafficEqpService.getFacilityDetail(tfcFacilityId);
+		List<String> oldFileArr = tfcFacilityMaster.getTfcFacilityFileInfoList().stream()
+				.map(MozTfcFacilityFileInfo::getFileOrgNm)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList())
+				;
+		model.addAttribute("tfcFacilityMaster", tfcFacilityMaster);
+		model.addAttribute("oldFileArr", oldFileArr);
+		return "views/equipmentmng/orgnzMngModify";
+	}
+
+
+	/**
+	 * @brief : 유관기관 수정 ajax
+	 * @author : IK.MOON
+	 * @date : 2024.07.18
+	 * @param tfcFacilityMaster
+	 * @param uploadFiles
+	 * @return
+	 */
+	@Authority(type = MethodType.UPDATE)
+	@PostMapping("/orgnz/update.ajax")
+	public @ResponseBody CommonResponse<?> organizationModifyAjax(@ModelAttribute MozTfcFacilityMaster tfcFacilityMaster,
+															  @RequestPart(required = false) MultipartFile[] uploadFiles){
+		ValidateBuilder dtoValidator = new ValidateBuilder(tfcFacilityMaster);
+
+		ValidateResult dtoValidatorResult = dtoValidator
+				.addRule("facilityNm", new ValidateChecker().setRequired().setMaxLength(100))
+				.addRule("useYn", new ValidateChecker().setRequired())
+				.addRule("roadAddr", new ValidateChecker().setRequired().setMaxLength(100))
+				.addRule("lat", new ValidateChecker().setRequired().setLatitude())
+				.addRule("lng", new ValidateChecker().setRequired().setLongitude())
+				.addRule("facilityDesc", new ValidateChecker().setMaxLength(1000))
+				.isValid();
+
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
+		}
+
+		try {
+			trafficEqpService.updateOrganization(tfcFacilityMaster, uploadFiles);
+		} catch (Exception e) {
+			// 오류가 발생했습니다
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Um erro ocorreu");
+		}
+		// 수정 되었습니다.
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Está mudado.");
 	}
 }

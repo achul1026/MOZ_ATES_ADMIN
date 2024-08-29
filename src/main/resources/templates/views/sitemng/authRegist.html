@@ -18,22 +18,24 @@
 						<th>
 							<span class="requiredMark" th:text="|#{sitemng.common.auth.name} (#{common.message.required})|">권한 이름(필수)</span>
 						</th>
-						<td><input class="search-box main-input" id="authNm" name="authNm" type="text"
-								th:placeholder="#{common.placeholder.enterName}" maxlength="64"></td>
+						<td>
+							<input type="text" id="authNm" class="search-box main-input data-validate" name="authNm" th:data-valid-name="#{sitemng.common.auth.name}"
+								th:placeholder="#{common.placeholder.enterName}" maxlength="64" data-valid-required>
+						</td>
 					</tr>
 					<tr>
 						<th>
 							<span class="requiredMark" th:text="#{sitemng.common.auth.descr}">권한 설명</span>
 						</th>
-						<td><input class="search-box main-input" id="authDesc" name="authDesc" type="text"
-								th:placeholder="#{common.placeholder.enterDescription}" maxlength="100"></td>
+						<td><input class="search-box main-input data-validate" id="authDesc" name="authDesc" type="text" th:data-valid-name="#{sitemng.common.auth.descr}"
+								th:placeholder="#{common.placeholder.enterDescription}" maxlength="100" data-valid-required></td>
 					</tr>
 					<tr>
 						<th>
 							<span class="requiredMark" th:text="#{sitemng.common.auth.code}">권한 코드</span>
 						</th>
 						<td>
-							<select id="authCd" name="authCd" class="filter-select">
+							<select id="authCd" name="authCd" class="filter-select data-validate" th:data-valid-name="#{sitemng.common.auth.code}" data-valid-required>
 								<option value="" th:text="#{common.search.select}">select</option>
 <!--								<option value="AUC000">Super Admin</option>-->
 								<option value="AUC001">Admin User</option>
@@ -152,127 +154,128 @@
 
 	// 권한 저장
 	function saveAuth() {
-		let confirmMsg = /*[[#{sitemng.authDetail.message.confirmRegist}]]*/;
+		if ($("#authRegistForm").soValid()) {
 
-		var authNm = $('#authNm').val().trim();
-		var authDesc = $('#authDesc').val().trim();
-		var authCd = $("#authCd").val().trim();
+			let confirmMsg = /*[[#{sitemng.authDetail.message.confirmRegist}]]*/;
 
-		if(authNm == null || authNm == ''){
-			alert(/*[[#{sitemng.common.auth.message.enterAuthName}]]*/);
-			return false;
-		};
-		if(authDesc == null || authDesc == ''){
-			alert(/*[[#{sitemng.common.auth.message.enterAuthDesc}]]*/);
-			return false;
-		};
-		if(authCd == null || authCd == ''){
-			alert(/*[[#{sitemng.common.auth.message.selectAuthCode}]]*/);
-			return false;
-		};
-		
-		if(!confirm(confirmMsg)){
-			return false;
+			var authNm = $('#authNm').val().trim();
+			var authDesc = $('#authDesc').val().trim();
+			var authCd = $("#authCd").val().trim();
+
+			new ModalBuilder().init().successBody(confirmMsg).footer(2, 'Confirmar', function (button, modal) {
+				modal.close();
+				setTimeout(() => {
+					var result = new Object();
+					var authMenuList = new Array();
+					var mainMenu = $(".mainMenuCheckBox");
+
+					for (var i = 0; i < mainMenu.length; i++) {
+						var mainMenuId = $(".mainMenuCheckBox").eq(i).data("menuid");
+						var mainMenuIsChecked = mainMenu.eq(i).is(":checked");
+						var menuUrlPattrn = $("#menuUrlPattrn_" + mainMenuId).val();
+
+						var mainAuthMenu = new Object();
+						var subMenu = $(".subMenu_" + mainMenuId);
+
+						mainAuthMenu.menuUrlPattrn = menuUrlPattrn;
+
+						if (mainMenuIsChecked) {
+							// 메인메뉴 Y인 경우
+							let isSubMenuHasAnyY = false;
+
+							mainAuthMenu.menuId = mainMenuId;
+							mainAuthMenu.createYn = "Y";
+							mainAuthMenu.readYn = "Y";
+							mainAuthMenu.deleteYn = "Y";
+							mainAuthMenu.updateYn = "Y";
+
+							for (var j = 0; j < subMenu.length; j++) {
+								var subAuthMenu = new Object();
+								var subMenuId = subMenu.eq(j).data("submenuid");
+								var readYn = $("#readYn_" + subMenuId).is(":checked") ? "Y" : "N";
+								var createYn = $("#createYn_" + subMenuId).is(":checked") ? "Y" : "N";
+								var deleteYn = $("#deleteYn_" + subMenuId).is(":checked") ? "Y" : "N";
+								var updateYn = $("#updateYn_" + subMenuId).is(":checked") ? "Y" : "N";
+
+								if (readYn == "Y" || createYn == "Y" || deleteYn == "Y" || updateYn == "Y") {
+									isSubMenuHasAnyY = true;
+								}
+
+								subAuthMenu.menuId = subMenuId;
+								subAuthMenu.createYn = createYn;
+								subAuthMenu.readYn = readYn;
+								subAuthMenu.deleteYn = deleteYn;
+								subAuthMenu.updateYn = updateYn;
+
+								authMenuList.push(subAuthMenu);
+							}
+
+							// 서브메뉴에 부여된 권한이 하나도 없는 경우
+							if (!isSubMenuHasAnyY) {
+								mainAuthMenu.createYn = "N";
+								mainAuthMenu.readYn = "N";
+								mainAuthMenu.deleteYn = "N";
+								mainAuthMenu.updateYn = "N";
+							}
+							authMenuList.push(mainAuthMenu);
+
+						} else {
+							// 메인메뉴 N인 경우
+							mainAuthMenu.menuId = mainMenuId;
+							mainAuthMenu.createYn = "N";
+							mainAuthMenu.readYn = "N";
+							mainAuthMenu.deleteYn = "N";
+							mainAuthMenu.updateYn = "N";
+
+							authMenuList.push(mainAuthMenu);
+
+							for (var j = 0; j < subMenu.length; j++) {
+								var subAuthMenu = new Object();
+								var subMenuId = subMenu.eq(j).data("submenuid");
+								subAuthMenu.menuId = subMenuId;
+								subAuthMenu.createYn = "N";
+								subAuthMenu.readYn = "N";
+								subAuthMenu.deleteYn = "N";
+								subAuthMenu.updateYn = "N";
+
+								authMenuList.push(subAuthMenu);
+							}
+						}
+					}
+
+					result.authNm = authNm;
+					result.authCd = authCd;
+					result.authDesc = authDesc;
+					result.authMenuList = authMenuList;
+
+					$.ajax({
+						type: "post",
+						dataType: "json",
+						contentType: "application/json",
+						data: JSON.stringify(result),
+						url: '/siteMng/auth/save.ajax',
+						success: function (data) {
+							if (data.code === 200) {
+								new ModalBuilder().init().successBody(data.message).footer(4, 'Confirmar', function (button, modal) {
+									modal.close();
+									location.href = "/siteMng/auth/list.do";
+								}).open();
+							} else {
+								new ModalBuilder().init().successBody(data.message).footer(4, 'Confirmar', function (button, modal) {
+									modal.close();
+								}).open();
+							}
+						},
+						error: function (e) {
+							new ModalBuilder().init().successBody(e.message).footer(4, 'Confirmar', function (button, modal) {
+								modal.close();
+							}).open();
+						}
+					});
+				}, 500);
+			}).open();
 		}
-		
-		var result = new Object();
-		var authMenuList = new Array();
-		var mainMenu = $(".mainMenuCheckBox");
 
-		for (var i = 0; i < mainMenu.length; i++) {
-			var mainMenuId = $(".mainMenuCheckBox").eq(i).data("menuid");
-			var mainMenuIsChecked = mainMenu.eq(i).is(":checked");
-			var menuUrlPattrn = $("#menuUrlPattrn_"+mainMenuId).val();
-			
-			var mainAuthMenu = new Object();
-			var subMenu = $(".subMenu_" + mainMenuId);
-
-			mainAuthMenu.menuUrlPattrn = menuUrlPattrn;
-			
-			if (mainMenuIsChecked) {
-				// 메인메뉴 Y인 경우
-				let isSubMenuHasAnyY = false;
-				
-				mainAuthMenu.menuId = mainMenuId;
-				mainAuthMenu.createYn = "Y";
-				mainAuthMenu.readYn = "Y";
-				mainAuthMenu.deleteYn = "Y";
-				mainAuthMenu.updateYn = "Y";
-
-				for (var j = 0; j < subMenu.length; j++) {
-					var subAuthMenu = new Object();
-					var subMenuId = subMenu.eq(j).data("submenuid");
-					var readYn = $("#readYn_" + subMenuId).is(":checked") ? "Y" : "N";
-					var createYn = $("#createYn_" + subMenuId).is(":checked") ? "Y" : "N";
-					var deleteYn = $("#deleteYn_" + subMenuId).is(":checked") ? "Y" : "N";
-					var updateYn = $("#updateYn_" + subMenuId).is(":checked") ? "Y" : "N";
-					
-					if(readYn == "Y" || createYn == "Y" || deleteYn == "Y" || updateYn == "Y") {
-						isSubMenuHasAnyY = true;
-					}	
-					
-					subAuthMenu.menuId = subMenuId;
-					subAuthMenu.createYn = createYn;
-					subAuthMenu.readYn = readYn;
-					subAuthMenu.deleteYn = deleteYn;
-					subAuthMenu.updateYn = updateYn;
-
-					authMenuList.push(subAuthMenu);
-				}
-				
-				// 서브메뉴에 부여된 권한이 하나도 없는 경우
-				if(!isSubMenuHasAnyY) {
-					mainAuthMenu.createYn = "N";
-					mainAuthMenu.readYn = "N";
-					mainAuthMenu.deleteYn = "N";
-					mainAuthMenu.updateYn = "N";
-				}
-				authMenuList.push(mainAuthMenu);
-				
-			} else {
-				// 메인메뉴 N인 경우
-				mainAuthMenu.menuId = mainMenuId;
-				mainAuthMenu.createYn = "N";
-				mainAuthMenu.readYn = "N";
-				mainAuthMenu.deleteYn = "N";
-				mainAuthMenu.updateYn = "N";
-
-				authMenuList.push(mainAuthMenu);
-
-				for (var j = 0; j < subMenu.length; j++) {
-					var subAuthMenu = new Object();
-					var subMenuId = subMenu.eq(j).data("submenuid");
-					subAuthMenu.menuId = subMenuId;
-					subAuthMenu.createYn = "N";
-					subAuthMenu.readYn = "N";
-					subAuthMenu.deleteYn = "N";
-					subAuthMenu.updateYn = "N";
-
-					authMenuList.push(subAuthMenu);
-				}
-			}
-		}
-
-		result.authNm = authNm;
-		result.authCd = authCd;
-		result.authDesc = authDesc;
-		result.authMenuList = authMenuList;
-		
- 		$.ajax({
- 			type: "post",
- 			dataType: "json",
- 			contentType: "application/json",
- 			data : JSON.stringify(result),
- 			url: '/siteMng/auth/save.ajax',
- 			success: function (data) {
- 				if (data.code == '200') {
- 					alert(data.message);
- 					location.href="/siteMng/auth/list.do";
- 				} else {
- 					alert(data.message);
- 				}
- 			}
- 		});
 	}
 
 	/*]]>*/

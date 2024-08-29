@@ -2,9 +2,32 @@ package com.moz.ates.traffic.admin.sitemng.code;
 
 import java.util.List;
 
-import com.moz.ates.traffic.common.entity.common.MozCmCd;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public interface CodeService {
+import com.moz.ates.traffic.admin.common.util.LoginOprtrUtils;
+import com.moz.ates.traffic.common.entity.common.MozCmCd;
+import com.moz.ates.traffic.common.repository.common.MozCmCdRepository;
+import com.moz.ates.traffic.common.support.exception.CommonException;
+import com.moz.ates.traffic.common.support.exception.ErrorCode;
+
+@Service
+public class CodeService {
+
+	@Autowired
+	MozCmCdRepository mozCmCdRepository;
+	
+	/**
+     * @brief : 코드 리스트 개수 조회
+     * @details : 코드 리스트 개수 조회
+     * @author : KC.KIM
+     * @date : 2024.01.23
+     * @param : mozCmCd
+     * @return : 
+     */
+	public int getCodeListCnt(MozCmCd mozCmCd) {
+		return mozCmCdRepository.countMozCmCd(mozCmCd);
+	}
 
 	/**
      * @brief : 코드 리스트 조회
@@ -14,17 +37,9 @@ public interface CodeService {
      * @param : mozCmCd
      * @return : 
      */
-	public int getCodeListCnt(MozCmCd mozCmCd);
-
-	/**
-     * @brief : 코드 리스트 개수 조회
-     * @details : 코드 리스트 개수 조회
-     * @author : KC.KIM
-     * @date : 2024.01.23
-     * @param : mozCmCd
-     * @return : 
-     */
-	public List<MozCmCd> getCodeList(MozCmCd mozCmCd);
+	public List<MozCmCd> getCodeList(MozCmCd mozCmCd) {
+		return mozCmCdRepository.findAllMozCmCd(mozCmCd);
+	}
 
 	/**
      * @brief : 코드 등록
@@ -34,7 +49,18 @@ public interface CodeService {
      * @param : mozCmCd
      * @return : 
      */
-	public void cmCdSave(MozCmCd mozCmCd);
+	public void cmCdSave(MozCmCd mozCmCd) {
+		
+		if (mozCmCdRepository.countMozCmCdByCdIdForSave(mozCmCd) > 0) {
+			throw new CommonException(ErrorCode.DATA_DUPLICATE);
+		}
+		
+		String crtr = LoginOprtrUtils.getOprtrId();
+
+		mozCmCd.setCrtr(crtr);
+		mozCmCd.setUseYn("Y");
+		mozCmCdRepository.saveMozCmCd(mozCmCd);
+	}
 
 	/**
      * @brief : 코드 상세 정보 조회
@@ -44,7 +70,9 @@ public interface CodeService {
      * @param : cdId
      * @return : 
      */
-	public MozCmCd getCodeDetail(String cdId);
+	public MozCmCd getCodeDetail(String cdId) {
+		return mozCmCdRepository.findOneMozCmCd(cdId); 
+	}
 
 	/**
      * @brief : 코드 정보 삭제 
@@ -54,7 +82,21 @@ public interface CodeService {
      * @param : cdId
      * @return
      */ 
-	public void cmCdDelete(String cdId);
+	public void cmCdDelete(String cdId) {
+		mozCmCdRepository.deleteMozCmCdByCdIdOrCdGroupId(cdId);
+	}
+
+	/**
+	 * @brief : 코드 정보 삭제 
+	 * @details : 코드 정보 삭제 
+	 * @author : KC.KIM
+	 * @date : 2024.02.01
+	 * @param : cdId
+	 * @return
+	 */ 
+	public void subCmCdDelete(MozCmCd mozCmCd) {
+		mozCmCdRepository.deleteMozCmCdByCdId(mozCmCd);
+	}
 
 	/**
      * @brief : 코드 상세 정보 수정 
@@ -64,26 +106,25 @@ public interface CodeService {
      * @param : mozCmCd
      * @return
      */ 
-	public void cmCdModify(MozCmCd mozCmCd);
-
+	public void cmCdModify(MozCmCd mozCmCd) {
+		
+		if (mozCmCdRepository.countMozCmCdByCdIdForUpdate(mozCmCd) > 0) {
+			throw new CommonException(ErrorCode.DATA_DUPLICATE);
+		}
+		
+		mozCmCdRepository.updateMozCmCd(mozCmCd);
+	}
+	
 	/**
 	  * @Method Name : getSubCodeDetail
 	  * @작성일 : 2024. 2. 20.
 	  * @작성자 : SM.KIM
-	  * @Method 설명 : 코드 상세정보 하위 코드 목록 조회
+	  * @Method 설명 : 코드 상세정보 하위 코드 리스트 조회
 	  * @param cdId
 	  * @return
 	  */
-	public List<MozCmCd> getSubCodeDetail(String cdId);
-
-	/**
-	 * @brief : 코드 정보 삭제 
-	 * @details : 코드 정보 삭제 
-	 * @author : KC.KIM
-	 * @date : 2024.02.01
-	 * @param : cdId
-	 * @return
-	 */
-	public void subCmCdDelete(MozCmCd mozCmCd);
+	public List<MozCmCd> getSubCodeDetail(String cdId) {
+		return mozCmCdRepository.findAllSubCmcd(cdId);
+	}
 
 }

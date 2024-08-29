@@ -1,11 +1,7 @@
 package com.moz.ates.traffic.admin.administmng;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import javax.servlet.http.HttpServletResponse;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -17,7 +13,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
-
 import com.moz.ates.traffic.admin.common.CommonCdService;
 import com.moz.ates.traffic.admin.common.enums.MethodType;
 import com.moz.ates.traffic.admin.config.Authority;
@@ -25,6 +20,7 @@ import com.moz.ates.traffic.common.component.Pagination;
 import com.moz.ates.traffic.common.entity.administrative.MozAdministDip;
 import com.moz.ates.traffic.common.entity.administrative.MozCourtDcsn;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
+import com.moz.ates.traffic.common.entity.law.MozTfcLwFineInfo;
 import com.moz.ates.traffic.common.entity.law.MozTfcLwInfo;
 import com.moz.ates.traffic.common.repository.administrative.MozAdministDipRepository;
 import com.moz.ates.traffic.common.repository.administrative.MozCourtDcsnRepository;
@@ -212,7 +208,9 @@ public class AdministController {
 	@GetMapping(value = "/law/save.do")
 	public String lawRegist(Model model) {
 		model.addAttribute("lawTypeCd", commonCdService.getCdList("LAW_TYPE_CD"));
-		model.addAttribute("lawChtrCd", commonCdService.getCdList("LAW_CHTR_CD"));
+		model.addAttribute("cntrvTyCd", commonCdService.getCdList("CONTRAVENTION_TYPE_CODE"));
+		model.addAttribute("addlPnCd", commonCdService.getCdList("ADDITIONAL_PENALTY_CODE"));
+		model.addAttribute("trnTyCd", commonCdService.getCdList("TRANSGRESSION_TYPE_CODE"));
 		return "views/administmng/lawRegist";
 	}
 
@@ -228,12 +226,24 @@ public class AdministController {
 	@PostMapping(value = "/law/save.ajax")
 	@ResponseBody
 	public CommonResponse<?> lawSaveAjax(@RequestBody MozTfcLwInfo tfcLwInfo) {
+		if (administService.checkDuplicateByArtclNo(tfcLwInfo)) {
+			// número do artigo가 이미 존재합니다
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "O número do artigo já existe");
+		}
+		
+		if (administService.checkDuplicateByTfcLwFineIdList(tfcLwInfo.getMozTfcLwFineInfoArr())) {
+			// 범칙금 ID가 이미 존재합니다.
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "O ID da multa já existe");
+		}
+		
 		try {
 			administService.lawSave(tfcLwInfo);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "O registo legal falhou.");
+			// 성공적으로 등록되지 않았습니다
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Não foi registrado com sucesso.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Registou uma lei.");
+		// 성공적으로 등록되었습니다.
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Você foi registrado com sucesso.");
 	}
 
 	/**
@@ -251,9 +261,11 @@ public class AdministController {
 		try {
 			administService.lawRevise(tfcLwInfo);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "A adição de uma lei falhou.");
+			// 성공적으로 등록되지 않았습니다
+			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Não foi registrado com sucesso.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Acrescentou com êxito uma nova lei.");
+		// 성공적으로 등록되었습니다.
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Você foi registrado com sucesso.");
 	}
 
 	/**
@@ -268,12 +280,20 @@ public class AdministController {
 	@PostMapping(value = "/law/addFine.ajax")
 	@ResponseBody
 	public CommonResponse<?> lawAddFineAjax(@RequestBody MozTfcLwInfo tfcLwInfo) {
+		
+		if (administService.checkDuplicateByTfcLwFineIdList(tfcLwInfo.getMozTfcLwFineInfoArr())) {
+			// 범칙금 ID가 이미 존재합니다.
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "O ID da multa já existe");
+		}
+		
 		try {
 			administService.lawAddFine(tfcLwInfo);
 		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "A adição de uma lei falhou.");
+			// 성공적으로 등록되지 않았습니다
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Não foi registrado com sucesso.");
 		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Acrescentou com êxito uma nova lei.");
+		// 성공적으로 등록되었습니다.
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Você foi registrado com sucesso.");
 	}
 
 	/**
@@ -315,25 +335,6 @@ public class AdministController {
 	}
 
 	/**
-	 * @brief : 범칙금 삭제
-	 * @details : 범칙금 삭제
-	 * @author : KY.LEE
-	 * @date : 2024.02.23
-	 * @param : tfcLawFineId
-	 */
-	@Authority(type = MethodType.DELETE)
-	@PostMapping(value = "/law/fineDelete.ajax")
-	@ResponseBody
-	public CommonResponse<?> fineInfoDeleteAjax(@RequestParam("tfcLawFineId") String tfcLawFineId) {
-		try {
-			administService.fineDelete(tfcLawFineId);
-		} catch (CommonException e) {
-			CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Falha na eliminação de uma penalização.");
-		}
-		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "Penalidade eliminada com sucesso.");
-	}
-
-	/**
 	 * @brief : 교통단속 법률관리 상세 조회
 	 * @details : 교통단속 법률관리 상세 조회
 	 * @author : KC.KIM
@@ -344,11 +345,14 @@ public class AdministController {
 	@Authority(type = MethodType.READ)
 	@GetMapping(value = "/law/detail.do")
 	public String lawDetail(Model model, @RequestParam("lawId") String tfcLawId) {
-
 		MozTfcLwInfo tfcLwInfo = administService.getLawDetail(tfcLawId);
-
+		
+		model.addAttribute("cntrvTyCd", commonCdService.getCdList("CONTRAVENTION_TYPE_CODE"));
+		model.addAttribute("addlPnCd", commonCdService.getCdList("ADDITIONAL_PENALTY_CODE"));
+		model.addAttribute("trnTyCd", commonCdService.getCdList("TRANSGRESSION_TYPE_CODE"));
+		
 		model.addAttribute("tfcLwInfo", tfcLwInfo);
-		model.addAttribute("tfcLwFineInfoList", administService.getLawFineList(tfcLawId));
+		model.addAttribute("tfcLwFineInfoList", administService.getLawFineListJoinCmCd(tfcLawId));
 		model.addAttribute("tfcLwAdtnRvsnList", administService.getLawAdtnRvsnList(tfcLawId));
 		return "views/administmng/lawDetail";
 	}
@@ -367,7 +371,10 @@ public class AdministController {
 		MozTfcLwInfo tfcLwInfo = administService.getLawDetail(tfcLawId);
 		
 		model.addAttribute("lawTypeCd", commonCdService.getCdList("LAW_TYPE_CD"));
-		model.addAttribute("lawChtrCd", commonCdService.getCdList("LAW_CHTR_CD"));
+		model.addAttribute("cntrvTyCd", commonCdService.getCdList("CONTRAVENTION_TYPE_CODE"));
+		model.addAttribute("addlPnCd", commonCdService.getCdList("ADDITIONAL_PENALTY_CODE"));
+		model.addAttribute("trnTyCd", commonCdService.getCdList("TRANSGRESSION_TYPE_CODE"));
+		
 		model.addAttribute("tfcLwInfo", tfcLwInfo);
 		model.addAttribute("tfcLwFineInfoList", administService.getLawFineList(tfcLawId));
 		model.addAttribute("tfcLwAdtnRvsnList", administService.getLawAdtnRvsnList(tfcLawId));
@@ -386,6 +393,12 @@ public class AdministController {
 	@PostMapping(value = "/law/update.ajax")
 	@ResponseBody
 	public CommonResponse<?> lawUpdateAjax(@RequestBody MozTfcLwInfo tfcLwInfo) {
+		
+		if (administService.checkDuplicateByArtclNoAndLawId(tfcLwInfo)) {
+			// número do artigo가 이미 존재합니다
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "o número do artigo já existe");
+		}
+		
 		try {
 			administService.updateLaw(tfcLwInfo);
 		} catch (CommonException e) {
@@ -393,28 +406,29 @@ public class AdministController {
 		}
 		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "A alteração da lei foi bem sucedida.");
 	}
-
+	
 	/**
-	 * @brief : 교통단속 법률관리 정보 수정
-	 * @details : 교통단속 법률관리 정보 수정
-	 * @author : KC.KIM
-	 * @date : 2023.08.08
-	 * @param : tfcLawId
-	 * @return :
-	 */
-	@Authority(type = MethodType.DELETE)
-	@PostMapping(value = "/law/delete.ajax")
+	  * @Method Name : fineUpdateAjax
+	  * @Date : 2024. 6. 20.
+	  * @Author : IK.MOON
+	  * @Method Brief : 범칙금 정보 수정
+	  * @param fineInfo
+	  * @return
+	  */
+	@Authority(type = MethodType.UPDATE)
+	@PostMapping(value = "/law/fineUpdate.ajax")
 	@ResponseBody
-	public Map<String, Object> lawDeleteAjax(@RequestParam("tfcLawId") String tfcLawId) {
-		Map<String, Object> result = new HashMap<>();
-
-		try {
-			administService.deleteLaw(tfcLawId);
-			result.put("code", "1");
-		} catch (Exception e) {
-			result.put("code", "0");
+	public CommonResponse<?> fineUpdateAjax(MozTfcLwFineInfo fineInfo) {
+		if (administService.checkDuplicateByTfcLwFineId(fineInfo)) {
+			// 범칙금 ID가 이미 존재합니다.
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "O ID da multa já existe");
 		}
-
-		return result;
+		
+		try {
+			administService.updateFineInfo(fineInfo);
+		} catch (CommonException e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Não conseguiu alterar a lei.");
+		}
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "A alteração da lei foi bem sucedida.");
 	}
 }

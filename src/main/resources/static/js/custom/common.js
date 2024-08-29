@@ -1,3 +1,5 @@
+let multilingual = window.Multilingual?window.Multilingual : null;
+
 /**
  	node.empty();
  */
@@ -13,6 +15,7 @@ function targetToggleClass(_this, cls = "on", onFunction, offFunction){
 		typeof offFunction == "function" ? v() : void(0);
 	}
 }
+
 function resetForm(targetFormId){
 	$('#'+targetFormId).find("input, select").each(function(){
 		switch(this.tagName.toUpperCase()){
@@ -40,17 +43,19 @@ function sideBarToggle(_this){
 			$(_this).removeClass('on');
 
 		} else {
-			$(_this).siblings().slideDown();
-			$(_this).find('.arrow').addClass('on')
-			$(_this).addClass('on')
-
-			$('.sidebar-list-title').not(_this).removeClass('on');
-
-			let subMenus = $('.sidebar-list-title').not(_this).siblings();
-			for (const menu of subMenus) {
-				if (!$(menu).hasClass('opened')) {
-					$(menu).slideUp();
-					$(menu).parent().find('.arrow').removeClass('on');
+			if(!$(_this).siblings().hasClass("on")){
+				$(_this).siblings().slideDown();
+				$(_this).find('.arrow').addClass('on')
+				$(_this).addClass('on')
+	
+				$('.sidebar-list-title').not(_this).removeClass('on');
+	
+				let subMenus = $('.sidebar-list-title').not(_this).siblings();
+				for (const menu of subMenus) {
+					if (!$(menu).hasClass('opened')) {
+						$(menu).slideUp();
+						$(menu).parent().find('.arrow').removeClass('on');
+					}
 				}
 			}
 		}
@@ -87,22 +92,23 @@ function passWordEye(elementId, eyeChange){
 }
 
 function filterdateCheck(type) {
+    const hasDoubleDateInput = document.querySelector('.time-sted-change') !== null;
+
     const today = new Date();
     const year = today.getFullYear();
-    const month = today.getMonth() + 1; // 현재 월
+    const month = today.getMonth(); // 현재 월
     const date = today.getDate(); // 현재 날짜
-	
 
-    let lastMonthYear, lastMonth;
+    const minDate = new Date(today);
     if (type === 'monthly') {
-        // 한 달 전 날짜 계산
-        lastMonthYear = year;
-        lastMonth = month - 1;
-        if (lastMonth === 0) {
-            lastMonth = 12;
-            lastMonthYear -= 1;
-        }
+        minDate.setFullYear(today.getFullYear() - 1);
+    } else  {
+        minDate.setMonth(today.getMonth() - 2);
     }
+    const yyyyMin = minDate.getFullYear();
+    const mmMin = String(minDate.getMonth() + 1).padStart(2, '0');
+    const ddMin = String(minDate.getDate()).padStart(2, '0');
+    const todayMinStr = `${yyyyMin}-${mmMin}-${ddMin}`;
 
     if (type === 'true') { // 시간대별
     	document.querySelector('.time-today-on').style.display="block";
@@ -110,18 +116,26 @@ function filterdateCheck(type) {
         document.getElementById('timeLineInput').value = today.toISOString().slice(0, 10); // 오늘 날짜 설정
     } else if (type === 'false') { // 일별
         const yesterday = new Date(today);
-        document.querySelector('.time-today-on').style.display="none";
-    	document.querySelector('.time-sted-change').style.display="block";
+        if (hasDoubleDateInput) {
+            document.querySelector('.time-today-on').style.display="none";
+            document.querySelector('.time-sted-change').style.display="block";
+        }
         yesterday.setDate(yesterday.getDate() - 1); // 어제 날짜 구하기
         document.getElementById('sDate').value = yesterday.toISOString().slice(0, 10); // 어제 날짜 설정
         document.getElementById('eDate').value = today.toISOString().slice(0, 10); // 오늘 날짜 설정
     } else if (type === 'monthly') { // 월간
         const lastMonthDate = new Date(year, month - 2, date);
+        if (hasDoubleDateInput) {
          document.querySelector('.time-today-on').style.display="none";
-    	document.querySelector('.time-sted-change').style.display="block";
+         document.querySelector('.time-sted-change').style.display="block";
+        }
         document.getElementById('sDate').value = lastMonthDate.toISOString().slice(0, 10); // 이전 달 설정
         document.getElementById('eDate').value = today.toISOString().slice(0, 10); // 오늘 날짜 설정
     }
+
+    if (hasDoubleDateInput) document.getElementById('timeLineInput').setAttribute('min', todayMinStr);
+    document.getElementById('eDate').setAttribute('min', todayMinStr);
+    document.getElementById('sDate').setAttribute('min', todayMinStr);
 }
 
  /*null check*/
@@ -184,7 +198,12 @@ function keyupMeticalEvent(_this){
 }
 
 function number_format(value){
-	return value.replace(/[^-\.0-9]/g, '');
+	return value.replace(/[^\.0-9]/g, '');
+}
+
+function numberOnly(event) {
+    let input = event.target.value;
+    event.target.value = input.replace(/[^0-9]/g, '');
 }
 function metical_format(value){
     // 숫자, 소수점, 음수 부호를 제외한 모든 문자 제거
@@ -248,86 +267,6 @@ function getPagingHtml(paging,page){
 	return pagingHtml;
 }
 
-var fileNo = 0;
-var filesArr = new Array();
-var deleteFilesArr = new Array();
-
-function addFiles(obj){
-	var fileMaxCnt = 5;
-	var fileCnt = $("#image_container div").length;
-	var remainFileCnt = fileMaxCnt - fileCnt;
-	var curFileCnt = obj.files.length;
-	
-	if (curFileCnt > remainFileCnt) {
-       return alert("첨부파일은 최대 " + fileMaxCnt + "개 까지 첨부 가능합니다.");
-    }
-	
-	for (var i = 0; i < Math.min(curFileCnt, remainFileCnt); i++) {
-
-        const file = obj.files[i];
-
-        // 첨부파일 검증
-        if (validation(file)) {
-            // 파일 배열에 담기
-            var reader = new FileReader();
-            reader.onload = function () {
-                filesArr.push(file);
-            };
-            reader.readAsDataURL(file)
-
-            // 목록 추가
-            let htmlData = '';
-            htmlData += '<div id="file' + fileNo + '" class="filebox">';
-            htmlData += '   <p class="name">' + file.name + '</p>';
-            htmlData += '   <button type="button" onclick="deleteFile(' + fileNo + ');"></button>';
-            htmlData += '</div>';
-            $('#image_container').append(htmlData);
-            fileNo++;
-        } else {
-            continue;
-        }
-    }
-    // 초기화
-    $("input[type=file]").value = "";
-}
-
-function validation(obj){
-	const fileExtension = obj.name.split('.').pop().toLowerCase();
-    const fileTypes = ['gif', 'jpeg', 'png', 'webm', 'avi', 'mp4', 'pdf', 'xlsx', 'xlx', 'word', 'doc', 'zip'];
-    if (obj.name.length > 100) {
-        alert("파일명이 100자 이상인 파일은 제외되었습니다.");
-        return false;
-    } else if (obj.size > (100 * 1024 * 1024)) {
-        alert("최대 파일 용량인 100MB를 초과한 파일은 제외되었습니다.");
-        return false;
-    } else if (obj.name.lastIndexOf('.') == -1) {
-        alert("확장자가 없는 파일은 제외되었습니다.");
-        return false;
-    } else if (!fileTypes.includes(fileExtension)) {
-        alert("첨부가 불가능한 파일은 제외되었습니다.");
-        return false;
-    } else {
-        return true;
-    }
-}
-
-function deleteFile(num) {
-	if(!isNull($("#fileNo"+num).data("value"))){
-		deleteFilesArr.push($("#fileNo"+num).data("value"));
-	}
-    document.querySelector("#file" + num).remove();
-    
-    const dataTransfer = new DataTransfer();
-    let files = $("#uploadFiles")[0].files;
-    let fileArray = Array.from(files);
-    filesArr[num].is_delete = true;
-    filesArr.filter(file => file.is_delete != true).forEach(file => { dataTransfer.items.add(file); });
-    $("#uploadFiles")[0].files = dataTransfer.files;
-    
-    fileNo--;
-    
-}
-
 function formatDate(date) {
     var year = date.getFullYear();
     var month = padNumber(date.getMonth() + 1);
@@ -345,168 +284,299 @@ function padNumber(number) {
     return number;
 }
 
-function fileDrag() {
-	//file upload
-        let $dragArea = $("#dragArea");
-        let $fileInput = $("#uploadFiles");
-        let $fileList = $("#upload_list_box");
+/* 단일 파일 업로드 */
+function fileUploadInit(maxFileSizeMB, maxFileNameLength, allowedExtensions) {
+    let $dragArea = $("#dragArea");
+    let $fileInput = $("#uploadFiles");
+    let $fileDiv = $("#fileInfoDiv");
 
-        $dragArea.on("dragover", function(e) {
-            e.preventDefault();
-            $(this).css("background-color", "#737373");
+    $dragArea.on("dragover", function(e) {
+        e.preventDefault();
+        $(this).css("background-color", "#737373");
+    });
+
+    $dragArea.on("dragleave", function(e) {
+        e.preventDefault();
+        $(this).css("background-color", "transparent");
+    });
+
+    $dragArea.on("drop", function(e) {
+        e.preventDefault();
+        $(this).css("background-color", "transparent");
+        
+        let files = e.originalEvent.dataTransfer.files;
+		
+        if (files.length > 0) {
+            if (!fileUploadChange(files, maxFileSizeMB, maxFileNameLength, allowedExtensions)) {
+                return;
+            }
+            fileChangeEvent(files);
+        }
+    });
+
+    $("#uploadBtn").off().on("click", function() {
+        $fileInput.click();
+    });
+
+    // Prevent multiple bindings
+    $fileInput.off("change").on("change", function() {
+        let files = $fileInput[0].files;
+        if (files.length > 0) {
+            if (!fileUploadChange(files, maxFileSizeMB, maxFileNameLength, allowedExtensions)) {
+                return;
+            }
+            fileChangeEvent(files);
+        }
+    });
+
+	function fileChangeEvent(files) {
+	    let dataTransfer = new DataTransfer();
+	    dataTransfer.items.add(files[0]);
+	    handleFiles(files);
+	    $fileInput[0].files = dataTransfer.files;
+	}
+
+    function handleFiles(files) {
+        if (files.length === 0) return;
+        $fileDiv.empty();
+
+        let fileNm = files[0].name;
+        let uploadList = $(`
+            <div id="upFileWrap">
+                <div id="upFileCon">
+                    ${fileNm}
+                     <button type="button" data-value="${fileNm}" class="fileDelBtn">
+	                    <img src="/images/upload_close_one.png" alt="업로드파일 삭제">
+	                </button>
+                </div>
+            </div>`);
+        $fileDiv.append(uploadList);
+        $fileDiv.removeClass('none');
+       $dragArea.addClass('none');
+
+        $(".fileDelBtn").off("click").on('click', function() {
+            var $this = $(this);
+            $this.closest('.upload_list').remove();
+            $fileInput.val('');
+            $fileDiv.addClass('none');
+            $dragArea.removeClass('none');
         });
-
-        $dragArea.on("dragleave", function(e) {
-            e.preventDefault();
-            $(this).css("background-color", "transparent");
-        });
-
-        $dragArea.on("drop", function(e) {
-            const inputFile = $fileInput[0].files;
-            let files = e.originalEvent.dataTransfer.files;
-            e.preventDefault();
-            $(this).css("background-color", "transparent");
-            
-            if(inputFile.length > 0){
-                if(!fileUploadChange(inputFile)|| !fileUploadChange(files)){
-                    $fileInput.prop('files',inputFile);
-                    return;
-                }
-                fileChangeAddEvent(inputFile,files);
-            } else{
-                if(!fileUploadChange(files)){
-                    $fileInput.prop('files',inputFile);
-                    return;
-                }
-                fileChangeDefaultEvent(files);
-            }
-            $('.upload_wrap').removeClass('none')
-        });
-
-    
-            const inputFile = $fileInput[0].files;
-            $fileInput.click();
-            $fileInput.off().on("change", function() {
-                if(!fileUploadChange(inputFile) || !fileUploadChange(this.files)){
-                    $fileInput.prop('files',inputFile);
-                    return;
-                }
-                if(inputFile.length > 0){
-                    fileChangeAddEvent(inputFile,this.files);
-                } else{
-                    fileChangeDefaultEvent(this.files);
-                }
-                $('.upload_wrap').removeClass('none')
-            });
-     
-
-        function fileChangeAddEvent(inputFileArr , addFileArr){
-            const dataTransfer = new DataTransfer();
-            Array.from(inputFileArr).forEach(file => {
-                addUniqueFile(file, dataTransfer);
-            });
-            Array.from(addFileArr).forEach(file => {
-                addUniqueFile(file, dataTransfer);
-            });
-            handleFiles(dataTransfer.files);
-            $fileInput.prop('files',dataTransfer.files);
-        }
-
-        function fileChangeDefaultEvent(files){
-            handleFiles(files);
-            $fileInput.prop('files',files);
-        }
-
-        function addUniqueFile(file, dataTransfer) {
-            const uniqueFileSet = new Set();
-            const uniqueFiles = [];
-            const uniqueKey = file.name + "_" + file.size;
-
-            for (let i = dataTransfer.items.length - 1; i >= 0; i--) {
-                const file = dataTransfer.items[i].getAsFile();
-                if (uniqueFileSet.has(file.name + "_" + file.size)) {
-                    dataTransfer.items.remove(i);
-                } else {
-                    uniqueFileSet.add(file.name + "_" + file.size);
-                    uniqueFiles.push(file);
-                }
-            }
-            if (!uniqueFileSet.has(uniqueKey)) {
-                uniqueFileSet.add(uniqueKey);
-                dataTransfer.items.add(file);
-            }
-        }
-
-        function handleFiles(files) {
-            if (files.length === 0) return;
-            $("#upload_list_box").empty();
-            for (let i = 0; i < files.length; i++) {
-                let fileNm = files[i].name;
-                var uploadList = $(`
-	                <div class="upload_list">
-                		<div class="list_item input_same group_box flex-center">
-                			<div class="file_list">
-		                		`+fileNm+`
-                			</div>
-	                		<button type="button" data-value='`+fileNm+`' class="fileDelBtn">
-									<img src="/images/upload_close.png" alt="업로드파일 삭제">
-	                		</button>
-                		</div>
-	                </div>`);
-                console.log($fileList);
-                console.log(uploadList);
-                $fileList.append(uploadList);
-            }
-			 
-            $(".fileDelBtn").on('click',function(){
-                var $this = $(this);
-                var fileNm = $this.data('value');
-                const dataTransfer = new DataTransfer();
-                let trans = $('#uploadFiles')[0].files;
-                let fileArray = Array.from(trans);
-	
-                $this.closest('.upload_list').remove();
-                fileArray.filter(file => file.name != fileNm).forEach(file => {
-                    dataTransfer.items.add(file);
-                });
-                $fileInput.prop('files',dataTransfer.files);
-                
-                let uploadLength = $('#upload_list_box').children().length;
-        		if(uploadLength <= 0){
-        			$('.upload_wrap').addClass('none')
-        		}
-            });
-        }
-
-
-    function fileUploadChange(files){
-        var maxBytes = 5242880;
-        var fileNmMaxLength = 50;
-
-        for(var i = 0; i < files.length; i++){
-            var fileNm = files[i].name;
-            var fileBytes = 0;
-
-            if(fileNm != ''){
-                fileBytes = files[i].size;
-            }
-            if(fileNm != ''){
-                var ext = fileNm.slice(fileNm.lastIndexOf(".")+1).toLowerCase();
-                //if(ext != 'png' && ext != 'jpg' && ext != 'jpeg' && ext != 'mp4'){
-				//	alert('JPG, PNG, MP4 파일만 첨부 가능합니다.')
-                //    return false;
-                //}else 
-                if(fileBytes > maxBytes){
-                    return false;
-                }else if(fileNm.length > fileNmMaxLength){
-				//	new ModalBuilder().init().alertBoby('파일 제목은 50자 이상 넘을 수 없습니다.').footer(4,'확인',function(button, modal){modal.close();}).open();
-				//	modalAlertWrap();      
-                    return false;
-                }
-            }
-        }
-        return true;
     }
+}
+    
+/* 다중 파일 업로드*/
+function fileDrag(maxFileSizeMB, maxFileCount, maxFileNameLength, allowedExtensions, oldFileNmArr = []) {
+	//file upload
+    let $dragArea = $("#dragArea");
+    let $fileInput = $("#uploadFiles");
+    let $fileList = $("#newFilesContainer");
+
+    $dragArea.on("dragover", function(e) {
+        e.preventDefault();
+        $(this).css("background-color", "#737373");
+    });
+
+    $dragArea.on("dragleave", function(e) {
+        e.preventDefault();
+        $(this).css("background-color", "transparent");
+    });
+
+    $dragArea.on("drop", function(e) {
+		e.preventDefault();
+        const inputFile = $fileInput[0].files;      
+        let files = e.originalEvent.dataTransfer.files;     
+        // e.preventDefault();
+        $(this).css("background-color", "transparent");
+        
+		// 파일 업로드 가능 개수 체크
+		if (inputFile.length + files.length > (maxFileCount - oldFileNmArr.length)) {
+			$fileInput.prop('files', inputFile);
+			new ModalBuilder().init().alertBody(`Não pode haver mais de ${maxFileCount} arquivos.`).footer(4, 'OK', function (button, modal) {
+				// 파일은 최대 ${maxFileCount}개를 넘을 수 없습니다.
+				modal.close();
+			}).open();
+			return;
+		}
+		
+        if(inputFile.length > 0){
+            if (!fileUploadChange(inputFile, maxFileSizeMB, maxFileNameLength, allowedExtensions, oldFileNmArr) || 
+            	!fileUploadChange(files, maxFileSizeMB, maxFileNameLength, allowedExtensions, oldFileNmArr)) {
+                $fileInput.prop('files',inputFile);
+                return;
+            }
+            fileChangeAddEvent(inputFile,files);
+        } else{
+            if(!fileUploadChange(files, maxFileSizeMB, maxFileNameLength, allowedExtensions, oldFileNmArr)){
+                $fileInput.prop('files',inputFile);
+                return;
+            }
+            fileChangeDefaultEvent(files);
+        }
+        $('.upload_wrap').removeClass('none')
+    });
+    
+	let inputFile;
+    $("#uploadBtn").off().on("click", function() {
+		inputFile = $fileInput[0].files;
+        $fileInput.click();
+    });
+    
+    $fileInput.off().on("change", function() {
+		// 파일 업로드 가능 개수 체크
+		if (inputFile.length + this.files.length > (maxFileCount - oldFileNmArr.length)) {
+			$fileInput.prop('files', inputFile);
+			new ModalBuilder().init().alertBody(`Não pode haver mais de ${maxFileCount} arquivos.`).footer(4, 'OK', function (button, modal) {
+				// 파일은 최대 ${maxFileCount}개를 넘을 수 없습니다.
+				modal.close();
+			}).open();
+			return;
+		}
+        if	(!fileUploadChange(inputFile, maxFileSizeMB, maxFileNameLength, allowedExtensions, oldFileNmArr)
+    		|| !fileUploadChange(this.files, maxFileSizeMB, maxFileNameLength, allowedExtensions, oldFileNmArr)) {
+            $fileInput.prop('files',inputFile);
+            return;
+        }
+        if(inputFile.length > 0){
+            fileChangeAddEvent(inputFile,this.files);
+        } else{
+            fileChangeDefaultEvent(this.files);
+        }
+        $('.upload_wrap').removeClass('none')
+    });
+
+    function fileChangeAddEvent(inputFileArr , addFileArr){
+        const dataTransfer = new DataTransfer();
+        Array.from(inputFileArr).forEach(file => {
+            addUniqueFile(file, dataTransfer);
+        });
+        Array.from(addFileArr).forEach(file => {
+            addUniqueFile(file, dataTransfer);
+        });
+        handleFiles(dataTransfer.files);
+        $fileInput.prop('files',dataTransfer.files);
+    }
+
+    function fileChangeDefaultEvent(files){
+        handleFiles(files);
+        $fileInput.prop('files',files);
+    }
+
+    function addUniqueFile(file, dataTransfer) {
+        const uniqueFileSet = new Set();
+        const uniqueFiles = [];
+        const uniqueKey = file.name + "_" + file.size;
+
+        for (let i = dataTransfer.items.length - 1; i >= 0; i--) {
+            const file = dataTransfer.items[i].getAsFile();
+            if (uniqueFileSet.has(file.name + "_" + file.size)) {
+                dataTransfer.items.remove(i);
+            } else {
+                uniqueFileSet.add(file.name + "_" + file.size);
+                uniqueFiles.push(file);
+            }
+        }
+        if (!uniqueFileSet.has(uniqueKey)) {
+            uniqueFileSet.add(uniqueKey);
+            dataTransfer.items.add(file);
+        }
+    }
+
+    function handleFiles(files) {
+        if (files.length === 0) return;
+        $fileList.empty();
+        for (let i = 0; i < files.length; i++) {
+            let fileNm = files[i].name;
+            var uploadList = $(`
+                <div class="upload_list">
+            		<div class="list_item input_same group_box flex-center">
+            			<div class="file_list">
+	                		`+fileNm+`
+            			</div>
+                		<button type="button" data-value='`+fileNm+`' class="fileDelBtn">
+								<img src="/images/upload_close.png" alt="업로드파일 삭제">
+                		</button>
+            		</div>
+                </div>`);
+            $fileList.append(uploadList);
+        }
+		 
+        $(".fileDelBtn").on('click',function(){
+            var $this = $(this);
+            var fileNm = $this.data('value');
+            const dataTransfer = new DataTransfer();
+            let trans = $('#uploadFiles')[0].files;
+            let fileArray = Array.from(trans);
+
+            $this.closest('.upload_list').remove();
+            fileArray.filter(file => file.name != fileNm).forEach(file => {
+                dataTransfer.items.add(file);
+            });
+            $fileInput.prop('files',dataTransfer.files);
+            
+            let uploadLength = $('#newFilesContainer').children().length;
+    		if(uploadLength <= 0){
+    			$('.upload_wrap').addClass('none')
+    		}
+        });
+    }
+}
+
+function fileUploadChange(files, maxFileSizeMB, maxFileNameLength, allowedExtensions, oldFileNmArr = []) {
+    var maxBytes = maxFileSizeMB * 1024 * 1024;
+
+    for(var i = 0; i < files.length; i++){
+        var fileNm = files[i].name;
+        var fileBytes = 0;
+        
+		if (fileNm != '' && oldFileNmArr.length > 0) {
+			let isFileDuplicated = false;
+			oldFileNmArr.forEach(oldFileNm => {
+				if(oldFileNm.toUpperCase() == fileNm.toUpperCase()) {
+					isFileDuplicated = true;
+					return false;
+				}
+			});
+			if (isFileDuplicated) {
+				new ModalBuilder().init().alertBody('Existem arquivos duplicados.').footer(4, 'OK', function(button, modal) {
+					// 중복된 파일이 존재합니다.
+					modal.close();
+				}).open();
+				return false;
+			}
+		}
+		
+        if(fileNm != ''){
+            fileBytes = files[i].size;
+        }
+        if(fileNm != ''){
+            let fileReg = new RegExp("(.*?)\\.(" + allowedExtensions.join("|") + ")$");
+			if (!fileReg.test(fileNm)) {
+				new ModalBuilder().init().alertBody(`Por favor, verifique a extensão do arquivo.(${allowedExtensions.join(", ")})`)
+				.footer(4, 'Confirmar', function(button, modal) {
+					// 파일 확장자를 확인 해 주세요.
+					modal.close();
+				}).open();
+				return false;
+			}
+			
+            if(fileBytes > maxBytes){
+				// 파일 용량은 5MB를 초과할 수 없습니다.
+				new ModalBuilder().init().alertBody(`O tamanho do arquivo não pode exceder ${maxFileSizeMB}MB.`)
+				.footer(4, 'Confirmar', function(button, modal) {
+					modal.close();
+				}).open(); 
+                return false;
+                
+            }else if(fileNm.length > maxFileNameLength){
+				// 파일 제목은 ${maxFileNameLength}자 이상을 넘을 수 없습니다.
+			    new ModalBuilder().init()
+			    .alertBody(`Os títulos dos arquivos não podem exceder ${maxFileNameLength} caracteres.`)
+			    .footer(4,'Confirmar',function(button, modal){modal.close();}).open();
+                return false;
+            }
+        }
+    }
+    return true;
 }
 
 class AdminLoading {
@@ -536,16 +606,18 @@ class AdminLoading {
     }
 }
 
-// 생년월일 유효성 keyup 이벤트
+/**
+ * 생년월일 유효성 keyup 이벤트
+ */
 function keyupDateCheck(event, pattern, separator) {
 	// 패턴 및 구분자 유효성 검사
 	if (!["yyyyMMdd", "ddMMyyyy", "MMddyyyy"].includes(pattern)) {
-		console.log("keyupDateCheck() --> Invalid Date Pattern");
+		console.warn("keyupDateCheck() --> Invalid Date Pattern");
 		event.target.value = '';
 		return false;
 	}
 	if (separator.length > 1) {
-		console.log("keyupDateCheck() --> Separator Length Too Long");
+		console.warn("keyupDateCheck() --> Separator Length Too Long");
 		event.target.value = '';
 		return false;
 	}
@@ -678,4 +750,37 @@ function keyupDateCheck(event, pattern, separator) {
 	}
 
 	event.target.value = dateVal;
+}
+
+function toCamelCase(str) {
+  return str.replace(/[-_](.)/g, function(match, group1) {
+    return group1.toUpperCase();
+  });
+}
+
+function createAddress(enderesso1, enderesso2, enderesso3, enderesso4) {
+    const addressParts = [enderesso1, enderesso2, enderesso3, enderesso4].filter(part => part != null);
+
+    const fullAddress = addressParts.join(' , ');
+
+    return fullAddress;
+}
+
+function getFirstKey(map) {
+    const keys = Object.keys(map);
+    return keys.length > 0 ? keys[0] : null;
+}
+
+function trimValues(inputArr) {
+	let valid = true;
+	inputArr.some(input => {
+		let elmnt = document.getElementById(input);
+		if (elmnt == null) {
+			console.warn(`trimValues() -> Wrong id: ${input}`);
+			valid = false;
+			return true;
+		}
+		elmnt.value = elmnt.value.trim();
+	})
+	return valid;
 }

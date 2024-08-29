@@ -1,12 +1,17 @@
 package com.moz.ates.traffic.admin.common;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfEqpFileInfo;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcFacilityFileInfo;
+import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfEqpFileInfoRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozTfcFacilityFileInfoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -22,11 +27,18 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.moz.ates.traffic.admin.common.enums.MethodType;
 import com.moz.ates.traffic.admin.config.Authority;
+import com.moz.ates.traffic.common.component.FileUploadComponent;
 import com.moz.ates.traffic.common.component.Pagination;
+import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntFileInfo;
+import com.moz.ates.traffic.common.entity.board.MozAtchFile;
 import com.moz.ates.traffic.common.entity.common.ApiDriverInfoDTO;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfFileInfo;
 import com.moz.ates.traffic.common.entity.operator.MozWebOprtr;
 import com.moz.ates.traffic.common.entity.police.MozPolInfo;
+import com.moz.ates.traffic.common.repository.accident.MozTfcAcdntFileInfoRepository;
+import com.moz.ates.traffic.common.repository.board.MozAtchFileRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfFileInfoRepository;
 import com.moz.ates.traffic.common.support.exception.CommonException;
 import com.moz.ates.traffic.common.support.exception.ErrorCode;
 
@@ -37,12 +49,23 @@ public class CommonController {
 	@Autowired
 	private CommonCdService commonCdService;
 	
-	@Authority(type = MethodType.READ)
-    @GetMapping("modal/search.do")
-    public String modalSearch() {
-    
-    	return "views/common/modalSearch";
-    }
+	@Autowired
+	MozTfcEnfFileInfoRepository tfcEnfFileInfoRepository;
+
+	@Autowired
+	MozTfcAcdntFileInfoRepository acdntFileInfoRepository;
+	
+	@Autowired
+	MozAtchFileRepository atchFileRepository;
+
+	@Autowired
+	MozTfcEnfEqpFileInfoRepository tfcEnfEqpFileInfoRepository;
+
+	@Autowired
+	MozTfcFacilityFileInfoRepository tfcFacilityFileInfoRepository;
+	
+	@Autowired
+	private FileUploadComponent fileUploadComponent;
 	
 	/**
 	 * @brief : 담당자 정보 조회
@@ -56,8 +79,9 @@ public class CommonController {
 	public String getModalDeptList(Model model, @ModelAttribute MozWebOprtr webOprtr) {
 		int page = webOprtr.getPage();
 		int totalCnt = commonCdService.getOprtrListCnt(webOprtr);
-		Pagination pagination = new Pagination(totalCnt, page);
+		Pagination pagination = new Pagination(totalCnt, page , 5, 5);
 	
+		webOprtr.setLength(5);
 		webOprtr.setStart((page - 1) * pagination.getPageSize());
 
 		model.addAttribute("webOprtr", webOprtr);
@@ -81,8 +105,9 @@ public class CommonController {
 		
 		int totalCnt = commonCdService.getOprtrListCnt(webOprtr);
 		int page = webOprtr.getPage();
-		Pagination pagination = new Pagination(totalCnt, page);
+		Pagination pagination = new Pagination(totalCnt, page, 5, 5);
 		
+		webOprtr.setLength(5);
 		webOprtr.setStart((page - 1) * pagination.getPageSize());
 		List<MozWebOprtr> webOprtrList = commonCdService.getOprtrList(webOprtr);
 		
@@ -104,8 +129,9 @@ public class CommonController {
 	public String getModalPolList(Model model, @ModelAttribute MozPolInfo polInfo) {
 		int page = polInfo.getPage();
 		int totalCnt = commonCdService.getPolListCnt(polInfo);
-		Pagination pagination = new Pagination(totalCnt, page);
+		Pagination pagination = new Pagination(totalCnt, page, 5, 5);
 	
+		polInfo.setLength(5);
 		polInfo.setStart((page - 1) * pagination.getPageSize());
 
 		model.addAttribute("polInfo", polInfo);
@@ -144,8 +170,9 @@ public class CommonController {
 		
 		int totalCnt = commonCdService.getPolListCnt(polInfo);
 		int page = polInfo.getPage();
-		Pagination pagination = new Pagination(totalCnt, page);
+		Pagination pagination = new Pagination(totalCnt, page, 5, 5);
 		
+		polInfo.setLength(5);
 		polInfo.setStart((page - 1) * pagination.getPageSize());
 		List<MozPolInfo> polList = commonCdService.getPolList(polInfo);
 		
@@ -161,12 +188,8 @@ public class CommonController {
 	 * @author : KY.LEE
 	 * @date : 2024.01.29
 	 */
-	@GetMapping("/modal/{type}/apiSearch.ajax")
-	public String getModalApiSearch(Model model,
-			@PathVariable(value="type") String type,
-			@RequestParam(name="searchContent",required=false) String searchContent ) {
-		model.addAttribute("searchContent", searchContent);
-		model.addAttribute("type", type);
+	@GetMapping("/modal/apiSearch.ajax")
+	public String getModalApiSearch(Model model) {
 		return "views/common/apiSearch";
    }
 
@@ -267,4 +290,53 @@ public class CommonController {
 
         return ResponseEntity.ok(resultList);
     }
+	
+	/**
+	  * @Method Name : fileDownload
+	  * @Date : 2024. 5. 16.
+	  * @Author : IK.MOON
+	  * @Method Brief : 첨부 파일 다운로드
+	  * @param type
+	  * @param fileId
+	  * @param response
+	  * @throws IOException
+	  */
+	@GetMapping("/file/{type}/download")
+	public void fileDownload(@PathVariable(value = "type", required = true) String type,
+			@RequestParam(value = "fileId", required = true) String fileId,
+			HttpServletResponse response) throws IOException {
+		
+		if (type.equals("enf")) {
+			MozTfcEnfFileInfo tfcEnfFileInfo = tfcEnfFileInfoRepository.findOneByMozTfcEnfFileInfoByVioFileId(fileId);
+			fileUploadComponent.fileDownload(response
+					, tfcEnfFileInfo.getFileNm()
+					, tfcEnfFileInfo.getFileOrgNm()
+					, tfcEnfFileInfo.getFilePath());
+		} else if (type.equals("acdnt")) {
+			MozTfcAcdntFileInfo tfcAcdntFileInfo = acdntFileInfoRepository
+					.findOneMozTfcAcdntFileInfoByAcdntFileNo(fileId);
+			fileUploadComponent.fileDownload(response
+					, tfcAcdntFileInfo.getFileNm()
+					, tfcAcdntFileInfo.getFileOriginNm()
+					, tfcAcdntFileInfo.getFilePath());
+		} else if (type.equals("portal")) {
+			MozAtchFile atchFile = atchFileRepository.findOneMozAtchFileByFileIdx(fileId);
+			fileUploadComponent.fileDownload(response
+					, atchFile.getFileSaveNm()
+					, atchFile.getFileOrgNm()
+					, atchFile.getFilePath());
+		} else if (type.equals("equipment")) {
+			MozTfcEnfEqpFileInfo tfcEnfEqpFileInfo = tfcEnfEqpFileInfoRepository.findOneMozMozTfcEnfEqpFileInfoByEqpFileNo(fileId);
+			fileUploadComponent.fileDownload(response
+					, tfcEnfEqpFileInfo.getFileNm()
+					, tfcEnfEqpFileInfo.getFileOrgNm()
+					, tfcEnfEqpFileInfo.getFilePath());
+		} else if (type.equals("facility")) {
+			MozTfcFacilityFileInfo tfcFacilityFileInfo = tfcFacilityFileInfoRepository.findOneMozTfcFacilityFileInfoByTfcFacilityFileNo(fileId);
+			fileUploadComponent.fileDownload(response
+					, tfcFacilityFileInfo.getFileNm()
+					, tfcFacilityFileInfo.getFileOrgNm()
+					, tfcFacilityFileInfo.getFilePath());
+		}
+	}
 }

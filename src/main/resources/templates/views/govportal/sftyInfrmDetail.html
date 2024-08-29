@@ -12,14 +12,14 @@
 		<table class="detail-table">
 				<colgroup>
 					<col width="15%">
-					<col width="85%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
 				</colgroup>
 				<tbody>
 					<tr>
 						<th th:text="#{portal.infrmDetail.ttl}">제목</th>
 						<td th:text="${sftyInfrm.postTtl}"></td>
-					</tr>
-					<tr>
 						<th th:text="#{portal.infrmDetail.posting}">게시기간</th>
 						<td>
 							<th:block th:if="${sftyInfrm.postStrDe == null && sftyInfrm.postEndDe == null}" th:text="#{portal.common.alwaysPosted}">
@@ -33,10 +33,7 @@
 							</th:block>
 						</td>
 					</tr>
-					<tr>
-						<th th:text="#{portal.infrmDetail.attachment}">첨부파일</th>
-						<td th:text="${sftyInfrm.atchFile != null ? sftyInfrm.atchFile.fileOrgNm : '-'}"></td>
-					</tr>
+
 					<tr>
 						<th th:text="#{portal.infrmDetail.exposure}">노출여부</th>
 						<td>
@@ -53,7 +50,19 @@
 					</tr>
 					<tr>
 						<th th:text="#{portal.infrmDetail.content}">내용</th>
-						<td><pre th:text="${sftyInfrm.postCn}"></pre></td>
+						<td colspan="3"><pre th:text="${sftyInfrm.postCn}"></pre></td>
+					</tr>
+					<tr>
+						<th th:text="#{portal.infrmDetail.attachment}">첨부파일</th>
+						<td colspan="3" th:if="${sftyInfrm.atchFile == null}">-</td>
+						<td colspan="3" th:unless="${sftyInfrm.atchFile == null}">
+							<div class="fileListWrap">
+								<a class="list_item" th:href="@{/common/file/portal/download(fileId = ${sftyInfrm.atchFile.fileIdx})}">
+									<div class="file_list" th:text="${sftyInfrm.atchFile.fileOrgNm}"></div>
+									<img src="/images/download.png" alt="download">
+								</a>
+							</div>
+						</td>
 					</tr>
 				</tbody>
 			</table>
@@ -74,7 +83,7 @@
 <script th:inline="javascript">
 
 	$("#btnDelete").click(function () {
-		new ModalBuilder().init().alertBody([[#{portal.infrmDetail.deleteMessage}]]).footer(2,'확인',function(button, modal){
+		new ModalBuilder().init().alertBody([[#{portal.infrmDetail.deleteMessage}]]).footer(2,'Confirmar',function(button, modal){
 			modal.close();
 			var idx = [[${sftyInfrm.tfcSftyInfrmId}]];
 			$.ajax({
@@ -85,14 +94,14 @@
 					var resultCode = result.code;
 					var resultMessage = result.message;
 					if (resultCode == '200') {
-						new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
+						new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();
 							location.href = /*[[@{/portal/sftyInfrm/list.do}]]*/ '/portal/sftyInfrm/delete.ajax';
 						}).open();
 					} else {
-						new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+						new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();}).open();
 					}
 				}
 			});
-			}, '취소', function(button, modal){}).open();
+			}, 'Cancelar', function(button, modal){}).open();
 	});
 </script>

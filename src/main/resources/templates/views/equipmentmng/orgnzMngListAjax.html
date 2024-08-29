@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<form id="frmSearch">
+	<input type="hidden" id="page" name="page" th:value="1">
+	<input type="hidden" id="pageType" name="pageType" th:value="list">
+</form>
+
+<div id="search-form-result-wrap">
+	<div id="table-search-result-text">
+		Found <span th:text='|"${pagination.totalListCnt}"|'>"0"</span> results
+	</div>
+	<div id="table-regist-btn">
+		<button type="button" id="" class="main-btn form-button" th:text="#{organization.orgnzMngList.list.btn.register}"
+		th:onclick="|location.href='/eqp/orgnz/save.do'|">등록하기</button>
+	</div>
+</div>
+
+<div class="">
+	<table class="main-table" id="tblList">
+		<thead>
+			<tr>
+				<th th:text="#{organization.orgnzMngList.list.table.number}">No.</th>
+				<th th:text="#{organization.orgnzMngList.list.table.name}">이름</th>
+				<th th:text="#{organization.orgnzMngList.list.table.location}">위치</th>
+				<th th:text="#{organization.orgnzMngList.list.table.status}">상태</th>
+				<th th:text="#{organization.orgnzMngList.list.table.registrant}">등록자</th>
+				<th th:text="#{organization.orgnzMngList.list.table.registerDate}">등록일</th>
+			</tr>
+		</thead>
+
+		<tbody>
+			<tr th:each="facilityItem : ${facilityList}"
+				th:onclick="|location.href='@{/eqp/orgnz/detail.do(tfcFacilityId=${facilityItem.tfcFacilityId})}'|">
+				<td th:text="${facilityItem.rnum}"></td>
+				<td th:text="${facilityItem.facilityNm}"></td>
+				<td th:text="${facilityItem.roadAddr}"></td>
+				<td th:text="${facilityItem.facilityStts}"></td>
+				<td th:text="${facilityItem.webOprtr.oprtrNm}"></td>
+				<td th:text="${#dates.format(facilityItem.crDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+			</tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="page_wrap">
+	<div th:insert="tags/paging :: pagingFragment"></div>
+</div>
+
+</html>
+<script th:inline="javascript">
+	function fnPageMove(page) {
+		$("#page").val(page);
+		getListAjax();
+	}
+</script>

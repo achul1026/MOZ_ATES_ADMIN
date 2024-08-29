@@ -1,7 +1,12 @@
 package com.moz.ates.traffic.admin.trafficaccidentmng;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
+import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntTrgtInfo;
+import com.moz.ates.traffic.common.entity.driver.MozVioInfo;
+import com.moz.ates.traffic.common.support.exception.CommonResponseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -25,10 +30,11 @@ import com.moz.ates.traffic.common.component.Pagination;
 import com.moz.ates.traffic.common.component.validate.ValidateBuilder;
 import com.moz.ates.traffic.common.component.validate.ValidateChecker;
 import com.moz.ates.traffic.common.component.validate.ValidateResult;
+import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntFileInfo;
 import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntMaster;
+import com.moz.ates.traffic.common.entity.api.ItesApiResponse;
 import com.moz.ates.traffic.common.entity.api.MojApiRequest;
 import com.moz.ates.traffic.common.entity.common.AccidentDomain;
-import com.moz.ates.traffic.common.entity.common.ApiDriverInfoDTO;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
 import com.moz.ates.traffic.common.entity.common.MozCmCd;
 import com.moz.ates.traffic.common.support.exception.CommonException;
@@ -71,16 +77,53 @@ public class TrafficAcdntController {
 	 */
 	@Authority(type = MethodType.READ)
 	@GetMapping("/driver/detail.do")
-	public String searchDriverDetail(Model model, @ModelAttribute ApiDriverInfoDTO apiDriverInfoDTO) {
-		if(apiDriverInfoDTO != null && MozatesCommonUtils.isNull(apiDriverInfoDTO.getDriverLicenseId())) {
-			throw new CommonException(ErrorCode.INVALID_PARAMETER);
+	public String searchDriverDetail(Model model, @ModelAttribute ItesApiResponse.ItesApiResponseData itesApiResponseData) {
+		if (itesApiResponseData.getCodigo() == 0) {
+			throw new CommonResponseException(ErrorCode.INVALID_PARAMETER);
 		}
 		
-		model.addAttribute("driverInfo", apiDriverInfoDTO);
-		model.addAttribute("acdntTrgtList", trafficAcdntService.getAcdntTrgtList(apiDriverInfoDTO.getDriverLicenseId()));
+		if(!MozatesCommonUtils.isNull(itesApiResponseData.getDataDeNascimento())) {
+			String birthDayFormat = MozatesCommonUtils.changeDateFormat(itesApiResponseData.getDataDeNascimento(), "yyyy-MM-dd", "dd.MM.yyyy");
+			itesApiResponseData.setDataDeNascimento(birthDayFormat);
+			String fullAddr = MozatesCommonUtils.createAddress(
+					itesApiResponseData.getEnderesso1(), 
+					itesApiResponseData.getEnderesso2(), 
+					itesApiResponseData.getEnderesso3(),
+					itesApiResponseData.getEnderesso4());
+			model.addAttribute("vioAddr", fullAddr);
+		}
+		
+		model.addAttribute("driverInfo", itesApiResponseData);
 		return "views/accidentmng/searchDriverDetail";
 	}
-	
+
+	/**
+	 * methodName : searchDriverListAjax
+	 * author : IK.MOON
+	 * date : 2024-08-20
+	 * description : 운전자 정보 조회 사고 리스트 ajax
+	 *
+	 * @param model
+	 * @param tfcAcdntTrgtInfo
+	 * @return String
+	 */
+	@Authority(type = MethodType.READ)
+	@PostMapping(value = "/driver/list.ajax")
+	public String searchDriverListAjax(Model model, MozTfcAcdntTrgtInfo tfcAcdntTrgtInfo) {
+
+		int page = tfcAcdntTrgtInfo.getPage();
+		int totalCnt = trafficAcdntService.getAcdntTrgtCountByDvrLcenId(tfcAcdntTrgtInfo);
+		Pagination pagination = new Pagination(totalCnt, page);
+
+		tfcAcdntTrgtInfo.setStart((page - 1) * pagination.getPageSize());
+
+		model.addAttribute("acdntHistory", trafficAcdntService.getAcdntTrgtListByDvrLcenId(tfcAcdntTrgtInfo));
+		model.addAttribute("pagination", pagination);
+		model.addAttribute("type", "driver");
+
+		return "views/accidentmng/searchListAjax";
+	}
+
 	/**
 	 * @brief : 차량 정보 조회 화면
 	 * @details : 차량 정보 조회 화면
@@ -96,8 +139,8 @@ public class TrafficAcdntController {
 	}
 	
 	/**
-	 * @brief : 운전자 정보 조회 상세 화면
-	 * @details : 운전자 정보 조회 상세 화면
+	 * @brief : 차량 정보 조회 상세 화면
+	 * @details : 차량 정보 조회 상세 화면
 	 * @author : KY.LEE
 	 * @date : 2023.04.10
 	 * @param : searchDriverDetail
@@ -105,13 +148,45 @@ public class TrafficAcdntController {
 	@Authority(type = MethodType.READ)
 	@GetMapping("/vehicle/detail.do")
 	public String searchCarDetail(Model model, @ModelAttribute MojApiRequest mojApiRequest) {
-		if(mojApiRequest != null && MozatesCommonUtils.isNull(mojApiRequest.getNumerododocumento())) {
-			throw new CommonException(ErrorCode.INVALID_PARAMETER);
+		if (MozatesCommonUtils.isNull(mojApiRequest.getVhRegNo())) {
+			throw new CommonResponseException(ErrorCode.INVALID_PARAMETER);
 		}
-		
+
+		if(!MozatesCommonUtils.isNull(mojApiRequest.getDatadenascimento())) {
+			String birthDayFormat = MozatesCommonUtils.changeDateFormat(mojApiRequest.getDatadenascimento(), "yyyy-MM-dd'T'HH:mm:ss", "dd.MM.yyyy");
+			mojApiRequest.setVioBrth(birthDayFormat);
+			mojApiRequest.setVioAddr(MozatesCommonUtils.formatAddress(mojApiRequest.getDomicilio(), mojApiRequest.getProvincia(), mojApiRequest.getDistrito()));
+		}
+
 		model.addAttribute("driverInfo", mojApiRequest);
-		model.addAttribute("acdntTrgtList", trafficAcdntService.getAcdntTrgtList(mojApiRequest.getNumerododocumento()));
 		return "views/accidentmng/searchCarDetail";
+	}
+
+	/**
+	 * methodName : searchVehicleListAjax
+	 * author : IK.MOON
+	 * date : 2024-08-20
+	 * description : 차량 정보 조회 사고 리스트 ajax
+	 *
+	 * @param model
+	 * @param tfcAcdntTrgtInfo
+	 * @return String
+	 */
+	@Authority(type = MethodType.READ)
+	@PostMapping(value = "/vehicle/list.ajax")
+	public String searchVehicleListAjax(Model model, MozTfcAcdntTrgtInfo tfcAcdntTrgtInfo) {
+
+		int page = tfcAcdntTrgtInfo.getPage();
+		int totalCnt = trafficAcdntService.getAcdntTrgtCountByDocNidOrVhRegNo(tfcAcdntTrgtInfo);
+		Pagination pagination = new Pagination(totalCnt, page);
+
+		tfcAcdntTrgtInfo.setStart((page - 1) * pagination.getPageSize());
+
+		model.addAttribute("acdntHistory", trafficAcdntService.getAcdntTrgtListByDocNidOrvhRegNo(tfcAcdntTrgtInfo));
+		model.addAttribute("pagination", pagination);
+		model.addAttribute("type", "vehicle");
+
+		return "views/accidentmng/searchListAjax";
 	}
 
 	/**
@@ -147,15 +222,20 @@ public class TrafficAcdntController {
 	 */
 	@Authority(type = MethodType.READ)
 	@GetMapping("/mng/save.do")
-	public String acdntSave(Model model, @ModelAttribute MojApiRequest MojApiRequest) {
+	public String acdntSave(Model model) {
 		List<MozCmCd> acdntCdList = commonCdService.getCdList("ACCIDENT_TYPE");
-		model.addAttribute("acdntCdList", acdntCdList);
+		List<MozCmCd> dvrLcenTyList = commonCdService.getCmCdByCdGroupId("DVR_LCEN_TY");
+		List<MozCmCd> vhTyList = commonCdService.getCmCdByCdGroupId("VEHICLE_TYPE_CD");
+		List<MozCmCd> passengerDamageCd = commonCdService.getCdList("PASSENGER_DAMAGE_CD");
+		List<MozCmCd> accidentDmgCd = commonCdService.getCdList("ACCIDENT_DMG_CD");
+		List<MozCmCd> passengerDriverRelationshipCd = commonCdService.getCdList("PASSENGER_DRIVER_RELATIONSHIP_CD");
 
-		List<MozCmCd> dmgCdList = commonCdService.getCdList("PASSENGER_DAMAGE_CD");
-		model.addAttribute("dmgCdList", dmgCdList);
-		model.addAttribute("apiDriverInfo",MojApiRequest);
-		model.addAttribute("lng", "32.545187854883096");
-		model.addAttribute("lat", "-25.928567787685097");
+		model.addAttribute("acdntCdList", acdntCdList);
+		model.addAttribute("passengerDamageCd", passengerDamageCd);
+		model.addAttribute("accidentDmgCd", accidentDmgCd);
+		model.addAttribute("dvrLcenTyList", dvrLcenTyList);
+		model.addAttribute("vhTyList", vhTyList);
+		model.addAttribute("passengerDriverRelationshipCd", passengerDriverRelationshipCd);
 		return "views/accidentmng/acdntMngRegist";
 	}
 
@@ -181,6 +261,8 @@ public class TrafficAcdntController {
 				.addRule("polId", new ValidateChecker().setRequired())
 				.addRule("acdntChildYn", new ValidateChecker().setRequired())
 				.addRule("acdntTyDtls", new ValidateChecker().setRequired().setMaxLength(200, "Os pormenores não podem ter mais de 200 caracteres."))
+				.addRule("lat", new ValidateChecker().setRequired().setLatitude())
+				.addRule("lng", new ValidateChecker().setRequired().setLongitude())
 				.isValid();
 		
 		if (!dtoValidatorResult.isSuccess()) {
@@ -226,11 +308,31 @@ public class TrafficAcdntController {
 	@GetMapping("/mng/update.do")
 	public String acdntMngModify(Model model, @RequestParam("tfcAcdntId") String tfcAcdntId) {
 
-		List<MozCmCd> cdList = commonCdService.getCdList("ACCIDENT_TYPE");
-		model.addAttribute("cdList", cdList);
-
 		MozTfcAcdntMaster tfcAcdntMaster = trafficAcdntService.getMngDetail(tfcAcdntId);
+		List<String> oldFileArr = tfcAcdntMaster.getTfcAcdntFileInfo().stream()
+				.map(MozTfcAcdntFileInfo::getFileOriginNm)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList())
+				;
+
+		model.addAttribute("oldFileArr", oldFileArr);
 		model.addAttribute("tfcAcdntMaster", tfcAcdntMaster);
+
+		List<MozCmCd> acdntCdList = commonCdService.getCdList("ACCIDENT_TYPE");
+		List<MozCmCd> dvrLcenTyList = commonCdService.getCmCdByCdGroupId("DVR_LCEN_TY");
+		List<MozCmCd> vhTyList = commonCdService.getCmCdByCdGroupId("VEHICLE_TYPE_CD");
+		List<MozCmCd> passengerDamageCd = commonCdService.getCdList("PASSENGER_DAMAGE_CD");
+		List<MozCmCd> passengerDriverRelationshipCd = commonCdService.getCdList("PASSENGER_DRIVER_RELATIONSHIP_CD");
+		List<MozCmCd> accidentDmgCd = commonCdService.getCdList("ACCIDENT_DMG_CD");
+		List<MozCmCd> cdList = commonCdService.getCdList("ACCIDENT_TYPE");
+
+		model.addAttribute("acdntCdList", acdntCdList);
+		model.addAttribute("passengerDamageCd", passengerDamageCd);
+		model.addAttribute("passengerDriverRelationshipCd", passengerDriverRelationshipCd);
+		model.addAttribute("accidentDmgCd", accidentDmgCd);
+		model.addAttribute("dvrLcenTyList", dvrLcenTyList);
+		model.addAttribute("vhTyList", vhTyList);
+		model.addAttribute("cdList", cdList);
 
 		return "views/accidentmng/acdntMngModify";
 	}
@@ -256,6 +358,8 @@ public class TrafficAcdntController {
 				.addRule("polId", new ValidateChecker().setRequired())
 				.addRule("acdntChildYn", new ValidateChecker().setRequired())
 				.addRule("acdntTyDtls", new ValidateChecker().setRequired().setMaxLength(200, "Os pormenores não podem ter mais de 200 caracteres."))
+				.addRule("lat", new ValidateChecker().setRequired().setLatitude())
+				.addRule("lng", new ValidateChecker().setRequired().setLongitude())
 				.isValid();
 		
 		if (!dtoValidatorResult.isSuccess()) {

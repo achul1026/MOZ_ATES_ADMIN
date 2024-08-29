@@ -20,7 +20,12 @@
 							<th>
 								<span class="requiredMark" th:text="#{portal.eduRegist.ttl}">제목</span>
 							</th>
-							<td><input type="text" class="main-input" id="postTtl" name="postTtl" th:placeholder="#{portal.eduRegist.title.placeholder}"></td>
+							<td>
+								<input type="text" class="main-input data-validate" id="postTtl" name="postTtl" maxlength="150" 
+								th:placeholder="#{portal.eduRegist.title.placeholder}"
+								th:data-valid-name="#{portal.eduRegist.ttl}"
+								data-valid-required data-valid-minimum="5" data-valid-maximum="150">
+							</td>
 						</tr>
 						<tr>
 							<th>
@@ -58,29 +63,30 @@
 		                <tr>
 		                    <th th:text="#{portal.eduRegist.attachment}">첨부파일</th>
 		                    <td colspan="3">
-								<input type="file" id="uploadFiles" name="uploadFiles"/>
-								<div id="dragArea">
-								<div class="drag-area">
+								<!-- 업로드 된 파일 영역 -->
+								<div id="fileInfoDiv" class="drag-area none"></div>
+								
+								<!-- 파일 업로드 영역 -->
+								<div id="dragArea" class="drag-area">
 									<div class="dragText">
 									   	File name cannot be more than 50 characters<br>
 										The file size can only be uploaded under 5MB<br>
 										Only WORD, XLSX, PDF, and ZIP file can be uploaded
 									</div>
 									<div>
-										<input type="file" id="uploadFiles" onchange="addFiles(this);" style="display: none;">
-										<button type="button" onclick="fileDrag()" id="uploadBtn" class="main-btn">File Upload</button>
+										<input type="file" id="uploadFiles" name="uploadFiles" class="none">
+										<button type="button" id="uploadBtn" class="main-btn">File Upload</button>
 									</div>
-								</div>
-								</div>
-								<div class="upload_wrap none">
-								<div id="upload_list_box"></div>	
 								</div>
 							</td>
 		                </tr>
 		                <tr>
 		                    <th th:text="#{portal.eduRegist.content}">상세</th>
 							<td>
-								<textarea class="form-control detail-table-textarea" id="postCn" name="postCn" th:placeholder="#{portal.eduRegist.content.placeholder}"></textarea>
+								<textarea class="form-control detail-table-textarea data-validate" id="postCn" name="postCn" maxlength="1000"
+								th:placeholder="#{portal.eduRegist.content.placeholder}"
+								th:data-valid-name="#{portal.eduRegist.content}"
+								data-valid-required data-valid-minimum="5" data-valid-maximum="1000"></textarea>
 							</td>
 		                </tr>
 	                </tbody>
@@ -98,7 +104,14 @@
 
 </html>
 <script th:inline="javascript">
+    $(document).ready(function() {
+        fileUploadInit(5, 50, ['doc', 'docx', 'xls', 'xlsx', 'pdf', 'zip']);
+    });
+	
 	$("#btnRegist").click(function () {
+		trimValues(['postTtl','postCn']);
+		if(!$("#sftyEducnRegistFrm").soValid()) return false;
+		
 		var expYn = $("#expYn-chkbox").prop("checked")? "Y" :"N";
 		$("#expYn").val(expYn);
 		$.ajax({
@@ -113,12 +126,12 @@
 				var resultCode = result.code;
 				var resultMessage = result.message;
 				if (resultCode == '200') {
-					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){
+					new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){
 						modal.close();
 						location.href =/*[[@{/portal/sftyEdu/list.do}]]*/ "";
 					}).open();
 				} else {
-					new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+					new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();}).open();
 				}
 			}
 		});

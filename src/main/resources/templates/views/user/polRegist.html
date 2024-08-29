@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="#{user.polRegist.title}">경찰 신규 둥록</h1>
+		<form id="frmRegistPolice" class="join-form-wrap form-wrap">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody id="policeInfoTable">
+					<tr>
+						<th>
+							<span th:text="#{user.polRegist.polLcenId}" class="requiredMark">경찰번호 입력(필수)</span>
+						</th>
+						<td>
+ 							<input type="text" class="main-input data-validate" id="polLcenId" name="polLcenId" th:placeholder="#{user.polRegist.placeholder.polLcenId}"
+ 							th:data-valid-name="#{user.polRegist.polLcenId}" data-valid-required>							
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{user.polRegist.polLcenDate}">라이선스 취득 일자</span>
+						</th>
+						<td>
+						 	<input id="polLcenDt" class="main-input data-validate" name="polLcenDt" type="date" th:data-valid-name="#{user.polRegist.polLcenDate}" data-valid-required/>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{user.polRegist.name}">이름</span>
+						</th>
+						<td>
+			    	     	<input type="text" class="main-input data-validate" id="polNm" name="polNm" th:placeholder="#{user.polRegist.name}"
+			    	     	th:data-valid-name="#{user.polRegist.name}" data-valid-required polLcenId>	
+						</td>
+						<th>
+							<span th:text="#{user.polRegist.password}" class="requiredMark">비밀번호</span>
+						</th>
+						<td>
+				    	    <input type="password" class="main-input passInput data-validate" id="appPolPw" name="appPolPw" th:placeholder="#{user.polRegist.placeholder.password}"
+				    	    th:data-valid-name="#{user.polRegist.password}" data-valid-required>
+							<i class="eye" onclick="eyeToggle()"></i>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{user.polRegist.tel}">Number</span>
+						</th>
+						<td>
+				    	    <input type="text" class="main-input data-validate" id="phone" name="phone" th:placeholder="#{user.polRegist.placeholder.enterTel}"
+				    	    th:data-valid-name="#{user.polRegist.tel}" data-valid-required>
+						</td>
+						<th th:text="#{user.polRegist.email}">이메일</th>
+						<td>
+			    	        <input type="text" class="main-input" id="email" name="email" th:placeholder="#{user.polRegist.placeholder.enterEmail}">
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{user.polRegist.brth}">생년 월일</span>
+						</th>
+						<td>
+							<input id="brth" class="main-input data-validate" name="brth" type="date" th:data-valid-name="#{user.polRegist.brth}" data-valid-required/>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{user.polRegist.policeStation}">관할 경찰서(필수)</span>
+						</th>
+						<td>
+				 			<input id="jur" name="jur" type="text" class="main-input modal-input data-validate" th:placeholder="#{user.polRegist.placeholder.enterPoliceStation}"
+				 			th:data-valid-name="#{user.polRegist.policeStation}" data-valid-required>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<div class="btn-wrap-center">
+			<button type="button" id="btnGoList" class="sub-btn" onclick="javascript:window.history.back()"
+				th:text="#{common.button.list}">목록</button>
+		    <button type="button" class="main-btn" th:text="#{common.button.save}" onclick="registPolInfo()">회원가입 신청</button>
+		</div>
+	</div>
+</th:block>
+
+</html>
+<script th:inline="javascript">
+	    /**비밀번호토글**/
+	function eyeToggle(){
+		const passEye = document.querySelector('.eye');
+		const passInput = document.querySelector('.passInput');
+	
+		 if (passEye.classList.contains('on')) {
+			passInput.type ='password';
+			passEye.classList.remove('on');
+		} else {
+			passInput.type ='text';
+			passEye.classList.add('on');
+		}
+	}
+	
+	function validateForm() {
+		
+	
+	    let dateFields = ['polLcenDt', 'brth'];
+	    let brthResult = /*[[#{user.polRegist.validation.brthResult}]]*/;
+	    let polLcenDtResult = /*[[#{user.polRegist.validation.polLcenDtResult}]]*/;
+
+	    for (var j = 0; j < dateFields.length; j++) {
+	        let dateField = dateFields[j];
+	        let dateValue = document.getElementById(dateField).value;
+	
+	        if (dateValue === '') {
+				switch(dateField){
+					case 'polLcenDt':
+			        alert(brthResult);
+					break;
+					case 'brth':
+			        alert(polLcenDtResult);
+					break;
+				}
+	            return false;
+	        }
+	    }
+	    return true;
+	}
+	
+	function registPolInfo(){
+		if($("#frmRegistPolice").soValid()) {
+			let completeWrap = document.getElementById('completeWrap');
+		
+		 // Date 객체로 변환
+   		 let polLcenDt = new Date(document.getElementById('polLcenDt').value);
+   		 let brth = new Date(document.getElementById('brth').value);
+    	// yyyy-MM-dd 형식으로 변환
+    	let formattedPolLcenDt = polLcenDt.toISOString().split('T')[0];
+    	let formattedBrth = brth.toISOString().split('T')[0];
+    
+    	// FormData에 추가
+   		let frmData = new FormData(document.getElementById('frmRegistPolice'));
+    	frmData.append('polLcenDt', formattedPolLcenDt);
+    	frmData.append('brth', formattedBrth);
+		
+		
+		const loading = new AdminLoading().start("Busca...");
+		
+		$.ajax({
+			url: "/user/police/save.ajax",
+			type: "post",
+			dataType : 'json',
+			data : frmData,
+	        processData: false,
+        	contentType: false,
+			success: function (result) {
+				if(result.code == '200'){
+					new ModalBuilder().init().successBody(result.message).footer(4,'Confirmar',function(button, modal){
+						modal.close();
+						location.href =/*[[@{/user/police/list.do}]]*/ "";
+					}).open();
+				} else {
+					new ModalBuilder().init().successBody("Ocorreu um erro durante o registro das informações policiais.").footer(4,'Confirmar',function(button, modal){
+						modal.close();
+					}).open();
+				}
+			},
+			error: function(data) {
+				//alert('Regist Failed');
+    		}
+		});
+		
+		loading.end();   
+		}
+		
+		
+	}
+</script>

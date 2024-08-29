@@ -86,6 +86,26 @@
 	$(document).ready(function(){
 		const today = new Date();
 		$('#timeLineInput').val(today.toISOString().slice(0, 10));
+
+		const yyyyMax = today.getFullYear();
+		const mmMax = String(today.getMonth() + 1).padStart(2, '0');
+		const ddMax = String(today.getDate()).padStart(2, '0');
+		const todayMaxStr = `${yyyyMax}-${mmMax}-${ddMax}`;
+
+		const minDate = new Date(today);
+		minDate.setMonth(today.getMonth() - 2);
+		const yyyyMin = minDate.getFullYear();
+		const mmMin = String(minDate.getMonth() + 1).padStart(2, '0');
+		const ddMin = String(minDate.getDate()).padStart(2, '0');
+		const todayMinStr = `${yyyyMin}-${mmMin}-${ddMin}`;
+
+		document.getElementById('timeLineInput').setAttribute('max', todayMaxStr);
+		document.getElementById('eDate').setAttribute('max', todayMaxStr);
+		document.getElementById('sDate').setAttribute('max', todayMaxStr);
+
+		document.getElementById('timeLineInput').setAttribute('min', todayMinStr);
+		document.getElementById('eDate').setAttribute('min', todayMinStr);
+		document.getElementById('sDate').setAttribute('min', todayMinStr);
 	})
 
 	/**단속/사고 차트***/
@@ -110,7 +130,16 @@
 				eDate = $("#eDate").val();
 			break;
 		}
-		
+
+		if (timeType !== 'hourly') {
+			if (sDate > eDate) {
+				new ModalBuilder().init().alertBody([[#{stat.common.wrong.period.msg}]]).footer(4, 'OK', function (button, modal) {
+					modal.close();
+				}).open();
+				return;
+			}
+		}
+
 		$(".chart").removeClass("none");
 		$("#stat-acdt-bar").remove();
 		$(".chartBox").append(

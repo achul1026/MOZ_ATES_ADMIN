@@ -1,5 +1,9 @@
 package com.moz.ates.traffic.admin.main;
 
+import com.moz.ates.traffic.common.component.validate.ValidateBuilder;
+import com.moz.ates.traffic.common.component.validate.ValidateChecker;
+import com.moz.ates.traffic.common.component.validate.ValidateResult;
+import com.moz.ates.traffic.common.support.exception.CommonException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
@@ -40,7 +44,7 @@ public class MainController {
     }
     
 	/**
-	 * @brief 대시보드 화면
+	 * @brief 대시보드 화면l
 	 * @author KY.LEE
 	 * @date 2024. 4. 24.
 	 * @method dashboard
@@ -105,39 +109,46 @@ public class MainController {
       * @return
       * @throws Exception
       */
-    @PostMapping("joinUsAjax")
-    public @ResponseBody CommonResponse<?> joinUsAjax(@ModelAttribute MozWebOprtr webOprtr) throws Exception{
-    	// TODO 벨리데이션
-    	
-    	// ValidateBuilder dtoValidator = new ValidateBuilder(webOprtr);
-    	// dtoValidator.addRule("oprtrAccountId", new ValidateChecker().setEmail().setRequired().setMaxLength(40, "담당자 이메일은 40자를 넘을 수 없습니다."))
-    	// 			.addRule("oprtrAccountPw", new ValidateChecker().setRequired().setPassword().setMaxLength(60, "담당자 비밀번호는 60자를 넘을 수 없습니다."))
-    	// 			.addRule("oprtrNm", new ValidateChecker().setRequired().setMaxLength(50, "담당자 명은 50자를 넘을 수 없습니다."));
-    	// 
-    	// ValidateResult dtoValidatorResult = dtoValidator.isValid();
-    	// 
-    	// if(!dtoValidatorResult.isSuccess()) {
-    	// 	return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
-    	// }
-    	
-    	// 권한 validation
-    	String oprtrPermission = webOprtr.getOprtrPermission();
+	@PostMapping("joinUsAjax")
+	public @ResponseBody CommonResponse<?> joinUsAjax(@ModelAttribute MozWebOprtr webOprtr) throws Exception {
+		ValidateBuilder dtoValidator = new ValidateBuilder(webOprtr);
+		dtoValidator
+				.addRule("oprtrPermission", new ValidateChecker().setRequired())
+				.addRule("oprtrAccountId", new ValidateChecker().setRequired()
+						.setId().setMinLength(5).setMaxLength(30))
+				.addRule("oprtrAccountPw", new ValidateChecker().setRequired()
+						.setPassword().setMinLength(8).setMaxLength(30))
+				.addRule("oprtrNm", new ValidateChecker().setRequired()
+						.setMinLength(3).setMaxLength(50))
+				.addRule("oprtrPno", new ValidateChecker().setRequired()
+						.setMaxLength(50))
+				.addRule("oprtrDeptId", new ValidateChecker().setRequired())
+		;
 
-    	if(OprtrPermissionCd.getCodeByNameValidateSuperAdmin(oprtrPermission)) {
-				webOprtr.setOprtrPermission(OprtrPermissionCd.getCodeByName(oprtrPermission));
-			} else {
-				// 권한을 확인해 주세요.
-				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Por favor, verifique suas permissões.");
-			}
-    	
-    	try {
-    		mainService.registWebOprtr(webOprtr);			
-			} catch (Exception e) {
-				return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST , e.getMessage());
-			}
-    	// 등록이 완료 되었습니다.
-    	return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK , "O registro foi concluído.");
-    }
+		ValidateResult dtoValidatorResult = dtoValidator.isValid();
+
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, dtoValidatorResult.getMessage());
+		}
+
+		// 권한 validation
+		String oprtrPermission = webOprtr.getOprtrPermission();
+
+		if (OprtrPermissionCd.getCodeByNameValidateSuperAdmin(oprtrPermission)) {
+			webOprtr.setOprtrPermission(OprtrPermissionCd.getCodeByName(oprtrPermission));
+		} else {
+			// 권한을 확인해 주세요.
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Por favor, verifique suas permissões.");
+		}
+
+		try {
+			mainService.registWebOprtr(webOprtr);
+		} catch (CommonException e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, "Error");
+		}
+		// 등록이 완료 되었습니다.
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O registro foi concluído.");
+	}
     
     /**
 	 * @Method Name : passwordFind

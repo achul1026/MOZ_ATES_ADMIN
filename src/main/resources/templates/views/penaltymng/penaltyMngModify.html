@@ -140,10 +140,14 @@
             data: $("#modifyPaySttsFrom").serialize(),
             success: function(data){
                 if(data.code == "200"){
-                    alert(data.message);
-                    window.location.reload();
+					new ModalBuilder().init().successBody(data.message).footer(4,'Confirmar',function(button, modal){
+						modal.close();
+						  window.location.reload();
+					}).open();
                 }else{
-                    alert(data.message);
+					new ModalBuilder().init().successBody(data.message).footer(4,'Confirmar',function(button, modal){
+						modal.close();
+					}).open();
                 }
             }
         });

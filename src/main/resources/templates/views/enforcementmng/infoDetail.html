@@ -6,6 +6,10 @@
 	<div id="container-fluid">
 		<!-- Page Heading -->
 		<h1 id="detail-content-title" th:text="#{enforcement.infoDetail.title}">교통단속 상세정보</h1>
+		<div id="cmDetailSubNumber">
+			<span th:text="#{enforcement.infoDetail.enforcementNumber}">Traffic Enforcement ID</span>:
+			<span th:text="${tfcEnfMaster.tfcEnfId}">E-1231-d123213</span>
+		</div>
 		<div>
 			<table class="detail-table">
 				<colgroup>
@@ -20,6 +24,12 @@
 						<td th:text="${tfcEnfMaster.tfcEnfTtl}"></td>
 						<th th:text="#{enforcement.infoDetail.violationDate}">날짜</th>
 						<td th:text="${#dates.format(tfcEnfMaster.tfcEnfDt, 'yyyy-MM-dd HH:mm:ss')}"></td>
+					</tr>
+					<tr>
+						<th th:text="#{enforcement.infoDetail.docNo}">DocNid</th>
+						<td th:text="${tfcEnfMaster.vioInfo.docNid}"></td>
+						<th th:text="#{enforcement.infoDetail.docType}">DocType</th>
+						<td th:text="${tfcEnfMaster.vioInfo.docType}"></td>
 					</tr>
 					<tr>
 						<th th:text="#{enforcement.infoDetail.licenseNumber}">라이선스 번호</th>
@@ -45,28 +55,51 @@
 						<th th:text="#{enforcement.infoDetail.vehiclNo}">차량 번호</th>
 						<td th:text="${tfcEnfMaster.vhRegNo}"></td>
 					</tr>
+					<th:block th:if="${tfcEnfMaster.tfcEnfEqpId != null}">
+						<tr>
+							<th th:text="#{enforcement.infoDetail.lmtSpd}">제한속도</th>
+							<td th:text="${tfcEnfMaster.spdLmt}"></td>
+							<th th:text="#{enforcement.infoDetail.vioSpd}">위반속도</th>
+							<td th:text="${tfcEnfMaster.vioSpd}"></td>
+						</tr>
+						<tr>
+							<th th:text="#{enforcement.infoDetail.ovrSpd}">초과속도</th>
+							<td th:text="${tfcEnfMaster.overSpd}"></td>
+							<th th:text="#{enforcement.infoDetail.lane}">도로라인</th>
+							<td th:text="${tfcEnfMaster.roadLn}"></td>
+						</tr>
+					</th:block>
 					<tr>
 						<th>Illegal Law</th>
-						<td>
-							<th:block th:each="lwInfo : ${tfcEnfMaster.tfcLwFineInfoList}">
-								<p th:text="${lwInfo.fineDesc}"></p>
-							</th:block>
+						<td colspan="3">
+							<div id="lawDetailListWrap">
+								<th:block th:each="item : ${fineInfoList}">
+									<div class="law-detail-list">
+										<div class="law-detail-title">
+											<span th:text="${item.tfcLwInfo.lawNm}">11-2-a) </span>
+											<span th:text="${@mozatesCommonUtils.priceFmt(item.tfcEnfPrice ,'MOZAMBIQUE_METICAL')}"></span>
+										</div>
+										<span class="law-detail-content" th:text="${item.tfcLwFineInfo.fineDesc}"></span>
+									</div>
+								</th:block>
+							</div>
 						</td>
+					</tr>
+					<tr>
 						<th th:text="#{enforcement.detectionRegist.addr}">주소</th>
-						<td th:text="${tfcEnfMaster.vioInfo.vioAddr}"></td>
+						<td colspan="3" th:text="${tfcEnfMaster.vioInfo.vioAddr}"></td>
 					</tr>
 					<tr>
 						<th th:text="#{enforcement.infoDetail.fine}">범칙금</th>
-						<td th:text="${tfcEnfMaster.totalPrice}"></td>
+						<td th:text="${@mozatesCommonUtils.priceFmt(tfcEnfMaster.totalPrice ,'MOZAMBIQUE_METICAL')}"></td>
 						<th th:text="#{enforcement.inforDetail.plcaePayment}">납부처</th>
 						<td th:text="${tfcEnfMaster.plPymntInfo?.placePymntNm}"></td>
 					</tr>
-				
 					<tr>
 						<th th:text="#{enforcement.infoDetail.polInCharge}">담당 경찰명</th>
 						<td th:text="${tfcEnfMaster.polInfo.polNm}"></td>
-						<th th:text="#{enforcement.infoDetail.polStationInCaharge}">관할 경찰서</th>
-						<td th:text="${tfcEnfMaster.polInfo.polDeptNm}"></td>
+						<th th:text="#{common.oprtr.tableJur}">관할 지역</th>
+						<td th:text="${tfcEnfMaster.polInfo.jur}"></td>
 					</tr>
 					<tr>
 						<th th:text="#{enforcement.infoDetail.placeOfViolate}">적발 지역</th>
@@ -82,27 +115,43 @@
 						<td th:text="${tfcEnfMaster.lng}"></td>
 					</tr>
 					<tr>
+						<th th:text="#{enforcement.detectionRegist.div.province}">Province</th>
+						<td th:text="${tfcEnfMaster.prvDesc}"></td>
+						<th th:text="#{enforcement.detectionRegist.div.district}">District</th>
+						<td th:text="${tfcEnfMaster.distDesc}"></td>
+					</tr>
+					<tr>
 						<th class="detail-th" th:text="#{enforcement.infoDetail.tfcEnfDetail}">상세 내용</th>
 						<td colspan="3" th:text="${tfcEnfMaster.tfcEnfDetail}"></td>
 					</tr>
 					<tr>
 						<th class="detail-th" th:text="#{enforcement.infoDetail.tfcEnfInfoImage}">첨부파일</th>
 						<td colspan="3">
-							<th:block th:each="fileInfo : ${tfcEnfMaster.tfcEnfFileInfoList}">
-								<p th:text="${fileInfo.fileOrgNm}"></p>
-							</th:block>
+							<div class="fileListWrap">
+								<th:block th:if="${#lists.isEmpty(tfcEnfMaster.tfcEnfFileInfoList)}">-</th:block>
+								<th:block th:unless="${#lists.isEmpty(tfcEnfMaster.tfcEnfFileInfoList)}" 
+									th:each="fileItem : ${tfcEnfMaster.tfcEnfFileInfoList}">
+								<a class="list_item" th:href="@{/common/file/enf/download(fileId = ${fileItem.vioFileNo})}">
+									<div class="file_list" th:text="${fileItem.fileOrgNm}"></div>
+									<img src="/images/download.png" alt="download">
+								</a>
+								</th:block>			
+							</div>					
 						</td>
 					</tr>
 				</tbody>
 			</table>
 
 			<div class="registor-btn-right">
-				<button type="button" id="btnGoList" class="sub-btn left-btn" th:onclick="|location.href='@{/enf/info/list.do}'|"
+				<button type="button" id="btnGoList" class="sub-btn" th:classappend="${tfcEnfMaster.finePymntInfo.pymntStts} == 'N' ? 'left-btn' : ''"
+						th:onclick="|location.href='@{/enf/info/list.do}'|"
 					th:text="#{enforcement.infoDetail.list}">목록</button>
-				<button type="button" id="btnModify" class="delete-btn" onclick="deleteCheck()" th:text="#{enforcement.common.button.delete}">삭제</button>	
-				<button type="button" id="btnModify" class="main-btn form-button"
-					th:onclick="|location.href='@{/enf/info/update.do(tfcEnfId=${tfcEnfMaster.tfcEnfId})}'|"
-					th:text="#{enforcement.infoDetail.modifyButton}">수정</button>
+				<th:block th:if="${tfcEnfMaster.finePymntInfo.pymntStts == 'N'}">
+					<button type="button" id="btnModify" class="delete-btn" onclick="deleteCheck()" th:text="#{enforcement.common.button.delete}">삭제</button>
+					<button type="button" id="btnModify" class="main-btn form-button"
+						th:onclick="|location.href='@{/enf/info/update.do(tfcEnfId=${tfcEnfMaster.tfcEnfId})}'|"
+						th:text="#{enforcement.infoDetail.modifyButton}">수정</button>
+				</th:block>
 			</div>
 		</div>
 	</div>
@@ -118,27 +167,36 @@
 		});
 
 		function deleteCheck() {
-			new ModalBuilder().init().alertBody([[#{enforcement.infoDetail.deleteMessage}]]).footer(2,'확인',function(button, modal){
+			new ModalBuilder().init().alertBody([[#{enforcement.infoDetail.deleteMessage}]]).footer(2,'Confirmar',function(button, modal){
 				modal.close();
 				var idx = [[${tfcEnfMaster.tfcEnfId}]];
-				$.ajax({
-					url: /*[[@{/enf/info/deleteByTfcEnfId.ajax}]]*/ "/enf/info/deleteByTfcEnfId.ajax",
-					type: "post",
-					data: {"tfcEnfId": idx},
-					success: function (result) {
-						var resultCode = result.code;
-						var resultMessage = result.message;
-						if (resultCode == '200') {
-							new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
-								location.href = /*[[@{/enf/info/list.do}]]*/ '/enf/info/list.do';
+				setTimeout(() => {
+					$.ajax({
+						url: /*[[@{/enf/info/deleteByTfcEnfId.ajax}]]*/ "/enf/info/deleteByTfcEnfId.ajax",
+						type: "post",
+						data: {"tfcEnfId": idx},
+						success: function (result) {
+							var resultCode = result.code;
+							var resultMessage = result.message;
+							if (resultCode == '200') {
+								new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();
+									location.href = /*[[@{/enf/info/list.do}]]*/ '/enf/info/list.do';
+								}).open();
+							} else {
+								new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){
+									modal.close();}).open();
+							}
+						},
+						error: function(data) {
+							const errorData = JSON.parse(data.responseText);
+							const msg = errorData.message ?? "Ocorreu um erro.";
+							new ModalBuilder().init().alertBody(msg).footer(4, 'Confirmar', function (button, modal) {
+								modal.close();
 							}).open();
-						} else {
-							new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
-								modal.close();}).open();
-						}
-					}
-				});
-				}, '취소', function(button, modal){}).open();
+						},
+					});
+				}, 500);
+			}, 'Cancelar', function(button, modal){}).open();
 		};
 	</script>
 </th:block>

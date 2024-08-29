@@ -5,8 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.moz.ates.traffic.common.component.api.ites.ItesApiComponent;
 import com.moz.ates.traffic.common.entity.administrative.MozAdministDip;
+import com.moz.ates.traffic.common.entity.api.ItesApiAccessToken;
+import com.moz.ates.traffic.common.entity.api.ItesStoreSecondNoticeRequest;
 import com.moz.ates.traffic.common.entity.common.MozMsgQueue;
 import com.moz.ates.traffic.common.entity.driver.MozVioInfo;
 import com.moz.ates.traffic.common.enums.MsgQueueStatus;
@@ -16,6 +22,7 @@ import com.moz.ates.traffic.common.repository.administrative.MozAdministDipRepos
 import com.moz.ates.traffic.common.repository.common.MozMsgQueueRepository;
 import com.moz.ates.traffic.common.repository.driver.MozVioInfoRepository;
 import com.moz.ates.traffic.common.repository.finentc.MozFineNtcInfoRepository;
+import com.moz.ates.traffic.common.repository.payment.MozFinePymntInfoRepository;
 import com.moz.ates.traffic.common.util.MozatesCommonUtils;
 import com.moz.ates.traffic.common.util.SmsSendContentUtils;
 
@@ -37,6 +44,17 @@ public class FineJobService {
 	@Value("${mail.url.portal}")
 	private String portalUrl;
 	
+	@Autowired
+	ItesApiComponent itesApiComponent;
+	
+	@Value("${ites.api.username}")
+	String itesUsername;
+	
+	@Value("${ites.api.password}")
+	String itesPassword;
+	
+	@Value("${ites.api.url.baseUrl}")
+	String itesBaseUrl;
 	
 	@Autowired
 	MozFineNtcInfoRepository mozFineNtcInfoRepository;
@@ -50,7 +68,8 @@ public class FineJobService {
 	@Autowired
 	MozAdministDipRepository mozAdministDipRepository;
 	
-	
+	@Autowired
+	MozFinePymntInfoRepository mozFinePymntInfoRepository;
 	
 	/**
      * @brief : 1차 고지 만료 체크 후 2차 고지 데이터 업데이트 
@@ -58,26 +77,37 @@ public class FineJobService {
      * @author : NK.KIM
      * @date : 2024.02.23
      */
+	@Transactional
 	public void updateFirstNoticeBatch() {
+		
+		// 벌금 결제정보 - 납부할 총 금액 Update
+		mozFinePymntInfoRepository.updateFirstNoticeBatch();
+		
 		//고지서 상태값 Update
 		//0대기 1진행 2성공 9실패
 		mozFineNtcInfoRepository.updateFirstNoticeBatch();
 		
 		//2차고지로 변경된 고지서의 Violator조회
-		List<MozVioInfo> mozVioInfoList = mozVioInfoRepository.findAllSecondFineNtcVioInfo();
+		List<ItesStoreSecondNoticeRequest> mozVioInfoList = mozVioInfoRepository.findAllSecondFineNtcVioInfo();
 		
 		if(mozVioInfoList != null && !mozVioInfoList.isEmpty()) {
-			//SMS발송
-			for(MozVioInfo mozVioInfo : mozVioInfoList) {
+			ItesApiAccessToken itesApiAccessToken = itesApiComponent.getBearerToken(itesUsername,itesPassword,itesBaseUrl);
+			for(ItesStoreSecondNoticeRequest mozVioInfo : mozVioInfoList) {
+				// 2차고지 api
+				String jsonRequest = safeWriteValueAsString(mozVioInfo);
+				String tfcEnfId = mozVioInfo.getNrAviso();
+				itesApiComponent.storeSecondNotice(jsonRequest, itesBaseUrl + "/auto", tfcEnfId, itesApiAccessToken);
+				
+				//SMS발송
 				MozMsgQueue mozMsgQueue = new MozMsgQueue();
 				mozMsgQueue.setSender(sender);
 				mozMsgQueue.setMsgType(MsgType.SMS);
 				mozMsgQueue.setStatus(MsgQueueStatus.WAITING);
 				mozMsgQueue.setRetry(0);
 				//TODO::URL추가 이나트로 결제
-				mozMsgQueue.setContent(SmsSendContentUtils.fineNoticeSmsContent(mozVioInfo.getVioNm(), portalUrl, NtcTypeCd.SECOND_NOTICE ,sender,mozVioInfo.getTfcEnfId()));
-				mozMsgQueue.setReceiver(mozVioInfo.getVioPno());
-				mozMsgQueue.setTfcEnfId(mozVioInfo.getTfcEnfId());
+				mozMsgQueue.setContent(SmsSendContentUtils.fineNoticeSmsContent(mozVioInfo.getNome(), portalUrl, NtcTypeCd.SECOND_NOTICE ,sender,mozVioInfo.getNrAviso()));
+				mozMsgQueue.setReceiver(mozVioInfo.getTelefone());
+				mozMsgQueue.setTfcEnfId(mozVioInfo.getNrAviso());
 				mozMsgQueueRepository.saveMozMsgQueue(mozMsgQueue);
 			}	
 		}
@@ -116,7 +146,7 @@ public class FineJobService {
 				mozAdministDip.setProHoldYn("N");
 				mozAdministDip.setCrtr("batch");
 				//범칙금 미납부
-				mozAdministDip.setCaseTy("ADC000");
+				mozAdministDip.setCaseTy("ACS000");
 				mozAdministDip.setVioId(mozVioInfo.getVioId());
 				mozAdministDip.setProcessYn("N");
 				mozAdministDip.setDipDesc("Não pagamento de multas"); //범칙금 미납부
@@ -124,4 +154,22 @@ public class FineJobService {
 			}
 		}
 	}
+	
+
+    /**
+      * @Method Name : safeWriteValueAsString
+      * @Date : 2024. 7. 9.
+      * @Author : IK.MOON
+      * @Method Brief : 객체 JSON 변환
+      * @param obj
+      * @return
+      */
+    public static String safeWriteValueAsString(Object obj) {
+    	ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(obj);
+        } catch (JsonProcessingException e) {
+            return "{}";
+        }
+    }
 }

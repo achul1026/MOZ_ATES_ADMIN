@@ -1,6 +1,8 @@
 package com.moz.ates.traffic.admin.govportal;
 
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -33,7 +35,9 @@ import com.moz.ates.traffic.common.entity.board.MozTfcSftyInfrm;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
 import com.moz.ates.traffic.common.entity.common.MozCmCd;
 import com.moz.ates.traffic.common.entity.payment.MozPlPymntInfo;
+import com.moz.ates.traffic.common.enums.RegistantType;
 import com.moz.ates.traffic.common.support.exception.CommonException;
+import com.moz.ates.traffic.common.util.MozatesCommonUtils;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -112,7 +116,6 @@ public class PortalController {
 				.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 				.addRule("imprtYn", new ValidateChecker().setRequired())
 				.addRule("useYn", new ValidateChecker().setRequired())
-				.addRule("popupYn", new ValidateChecker().setRequired())
 				.addRule("boardContents", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 				.isValid();
 		
@@ -194,8 +197,14 @@ public class PortalController {
 	@GetMapping("/notice/update.do")
 	public String noticeModify(Model model, @RequestParam("boardIdx") String boardIdx) {
 		MozBrd brd = portalService.getNoticeDetail(boardIdx);
-		model.addAttribute("brd", brd);
+		List<String> oldFileArr = brd.getAtchFileList().stream()
+				.map(MozAtchFile::getFileOrgNm)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList())
+				;
 		
+		model.addAttribute("oldFileArr", oldFileArr);
+		model.addAttribute("brd", brd);
 		return "views/govportal/noticeModify";
 	}
 
@@ -218,7 +227,6 @@ public class PortalController {
 				.addRule("boardTitle", new ValidateChecker().setRequired().setMaxLength(200, "O título não pode ter mais de 200 caracteres."))
 				.addRule("imprtYn", new ValidateChecker().setRequired())
 				.addRule("useYn", new ValidateChecker().setRequired())
-				.addRule("popupYn", new ValidateChecker().setRequired())
 				.addRule("boardContents", new ValidateChecker().setMaxLength(200, "O conteúdo não pode ter mais de 200 caracteres."))
 				.isValid();
 
@@ -450,10 +458,20 @@ public class PortalController {
 	@Authority(type = MethodType.READ)
 	@GetMapping("/inqr/detail.do")
 	public String inquiryDetail(Model model, @RequestParam("inqryId") String inqryId) {
-		MozInqry inqry = portalService.getMozInqryDetail(inqryId);
 		
-		List<MozAtchFile> ansFileList = portalService.findAllMozAtchFileByAtchIdx(inqryId);
-		inqry.setAnsAtchFileList(ansFileList);
+		MozInqry inqry = portalService.getMozInqryDetail(inqryId);
+		List<MozAtchFile> ansAtchFileList = portalService.findAllMozAtchFileByAtchIdx(inqryId, RegistantType.ADMIN_USER);
+		
+		List<String> oldFileArr = ansAtchFileList.stream()
+				.map(MozAtchFile::getFileOrgNm)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList())
+				;
+		model.addAttribute("oldFileArr", oldFileArr);
+		
+		inqry.setAnsAtchFileList(ansAtchFileList);
+		inqry.setQstAtchFileList(portalService.findAllMozAtchFileByAtchIdx(inqryId, RegistantType.PORTAL_USER));
+		
 		model.addAttribute("inqry", inqry);
 		return "views/govportal/inquiryDetail";
 	}
@@ -487,6 +505,39 @@ public class PortalController {
 			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
 		}
 		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "O registo de respostas foi concluído.");
+	}
+	
+	/**
+	 * @brief : QNA 스팸처리
+	 * @details : QNA 스팸처리
+	 * @author : KY.LEE
+	 * @date : 2024.05.23
+	 * @param : unnecessaryQna
+	 */
+	@Authority(type = MethodType.DELETE)
+	@PostMapping("/inqr/unnecessary.ajax")
+	@ResponseBody
+	public CommonResponse<?> unnecessaryQna(@RequestParam("inqryId") String inqryId) {
+		MozInqry mozInqry = new MozInqry();
+		mozInqry.setInqryId(inqryId);
+
+		ValidateBuilder dtoValidator = new ValidateBuilder(mozInqry);
+
+		ValidateResult dtoValidatorResult =
+				dtoValidator.addRule("inqryId", new ValidateChecker().setRequired()).isValid();
+		
+		if (!dtoValidatorResult.isSuccess()) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST,
+					dtoValidatorResult.getMessage());
+		}
+
+		try {
+			portalService.unnecessaryQna(mozInqry);
+		} catch (Exception e) {
+			return CommonResponse.ResponseCodeAndMessage(HttpStatus.BAD_REQUEST, e.getMessage());
+		}
+
+		return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK, "QNA tornou-se desnecessário.");
 	}
 
 	/**
@@ -525,9 +576,17 @@ public class PortalController {
 	@GetMapping("/objection/detail.do")
 	public String objectionDetail(Model model, @RequestParam("objIdx") String objIdx) {
 		MozObjReg objReg = portalService.getObjectionDetail(objIdx);
+		List<MozAtchFile> ansAtchFileList = portalService.findAllMozAtchFileByAtchIdx(objIdx, RegistantType.ADMIN_USER);
 		
-		List<MozAtchFile> ansFileList = portalService.findAllMozAtchFileByAtchIdx(objIdx);
-		objReg.setAnsAtchFileList(ansFileList);
+		List<String> oldFileArr = ansAtchFileList.stream()
+				.map(MozAtchFile::getFileOrgNm)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList())
+				;
+		model.addAttribute("oldFileArr", oldFileArr);
+		
+		objReg.setAnsAtchFileList(ansAtchFileList);
+		objReg.setQstAtchFileList(portalService.findAllMozAtchFileByAtchIdx(objIdx, RegistantType.PORTAL_USER));
 		model.addAttribute("objReg", objReg);
 		return "views/govportal/objectionDetail";
 	}
@@ -598,8 +657,18 @@ public class PortalController {
 	@GetMapping("/complaint/detail.do")
 	public String complaintDetail(Model model, @RequestParam("complaintsIdx") String complaintsIdx) {
 		MozComplaintsReg complaintsReg = portalService.getComplaintDetail(complaintsIdx);
-		List<MozAtchFile> ansFileList = portalService.findAllMozAtchFileByAtchIdx(complaintsIdx);
-		complaintsReg.setAnsAtchFileList(ansFileList);
+		
+		List<MozAtchFile> ansAtchFileList = portalService.findAllMozAtchFileByAtchIdx(complaintsIdx, RegistantType.ADMIN_USER);
+		
+		List<String> oldFileArr = ansAtchFileList.stream()
+				.map(MozAtchFile::getFileOrgNm)
+				.filter(Objects::nonNull)
+				.collect(Collectors.toList())
+				;
+		model.addAttribute("oldFileArr", oldFileArr);
+		
+		complaintsReg.setAnsAtchFileList(ansAtchFileList);
+		complaintsReg.setQstAtchFileList(portalService.findAllMozAtchFileByAtchIdx(complaintsIdx, RegistantType.PORTAL_USER));
 		model.addAttribute("complaintsReg", complaintsReg);
 
 		return "views/govportal/complaintDetail";

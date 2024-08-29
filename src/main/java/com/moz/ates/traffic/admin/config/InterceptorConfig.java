@@ -22,10 +22,9 @@ public class InterceptorConfig implements WebMvcConfigurer {
 	
 	@Autowired
 	AuthorityCheckerInterceptor authorityCheckerInterceptor;
-
+	
     @Bean
     public LocaleResolver localeResolver() {
-
         CookieLocaleResolver resolver = new CookieLocaleResolver();
         resolver.setCookieName("lang");
 //        resolver.setDefaultLocale(new Locale("por"));

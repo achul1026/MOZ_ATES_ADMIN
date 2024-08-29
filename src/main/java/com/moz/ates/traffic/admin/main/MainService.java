@@ -1,34 +1,118 @@
 package com.moz.ates.traffic.admin.main;
 
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import com.moz.ates.traffic.admin.common.enums.OprtrSttsCd;
 import com.moz.ates.traffic.common.entity.accident.MozTfcAcdntMaster;
 import com.moz.ates.traffic.common.entity.common.ChartDTO;
+import com.moz.ates.traffic.common.entity.common.ChartDTO.AccidentChartGraph;
+import com.moz.ates.traffic.common.entity.common.ChartDTO.AccidentCircularGraph;
+import com.moz.ates.traffic.common.entity.common.ChartDTO.EnforcementChartGraph;
+import com.moz.ates.traffic.common.entity.common.ChartDTO.EnforcementCircularGraph;
+import com.moz.ates.traffic.common.entity.common.ChartDTO.PaymentChartGraph;
+import com.moz.ates.traffic.common.entity.common.ChartDTO.PaymentCircularGraph;
 import com.moz.ates.traffic.common.entity.common.MozCmCd;
+import com.moz.ates.traffic.common.entity.common.MozMsgQueue;
 import com.moz.ates.traffic.common.entity.enforcement.MozTfcEnfMaster;
 import com.moz.ates.traffic.common.entity.operator.MozWebOprtr;
+import com.moz.ates.traffic.common.enums.MsgQueueStatus;
+import com.moz.ates.traffic.common.repository.accident.MozTfcAcdntMasterRepository;
+import com.moz.ates.traffic.common.repository.common.MozCmCdRepository;
+import com.moz.ates.traffic.common.repository.common.MozMsgQueueRepository;
+import com.moz.ates.traffic.common.repository.enforcement.MozTfcEnfMasterRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozTfcEnfEqpMasterRepository;
+import com.moz.ates.traffic.common.repository.equipment.MozTfcFacilityMasterRepository;
+import com.moz.ates.traffic.common.repository.operator.MozWebOprtrRepository;
+import com.moz.ates.traffic.common.repository.payment.MozFinePymntInfoRepository;
+import com.moz.ates.traffic.common.support.exception.CommonException;
+import com.moz.ates.traffic.common.support.exception.ErrorCode;
+import com.moz.ates.traffic.common.util.MozatesCommonUtils;
+import com.moz.ates.traffic.common.util.SmsSendContentUtils;
 
-public interface MainService {
-
-	MozWebOprtr getUserById(MozWebOprtr webOprtr);
+@Service
+public class MainService {
 	
+    @Autowired
+    MozWebOprtrRepository webOprtrRepository;
+    
+    @Autowired
+    MozCmCdRepository mozCmCdRepository;
+    
+    @Autowired
+    MozMsgQueueRepository msgQueueRepository;    
+    
+    @Autowired
+    MozFinePymntInfoRepository mozFinePymntInfoRepository;    
+    
+    @Autowired
+    MozTfcEnfMasterRepository mozTfcEnfMasterRepository;
+    
+    @Autowired
+    MozTfcAcdntMasterRepository mozTfcAcdntMasterRepository;
+    
+    @Autowired
+    MozTfcEnfEqpMasterRepository mozTfcEnfEqpMasterRepository;
+    
+    @Autowired
+    MozTfcFacilityMasterRepository mozTfcFacilityMasterRepository;
+    
+    @Value("${mail.sender.inatro}")
+    String sender;
+    
+	/**
+	 * @brief 유저 아이디 조회
+	 * @author KY.LEE
+	 * @Date 2023.08.11
+	 * @param webOprtr
+	 */
+    public MozWebOprtr getUserById(MozWebOprtr webOprtr) {
+    	return webOprtrRepository.findOneUserById(webOprtr);
+
+    }
+    
 	/**
 	 * @brief 어드민 관리자 회원가입
 	 * @author KY.LEE
 	 * @Date 2023.08.11
 	 * @param webOprtr
 	 */
-	public void registWebOprtr(MozWebOprtr webOprtr);
+	public void registWebOprtr(MozWebOprtr webOprtr) {
+		BCryptPasswordEncoder encode = new BCryptPasswordEncoder();
+		String encodePw = encode.encode(webOprtr.getOprtrAccountPw());
+		
+		if(this.dupChkAccountId(webOprtr)) {
+			webOprtr.setOprtrId(MozatesCommonUtils.getUuid());
+			webOprtr.setOprtrAccountPw(encodePw);
+			webOprtr.setOprtrStts(OprtrSttsCd.WAITTING.getCode());
+			webOprtrRepository.insertUser(webOprtr);
+		} else {
+			throw new CommonException(ErrorCode.DUPLICATE_ACCOUNTS);
+		}
+	}
+
 	
 	/**
 	 * @brief 어드민 관리자아이디 중복체크
 	 * @author KY.LEE
 	 * @Date 2023.08.11
-	 * @param dupChkAccountId
+	 * @param webOprtr
 	 */
-	public boolean dupChkAccountId(MozWebOprtr webOprtr);
-	
+	public boolean dupChkAccountId(MozWebOprtr webOprtr) {
+		boolean result = false;
+		int isUserChk = webOprtrRepository.countDupliChk(webOprtr);
+		if(0 == isUserChk) {
+			result = true;
+		}
+		return result;
+	}
+
 	/**
 	  * @Method Name : findId
 	  * @Date : 2024. 2. 15.
@@ -37,7 +121,15 @@ public interface MainService {
 	  * @param webOprtr
 	  * @return
 	  */
-	public MozWebOprtr findId(MozWebOprtr webOprtr);
+	public MozWebOprtr findId(MozWebOprtr webOprtr) {
+		MozWebOprtr webOprtrFound = webOprtrRepository.findOneWebOprtrByOprtrNmAndOprtrPno(webOprtr);
+		
+		if(MozatesCommonUtils.isNull(webOprtrFound)) {
+			throw new CommonException(ErrorCode.ENTITY_DATA_NULL);
+		}
+		
+		return webOprtrFound;
+	}
 	
 	/**
 	  * @Method Name : findPw
@@ -47,7 +139,51 @@ public interface MainService {
 	  * @param webOprtr
 	  * @return
 	  */
-	public void findPw(MozWebOprtr webOprtr);
+	public void findPw(MozWebOprtr webOprtr) {
+		// 일치 조회
+		MozWebOprtr webOprtrDb = webOprtrRepository.findOneWebOprtrByOprtrAccountIdAndOprtrNm(webOprtr);
+		
+		if (MozatesCommonUtils.isNull(webOprtrDb)) {
+			throw new CommonException(ErrorCode.ENTITY_DATA_NULL);
+		}
+		
+		// 랜덤 비밀번호 생성
+    String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    int MIN_LENGTH = 8;
+    int MAX_LENGTH = 15;
+    
+    SecureRandom random = new SecureRandom();
+    int length = MIN_LENGTH + random.nextInt(MAX_LENGTH - MIN_LENGTH + 1);
+    
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < length; i++) {
+        int randomIndex = random.nextInt(CHARACTERS.length());
+        char randomChar = CHARACTERS.charAt(randomIndex);
+        sb.append(randomChar);
+    }
+    String tmpPw =  sb.toString();
+		
+		// 임시 비밀번호 DB 저장
+    BCryptPasswordEncoder encode = new BCryptPasswordEncoder();
+    String encodeTmpPw = encode.encode(tmpPw);
+		
+    webOprtrDb.setOprtrAccountPw(encodeTmpPw);
+    webOprtrDb.setTmpPwIssuedYn("Y");
+    
+    webOprtrRepository.updateOprtrAccountPw(webOprtrDb);
+    
+		// sms 발송
+    MozMsgQueue msgQueue = new MozMsgQueue();
+    
+    msgQueue.setMsgType("sms");
+    msgQueue.setSender(sender);
+    msgQueue.setReceiver(webOprtrDb.getOprtrPno());
+    msgQueue.setContent(SmsSendContentUtils.findPassword(webOprtrDb.getOprtrNm(), tmpPw));
+    msgQueue.setStatus(MsgQueueStatus.WAITING);
+    msgQueue.setRetry(0);
+    
+    msgQueueRepository.saveMozMsgQueue(msgQueue);
+	}
 	
 	/**
 	  * @Method Name : getAffiliationCd
@@ -57,26 +193,51 @@ public interface MainService {
 	  * @param webOprtr
 	  * @return List<MozCmCd>
 	  */
-	public List<MozCmCd> getAffiliationCd(MozCmCd mozCmCd);
-	
+	public List<MozCmCd> getAffiliationCd(MozCmCd mozCmCd) {
+		return mozCmCdRepository.findAllCdListByPagination(mozCmCd);
+	}
+
 	/**
 	 * @Method Name : getTotalCountAffiliationCd
 	 * @Date : 2024. 3. 26.
 	 * @Author : IK.MOON
 	 * @Method Brief : 소속 기관 카운트조회
-	 * @param mozCmCd
+	 * @param cdGroupId
 	 * @return Long
 	 */
-	public int getTotalCountAffiliationCd(MozCmCd mozCmCd);
+	public int getTotalCountAffiliationCd(MozCmCd mozCmCd) {
+		return mozCmCdRepository.countByCdGroupId(mozCmCd);
+	}
 	
 	/**
 	 * @Method Name : getPaymentStatisticsInfoForDashboard
 	 * @Date : 2024. 4. 25.
 	 * @Author : NK.KIM
 	 * @Method Brief : 대시보드 체납/미납 통계 정보
-	 * @return ChartDTO
+	 * @return chartDTO
 	 */
-	public ChartDTO getStatisticsInfoForDashboard();
+	public ChartDTO getStatisticsInfoForDashboard() {
+		ChartDTO chartDTO = new ChartDTO();
+		EnforcementChartGraph enforcementChartGraph = mozTfcEnfMasterRepository.findOneEnforcementStatisticsChartGraph();
+		chartDTO.setEnforcementChartGraph(enforcementChartGraph);
+		
+		EnforcementCircularGraph enforcementCircularGraph = mozTfcEnfMasterRepository.findOneEnforcementStatisticsCircularGraph();
+		chartDTO.setEnforcementCircularGraph(enforcementCircularGraph);
+		
+		AccidentCircularGraph accidentCircularGraph = mozTfcAcdntMasterRepository.findOneAccidentStatisticsCircularGraph();
+		chartDTO.setAccidentCircularGraph(accidentCircularGraph);
+		
+		AccidentChartGraph accidentChartGraph = mozTfcAcdntMasterRepository.findOneAccidentStatisticsChartGraph();
+		chartDTO.setAccidentChartGraph(accidentChartGraph);
+		
+		PaymentCircularGraph paymentCircularGraph = mozFinePymntInfoRepository.findOnePaymentStatisticsCircularGraph();
+		chartDTO.setPaymentCircularGraph(paymentCircularGraph);
+		
+		PaymentChartGraph chartGraph = mozFinePymntInfoRepository.findOnePaymentStatisticsChartGraph();
+		chartDTO.setPaymentChartGraph(chartGraph);
+		
+		return chartDTO;
+	}
 
 	/**
 	 * @Method Name : getTodayEnforcementInfo
@@ -85,15 +246,9 @@ public interface MainService {
 	 * @Method Brief : 대시보드 금일 단속 목록 조회 
 	 * @return List<MozTfcEnfMaster>
 	 */
-	public List<MozTfcEnfMaster> getTodayEnforcementInfo();
-	
-	/**
-	 * @Method Name : getTodayEnforcementCount
-	 * @Date : 2024. 4. 25.
-	 * @Author : KY.LEE
-	 * @Method Brief : 대시보드 금일 단속 목록 카운트
-	 */
-	public int getTodayEnforcementCount();
+	public List<MozTfcEnfMaster> getTodayEnforcementInfo() {
+		return mozTfcEnfMasterRepository.findMozTfcEnfMasterByToday();
+	}
 
 	/**
 	 * @Method Name : getTodayAccidentInfo
@@ -102,15 +257,9 @@ public interface MainService {
 	 * @Method Brief : 대시보드 금일 사고 목록
 	 * @return List<MozTfcEnfMaster>
 	 */
-	public List<MozTfcAcdntMaster> getTodayAccidentInfo();
-
-	/**
-	 * @Method Name : getTodayAccidentCount
-	 * @Date : 2024. 4. 25.
-	 * @Author : KY.LEE
-	 * @Method Brief : 대시보드 금일 사고 목록 카운트
-	 */
-	public int getTodayAccidentCount();
+	public List<MozTfcAcdntMaster> getTodayAccidentInfo() {
+		return mozTfcAcdntMasterRepository.findMozTfcAcdntMatserByToday();
+	}
 
 	/**
 	 * @Method Name : getEqpInfo
@@ -119,14 +268,38 @@ public interface MainService {
 	 * @Method Brief : 단속장비 정보
 	 * @return Map<String,Object>
 	 */
-	Map<String,Object> getEqpInfo();
+	public Map<String, Object> getEqpInfo() {
+		return mozTfcEnfEqpMasterRepository.findOneEqpUseCnt();
+	}
+
+	/**
+	 * @Method Name : getTodayAccidentCount
+	 * @Date : 2024. 4. 25.
+	 * @Author : KY.LEE
+	 * @Method Brief : 대시보드 금일 사고 목록 카운트
+	 */
+	public int getTodayEnforcementCount() {
+		return mozTfcEnfMasterRepository.countMozTfcEnfMasterByToday();
+	}
+
 	
+	/**
+	 * @Method Name : getTodayAccidentCount
+	 * @Date : 2024. 4. 25.
+	 * @Author : KY.LEE
+	 * @Method Brief : 대시보드 금일 사고 목록 카운트
+	 */
+	public int getTodayAccidentCount() {
+		return mozTfcAcdntMasterRepository.countMozTfcAcdntMatserByToday();
+	}
+
 	/**
 	 * @Method Name : getFacilitiesCountInfo
 	 * @Date : 2024. 4. 25.
 	 * @Author : KY.LEE
-	 * @Method Brief : 장비 정보
-	 * @return Map<String,Object>
+	 * @Method Brief : 장비 목록 개수 정보 
 	 */
-	Map<String,Object> getFacilitiesCountInfo();
+	public List<Map<String, Object>> getFacilitiesCountInfo() {
+		return mozTfcFacilityMasterRepository.countMozTfcFacilityMaster();
+	}
 }

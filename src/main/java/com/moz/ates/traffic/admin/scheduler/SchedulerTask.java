@@ -1,7 +1,6 @@
 package com.moz.ates.traffic.admin.scheduler;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
@@ -17,9 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class SchedulerTask {
 	
-    @Value("${java.schedule:false}")
-    private boolean scheduleEnabled;
-    
 	@Autowired
 	FineJobService fineJobService;
 	
@@ -35,7 +31,9 @@ public class SchedulerTask {
 //	@Scheduled(cron = "0 */1 * * * *") //테스트용 1분
 	@Scheduled(cron = "0 1 0 * * *") // 매일 00:01분에 실행
     public void fineJobScheduler() throws InterruptedException {
-		if(scheduleEnabled) {
+		boolean isScheduler = Boolean.parseBoolean(System.getProperty("Java.scheduler", "false"));
+		
+		if(isScheduler) {
 			try {
 				fineJobService.updateFirstNoticeBatch();
 				mozTfcSystmErrLogRepository.saveMozTfcSystmErrLog(new MozTfcSystmErrLog(LogCateCd.BATCH,"First Fine Notice Update Success","Y"));

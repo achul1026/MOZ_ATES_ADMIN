@@ -8,6 +8,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,12 +27,16 @@ import com.moz.ates.traffic.admin.sitemng.auth.AuthService;
 import com.moz.ates.traffic.admin.sitemng.code.CodeService;
 import com.moz.ates.traffic.admin.sitemng.log.LogService;
 import com.moz.ates.traffic.common.component.Pagination;
+import com.moz.ates.traffic.common.entity.common.CommonResponse;
 import com.moz.ates.traffic.common.entity.common.MozCmCd;
 import com.moz.ates.traffic.common.entity.operator.MozAuth;
 import com.moz.ates.traffic.common.entity.operator.MozOprtrAudLog;
 import com.moz.ates.traffic.common.entity.operator.MozPolAudLog;
 import com.moz.ates.traffic.common.entity.operator.MozWebOprtr;
 import com.moz.ates.traffic.common.entity.police.MozPolInfo;
+import com.moz.ates.traffic.common.support.exception.CommonException;
+import com.moz.ates.traffic.common.support.exception.ErrorCode;
+import com.moz.ates.traffic.common.util.MozatesCommonUtils;
 
 @Controller
 @RequestMapping(value = "user")
@@ -51,20 +56,6 @@ public class UserController {
     
     @Autowired
     private PasswordEncoder passwordEncoder;
-    
-    /**
-     * @brief : 관리자 등록 화면
-     * @details : 관리자 등록 화면
-     * @author : KC.KIM
-     * @date : 2023.08.04
-     * @param : 
-     * @return : 
-     */
-    @Authority(type = MethodType.READ)
-    @GetMapping(value = "/admin/save.do")
-    public String newUserRegist(Model model){
-        return "views/user/userRegist";
-    }
 
     /**
      * @brief : 관리자 등록
@@ -177,7 +168,7 @@ public class UserController {
       */
     @Authority(type = MethodType.READ)
     @GetMapping("/operator/detail.do")
-    public String operatorDetail(Model model, @RequestParam("oprtrId")String oprtrId, @ModelAttribute MozOprtrAudLog oprtrAudLog){
+    public String operatorDetail(Model model, @RequestParam("oprtrId")String oprtrId, @ModelAttribute MozOprtrAudLog oprtrAudLog, MozAuth mozAuth){
 
         MozWebOprtr webOprtr = userService.getUserDetail(oprtrId);
         
@@ -185,10 +176,17 @@ public class UserController {
     	int totalCnt = logService.getMozOprtrAudLogListCnt(oprtrAudLog);
     	Pagination pagination = new Pagination(totalCnt, page);
         
+    	List<MozCmCd> permissionList = codeService.getSubCodeDetail(webOprtr.getOprtrPermissionGroupCode());
+		permissionList.removeIf(item -> item.getCdId().equals(OprtrPermissionCd.SUPER_ADMIN.getCode()));
+    	
+		mozAuth.setAuthCd("AUC000");
+    	
         model.addAttribute("webOprtr", webOprtr);
+        model.addAttribute("authList", authService.getAuthListByNoyEqualToAuthCd(mozAuth));
         model.addAttribute("oprtrAudLogList", logService.getOprtrAudLogByOprtrId(webOprtr.getOprtrId()));
-        model.addAttribute("cmCdList", codeService.getSubCodeDetail(webOprtr.getOprtrPermissionGroupCode()));
+        model.addAttribute("permissionList", permissionList);
         model.addAttribute("pagination", pagination);
+        model.addAttribute("pageType", "operator");
         
         return "views/user/adminDetail";
     }
@@ -214,30 +212,16 @@ public class UserController {
     	List<MozCmCd> permissionList = codeService.getSubCodeDetail(webOprtr.getOprtrPermissionGroupCode());
 		permissionList.removeIf(item -> item.getCdId().equals(OprtrPermissionCd.SUPER_ADMIN.getCode()));
 		
+		mozAuth.setAuthCd("AUC000");
+		
         model.addAttribute("webOprtr", webOprtr);
-        model.addAttribute("authList", authService.getAuthList(mozAuth));
+        model.addAttribute("authList", authService.getAuthListByNoyEqualToAuthCd(mozAuth));
         model.addAttribute("oprtrAudLogList", logService.getOprtrAudLogByOprtrId(webOprtr.getOprtrId()));
         model.addAttribute("permissionList", permissionList);
         model.addAttribute("pagination", pagination);
+        model.addAttribute("pageType", "admin");
         
         return "views/user/adminDetail";
-    }
-    
-    /**
-     * @brief : 관리자 수정 화면
-     * @details : 관리자 수정 화면
-     * @author : KC.KIM
-     * @date : 2023.08.04
-     * @param : oprtrId
-     * @return : 
-     */
-    @Authority(type = MethodType.READ)
-    @GetMapping("/admin/update.do")
-    public String adminModify(Model model, @RequestParam("oprtrId")String oprtrId){
-    	MozWebOprtr webOprtr = userService.getUserDetail(oprtrId);
-        model.addAttribute("webOprtr", webOprtr);
-
-        return "views/user/adminModify";
     }
     
     /**
@@ -321,6 +305,47 @@ public class UserController {
 
         return "views/user/polDetail";
     }
+
+    /**
+     * @brief : 경찰 신규 등록
+     * @details : 경찰 신규 등록
+     * @author : KY.LEE
+     * @date : 2024.07.10
+     */
+    @Authority(type = MethodType.CREATE)
+    @GetMapping("/police/save.do")
+    public String polMngSave(Model model){
+    	return "views/user/polRegist";
+    }
+    
+    
+    /**
+     * @brief : 경찰 신규 등록
+     * @details : 경찰 신규 등록
+     * @author : KY.LEE
+     * @date : 2024.07.10
+     */
+    @Authority(type = MethodType.CREATE)
+	@PostMapping(value="/police/save.ajax")
+	public @ResponseBody CommonResponse<?> polMngSaveAjax(Model model, MozPolInfo mozPolInfo) {
+		if(
+			MozatesCommonUtils.isNull(mozPolInfo.getPolLcenId()) ||
+			MozatesCommonUtils.isNull(mozPolInfo.getPolNm())	||
+			MozatesCommonUtils.isNull(mozPolInfo.getAppPolPw())	||
+			MozatesCommonUtils.isNull(mozPolInfo.getPhone())	||
+			mozPolInfo.getPolLcenDt() == null	||
+			mozPolInfo.getBrth() == null
+		) {
+			throw new CommonException(ErrorCode.INVALID_PARAMETER);
+		}
+		
+		try {
+			userService.registPolInfo(mozPolInfo);
+		} catch (CommonException e){
+			throw new CommonException(ErrorCode.DATA_INSERT_FAIL);
+		}
+        return CommonResponse.ResponseCodeAndMessage(HttpStatus.OK,"As informações policiais foram registradas recentemente. A conta estará disponível para uso após a aprovação.");
+	}
     
     /**
       * @Method Name : adminDeleteAjax

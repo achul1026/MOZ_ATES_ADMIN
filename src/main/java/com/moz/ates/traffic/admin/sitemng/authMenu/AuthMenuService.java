@@ -1,11 +1,8 @@
 package com.moz.ates.traffic.admin.sitemng.authMenu;
 
-import java.util.List;
+import org.springframework.stereotype.Service;
 
-import com.moz.ates.traffic.common.entity.menu.MozAuthMenu;
+@Service
+public class AuthMenuService {
 
-public interface AuthMenuService {
-
-	public void registAuthMenu(List<MozAuthMenu> authMenuList);
-	
 }

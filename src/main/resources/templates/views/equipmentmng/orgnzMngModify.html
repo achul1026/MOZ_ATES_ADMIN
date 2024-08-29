@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/layout}">
+
+<th:block layout:fragment="content">
+
+    <div id="container-fluid">
+
+        <!-- Page Heading -->
+        <h1 id="detail-content-title" th:text="#{organization.orgnzMngModify.title}">교통시설물 수정</h1>
+
+        <form id="frmOrgnzModify" enctype="multipart/form-data">
+            <input type="hidden" name="tfcFacilityId" th:value="${tfcFacilityMaster.tfcFacilityId}">
+            <table class="detail-table">
+                <colgroup>
+                    <col width="15%">
+                    <col width="35%">
+                    <col width="15%">
+                    <col width="35%">
+                </colgroup>
+                <tbody>
+                <tr>
+                    <th th:text="#{organization.orgnzMngModify.name}">이름</th>
+                    <td>
+                        <input type="text" id="facilityNm" name="facilityNm" class="main-input data-validate"
+                               th:placeholder="#{organization.orgnzMngModify.placeholder.name}"
+                               th:data-valid-name="#{organization.orgnzMngModify.placeholder.name}"
+                               th:value="${tfcFacilityMaster.facilityNm}"
+                               data-valid-required maxlength="50">
+                    </td>
+                    <th>
+                        <span class="requiredMark" th:text="#{organization.orgnzMngModify.usageStatus}">사용 여부</span>
+                    </th>
+                    <td>
+                        <label for="useY" class="radioBox">
+                            <input type="radio" id="useY" name="useYn" value="Y"
+                                   th:checked="${tfcFacilityMaster.useYn} == 'Y'">
+                            <span class="radioOn">
+								</span>
+                            <span th:text="#{organization.orgnzMngModify.usageStatus.useY}">
+								</span>
+                        </label>
+                        <label for="useN" class="radioBox">
+                            <input type="radio" id="useN" name="useYn" value="N"
+                                   th:checked="${tfcFacilityMaster.useYn} == 'N'">
+                            <span class="radioOn">
+								</span>
+                            <span th:text="#{organization.orgnzMngModify.usageStatus.useN}">
+								</span>
+                        </label>
+                    </td>
+                </tr>
+                <tr>
+                    <th th:text="#{organization.orgnzMngModify.location}">위치</th>
+                    <td colspan="3" class="modal-find-line">
+                        <input type="text" id="roadAddr" class="main-input data-validate" name="roadAddr"
+                               th:placeholder="#{organization.orgnzMngModify.placeholder.location}"
+                               th:data-valid-name="#{organization.orgnzMngModify.location}"
+                               th:value="${tfcFacilityMaster.roadAddr}"
+                               data-valid-required maxlength="100">
+                        <br><br>
+                        <div id="map" class="detailMap"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th>
+                        <span th:text="#{organization.orgnzMngModify.lat}">위도</span>
+                    </th>
+                    <td>
+                        <input type="text" class="main-input data-validate" id="lat" name="lat"
+                               data-valid-lat data-valid-required
+                               th:placeholder="#{organization.orgnzMngModify.placeholder.lat}"
+                               th:data-valid-name="#{organization.orgnzMngModify.lat}"
+                               th:value="${tfcFacilityMaster.lat}">
+                    </td>
+                    <th>
+                        <span th:text="#{organization.orgnzMngModify.lng}">경도</span>
+                    </th>
+                    <td>
+                        <input type="text" class="main-input data-validate" id="lng" name="lng"
+                               data-valid-lng data-valid-required
+                               th:placeholder="#{organization.orgnzMngModify.placeholder.lng}"
+                               th:data-valid-name="#{organization.orgnzMngModify.lng}"
+                               th:value="${tfcFacilityMaster.lng}">
+                    </td>
+                </tr>
+                <tr id="imageTr">
+                    <th th:text="#{organization.orgnzMngModify.images}">첨부 파일</th>
+                    <td colspan="3">
+                        <div id="dragArea" class="drag-area">
+                            <div class="dragText">
+                                File name cannot be more than 50 characters<br>
+                                The file size can only be uploaded under 5MB<br>
+                                Only JPG, JPEG, PNG, and MP4 files can be uploaded
+                            </div>
+                            <div>
+                                <input type="file" id="uploadFiles" name="uploadFiles" multiple style="display: none;">
+                                <button type="button" id="uploadBtn" class="main-btn">File Upload</button>
+                            </div>
+                        </div>
+
+                        <div id="uploadedFilesContainer" class="upload_list_box">
+                            <th:block th:each="fileItem : ${tfcFacilityMaster.tfcFacilityFileInfoList}">
+                                <div class="upload_list">
+                                    <div class="list_item input_same group_box flex-center">
+                                        <div class="file_list" th:text="${fileItem.fileOrgNm}"></div>
+                                        <button type="button" th:data-name="${fileItem.fileOrgNm}"
+                                                th:data-value="${fileItem.tfcFacilityFileNo}"
+                                                class="fileDelBtn uploadedFileDelBtn">
+                                            <img src="/images/upload_close.png" alt="업로드파일 삭제">
+                                        </button>
+                                    </div>
+                                </div>
+                            </th:block>
+                        </div>
+
+                        <div id="newFilesContainer" class="upload_list_box"></div>
+                    </td>
+                </tr>
+                <tr>
+                    <th th:text="#{organization.orgnzMngModify.status}">교통시설물 상태</th>
+                    <td colspan="3">
+                        <input type="text" class="main-input data-validate" id="facilityStts" name="facilityStts"
+                               th:placeholder="#{organization.orgnzMngModify.placeholder.status}"
+                               th:data-valid-name="#{organization.orgnzMngModify.status}"
+                               th:value="${tfcFacilityMaster.facilityStts}" maxlength="100">
+                    </td>
+                </tr>
+                <tr>
+                    <th th:text="#{organization.orgnzMngModify.details}">상세정보</th>
+                    <td colspan="3">
+                        <textarea class="detail-table-textarea" id="facilityDesc" name="facilityDesc"
+                                  th:placeholder="#{organization.orgnzMngModify.placeholder.details}"
+                                  th:text="${tfcFacilityMaster.facilityDesc}" maxlength="1000"></textarea>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </form>
+
+        <div class="btn-wrap-center">
+            <button type="button" id="btnGoList" class="sub-btn form-button left-btn" onclick="window.history.back()"
+                    th:text="#{organization.orgnzMngModify.btn.cancel}">취소
+            </button>
+            <button type="button" id="btnDelete" class="delete-btn" th:text="#{organization.orgnzMngModify.btn.delete}">삭제
+            </button>
+            <button type="button" id="btnModify" class="main-btn form-button"
+                    th:text="#{organization.orgnzMngModify.btn.modify}">수정완료
+            </button>
+        </div>
+    </div>
+
+    <div class="modal-wrap" id="modal"></div>
+</th:block>
+
+</html>
+
+<script th:inline="javascript">
+
+    let oldFileNameArr = /*[[${oldFileArr}]]*/;
+
+    $(document).ready(function () {
+        fileDrag(10, 5, 100, ["jpg", "jpeg", "png", "PNG"], oldFileNameArr);
+    })
+
+    let deleteFilesArr = [];
+    $(".uploadedFileDelBtn").on('click', function () {
+        const $this = $(this);
+        const fileNm = $this.data('name');
+        const fileId = $this.data('value');
+
+        $this.closest('.upload_list').remove();
+
+        const $uploadedFilesContainer = $('#uploadedFilesContainer');
+        let uploadLength = $uploadedFilesContainer.children('.upload_list').length;
+        if (uploadLength < 1) {
+            $uploadedFilesContainer.addClass('none');
+        }
+        deleteFilesArr.push(fileId);
+
+        let deleteIdx = oldFileNameArr.indexOf(fileNm);
+        oldFileNameArr.splice(deleteIdx, 1);
+        fileDrag(10, 5, 100, ["jpg", "jpeg", "png", "PNG"], oldFileNameArr);
+    });
+
+    $("#btnModify").click(function () {
+        trimValues(['facilityNm', 'roadAddr', 'lat', 'lng', 'facilityStts', 'facilityDesc']);
+        const $frmOrgnzModify = $("#frmOrgnzModify");
+        if (!$frmOrgnzModify.soValid()) return;
+
+        const form = $frmOrgnzModify[0];
+        const data = new FormData(form);
+
+        deleteFilesArr.forEach((value, index) => {
+            data.append("tfcFacilityFileInfoList[" + index + "].tfcFacilityFileNo", value);
+        })
+
+        $.ajax({
+            url: /*[[@{/eqp/orgnz/update.ajax}]]*/ "/eqp/orgnz/update.ajax",
+            type: "post",
+            enctype: 'multipart/form-data',
+            data: data,
+            processData: false,
+            contentType: false,
+            success: function (result) {
+                if (result.code === 200) {
+                    new ModalBuilder().init().successBody(result.message).footer(4, 'Confirmar', function (button, modal) {
+                        modal.close();
+                        const baseUrl = /*[[@{/eqp/orgnz/detail.do}]]*/ '';
+                        window.location.href = baseUrl + "?tfcFacilityId=" + [[${tfcFacilityMaster.tfcFacilityId}]];
+                    }).open();
+                } else {
+                    new ModalBuilder().init().alertBody(result.message).footer(4, 'Confirmar', function (button, modal) {
+                        modal.close();
+                    }).open();
+                }
+            }
+        });
+
+    });
+
+    const lng = /*[[${tfcFacilityMaster.lng}]]*/;
+    const lat = /*[[${tfcFacilityMaster.lat}]]*/;
+    let map = new MozAtesMap({
+        elementId: 'map',
+        center_lng: lng,
+        center_lat: lat,
+        isInitDrawCenterMarker: true
+    });
+
+    $("#btnDelete").click(function () {
+        new ModalBuilder().init().alertBody(/*[[#{equipment.facilityDetail.deleteMessage}]]*/).footer(2,'Confirmar',function(button, modal){
+            modal.close();
+            setTimeout(()=>{
+                var idx = /*[[${tfcFacilityMaster.tfcFacilityId}]]*/;
+                $.ajax({
+                    url: /*[[@{/eqp/facility/delete.ajax}]]*/ "/eqp/facility/delete.ajax",
+                    type: "post",
+                    data: {"tfcFacilityId": idx},
+                    success: function (result) {
+                        var resultCode = result.code;
+                        var resultMessage = result.message;
+                        if (resultCode === 200) {
+                            new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){
+                                modal.close();
+                                location.href = /*[[@{/eqp/orgnz/list.do?pageType=list}]]*/ '/eqp/orgnz/list.do?pageType=list';
+                            }).open();
+                        } else {
+                            new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){
+                                modal.close();
+                            }).open();
+                        }
+                    }
+                });
+            },500);
+        }, 'Cancelar', function(button, modal){
+            modal.close();
+        }).open();
+    });
+</script>

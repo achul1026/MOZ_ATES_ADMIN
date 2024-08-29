@@ -21,6 +21,7 @@ import com.moz.ates.traffic.admin.config.Authority;
 import com.moz.ates.traffic.common.component.Pagination;
 import com.moz.ates.traffic.common.entity.common.CommonResponse;
 import com.moz.ates.traffic.common.entity.common.MozCmCd;
+import com.moz.ates.traffic.common.entity.equipment.MozTfcEnfFineInfo;
 import com.moz.ates.traffic.common.entity.payment.MozFinePymntInfo;
 import com.moz.ates.traffic.common.enums.NtcTypeCd;
 import com.moz.ates.traffic.common.enums.PymntMethod;
@@ -235,13 +236,25 @@ public class PenaltyController {
      * @date : 2023.08.04
      * @param : pymntId
      * @return : 
+     * @throws Exception 
      */
     @Authority(type = MethodType.READ)
     @GetMapping("/first/detail.do")
-    public String mngFirstDetail(Model model, @RequestParam("pymntId")String pymntId){
-    	MozFinePymntInfo finePymntInfo = penaltyService.getPenaltyDetail(pymntId);
-        model.addAttribute("finePymntInfo",finePymntInfo);
-        return "views/penaltymng/penaltyFirstDetail";
+    public String mngFirstDetail(Model model, @RequestParam("pymntId")String pymntId) throws Exception{
+    	MozFinePymntInfo finePymntInfo;
+    	List<MozTfcEnfFineInfo> fineInfoList;
+    	try {
+    		finePymntInfo = penaltyService.getPenaltyDetail(pymntId);
+    		
+    		String tfcEnfId = finePymntInfo.getTfcEnfMaster().getTfcEnfId();
+    		fineInfoList = penaltyService.getAllTfcEnfFineInfo(tfcEnfId);
+			} catch (CommonException e) {
+				throw new Exception(e.getMessage());
+			}
+    	
+      model.addAttribute("finePymntInfo",finePymntInfo);
+      model.addAttribute("fineInfoList",fineInfoList);
+      return "views/penaltymng/penaltyFirstDetail";
     }
     
     /**
@@ -251,12 +264,24 @@ public class PenaltyController {
      * @date : 2023.08.04
      * @param : pymntId
      * @return : 
+     * @throws Exception 
      */
     @Authority(type = MethodType.READ)
     @GetMapping("/second/detail.do")
-    public String mngSecondDetail(Model model, @RequestParam("pymntId")String pymntId){
-    	MozFinePymntInfo finePymntInfo = penaltyService.getPenaltyDetail(pymntId);
-    	model.addAttribute("finePymntInfo",finePymntInfo);
+    public String mngSecondDetail(Model model, @RequestParam("pymntId")String pymntId) throws Exception{
+    	MozFinePymntInfo finePymntInfo;
+    	List<MozTfcEnfFineInfo> fineInfoList;
+    	try {
+    		finePymntInfo = penaltyService.getPenaltyDetail(pymntId);
+    		
+    		String tfcEnfId = finePymntInfo.getTfcEnfMaster().getTfcEnfId();
+    		fineInfoList = penaltyService.getAllTfcEnfFineInfo(tfcEnfId);
+			} catch (CommonException e) {
+				throw new Exception(e.getMessage());
+			}
+    	
+      model.addAttribute("finePymntInfo",finePymntInfo);
+      model.addAttribute("fineInfoList",fineInfoList);
     	return "views/penaltymng/penaltySecondDetail";
     }
     

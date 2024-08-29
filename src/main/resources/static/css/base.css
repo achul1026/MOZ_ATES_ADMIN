@@ -1,8 +1,11 @@
 .filter98 {
-	background: url(/images/arrow_black.png) 98% / 10px no-repeat !important;
+	background-position-x: 98% !important;
 }
 .filter95 {
-	background: url(/images/arrow_black.png) 95% / 10px no-repeat !important;
+	background-position-x: 95% !important;
+}
+.filter90 {
+	background-position-x: 90% !important
 }
 .none {
 	display:none;
@@ -16,9 +19,13 @@
 .mt30 {
 	margin-top:30px;
 }
+.mb8 {
+	margin-bottom: 8px !important;
+}
 .mb20 {
 	margin-bottom: 20px !important;
 }
+
 .d-none {
 	display: none;
 }
@@ -37,9 +44,45 @@
 	display: flex;
 	border-top:none !important;
 }
+.gap8 {
+	gap: 8px;
+}
 .textCenter {
 	text-align: center !important;
 }
 .justify-center {
 	justify-content: center;
+}
+.bdTop {
+	border-top: 1px solid #efefef;
+}
+.bgps95 {
+	padding: 12px;
+	width: 100%;
+	border-radius: 6px;
+	border: none;
+	outline: none;
+	-webkit-appearance:none; /* for chrome */
+   	-moz-appearance:none; /*for firefox*/
+    appearance:none;
+	background:#f7f7f7 url(/images/arrow_black.png) 95% / 10px no-repeat !important;
+}
+.bgps98 {
+	padding: 12px;
+	width: 100%;
+	border-radius: 6px;
+	border: none;
+	outline: none;
+	-webkit-appearance:none; /* for chrome */
+   	-moz-appearance:none; /*for firefox*/
+    appearance:none;
+	background:#f7f7f7 url(/images/arrow_black.png) 98% / 10px no-repeat !important;
+}
+.btn-img {
+	background: none;
+	border: none;
+	outline: none;
+}
+.none {
+	display: none !important;
 }

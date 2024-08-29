@@ -14,41 +14,40 @@
             <table class="detail-table">
                 <colgroup>
                     <col width="15%">
-                    <col width="85%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
                 </colgroup>
                 <tbody>
                     <tr>
                         <th th:text="#{portal.pp.name}">이름</th>
                         <td th:text="${plPymntInfo.placePymntNm}"></td>
+                        <th th:text="#{portal.pp.dw}">주소</th>
+                        <td>
+							<div th:text="${plPymntInfo.placePymntAddr}"></div>
+							<br>
+							<div id="map" class="detail-map"></div>
+						</td>
                     </tr>
 <!--                    <tr>-->
 <!--                    	<th th:text="#{portal.pp.pymntPlaceType}">납부처 유형</th>-->
 <!--                    	<td th:text="${plPymntInfo.cmCd.cdNm}"></td>-->
 <!--                    </tr>-->
-                    <tr>
-                        <th th:text="#{portal.pp.dw}">주소</th>
-                        <td>
-													<div th:text="${plPymntInfo.placePymntAddr}"></div>
-													<br>
-													<div id="map" class="detail-map"></div>
-												</td>
-                    </tr>
+
                     <tr>
                     	<th th:text="#{portal.pp.contact}">연락처</th>
                     	<td th:text="${plPymntInfo.placePymntCntc}"></td>
-                    </tr>
-                    <tr>
                     	<th th:text="#{portal.pp.operatingTime}"></th>
                     	<td th:text="|${plPymntInfo.operStrTm} ~ ${plPymntInfo.operEndTm}|"></td>
                     </tr>
+
                     <tr>
                     	<th th:text="#{portal.pp.closedDays}"></th>
                     	<td th:text="${plPymntInfo.clsdDt}"></td>
-                    </tr>
-                    <tr>
-                        <th th:text="#{portal.pp.preName}">대표자 이름</th>
+                    	<th th:text="#{portal.pp.preName}">대표자 이름</th>
                         <td colspan="3" th:text="${plPymntInfo.placePymntRprsvNm}"></td>
                     </tr>
+                   
                 </tbody>
             </table>
         </div>
@@ -65,35 +64,28 @@
 </html>
 <script th:inline="javascript">
 	function deleteCheck() {
-		new ModalBuilder().init().alertBody([[#{portal.pp.deleteMessage}]]).footer(2,'확인',function(button, modal){
+		new ModalBuilder().init().successBody(/*[[#{portal.pp.deleteMessage}]]*/).footer(2, 'Confirmar', function (button, modal) {
 			modal.close();
-			var idx = [[${plPymntInfo.placePymntId}]];
-			$.ajax({
-				 url: /*[[@{/portal/penaltyplace/delete.ajax}]]*/ "/portal/penaltyplace/delete.ajax",
-				type: "post",
-				data: {"placePymntId":idx},
-				success: function (result) {
-					var resultCode = result.code;
-					var resultMessage = result.message;
-					if (resultCode == '200') {
-						new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
-						location.href = /*[[@{/portal/penaltyplace/list.do}]]*/ '/portal/penaltyplace/list.do';
-						}).open();
-					} else {
-						new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){
-							modal.close();}).open();
+			setTimeout(() => {
+				var idx = [[${plPymntInfo.placePymntId}]];
+				$.ajax({
+					 url: /*[[@{/portal/penaltyplace/delete.ajax}]]*/ "/portal/penaltyplace/delete.ajax",
+					type: "post",
+					data: {"placePymntId":idx},
+					success: function (result) {
+						var resultCode = result.code;
+						var resultMessage = result.message;
+						if (resultCode == '200') {
+							new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();
+							location.href = /*[[@{/portal/penaltyplace/list.do}]]*/ '/portal/penaltyplace/list.do';
+							}).open();
+						} else {
+							new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){
+								modal.close();}).open();
+						}
 					}
-				}
-			});
-			}, '취소', function(button, modal){}).open();
+				});
+			}, 500);
+		}, 'Cancelar', function(button, modal){}).open();
 	}
-    //TODO 좌표값 확인하기
-	const lng = 22;
-	const lat = 60;
-	let map = new MozAtesMap({
-		elementId : 'map',
-		center_lng : lng,
-		center_lat : lat,
-		isInitDrawCenterMarker : true
-	});
 </script>

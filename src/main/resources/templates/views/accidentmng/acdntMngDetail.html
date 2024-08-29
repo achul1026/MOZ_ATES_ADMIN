@@ -40,22 +40,32 @@
 						<tr>
 							<th th:text="#{accident.mngRegist.policeOfficerInCharge}">담당경찰관</th>
 							<td th:text="${tfcAcdntMaster.polInfo.polNm}"></td>
-							<th th:text="#{accident.mngDetail.department}">담당자 행정기관</th>
-							<td th:text="${tfcAcdntMaster.polInfo.polDeptNm}"></td>
+							<th th:text="#{common.oprtr.tableJur}">담당 관할</th>
+							<td th:text="${tfcAcdntMaster.polInfo.jur}"></td>
 						</tr>
 						<tr>
 							<th th:text="#{accident.mngRegist.childAcdnt}">어린이 사고 유무</th>
-							<td th:text="${tfcAcdntMaster.acdntChildYn}"></td>
+							<td th:text="${tfcAcdntMaster.acdntChildYn} == 'y' ? #{accident.mngRegist.childAcdnt.y} : #{accident.mngRegist.childAcdnt.n}"></td>
 							<th th:text="#{accident.mngDetail.accidentTypeDetails}">사고유형상세</th>
 							<td th:text="${tfcAcdntMaster.acdntTyDtls}"></td>
 						</tr>
 						<tr>
 							<th th:text="#{accident.mngDetail.attachment}">첨부파일</th>
 							<td colspan="3" id="file-download">
-								<div id="image_container" class="atContainer" th:each="fileInfo : ${tfcAcdntMaster.tfcAcdntFileInfo}">
-									<span th:text="${fileInfo.fileOriginNm}"></span>
-								</div>
-<!-- 								<a href="">사고 관련 영상 <img src="/images/download.png" alt="다운로드" id="download-icon"></a> -->
+<!--								<div id="image_container" class="atContainer" th:each="fileInfo : ${tfcAcdntMaster.tfcAcdntFileInfo}">-->
+<!--									<span th:text="${fileInfo.fileOriginNm}"></span>-->
+<!--								</div>-->
+								
+								<div class="fileListWrap">
+									<th:block th:if="${#lists.isEmpty(tfcAcdntMaster.tfcAcdntFileInfo)}">-</th:block>
+									<th:block th:unless="${#lists.isEmpty(tfcAcdntMaster.tfcAcdntFileInfo)}" 
+										th:each="fileItem : ${tfcAcdntMaster.tfcAcdntFileInfo}">
+									<a class="list_item" th:href="@{/common/file/acdnt/download(fileId = ${fileItem.acdntFileNo})}">
+										<div class="file_list" th:text="${fileItem.fileOriginNm}"></div>
+										<img src="/images/download.png" alt="download">
+									</a>
+									</th:block>			
+								</div>	
 							</td>
 						</tr>
 						<tr>
@@ -70,7 +80,7 @@
 					<th:block th:if="${trgtInfo.acdntTrgtCd == 'ATT000'}">
 						<!-- 운전자 -->
 						<div class="rgTableTitle">
-							<h1><span th:text="#{accident.mngRegist.accidentParty}"></span> <span  class="rgTableTitleNumber" th:text="${status.index+1}"></span></h1>
+							<h1><span th:text="#{accident.common.target.title}"></span> <span  class="rgTableTitleNumber" th:text="${status.index+1}"></span></h1>
 						</div>
 						<table class="detail-table">
 							<colgroup>
@@ -81,44 +91,51 @@
 							</colgroup>
 							<tbody>
 								<tr>
-									<th th:text="#{accident.mngRegist.accidentTarget}"></th>
-									<td th:text="${trgtInfo.acdntTrgtCd == 'ATT000' ? 'Vehicle' : 'Person'}"></td>
+									<th th:text="#{accident.common.target.type.label}"></th>
+									<td th:text="${trgtInfo.acdntTrgtCd} == 'ATT000' ? #{accident.common.target.type.vehicle} : #{accident.common.target.type.person}"></td>
 								</tr>
 								<tr>
-									<th th:text="#{accident.mngRegist.driverLicenseId}"></th>
-									<td th:text="${trgtInfo.dvrLcenId}"></td>
-									<th th:text="#{accident.mngRegist.vehicleNo}"></th>
-									<td th:text="${trgtInfo.vhRegNo}"></td>
+									<th th:text="#{accident.common.target.name}"></th>
+									<td th:text="${trgtInfo.acdntTrgtNm}"></td>
+									<th th:text="#{accident.common.target.birth}"></th>
+									<td th:text="${trgtInfo.acdntTrgtBrth}"></td>
 								</tr>
 								<tr>
-									<th th:text="#{accident.mngRegist.vehicleType}"></th>
-									<td th:text="${trgtInfo.vhTy}"></td>
-									<th th:text="#{accident.mngRegist.DrivingStatus}"></th>
-									<td th:text="${trgtInfo.dvYn}"></td>
-								</tr>
-								<tr>
-									<th th:text="#{accident.mngRegist.accidentDamage}"></th>
-									<td th:text="${trgtInfo.acdntDmgCdNm}"></td>
-									<th th:text="#{accident.mngRegist.phoneNumber}"></th>
+									<th th:text="#{accident.common.target.damage}"></th>
+									<td th:text="${trgtInfo.acdntDmgCd}"></td>
+									<th th:text="#{accident.common.target.contact}"></th>
 									<td th:text="${trgtInfo.acdntTrgtPno}"></td>
 								</tr>
 								<tr>
-									<th th:text="#{accident.mngRegist.accidentTargetBirthday}"></th>
-									<td th:text="${trgtInfo.acdntTrgtBrth}"></td>
-									<th th:text="#{accident.mngRegist.name}"></th>
-									<td th:text="${trgtInfo.acdntTrgtNm}"></td>
+									<th th:text="#{accident.common.target.license.id}"></th>
+									<td th:text="${trgtInfo.dvrLcenId}"></td>
+									<th th:text="#{accident.common.target.license.type}"></th>
+									<td th:text="${trgtInfo.dvrLcenTy}"></td>
 								</tr>
 								<tr>
-									<th th:text="#{accident.mngRegist.deathStatus}"></th>
-									<td colspan="3" th:text="${trgtInfo.deadYn == 'N' ? 'Not Death' : 'Death'}"></td>
-									
+									<th th:text="#{accident.common.target.vehicle.no}"></th>
+									<td th:text="${trgtInfo.vhRegNo}"></td>
+									<th th:text="#{accident.common.target.vehicle.type}"></th>
+									<td th:text="${trgtInfo.vhTy}"></td>
+								</tr>
+								<tr>
+									<th th:text="#{accident.common.target.death.label}"></th>
+									<td th:text="${trgtInfo.deadYn} == 'N' ? #{accident.common.target.death.n} : #{accident.common.target.death.y}"></td>
+									<th th:text="#{accident.common.target.vehicle.status}"></th>
+									<td th:text="${trgtInfo.dvYn} == 'Y' ? #{accident.common.target.vehicle.status.moving} : #{accident.common.target.vehicle.status.stopped}"></td>
+								</tr>
+								<tr>
+									<th th:text="#{accident.common.target.docNo}">Doc No.</th>
+									<td th:text="${trgtInfo.docNid}"></td>
+									<th th:text="#{accident.common.target.docType}">Doc Type</th>
+									<td th:text="${trgtInfo.docType}"></td>
 								</tr>
 							</tbody>
 						</table>
 						<th:block th:each="pnrInfo, status : ${trgtInfo.tfcAcdntTrgtPnrInfo}">
 							<!-- 동승자 -->
 							<div class="rgTableTitle">
-								<h1><span th:text="#{accident.mngRegist.passenger}"></span> <span th:text="${status.index + 1}"></span></h1>
+								<h1><span th:text="#{accident.common.passenger.title}"></span> <span th:text="${status.index + 1}"></span></h1>
 							</div>
 							<table class="detail-table">
 								<colgroup>
@@ -129,40 +146,40 @@
 								</colgroup>
 								<tbody>
 									<tr>
-										<th th:text="#{accident.mngRegist.isDriver}"></th>
-										<td th:text="${pnrInfo.drvYn}"></td>
-										<th th:text="#{accident.mngRegist.passengerDriverLicenseId}"></th>
-										<td th:text="${pnrInfo.pnrDvrLcenId}"></td>
-									</tr>
-									<tr>
-										<th th:text="#{accident.mngRegist.passengerDriverLicenseType}"></th>
-										<td th:text="${pnrInfo.dvrLcenTy}"></td>
-										<th th:text="#{accident.mngRegist.passengerName}"></th>
+										<th th:text="#{accident.common.passenger.driver.status.label}"></th>
+										<td th:text="${pnrInfo.drvYn} == 'Y' ? #{accident.common.passenger.driver.status.y} : #{accident.common.passenger.driver.status.n}"></td>
+										<th th:text="#{accident.common.passenger.name.label}"></th>
 										<td th:text="${pnrInfo.pnrNm}"></td>
 									</tr>
 									<tr>
-										<th th:text="#{accident.mngRegist.passengerAddress}"></th>
-										<td th:text="${pnrInfo.pnrAddr}"></td>
-										<th th:text="#{accident.mngRegist.passengerBirthday}"></th>
+										<th th:text="#{accident.common.passenger.birth.label}"></th>
 										<td th:text="${pnrInfo.pnrBrth}"></td>
-									</tr>
-									<tr>
-										<th th:text="#{accident.mngRegist.passengerEmail}"></th>
-										<td th:text="${pnrInfo.pnrEmail}"></td>
-										<th th:text="#{accident.mngRegist.passengerPhoneNumber}"></th>
+										<th th:text="#{accident.common.passenger.contact.label}"></th>
 										<td th:text="${pnrInfo.pnrPno}"></td>
 									</tr>
 									<tr>
-										<th th:text="#{accident.mngRegist.passengerDamage}"></th>
-										<td th:text="${pnrInfo.pnrDmgCdNm}"></td>
-										<th th:text="#{accident.mngRegist.damageDiscription}"></th>
+										<th th:text="#{accident.common.passenger.address.label}"></th>
+										<td th:text="${pnrInfo.pnrAddr}"></td>
+										<th th:text="#{accident.common.passenger.email.label}"></th>
+										<td th:text="${pnrInfo.pnrEmail}"></td>
+									</tr>
+									<tr>
+										<th th:text="#{accident.common.passenger.damage.label}"></th>
+										<td th:text="${pnrInfo.pnrDmgCd}"></td>
+										<th th:text="#{accident.common.passenger.damage.desc.label}"></th>
 										<td th:text="${pnrInfo.pnrDmgDesc}"></td>
 									</tr>
 									<tr>
-										<th th:text="#{accident.mngRegist.relationshipWithDriver}"></th>
-										<td th:text="${pnrInfo.pnrDrvrRltnCdNm}"></td>
-										<th th:text="#{accident.mngRegist.deathStatus}"></th>
-										<td th:text="${pnrInfo.pnrDeadYn == 'N' ? 'Not Death' : 'Death'}"></td>
+										<th th:text="#{accident.common.passenger.death.label}"></th>
+										<td th:text="${pnrInfo.pnrDeadYn} == 'Y' ? #{accident.common.passenger.death.y} : #{accident.common.passenger.death.n}"></td>
+										<th th:text="#{accident.common.passenger.relationship}"></th>
+										<td th:text="${pnrInfo.pnrDrvrRltnCd}"></td>
+									</tr>
+									<tr>
+										<th th:text="#{accident.common.passenger.license.id.label}"></th>
+										<td th:text="${pnrInfo.pnrDvrLcenId}"></td>
+										<th th:text="#{accident.common.passenger.license.type.label}"></th>
+										<td th:text="${pnrInfo.dvrLcenTy}"></td>
 									</tr>
 								</tbody>
 							</table>
@@ -171,7 +188,7 @@
 					<!-- 보행자 -->
 					<th:block th:if="${trgtInfo.acdntTrgtCd == 'ATT001'}">
 						<div class="rgTableTitle">
-							<h1><span th:text="#{accident.mngRegist.accidentParty}"></span> <span class="rgTableTitleNumber" th:text="${status.index+1}"></span></h1>
+							<h1><span th:text="#{accident.common.target.title}"></span> <span class="rgTableTitleNumber" th:text="${status.index+1}"></span></h1>
 						</div>
 						<table class="detail-table">
 						<colgroup>
@@ -182,24 +199,24 @@
 						</colgroup>
 						<tbody>
 							<tr>
-								<th th:text="#{accident.mngRegist.accidentTarget}"></th>
-								<td th:text="${trgtInfo.acdntTrgtCd == 'ATT000' ? 'Vehicle' : 'Person'}"></td>
+								<th th:text="#{accident.common.target.type.label}"></th>
+								<td th:text="${trgtInfo.acdntTrgtCd} == 'ATT000' ? #{accident.common.target.type.vehicle} : #{accident.common.target.type.person}"></td>
 							</tr>
 							<tr>
-								<th th:text="#{accident.mngRegist.accidentDamage}"></th>
-								<td th:text="${trgtInfo.acdntDmgCdNm}"></td>
-								<th th:text="#{accident.mngRegist.accidentTargetPhoneNumber}"></th>
+								<th th:text="#{accident.common.target.damage}"></th>
+								<td th:text="${trgtInfo.acdntDmgCd}"></td>
+								<th th:text="#{accident.common.target.contact}"></th>
 								<td th:text="${trgtInfo.acdntTrgtPno}"></td>
 							</tr>
 							<tr>
-								<th th:text="#{accident.mngRegist.accidentTargetBirthday}"></th>
+								<th th:text="#{accident.common.target.birth}"></th>
 								<td th:text="${trgtInfo.acdntTrgtBrth}"></td>
-								<th th:text="#{accident.mngRegist.accidentTargetName}"></th>
+								<th th:text="#{accident.common.target.name}"></th>
 								<td th:text="${trgtInfo.acdntTrgtNm}"></td>
 							</tr>
 							<tr>
-								<th th:text="#{accident.mngRegist.deathStatus}">사망여부</th>
-								<td colspan="3" th:text="${trgtInfo.deadYn == 'N' ? 'Not Death' : 'Death'}"></td>
+								<th th:text="#{accident.common.target.death.label}">사망여부</th>
+								<td colspan="3" th:text="${trgtInfo.deadYn} == 'Y' ? #{accident.common.target.death.y} : #{accident.common.target.death.n}"></td>
 							</tr>
 						</tbody>
 					</table>

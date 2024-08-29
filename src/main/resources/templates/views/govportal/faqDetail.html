@@ -12,12 +12,16 @@
 				<table class="sub-table detail-table">
 					<colgroup>
 						<col width="15%">
-						<col width="85%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
 					</colgroup>
 					<tbody>
 						<tr>
 							<th th:text="#{portal.faq.title}">제목</th>
 							<td th:text="${faq.postTitle}"></td>
+							<th th:text="#{portal.faq.category}">카테고리</th>
+							<td th:text="${faq.cmCd.cdNm}"></td>
 						</tr>
 <!--						<tr>-->
 <!--							<th th:text="#{portal.faq.exposureRank}">노출순위</th>-->
@@ -28,12 +32,11 @@
 <!--							<td th:text="${faq.faqKywrd}"></td>-->
 <!--						</tr>-->
 						<tr>
-							<th th:text="#{portal.faq.category}">카테고리</th>
-							<td th:text="${faq.cmCd.cdNm}"></td>
+							
 						</tr>
 						<tr>
 							<th th:text="#{portal.faq.answerContent}">답변</th>
-							<td><pre th:text="${faq.postContent}"></pre></td>
+							<td colspan="3"><pre th:text="${faq.postContent}"></pre></td>
 						</tr>
 					</tbody>
 				</table>
@@ -55,25 +58,27 @@
 
 <script th:inline="javascript">
 	function deleteInfo() {
-		new ModalBuilder().init().alertBody([[#{portal.faq.deleteMessage}]]).footer(2,'확인',function(button, modal){
+		new ModalBuilder().init().successBody(/*[[#{portal.faq.deleteMessage}]]*/).footer(2, 'Confirmar', function (button, modal) {
 			modal.close();
-			var idx = [[${faq.faqIdx}]];
-			$.ajax({
-				url: /*[[@{/portal/faq/delete.ajax}]]*/ "/portal/faq/delete.ajax",
-				type: "post",
-				data: {"faqIdx": idx},
-				success: function (result) {
-					var resultCode = result.code;
-					var resultMessage = result.message;
-					if (resultCode == '200') {
-						new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();
-							location.href = /*[[@{/portal/faq/list.do}]]*/ '/portal/faq/list.do';
-						}).open();
-					} else {
-						new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+			setTimeout(() => {
+				var idx = [[${faq.faqIdx}]];
+				$.ajax({
+					url: /*[[@{/portal/faq/delete.ajax}]]*/ "/portal/faq/delete.ajax",
+					type: "post",
+					data: {"faqIdx": idx},
+					success: function (result) {
+						var resultCode = result.code;
+						var resultMessage = result.message;
+						if (resultCode == '200') {
+							new ModalBuilder().init().successBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();
+								location.href = /*[[@{/portal/faq/list.do}]]*/ '/portal/faq/list.do';
+							}).open();
+						} else {
+							new ModalBuilder().init().alertBody(resultMessage).footer(4,'Confirmar',function(button, modal){modal.close();}).open();
+						}
 					}
-				}
-			});
-			}, '취소', function(button, modal){}).open();
+				});
+			}, 500);
+		}, 'Cancelar', function(button, modal){}).open();
 	}
 </script>

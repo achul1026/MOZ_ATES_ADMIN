@@ -1,56 +1,58 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
-    <div id="container-fluid">
-        <h1 id="detail-content-title" th:text="#{user.polDetail.title.detail}">사용자 상세정보</h1>
-        <form id="policeModifyForm">
-	        <table class="detail-table">
-	            <colgroup>
-	                <col width="15%">
-	                <col width="35%">
-	                <col width="15%">
-	                <col width="35%">
-	            </colgroup>
-	            <tbody id="policeInfoTable">
-				<tr>
-	                <th th:text="#{common.user.name}">이름</th>
-	                <td th:text="${polInfo.polNm}"></td>
-	                <th th:text="#{common.user.id}">ID</th>
-	                <td th:text="${polInfo.polLcenId}">DKAS23123</td>
-	            </tr>
-	             <tr>
-	                <th th:text="#{common.user.address}">Address</th>
-	                <td>-</td>
-	                <th th:text="#{common.user.email}">E-mail</th>
-	                <td th:text="${polInfo.email}">das12@naver.com</td>
-	            </tr>
-	            <tr>
-	                <th th:text="#{common.user.contact}">Number</th>
-	                <td th:text="${polInfo.phone}">010-4100-3123</td>
-	                <th th:text="#{common.common.status}">상태</th>
-	                <td th:switch="${polInfo.polStts}">
-						<span th:case="'PSC000'" th:text="#{user.common.statusOk}"></span>							
-						<span th:case="'PSC001'" th:text="#{user.common.statusStopped}"></span>							
-						<span th:case="'PSC002'" th:text="#{user.common.statusWaiting}"></span>							
-						<span th:case="'PSC003'" th:text="#{user.common.statusWithdraw}"></span>							
-					</td>
-	            </tr>
-	            <tr>
-	               <th th:text="#{user.common.jur}">관할</th>
-	               <td th:text="${polInfo.jur}"></td>
-	                <th th:text="#{common.common.option}">옵션</th>
-	                <th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
-						<td>
-							<button type="button" class="main-btn detail-table-button" th:text="#{common.button.modify}" onclick="displayTable('modify')">수정</button>
-							<button type="button" class="delete-btn detail-table-button"  th:text="#{common.button.delete}" th:onclick="deletePolice([[${polInfo.polId}]])">삭제</button>
+	<div id="container-fluid">
+		<h1 id="detail-content-title" th:text="#{user.polDetail.title.detail}">사용자 상세정보</h1>
+		<form id="policeModifyForm">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody id="policeInfoTable">
+					<tr>
+						<th th:text="#{common.user.name}">이름</th>
+						<td th:text="${polInfo.polNm}"></td>
+						<th th:text="#{common.user.id}">ID</th>
+						<td th:text="${polInfo.polLcenId}">DKAS23123</td>
+					</tr>
+					<tr>
+						<th th:text="#{common.user.address}">Address</th>
+						<td>-</td>
+						<th th:text="#{common.user.email}">E-mail</th>
+						<td th:text="${polInfo.email}">das12@naver.com</td>
+					</tr>
+					<tr>
+						<th th:text="#{common.user.contact}">Number</th>
+						<td th:text="${polInfo.phone}">010-4100-3123</td>
+						<th th:text="#{common.common.status}">상태</th>
+						<td th:switch="${polInfo.polStts}">
+							<span th:case="'PSC000'" th:text="#{user.common.statusOk}"></span>
+							<span th:case="'PSC001'" th:text="#{user.common.statusStopped}"></span>
+							<span th:case="'PSC002'" th:text="#{user.common.statusWaiting}"></span>
+							<span th:case="'PSC003'" th:text="#{user.common.statusWithdraw}"></span>
 						</td>
-					</th:block>
-	            </tr>
-	            </tbody>
-	            <th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
+					</tr>
+					<tr>
+						<th th:text="#{user.common.jur}">관할</th>
+						<td th:text="${polInfo.jur}"></td>
+						<th th:text="#{common.common.option}">옵션</th>
+						<th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
+							<td>
+								<button type="button" class="delete-btn detail-table-button"
+									th:text="#{common.button.delete}"
+									th:onclick="deletePolice([[${polInfo.polId}]])">삭제</button>
+								<button type="button" class="main-btn detail-table-button"
+									th:text="#{common.button.modify}" onclick="displayTable('modify')">수정</button>
+							</td>
+						</th:block>
+					</tr>
+				</tbody>
+				<th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
 					<tbody id="policeInfoModifyTable" class="d-none">
 						<tr>
 							<th th:text="#{common.user.name}">Name</th>
@@ -63,13 +65,15 @@
 								<span class="requiredMark" th:text="#{common.user.address}">주소</span>
 							</th>
 							<td>
-								<input type="text" class="main-input" name="" value="-" placeholder="Please Enter Address"/>
+								<input type="text" class="main-input" name="" value="-"
+									placeholder="Please Enter Address" />
 							</td>
 							<th>
 								<span class="requiredMark" th:text="#{common.user.email}">E-MAIL</span>
 							</th>
 							<td>
-								<input type="text" class="main-input" name="email" placeholder="Please Enter Email" th:value="${polInfo.email}"/>
+								<input type="text" class="main-input" name="email" placeholder="Please Enter Email"
+									th:value="${polInfo.email}" />
 							</td>
 						</tr>
 						<tr>
@@ -77,18 +81,23 @@
 								<span class="requiredMark" th:text="#{common.user.contact}">연락처</span>
 							</th>
 							<td>
-								<input type="text" class="main-input" name="phone" placeholder="Please Enter Contact" th:value="${polInfo.phone}"/>
+								<input type="text" class="main-input" name="phone" placeholder="Please Enter Contact"
+									th:value="${polInfo.phone}" />
 							</td>
 							<th>
 								<span class="requiredMark" th:text="#{common.common.status}">상태</span>
 							</th>
 							<td>
 								<select name="polStts" class="filter-select">
-									<option value="PSC000" th:selected="${polInfo.polStts eq 'PSC000'}" th:text="#{user.common.statusOk}"></option>
-									<option value="PSC001" th:selected="${polInfo.polStts eq 'PSC001'}" th:text="#{user.common.statusStopped}"></option>
-									<option value="PSC002" th:selected="${polInfo.polStts eq 'PSC002'}" th:text="#{user.common.statusWaiting}"></option>
-									<option value="PSC003" th:selected="${polInfo.polStts eq 'PSC003'}" th:text="#{user.common.statusWithdraw}"></option>
-								</select>						
+									<option value="PSC000" th:selected="${polInfo.polStts eq 'PSC000'}"
+										th:text="#{user.common.statusOk}"></option>
+									<option value="PSC001" th:selected="${polInfo.polStts eq 'PSC001'}"
+										th:text="#{user.common.statusStopped}"></option>
+									<option value="PSC002" th:selected="${polInfo.polStts eq 'PSC002'}"
+										th:text="#{user.common.statusWaiting}"></option>
+									<option value="PSC003" th:selected="${polInfo.polStts eq 'PSC003'}"
+										th:text="#{user.common.statusWithdraw}"></option>
+								</select>
 							</td>
 						</tr>
 						<tr>
@@ -96,28 +105,31 @@
 								<span class="requiredMark" th:text="#{user.common.jur}">관할</span>
 							</th>
 							<td>
-								<input type="text" class="main-input" name="jur" placeholder="Please Enter Jurisdiction" th:value="${polInfo.jur}"/>
+								<input type="text" class="main-input" name="jur" placeholder="Please Enter Jurisdiction"
+									th:value="${polInfo.jur}" />
 							</td>
 							<th th:text="#{common.common.option}">옵션</th>
 							<th:block th:if="${webOprtrInfo.oprtrPermission} == 'OPC000'">
 								<td>
-									<input type="hidden" name="polId" th:value="${polInfo.polId}"/>
-									<input type="hidden" name="polNm" th:value="${polInfo.polNm}"/>
-									<input type="hidden" name="polLcenId" th:value="${polInfo.polLcenId}"/>
-									<input type="hidden" name="appPermission" th:value="${polInfo.appPermission}"/>
-									<button type="button" class="sub-btn" th:text="#{common.button.cancel}" onclick="displayTable('cancel')">취소</button>
-									<button type="button" class="main-btn" th:text="#{common.button.save}" th:onclick="modifyPolice([[${polInfo.polId}]])">저장</button>
+									<input type="hidden" name="polId" th:value="${polInfo.polId}" />
+									<input type="hidden" name="polNm" th:value="${polInfo.polNm}" />
+									<input type="hidden" name="polLcenId" th:value="${polInfo.polLcenId}" />
+									<input type="hidden" name="appPermission" th:value="${polInfo.appPermission}" />
+									<button type="button" class="sub-btn" th:text="#{common.button.cancel}"
+										onclick="displayTable('cancel')">취소</button>
+									<button type="button" class="main-btn" th:text="#{common.button.save}"
+										th:onclick="modifyPolice([[${polInfo.polId}]])">저장</button>
 								</td>
 							</th:block>
 						</tr>
 					</tbody>
 				</th:block>
-	        </table>
-     	</form>
-       	<div class="contents-wrap">			
+			</table>
+		</form>
+		<div class="contents-wrap">
 			<div id="search-form-result-wrap">
 				<div id="table-search-result-text">
-				Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
+					Found <span th:text='|"${pagination.totalListCnt}"|'></span> results
 				</div>
 				<div id="table-regist-btn">
 				</div>
@@ -125,7 +137,7 @@
 			<div class="table-wrap">
 				<table class="main-table">
 					<colgroup>
- 						<col width="5%">
+						<col width="5%">
 						<col width="50%">
 						<col width="45%">
 					</colgroup>
@@ -156,55 +168,61 @@
 		</div>
 	</div>
 </th:block>
+
 </html>
 <script th:inline="javascript">
-function displayTable(type){
-    var infoTable = document.getElementById('policeInfoTable');
-    var modifyTable = document.getElementById('policeInfoModifyTable');
-	if (type == 'modify') {
-	    infoTable.classList.add('d-none');
-	    modifyTable.classList.remove('d-none');
-	} else {
-		modifyTable.classList.add('d-none');
-		infoTable.classList.remove('d-none');
-		new ModalBuilder().init().successBody([[#{common.message.completeCancel}]]).footer(4,'확인',function(button, modal){
+	function displayTable(type) {
+		var infoTable = document.getElementById('policeInfoTable');
+		var modifyTable = document.getElementById('policeInfoModifyTable');
+		if (type == 'modify') {
+			infoTable.classList.add('d-none');
+			modifyTable.classList.remove('d-none');
+		} else {
+			modifyTable.classList.add('d-none');
+			infoTable.classList.remove('d-none');
+			new ModalBuilder().init().successBody([[#{common.message.completeCancel}]]).footer(4, 'Confirmar', function (button, modal) {
+				modal.close();
+			}).open();
+		}
+	}
+
+	function modifyPolice(polId) {
+		new ModalBuilder().init().successBody(/*[[#{common.message.confirmSave}]]*/).footer(2, 'Confirmar', function (button, modal) {
 			modal.close();
+			setTimeout(() => {
+				$.ajax({
+					type: "post",
+					data: $("#policeModifyForm").serialize(),
+					url: "/user/police/update.ajax",
+					success: function (data) {
+						if (data.code == 1) {
+							new ModalBuilder().init().successBody([[#{common.message.completeModify}]]).footer(4, 'Confirmar', function (button, modal) {
+								window.location.href = "/user/police/detail.do?polId=" + polId;
+							}).open();
+						} else {
+						}
+					}
+				});
+			}, 500);
 		}).open();
 	}
-}
 
-function modifyPolice(polId){
-		new ModalBuilder().init().alertBody([[#{common.message.confirmSave}]]).footer(2,'확인',function(button, modal){
-		modal.close();
-		$.ajax({
-			type: "post",
-			data: $("#policeModifyForm").serialize(),
-			url: "/user/police/update.ajax",
-			success: function (data) {
-				if (data.code == 1) {
-					new ModalBuilder().init().successBody([[#{common.message.completeModify}]]).footer(4,'확인',function(button, modal){
-						window.location.href="/user/police/detail.do?polId=" + polId;
-					}).open();
-				} else {
-				}
-			}
-		});
-	}, '취소', function(button, modal){}).open();
-}
-
-function deletePolice(polId){
-	new ModalBuilder().init().alertBody([[#{common.message.confirmDelete}]]).footer(2,'확인',function(button, modal){
-		$.ajax({
-			type: "post",
-			data: {polId : polId},
-			url: "/user/police/delete.ajax",
-			success: function (data) {
-				if (data.code == 1) {
-					window.location.href="/user/police/list.do";
-				} else {
-				}
-			}
-		});
-	}).open();
-}
+	function deletePolice(polId) {
+		new ModalBuilder().init().successBody(/*[[#{common.message.confirmDelete}]]*/).footer(2, 'Confirmar', function (button, modal) {
+			modal.close();
+			setTimeout(() => {
+				$.ajax({
+					type: "post",
+					data: {polId: polId},
+					url: "/user/police/delete.ajax",
+					success: function (data) {
+						if (data.code == 1) {
+							window.location.href = "/user/police/list.do";
+						} else {
+						}
+					}
+				});
+			}, 500);
+		}).open();
+	}
 </script>

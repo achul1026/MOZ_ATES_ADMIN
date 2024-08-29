@@ -9,6 +9,7 @@
 		<div id="content-sub-title" th:text="#{administ.mngList.descr}">법원 이송 대상자를 관리할 수 있습니다</div>
 		
 		<form id="frmSearch">
+			<input type="hidden" name="page" id="page" value="1">
 			<div id="filter-table">
 				 <table class="">
 		            <colgroup>
@@ -44,8 +45,8 @@
 			</div>
 		</form>
 		  <div class="btn-wrap-center">
-			 <button type="button" id="btnSearch" class="main-btn form-button" th:text="#{administ.mngList.check}">조회</button>
 			 <button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')" th:text="#{administ.common.search.reset}">검색 초기화</button>
+			 <button type="button" id="btnSearch" class="main-btn form-button" th:text="#{administ.mngList.check}">조회</button>
 		  </div>
 
 		  <div id="search-form-result-wrap">
@@ -81,12 +82,13 @@
 						<td th:text="${administInfo.tfcEnfId}">23-01242</td>
 						<td th:text="${administInfo.cmCd.cdNm}"></td>
 						<td th:text="${#dates.format(administInfo.crDt, 'yyyy-MM-dd')}"></td>
-						<td>
-							<span class="tableStausOff" th:text="${administInfo.proHoldYn}"></span>
+						<td th:switch="${administInfo.proHoldYn}">
+							<span th:case="N" class="tableStausOn" th:text="#{administ.common.retentionN}"></span>
+							<span th:case="Y" class="tableStausOff" th:text="#{administ.common.retentionY}"></span>
 						</td>
 						<td class="flex justify-center" th:switch="${administInfo.processYn}">
-							<span th:case="N" class="tableStausProg">In Process</span>
-							<span th:case="Y" class="tableStausOn">Completed</span>
+							<span th:case="N" class="tableStausProg" th:text="#{administ.common.handlingPrcss}">In Process</span>
+							<span th:case="Y" class="tableStausOn" th:text="#{administ.common.handlingCmplt}">Completed</span>
 						</td>
 					</tr>
 				</tbody>

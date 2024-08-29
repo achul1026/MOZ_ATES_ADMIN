@@ -6,7 +6,7 @@
 				<li><a class="firstEnd" th:onclick="fnAjaxPageMove([[${pagination.startPage}]])">First</a></li>	
 				
 				<li class="page-item">
-					<a class="first" th:onclick="fnAjaxPageMove([[${pagination.page} - 1]])" aria-label="Previous"> 
+					<a class="first" th:onclick="fnAjaxPageMove([[${pagination.page} == 1 ? 1 : ${pagination.page} - 1]])" aria-label="Previous"> 
 						<i class="page-arrow-left"></i>
 					</a>
 				</li>
@@ -26,7 +26,7 @@
 				</th:block>
 				
 				<li class="page-item">
-					<a class="last" th:onclick="fnAjaxPageMove([[${pagination.page} + 1]])" aria-label="Next">
+					<a class="last" th:onclick="fnAjaxPageMove([[${pagination.page} == ${pagination.totalPageCnt} ? ${pagination.page} : ${pagination.page} + 1]])" aria-label="Next">
 						<i class="page-arrow-right"></i>
 					</a>
 				</li>

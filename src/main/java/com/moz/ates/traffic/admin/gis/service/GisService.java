@@ -1,9 +1,27 @@
 package com.moz.ates.traffic.admin.gis.service;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
 import com.moz.ates.traffic.common.entity.common.AccidentDomain;
 import com.moz.ates.traffic.common.entity.common.EnforcementDomain;
+import com.moz.ates.traffic.common.repository.common.GisRepository;
 
-public interface GisService {
-	public AccidentDomain getAcMapInfo(String tfcAcdntId);
-	public EnforcementDomain getMapInfo(String tfcEnfId);
+@Service
+public class GisService {
+	
+	@Autowired
+	GisRepository gisRepository;
+	
+	public EnforcementDomain getMapInfo(String tfcEnfId) {
+		EnforcementDomain enfDomain = new EnforcementDomain();
+		enfDomain = gisRepository.findOneEnforcementDomainBytfcEnfId(tfcEnfId);
+		return enfDomain;
+	}
+
+	public AccidentDomain getAcMapInfo(String tfcAcdntId) {
+		AccidentDomain acdntDomain = new AccidentDomain();
+		acdntDomain = gisRepository.selectAccidentList(tfcAcdntId);
+		return acdntDomain;
+	}
 }

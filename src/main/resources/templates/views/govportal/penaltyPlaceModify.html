@@ -1,161 +1,185 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout/layout}">
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/layout}">
 
 <th:block layout:fragment="content">
 
-    <div id="container-fluid">
+	<div id="container-fluid">
 
-        <!-- Page Heading -->
-        <h1 th:text="#{portal.pp.title.modify}" id="detail-content-title">범칙금 납부처 수정</h1>
+		<!-- Page Heading -->
+		<h1 th:text="#{portal.pp.title.modify}" id="detail-content-title">범칙금 납부처 수정</h1>
 
-        <form id="frmPenaltyPlaceModify">
-            <input type="hidden" name="placePymntId" th:value="${plPymntInfo.placePymntId}">
-        <table class="detail-table">
-            <colgroup>
-                <col width="15%">
-                <col width="85%">
-            </colgroup>
-            <tbody>
-            <tr>
-                <th>
-					<span class="requiredMark" th:text="#{portal.pp.name}">이름</span>
-				</th>
-                <td><input type="text" class="main-input" id="placePymntNm" name="placePymntNm" th:value="${plPymntInfo.placePymntNm}"></td>
-            </tr>
-<!--            <tr>-->
-<!--            	<th th:text="#{portal.pp.pymntPlaceType}">납부처 유형</th>-->
-<!--            	<td>-->
-<!--            		<select class="filter-select" id="placePymntType" name="placePymntType" th:field="${plPymntInfo.placePymntType}">-->
-<!--						<th:block th:each="cdItem : ${cdList}">-->
-<!--							<option th:value="${cdItem.cdId}" th:text="${cdItem.cdNm}"></option>-->
-<!--						</th:block>-->
-<!--					</select>   -->
-<!--            	</td>-->
-<!--            </tr>-->
-            <tr>
-                <th>
-					<span class="requiredMark" th:text="#{portal.pp.dw}">주소</span>
-				</th>
-                <td>
-					<input type="text" class="main-input" id="placePymntAddr" name="placePymntAddr" th:value="${plPymntInfo.placePymntAddr}"><br><br>
-					<div id="map" class="detail-map"></div>
-				</td>            
-            </tr>
-            <tr>
-                <th>
-					<span class="requiredMark" th:text="#{portal.pp.contact}"></span>
-				</th>
-                <td><input type="text" class="main-input" name="placePymntCntc" id="placePymntCntc" th:value="${plPymntInfo.placePymntCntc}"></td>
-            </tr>
-            <tr>
-            	<th>
-					<span class="requiredMark" th:text="#{portal.pp.operatingTime}">운영시간</span>
-				</th>
-                <td>
-					<input type="time" class="input-time" name="operStrTm" id="operStrTm" th:value="${plPymntInfo.operStrTm}"> ~
-					<input type="time" class="input-time" name="operEndTm" id="operEndTm" th:value="${plPymntInfo.operEndTm}">
-				</td>
-            </tr>
-            <tr>
-            	<th>
-					<span class="requiredMark" th:text="#{portal.pp.closedDays}">휴무일</span>
-				</th>
-                <td>
-                	<input type="hidden" name="clsdDt" id="clsdDt" th:value="${plPymntInfo.clsdDt}">
-					<input type="checkbox" name="clsdChkBox" value="Mon">
-					<label>Mon</label>
-		
-					<input type="checkbox" name="clsdChkBox" value="Tue">
-					<label>Tue</label>
-		
-					<input type="checkbox" name="clsdChkBox" value="Wed">
-					<label>Wed</label>
-		
-					<input type="checkbox" name="clsdChkBox" value="Thu">
-					<label>Thu</label>
-		
-					<input type="checkbox" name="clsdChkBox" value="Fri">
-					<label>Fri</label>
-		
-					<input type="checkbox" name="clsdChkBox" value="Sat">
-					<label>Sat</label>
-		
-					<input type="checkbox" name="clsdChkBox" value="Sun">
-					<label>Sun</label>
-		
-					<input type="checkbox" name="clsdChkBox" value="Hol">
-					<label>Hol</label>
-				</td>
-            </tr>
-            <tr>
-                <th>
-					<span class="requiredMark" th:text="#{portal.pp.preName}">대표자 이름</span>
-				</th>
-                <td><input type="text" class="form-control main-input" id="txtPlacePymntRprsvNm" name="placePymntRprsvNm" th:value="${plPymntInfo.placePymntRprsvNm}"></td>
-            </tr>
+		<form id="frmPenaltyPlaceModify">
+			<input type="hidden" name="placePymntId" th:value="${plPymntInfo.placePymntId}">
+			<table class="detail-table">
+				<colgroup>
+					<col width="15%">
+					<col width="35%">
+					<col width="15%">
+					<col width="35%">
+				</colgroup>
+				<tbody>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{portal.pp.name}">이름</span>
+						</th>
+						<td>
+							<input type="text" class="main-input data-validate" id="placePymntNm" name="placePymntNm" maxlength="50"
+								th:value="${plPymntInfo.placePymntNm}" data-valid-maximum="50" th:data-valid-name="#{portal.pp.name}"
+								data-valid-required>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{portal.pp.dw}">주소</span>
+						</th>
+						<td>
+							<input type="text" class="main-input data-validate" id="placePymntAddr" maxlength="100"
+								name="placePymntAddr" th:value="${plPymntInfo.placePymntAddr}"
+								th:data-valid-name="#{portal.pp.dw}" data-valid-maximum="100" data-valid-required>
+						</td>
+					</tr>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{portal.pp.contact}">연락처</span>
+						</th>
+						<td>
+							<input type="text" class="main-input data-validate" name="placePymntCntc" maxlength="50"
+								id="placePymntCntc" th:value="${plPymntInfo.placePymntCntc}"
+								th:data-valid-name="#{portal.pp.contact}" data-valid-maximum="50" data-valid-required>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{portal.pp.operatingTime}">운영시간</span>
+						</th>
+						<td>
+							<input type="time" class="input-time" name="operStrTm" id="operStrTm"
+								th:value="${plPymntInfo.operStrTm}" th:data-valid-name="#{portal.pp.operatingTime}"
+								data-valid-required> ~
+							<input type="time" class="input-time" name="operEndTm" id="operEndTm"
+								th:value="${plPymntInfo.operEndTm}" th:data-valid-name="#{portal.pp.operatingTime}"
+								data-valid-required>
+						</td>
+					</tr>
 
-            </tbody>
-        </table>
-        </form>
-        <div class="btn-wrap-center">
-			<button th:text="#{portal.common.cancel}" type="button" id="btnGoList" class="sub-btn" onclick="javascript:window.history.back()">취소</button>
-      	    <button th:text="#{portal.common.modiCom}" type="button" id="btnModify" class="main-btn">수정완료</button>
-		</div>       
-    </div>
+					<tr>
+						<th>
+							<span class="requiredMark" th:text="#{portal.pp.closedDays}">휴무일</span>
+						</th>
+						<td>
+							<input type="hidden" name="clsdDt" id="clsdDt" th:value="${plPymntInfo.clsdDt}">
+							<input type="checkbox" class="data-validate" name="clsdChkBox" value="Mon"
+								th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+							<label>Mon</label>
+
+							<input type="checkbox" class="data-validate" name="clsdChkBox" value="Tue"
+								th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+							<label>Tue</label>
+
+							<input type="checkbox" class="data-validate" name="clsdChkBox" value="Wed"
+								th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+							<label>Wed</label>
+
+							<input type="checkbox" class="data-validate" name="clsdChkBox" value="Thu"
+								th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+							<label>Thu</label>
+
+							<input type="checkbox" class="data-validate" name="clsdChkBox" value="Fri"
+								th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+							<label>Fri</label>
+
+							<input type="checkbox" class="data-validate" name="clsdChkBox" value="Sat"
+								th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+							<label>Sat</label>
+
+							<input type="checkbox" class="data-validate" name="clsdChkBox" value="Sun"
+								th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+							<label>Sun</label>
+
+							<input type="checkbox" class="data-validate" name="clsdChkBox" value="Hol"
+								th:data-valid-name="#{portal.pp.closedDays}" data-valid-required>
+							<label>Hol</label>
+						</td>
+						<th>
+							<span class="requiredMark" th:text="#{portal.pp.preName}">대표자 이름</span>
+						</th>
+						<td>
+							<input type="text" class="form-control main-input data-validate" id="txtPlacePymntRprsvNm" maxlength="50"
+								name="placePymntRprsvNm" th:value="${plPymntInfo.placePymntRprsvNm}"
+								th:data-valid-name="#{portal.pp.preName}" data-valid-maximum="50" data-valid-required>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</form>
+		<div class="btn-wrap-center">
+			<button th:text="#{portal.common.cancel}" type="button" id="btnGoList" class="sub-btn"
+				onclick="javascript:window.history.back()">취소</button>
+			<button th:text="#{portal.common.modiCom}" type="button" id="btnModify" class="main-btn">수정완료</button>
+		</div>
+	</div>
 
 
 
 </th:block>
+
 </html>
 <script th:inline="javascript">
-function saveInfo() {
-	new ModalBuilder().init().successBody('수정되었습니다.').footer(4,'확인',function(button, modal){modal.close();}).open();
-}
-	$(document).ready(function(){
+	$(document).ready(function () {
 		var clsdDt = $("#clsdDt").val();
-		if(!isNull(clsdDt)){
+		if (!isNull(clsdDt)) {
 			var clsdDtArr = clsdDt.split(',');
-			for (const item of clsdDtArr){
-				$("input[name='clsdChkBox']").each(function(){
-					if($(this).val() == item){
+			for (const item of clsdDtArr) {
+				$("input[name='clsdChkBox']").each(function () {
+					if ($(this).val() == item) {
 						$(this).prop('checked', true);
 					}
-				})				
+				})
 			}
 		}
 	})
-	
-    $("#btnModify").click(function () {
+
+	$("#btnModify").click(function () {
+		trimValues(['placePymntNm', 'placePymntAddr', 'placePymntCntc', 'txtPlacePymntRprsvNm']);
+		if (!$("#frmPenaltyPlaceModify").soValid()) return false;
+
+		let operStrTm = document.getElementById('operStrTm').value;
+		let operEndTm = document.getElementById('operEndTm').value;
+		if (operStrTm >= operEndTm) {
+			new ModalBuilder().init().successBody(/*[[#{portal.pp.modify.alert.opertaing.hours}]]*/).footer(4, 'Confirmar', function (button, modal) {
+				modal.close();
+			}).open();
+			return false;
+		}
+
 		var clsdDt = '';
-		$("input[name='clsdChkBox']:checked").each(function(index, item){
-			if(index == 0){
-				clsdDt += $(item).val();			
-			}else{
-				clsdDt +=  ',' + $(item).val();					
+		$("input[name='clsdChkBox']:checked").each(function (index, item) {
+			if (index == 0) {
+				clsdDt += $(item).val();
+			} else {
+				clsdDt += ',' + $(item).val();
 			}
 		})
 		$("#clsdDt").val(clsdDt);
-        $.ajax({
-            url: /*[[@{/portal/penaltyplace/update.ajax}]]*/ "/portal/penaltyplace/update.ajax",
-            type: "post",
-            data: $("#frmPenaltyPlaceModify").serialize(),
-            success: function(data){
+
+		$.ajax({
+			url: /*[[@{/portal/penaltyplace/update.ajax}]]*/ "/portal/penaltyplace/update.ajax",
+			type: "post",
+			data: $("#frmPenaltyPlaceModify").serialize(),
+			success: function (data) {
 				var resultCode = data.code;
 				var resultMessage = data.message;
-                if(resultCode == '200'){
-					new ModalBuilder().init().successBody(resultMessage).footer(4,'확인',function(button, modal){
+				if (resultCode == '200') {
+					new ModalBuilder().init().successBody(resultMessage).footer(4, 'Confirmar', function (button, modal) {
 						modal.close();
-                    var baseUrl = /*[[@{/portal/penaltyplace/detail.do}]]*/ '';
-                    window.location.href=baseUrl+"?placePymntId="+[[${plPymntInfo.placePymntId}]];
-						}).open();
-                } else {
-                	new ModalBuilder().init().alertBody(resultMessage).footer(4,'확인',function(button, modal){modal.close();}).open();
+						var baseUrl = /*[[@{/portal/penaltyplace/detail.do}]]*/ '';
+						window.location.href = baseUrl + "?placePymntId=" + [[${plPymntInfo.placePymntId}]];
+					}).open();
+				} else {
+					new ModalBuilder().init().alertBody(resultMessage).footer(4, 'Confirmar', function (button, modal) {
+						modal.close();
+					}).open();
 				}
-            }
-        });
-    })
-    
-   
+			}
+		});
+	})
+
+
 </script>

@@ -17,8 +17,6 @@ function randomString(num) {
     return result;
 }
 /*
-alert 
-ex) new ModalBuilder().init().alertBody('ㅁ너ㅏㅣㅓㅁ아ㅣㅁ너').footer(3,'버튼명',function(button, modal){modal.close();}).open();
 success
 ex) new ModalBuilder().init().successBody('컨텐츠').footer(4,'버튼명',function(button, modal){modal.close();}).open();
 modal
@@ -69,14 +67,14 @@ let ModalBuilder = function(){
             }
         },
 		ALERT_BODY : function(content) {
-			let alertBody = $(`<div id="modal-body"><div><div id="alert-img"><img src="/../images/alert.png" alt="경고"></div><div id="modal-txt"></div></div></div>`);
+			let alertBody = $(`<div id="modal-body"><div id="modal-txt"></div></div>`);
 			if(content !== null){
 				alertBody.find('#modal-txt').append(`${content}`)
 			}
 			return alertBody;
 		},
 		SUCCESS_BODY : function(content) {
-			let alertBody = $(`<div id="modal-body"><div><div id="alert-img"><img src="/../images/success.png" alt="성공"></div><div id="modal-txt"></div></div></div>`);
+			let alertBody = $(`<div id="modal-body"><div id="modal-txt"></div></div>`);
 			if(content !== null){
 				alertBody.find('#modal-txt').append(`${content}`)
 			}
@@ -109,7 +107,7 @@ let ModalBuilder = function(){
 		FOOTER_TWO_BUTTON : function(buttonText, callback){
 			let $footerWrap = $(`<div id="modal-footer"></div>`);
 			let $footerButton = $(`<button type="button" class="main-btn">${buttonText}</button>`);
-			let $footerCloseButton = $(`<button type="button" class="sub-btn">닫기</button>`);
+			let $footerCloseButton = $(`<button type="button" class="sub-btn">Cancelar</button>`);
 			$footerButton.on("click", function(){
 				if(!isNull(callback)){
 					callback($(this), _self);
@@ -126,8 +124,8 @@ let ModalBuilder = function(){
 		},
 		FOOTER_CUSTOM_TWO_BUTTON : function(OneButtonText, callback, TwoButtonText, callback2){
 			let $footerWrap = $(`<div id="modal-footer"></div>`);
-			let $footerButton = $(`<button type="button" class="main-btn">${OneButtonText}</button>`);
-			let $footerCloseButton = $(`<button type="button" class="sub-btn">${TwoButtonText}</button>`);
+			let $footerButton = $(`<button type="button" class="sub-btn">${OneButtonText}</button>`);
+			let $footerCloseButton = $(`<button type="button" class="main-btn">${TwoButtonText}</button>`);
 			
 			$footerButton.on("click", function(){
 				if(!isNull(callback)){
@@ -272,19 +270,20 @@ let ModalBuilder = function(){
 
     _self.close = function(){
 		window.modalUrl = null;
-		$content.fadeOut(10, function(){
-            $("#"+containerId).remove();
-        });
-        $("body").removeClass("hidden");
-		$('.modal-container').remove();
+		$('#modal-wrap').removeClass("on");
+		$("#"+containerId).fadeOut(
+			function(){
+				$(this).remove();
+			}
+		);
 	}
 
    function generate(callback){
         $("body").append($container).ready(function(){
-            $container.show();
+            $("#"+containerId).fadeIn();
+            $('#modal-wrap').addClass("on")
             opening = false;
         })
-		$("body").addClass('hidden');
    }
 
    return _self;

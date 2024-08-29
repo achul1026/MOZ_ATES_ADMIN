@@ -41,9 +41,7 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
                 error = messageSource.getMessage("login.fail.error.alert",null,locale);
             }
         }
-
-
-        System.out.println(request.getContextPath());
+        //System.out.println(request.getContextPath());
 
         response.setContentType("text/html; charset=UTF-8");
         PrintWriter out = response.getWriter();

@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<th:block th:fragment="mapLegendFragment">
+    <div id="legend">
+        <div id="lgHead" class="lg-head">
+            <h2 id="lgTitle" th:text="#{main.dashboard.map.legend.title}">
+                범례
+            </h2>
+            <img src="/images/legend_toggle_btn.png" alt="toggle" class="toggle-btn" onclick="legendToggle();">
+        </div>
+        <div id="lgCon" class="lg-container">
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT000.png">
+                </div>
+                <div class="lg_list_con">
+                    Chevron Sign
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT001.png">
+                </div>
+                <div class="lg_list_con">
+                    Delineator
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT003.png">
+                </div>
+                <div class="lg_list_con">
+                    Median barrier
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT004.png">
+                </div>
+                <div class="lg_list_con">
+                    Roadside barrier</div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT005.png">
+                </div>
+                <div class="lg_list_con">
+                    Protect head light
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT006.png">
+                </div>
+                <div class="lg_list_con">
+                    Anti-skid pavement
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT008.png">
+                </div>
+                <div class="lg_list_con">
+                    Variable message sign
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT009.png">
+                </div>
+                <div class="lg_list_con">
+                    LED warning sign
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT010.png">
+                </div>
+                <div class="lg_list_con">
+                    Lane control sign
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT011.png">
+                </div>
+                <div class="lg_list_con">
+                    Variable speed limit
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT012.png">
+                </div>
+                <div class="lg_list_con">
+                    fixed type camera
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT015.png">
+                </div>
+                <div class="lg_list_con">
+                    Speed hump
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT016.png">
+                </div>
+                <div class="lg_list_con">
+                    crash cushion
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT018.png">
+                </div>
+                <div class="lg_list_con">
+                    Emergency stop facility
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/facility_TFT019.png">
+                </div>
+                <div class="lg_list_con">
+                    Emergency call
+                </div>
+            </div>
+
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/organization_TFT900.png">
+                </div>
+                <div class="lg_list_con">
+                    Organizações relacionadas
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/accident_ACT001.png">
+                </div>
+                <div class="lg_list_con">
+                    Acidentes
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/enfrocement_ENF001.png">
+                </div>
+                <div class="lg_list_con">
+                    Fiscalização de trânsito
+                </div>
+            </div>
+            <div class="lg__list">
+                <div class="lg_list_con">
+                    <img src="/images/equipment_EQP001.png">
+                </div>
+                <div class="lg_list_con">
+                    Equipamento de fiscalização de trânsito não tripulado
+                </div>
+            </div>
+
+
+        </div>
+    </div>
+
+    <script>
+        legendCon();
+
+        function legendCon() {
+            const lgCon = document.getElementById('lgCon');
+            const conHeight = lgCon.offsetHeight;
+            if (conHeight > 129) {
+                lgCon.style.paddingRight = "18px";
+                lgCon.style.overflowY = "auto";
+            } else {
+                lgCon.style.paddingRight = "0";
+            }
+        }
+
+        function legendToggle() {
+            const lgCon = document.getElementById('lgCon');
+            const lgBtn = document.querySelector('.toggle-btn');
+
+            if (lgCon.classList.contains('on')) {
+                setTimeout(() => {
+                    lgCon.classList.remove('on');
+                }, 10);
+                lgBtn.classList.remove('on');
+            } else {
+                setTimeout(() => {
+                    lgCon.style.overflowY = "auto";
+                }, 220);
+                lgCon.classList.add('on');
+                lgBtn.classList.add('on');
+            }
+        }
+    </script>
+</th:block>
+</html>

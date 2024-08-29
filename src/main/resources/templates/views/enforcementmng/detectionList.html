@@ -20,6 +20,10 @@
 						<td>
 							<select name="searchType" class="filter-select" id="searchType">
 								<option value="all" th:text="#{common.search.searchOption.all}">전체</option>
+								<option value="vhNumber" th:text="#{enforcement.detectionList.carPlate}"
+										th:selected="${searchOption.searchType == 'vhNumber'}">차량 번호</option>
+								<option value="eqpName" th:text="#{enforcement.detectionList.eqpNm}"
+										th:selected="${searchOption.searchType == 'eqpName'}">단속장비 명</option>
 							</select>
 						</td>
 					</tr>
@@ -32,6 +36,7 @@
 			</table>
 
 			<div class="btn-wrap-center">
+				<button type="button" id="resetSearch" class="sub-btn form-button" onclick="resetForm('frmSearch')" th:text="#{enforcement.common.search.reset}">검색 초기화</button>
 				<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{common.search.search}">조회</button>
 			</div>
 		</form>
@@ -58,14 +63,27 @@
 				<tbody>
 					<tr th:each="detectionItem : ${detectionList}" th:onclick="|location.href='@{/enf/detection/detail.do(idx=${detectionItem.idx})}'|">
 						<td th:text="${detectionItem.rnum}"></td>
-						<td th:text="${detectionItem.tfcEnfEqpMatser.eqpNm}"></td>
-						<td th:text="${detectionItem.tfcEnfEqpMatser.roadAddr}"></td>
+						<td th:text="${detectionItem.tfcEnfEqpMatser == null ? '-' : detectionItem.tfcEnfEqpMatser.eqpNm}"></td>
+						<td th:text="${detectionItem.addr}"></td>
 						<td th:text="${#dates.format(detectionItem.enforceTime, 'yyyy-MM-dd HH:mm:ss')}"></td>
-						<td th:text="${detectionItem.carPlate}"></td>
-						<td th:switch="${detectionItem.tfcEqpEnfYn}">
-							<span th:case="Y" th:text="#{enforcement.detectionList.eqpYnY}">단속 등록 완료</span>
-							<span th:case="N" th:text="#{enforcement.detectionList.eqpYnN}">단속 등록 미완료</span>
+						<td th:text="${detectionItem.carPlate == '' ? '-' : detectionItem.carPlate}"></td>
+						<td  class="tdFlex" th:switch="${detectionItem.tfcEqpEnfYn}">
+							<th:block th:case="Y">
+								<div class="statusComplete">
+									<img src="/images/status_icon01.png" class="statusImg" alt="complete">
+									<span class="statusText" th:text="#{enforcement.detectionList.eqpYnY}">단속 등록 완료</span>
+								</div>
+							</th:block>
+							<th:block th:case="N">
+								<div class="statusFail">
+									<img src="/images/status_icon02.png" class="statusImg" alt="not complete">
+									<span class="statusText" th:text="#{enforcement.detectionList.eqpYnN}">단속 등록 미완료</span>
+								</div>
+							</th:block>
 						</td>
+
+
+
 					</tr>
 				</tbody>
 			</table>

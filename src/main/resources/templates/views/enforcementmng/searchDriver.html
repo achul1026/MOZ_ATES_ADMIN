@@ -4,10 +4,8 @@
 
 <th:block layout:fragment="content">
 	<div id="container-fluid">
-		<!-- Page Heading -->
-		<!--<h1 th:text="#{enforcement.driver.search.title}" class="search-result">운전자 조회</h1>-->
-		<h1 id="content-title" th:text="|#{enforcement.driver.search.title}|">운전자 조회</h1>
-		<div id="content-sub-title" th:text="#{enforcement.driver.search.descr}">이름 또는 연락처를 통해 운전자를 검색할 수 있습니다.</div>
+		<h1 id="content-title" th:text="#{enforcement.driver.search.title}">운전자 조회</h1>
+		<div id="content-sub-title" th:text="#{enforcement.driver.search.descr}">운전면허 번호로 검색할 수 있습니다..</div>
 		<div id="frmDriverSearch">
 			<table id="filter-table">
 				<colgroup>
@@ -16,121 +14,156 @@
 				</colgroup>
 				<tbody>
 					<tr>
-						<th th:text="#{enforcement.common.search.searchOp}">유형 선택</th>
-						<td>
-							<select name="searchType" id="searchType" class="filter-select">
-<!--								<option th:text="#{enforcement.common.search.selectAll}">전체</option>-->
-								<option value="driverNm" th:text="#{enforcement.driver.search.name}">이름</option>
-								<option value="dvrLcenId" th:text="#{enforcement.driver.search.driverLicense}">운전면허증 번호</option>
-							</select>
-						</td>
-					</tr>
-					<tr>
 						<th th:text="#{enforcement.common.search.serchTerm}">내용 검색</th>
-						<td><input type="text" id="searchContent" name="searchContent" class="search-box main-input" th:placeholder="#{enforcement.common.search.placeholder}"></td>
+						<td>
+							<input type="hidden" id="searchType" name="searchType" value="dvrLcenId">
+							<input type="text" id="searchContent" name="searchContent" class="search-box main-input" th:placeholder="#{enforcement.common.search.placeholder}" onkeyup="keyupNumberEvent(this)">
+						</td>
 					</tr>
 				</tbody>
 			</table>
 		</div>
 			<div class="btn-wrap-center">
-				<button type="button" id="btnSearch" class="main-btn form-button" th:text="#{enforcement.driver.search.check}">조회</button>
 				<button type="button" id="resetSearch" onclick="resetForm()" class="sub-btn form-button" th:text="#{enforcement.common.search.reset}">검색 초기화</button>
+				<button type="button" id="btnSearch" class="main-btn form-button" onclick="apiSearch()" th:text="#{enforcement.driver.search.check}">조회</button>
 			</div>
-			
-			<div class="">
-				<table id="api_table" class="main-table" style="display:none">
-					<thead>
-						<tr>
-							<th th:text="#{enforcement.driver.search.driverLicense}">Driver License Id</th>
-							<th th:text="#{enforcement.driver.search.driverType}">Driver License Type</th>
-							<th th:text="#{enforcement.driver.search.expiration}">Driver License Expiration Date</th>
-							<th th:text="#{enforcement.driver.search.name}">Driver Name</th>
-							<th th:text="#{enforcement.driver.search.birth}">Driver Brth</th>
-							<th th:text="#{enforcement.driver.search.searchAddress}">Driver Addr</th>
-							<th th:text="#{enforcement.driver.search.phNum}">Driver Phone Number</th>
-							<th th:text="#{enforcement.driver.search.vehicleNo}">Vehicle No</th>
-							<th th:text="#{enforcement.driver.search.vehicleType}">Vehicle Type</th>
-						</tr>
-					</thead>
-					<tbody id="resultTbody">
-					</tbody>
-				</table>
+		<div class="">
+			<table id="api_table" class="main-table" style="display:none">
+				<thead>
+					<tr>
+						<th th:text="#{enforcement.driver.search.name}">Driver Name</th>
+						<th th:text="#{enforcement.driver.search.birth}">BirthDay</th>
+						<th th:text="#{enforcement.driver.search.docType}">Document Type</th>
+						<th th:text="#{enforcement.driver.search.docNo}">Document No</th>
+						<th th:text="#{enforcement.driver.search.address}">Driver Address</th>
+						<th th:text="#{enforcement.driver.search.phNum}">Driver Contact</th>
+						<th th:text="#{enforcement.driver.search.sex}">Area</th>
+					</tr>
+				</thead>
+				<tbody id="resultTbody">
+				</tbody>
+			</table>
 		</div>
 	</div>
 </th:block>
 
 </html>
-<script>
-	
+<script th:inline="javascript">
 	const resultTable = document.getElementById('api_table');
+	const tbody = document.getElementById('resultTbody');
 	
-	function apiResultDetail(_this){
-		let resultData = _this.dataset != null ? _this.dataset.prop : null;
-		let obj = JSON.parse(resultData);
+	function apiResultDetail(_this) {
+	    let resultData = _this.dataset != null ? _this.dataset.prop : null;
+	    let obj = JSON.parse(resultData);
+	
 	    const form = document.createElement('form');
 	    form.method = 'get';
 	    form.action = '/enf/driver/detail.do';
-//		console.log(_this.dataset.prop);
-	    Object.keys(obj).forEach(key => {
-	        const result = document.createElement('input');
-	        result.type = 'hidden';
-	        result.name = key;
-	        result.value = obj[key];
-	        form.appendChild(result);
-	    });
 	
+	    function appendHiddenInput(name, value) {
+	        const input = document.createElement('input');
+	        input.type = 'hidden';
+	        input.name = toCamelCase(name);
+	        input.value = value;
+	        form.appendChild(input);
+	    }
+	
+	    function processObject(obj, parentKey = '') {
+	        Object.entries(obj).forEach(([key, value]) => {
+	            const fullName = parentKey ? `${parentKey}_${key}` : key;
+	            if (typeof value === 'object' && value !== null) {
+	                if (key === 'classes') {
+	                    Object.entries(value).forEach(([subKey, subValue]) => {
+	                        const subFullName = `${fullName}[${subKey}]`;
+	                        appendHiddenInput(subFullName, subValue);
+	                    });
+	                } else {
+	                    processObject(value, fullName);
+	                }
+	            } else {
+	                appendHiddenInput(fullName, value);
+	            }
+	        });
+	    }
+	    processObject(obj);
 	    document.body.appendChild(form);
-	    form.submit();
+
+	    const queryString = new URLSearchParams(new FormData(form)).toString();
+	    const url = form.action + '?' + queryString;
+	    
+	    location.href=url;
 	}
+
 	
-	$("#btnSearch").click(function () {
+	function apiSearch(){
         const searchType = document.getElementById('searchType').value;
         const searchValue = document.getElementById('searchContent').value;
+        const resultMsg = /*[[#{common.search.notFound}]]*/;
+        const notSearch = /*[[#{common.search.notSearch}]]*/;
+        const conFirm = /*[[#{common.button.confirm}]]*/;
         
         if(searchType == null || searchType == '' || searchValue == null || searchValue == ''){
-			alert("Please Input SearchType and SearchContent");
+			new ModalBuilder().init().successBody(notSearch).footer(4,conFirm,function(button, modal){
+				modal.close();
+			}).open();
 			return;
 		}
         
 		const fetcher = new DriverSelectAPI();
 		
-        fetcher.fetchData(searchType, searchValue, function(data) {
-            const tbody = document.getElementById('resultTbody');
-            tbody.empty();
-
-            data.forEach(item => {
+		const loading = new AdminLoading().start("API Searching...");
+		
+		fetcher.fetchData(searchType, searchValue, function(searchInfo) {
+		    tbody.empty();
+		    
+		    if(searchInfo != null){
                 const tr = document.createElement('tr');
-                tr.dataset.prop = JSON.stringify(item);
-                //console.log(JSON.stringify(item));
+                tr.dataset.prop = JSON.stringify(searchInfo);
                 tr.setAttribute('onclick','apiResultDetail(this)');
+                
+				let birthday = new Date(searchInfo.data_de_nascimento);
+				
+				let birthdayFormat = `${birthday.getDate()}.${birthday.getMonth() + 1}.${birthday.getFullYear()}`;
+				let fullAddress = createAddress(searchInfo.enderesso1,searchInfo.enderesso2,searchInfo.enderesso3,searchInfo.enderesso4);
+               
                 tr.innerHTML = `
-	               	<td>${item.driverLicenseId}</td>
-	               	<td>${item.driverLicenseType}</td>
-	               	<td>${item.expirationDate}</td>
-	               	<td>${item.driverNm}</td>
-	               	<td>${item.driverBrth}</td>
-	               	<td>${item.driverPno}</td>
-	               	<td>${item.driverAddr}</td>
-	               	<td>${item.vehicleNo}</td>
-	               	<td>${item.vehicleType}</td>
+	               	<td>${searchInfo.nome}</td>
+	               	<td>${birthdayFormat}</td>
+	               	<td>${searchInfo.tipo_documento}</td>
+	               	<td>${searchInfo.doc_number}</td>
+	               	<td>${fullAddress}</td>
+	               	<td>${searchInfo.phone1}</td>
+	               	<td>${searchInfo.genero}</td>
                	`;
                	
                 tbody.appendChild(tr);
                 
                 resultTable.style.display = 'table';
-            });
-        });
-	});
+			} else {
+				const tr = document.createElement('tr');
+				
+				 tr.innerHTML = `
+		               	<td colspan="8">${resultMsg}</td>
+	               	`;
+               	tbody.appendChild(tr);
+                
+                resultTable.style.display = 'table';
+			}
+			
+			loading.end();
+		});
+	}
+	
+	function createAddress(enderesso1, enderesso2, enderesso3, enderesso4) {
+	    const addressParts = [enderesso1, enderesso2, enderesso3, enderesso4].filter(part => part != null);
+	
+	    const fullAddress = addressParts.join(' , ');
+	
+	    return fullAddress;
+	}
 	
 	function resetForm(){
-        const searchType = document.getElementById('searchType');
-        
-	    if (searchType && searchType.options.length > 0) {
-	        searchType.value = searchType.options[0].value;
-	    }
-	    
         document.getElementById('searchContent').value = '';
         resultTable.style.display = 'none';
 	}
-
 </script>

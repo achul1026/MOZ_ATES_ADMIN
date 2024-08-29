@@ -7,11 +7,14 @@
 </form>
 
 <div id="map-wrap">
-	<div id="map" class="listMap"></div>
+	<div id="map" class="listMap" style="min-height: 470px;">
+		<th:block th:insert="tags/mapLegend :: mapLegendFragment"></th:block>
+	</div>
 	<div id="map-search-wrap">
-		<div id="map-search-title" th:text="#{equipment.facilityMngList.map.title}">Facility List</div>
+		<div id="map-search-title">Equipment List</div>
 		<div id="map-search">
-			<input class="search-box main-input" id="searchTxt" name="searchTxt" type="text" th:placeholder="#{equipment.mngList.placeholder}" th:value="${tfcFacilityMaster.searchTxt}">
+			<input class="search-box main-input" id="searchTxt" name="searchTxt" type="text"
+				th:placeholder="#{equipment.mngList.placeholder}" th:value="${tfcFacilityMaster.searchTxt}">
 			<div id="map-search-icon-wrap" class="btnSearch">
 				<i class="search-icon"></i>
 			</div>
@@ -19,19 +22,23 @@
 		<div>
 			<table class="main-table map-list-table">
 				<colgroup>
-				
+
 				</colgroup>
 				<thead>
 					<tr>
-						<th th:text="#{equipment.facilityMngList.title.type}">Equipment Type</th>
-						<th th:text="#{equipment.facilityMngList.title.name}">Equipment Name</th>
-						<th th:text="#{equipment.facilityMngList.title.location}">Installation location</th>
+						<th th:text="#{equipment.mngList.equipmentType}">Equipment Type</th>
+						<th th:text="#{equipment.mngList.equipmentName}">Equipment Name</th>
+						<th th:text="#{equipment.mngList.address}">Installation location</th>
 					</tr>
 				</thead>
 				<tbody>
-					<tr th:each="facilityItem, status : ${facilityList}"
+					<tr th:if="${#lists.isEmpty(facilityList)}">
+						<td colspan="3" th:text="#{equipment.facilityMngList.search.empty}">결과 없음</td>
+					</tr>
+					<tr th:unless="${#lists.isEmpty(facilityList)}" th:each="facilityItem, status : ${facilityList}"
 						th:onclick="findLocation([[${facilityItem.lat}]], [[${facilityItem.lng}]])"
-						th:id="facility+${status.index}" th:data-lat="${facilityItem.lat}" th:data-lng="${facilityItem.lng}">
+						th:id="facility+${status.index}" th:data-lat="${facilityItem.lat}"
+						th:data-lng="${facilityItem.lng}">
 						<td th:text="${facilityItem.cmCd.cdNm}"></td>
 						<td th:text="${facilityItem.facilityNm}"></td>
 						<td th:text="${facilityItem.roadAddr}"></td>
@@ -45,21 +52,21 @@
 	</div>
 </div>
 <script th:inline="javascript">
-	$(document).ready(function(){
+	$(document).ready(function () {
 		var lat = $("#facility0").data("lat");
 		var lng = $("#facility0").data("lng");
-		
+
 		map = new MozAtesMap({
-			elementId : 'map',
-			center_lng : lng,
-			center_lat : lat,
-			isInitDrawCenterMarker : false,
-			isFacility : true,
-			isEquipment : false
+			elementId: 'map',
+			center_lng: lng,
+			center_lat: lat,
+			isInitDrawCenterMarker: false,
+			isFacility: true,
+			isEquipment: false
 		});
 	});
-		
-	$(".btnSearch").on("click", function(){
+
+	$(".btnSearch").on("click", function () {
 		$.ajax({
 			url: /*[[@{/eqp/facility/facilityMngMapAjax}]]*/ '/eqp/facility/facilityMngMapAjax',
 			type: "POST",
@@ -71,14 +78,16 @@
 			}
 		});
 	});
-	
-	function findLocation(lat, lng){
-		map.flyToMove(lng,lat);
+
+	function findLocation(lat, lng) {
+		map.flyToMove(lng, lat);
 	}
-	
+
 	function fnPageMove(page) {
 		$("#page").val(page);
 		getMapAjax();
 	}
+
 </script>
+
 </html>
